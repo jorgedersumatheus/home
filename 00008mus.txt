@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Tim Maia - 1970</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
+    <link href="vendor/simple-line-icons/css/simple-line-icons.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="css/stylish-portfolio.min.css" rel="stylesheet">
+
+  </head>
+
+  <body id="page-top">
+
+    <!-- Navigation -->
+    <a class="menu-toggle rounded" href="#">
+      <i class="fas fa-bars"></i>
+    </a>
+    <nav id="sidebar-wrapper">
+      <ul class="sidebar-nav">
+       
+       
+       
+        <li class="sidebar-nav-item">
+          <a class="js-scroll-trigger" href="#portfolio">MUSICAL VIVO</a>
+        </li>
+		
+		
+		 <li class="sidebar-nav-item">
+          <a class="js-scroll-trigger" 
+		  href="#contato">CONTATO</a>
+		  
+		  
+		  <li class="sidebar-nav-item">
+          <a class="js-scroll-trigger"
+		  href="#contato"></a>
+		  
+		  
+		  
+        </li>
+		  
+		  
+        </li>
+		
+       
+      </ul>
+    </nav>
+
+    <!-- Header -->
+    <header class="masthead d-flex">
+	
+	
+	 <div class="container text-center my-auto">
+	    
+        <h1 class="mb-1"></h1>
+        <h3 class="mb-5">
+          <em> <font size="9"></font></em>
+        </h3><p><p><p>
+        <a class="btn btn-primary btn-xl js-scroll-trigger" 
+		href="#about">
+		
+		 <font size="3" color="BLACK" face="Verdana">Tim Maia - 1970
+
+
+		 </font></a>
+      </div>
+      <div class="overlay"></div><p><p><p>
+	  
+	  
+	 
+	  
+    </header>
+    <!-- Portfolio -->
+    <section class="content-section" id="portfolio">
+      <div class="container">
+        <div class="content-section-heading text-center">
+          <h3 class="text-secondary mb-0"></h3>
+		  
+		  
+			  
+		  
+		  <font size="16" color="blue" face="Verdana"> MUSICAL
+		  
+		  <br> VIVO </font><br>
+		  
+		   <font size="2" color="black" face="Verdana">
+		  
+		  (clicar na seta abaixo, aguardar e ouvir)
+		  
+		  </font>
+		  
+        </div>
+       
+          <div class="col-lg-6">
+            <a class="portfolio-item" href="#">
+              <span class="caption">
+                <span class="caption-content">
+                  
+				  
+				</section>
+
+    <!-- Call to Action -->
+    <section class="content-section bg-primary text-white">
+      <div class="container text-center">
+	  
+	       
+		<table border="0" width="550">
+<tr>
+<td align="left"  width="500"> 
+
+
+<iframe width="20"  height="20"  src="https://www.youtube.com/embed/2pxXm4MDdm4"
+				 frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; 
+				 picture-in-picture" allowfullscreen></iframe>
+				 
+				 
+
+ <h6>Tim Maia - 1970
+				 </h6><p>
+<div align="justify">
+
+Sebastião Rodrigues Maia, popularmente conhecido como Tim Maia (Rio de Janeiro, 
+28 de setembro de 1942 — Niterói, 15 de março de 1998), foi um cantor, compositor, 
+produtor, maestro, guitarrista, baterista, multi-instrumentista e empresário brasileiro, 
+um dos pioneiros na introdução do estilo soul na música popular brasileira e um dos 
+maiores ícones da música no Brasil. Suas músicas eram marcadas pela rouquidão de sua 
+voz, sempre grave e carregada, conquistando grande vendagem e consagrando muitos sucessos.<br> 
+Nasceu e cresceu na cidade do Rio de Janeiro, onde, em sua infância, já teve contato com 
+pessoas que viriam a ser grandes cantores, como Jorge Ben Jor e Erasmo Carlos. Em 1957, 
+integrou o grupo The Sputniks, onde cantou junto a Roberto Carlos. Em 1959, emigrou para 
+os Estados Unidos, onde teve seus primeiros contatos com o soul, vindo a ser preso 
+e deportado por roubo e porte de drogas. 
+Em 1970, gravou seu primeiro disco, intitulado Tim Maia.<br>
+
+
+
+<p>
+
+
+
+Tim Maia - 1970 <p>
+Músicas <p>
+1 Coroné Antônio Bento (Luiz Wanderley, João do Vale)<br> 
+2 Cristina (Carlos Imperial, Tim Maia)<br> 
+3 Jurema (Tim Maia)<br> 
+4 Padre Cícero (Cassiano, Tim Maia)<br> 
+5 Flamengo (Tim Maia)<br> 
+6 Você fingiu (Cassiano)<br> 
+7 Eu amo você (Silvio Rochael, Cassiano)<br> 
+8 Primavera [Vai chuva] (Silvio Rochael, Cassiano)<br> 
+9 Risos (Fábio, Paulo Imperial)<br> 
+10 Azul da cor do mar (Tim Maia)<br> 
+11 Cristina nº 2 (Carlos Imperial, Tim Maia)<br> 
+12 Tributo à Booker Pittman (Cláudio Roditi)<br><p>
+
+
+Músicos<p>
+
+Segundo consta no LP original:<p>
+
+    Tim Maia – vocais e violão<br> 
+    Garoto - vibrafone<br> 
+    Carlinhos - piano e órgão<br> 
+    Genival Cassiano – guitarra e vocais<br> 
+    Zé Carlos – baixo elétrico<br> 
+    Capacete – baixo elétrico<br> 
+    Guilherme – percussão<br> 
+    Paulinho - bateria<br> 
+    Amaro, Fernando, Marcos, Malu, Regina e Dora - vocais<p>
+
+Ficha Técnica<p>
+
+Segundo consta no LP original:<p>
+
+    Criação Musical - Tim Maia<br> 
+    Produção - Jairo Pires e Arnaldo Saccomani<br> 
+    Técnicos de Gravação - João Kibelstis, Marcos, Célio, Ary e João Moreira<br> 
+    Estúdios - Scatena Studios de Som - C.B.D.<br> 
+    Lay-out - Aldo Luiz<br> 
+    Arranjos - Tim Maia, Waltel Branco, Waldir Arouca Barros e Cláudio Roditi<p>
+
+<p>
+
+
+   
+   
+
+
+<br><a href="http://www.jorgematheus.mus.br" 
+	style="color:#000001;" target="_blank">
+	<h6>VOLTAR PARA A PÁGINA PRINCIPAL<br>
+				 
+	</a><p>
+
+
+</div>
+			 
+				 
+				 
+				
+
+				 
+				 
+				 
+</td>
+		
+</tr>
+
+
+<tr>
+
+
+<p><p>		
+
+
+ 
+				 
+</td>
+</tr>
+</table>   
+		   
+    </a>
+        </div>
+    </section>
+	
+	<a class="scroll-to-top rounded js-scroll-trigger" href="#page-top">
+      <i class="fas fa-angle-up"></i>
+    </a>
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Plugin JavaScript -->
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for this template -->
+    <script src="js/stylish-portfolio.min.js"></script>
+	<center>
+	<br>
+	
+	
+	
+	 <section class="content-section" id="contato">
+      <div class="container">
+        <div class="content-section-heading text-center">
+          <h3 class="text-secondary mb-0"></h3>
+		  
+	
+<center>
+
+
+<table data-mysignature-version="2018-11-14T18:23:18.162Z | 0" cellspacing="0" width="300" 
+	cellpadding="0" border="0"><tr>  <td valign="top" style="vertical-align: top;" width="100"> 
+	<img alt="Dersu Projetos Culturais" width="100" style="width:100px;moz-border-radius:10%;khtml
+	-border-radius:10%;o-border-radius:10%;webkit-border-radius:10%;ms-border-radius:10%;border-
+	radius:10%;" src="https://img.mysignature.io/p/e/f/4/ef45afdf-c40d-501a-ab8d-fc0b672f5388.png?time=1542219808" /> 
+	</td>  <td style="font-size:1em;padding: 0 0 0 15px;vertical-align: top;" valign="top">
+	<table cellspacing="0" cellpadding="0" border="0" style="width: 100%;max-width: 400px;line-
+	height: 1.4;font-family:'Trebuchet MS', Helvetica, sans-serif;font-size:80%;color: #000001;">
+	<tr><td style="padding-bottom: 4px;"><div style="font-family:'Trebuchet MS', Helvetica, sans-serif;">
+	<span style="font-size:1.2em;color:black;font-weight: 600;">Jorge Luis Aparecido Matheus</span>  
+	</div></td></tr>  <tr><td style="padding-bottom: 4px;"><div style="font-family:'Trebuchet MS', 
+	Helvetica, sans-serif;">  | Dersu Projetos Culturais  </div></td></tr>     <tr><td style="padding: 
+	1px 0;"><div style="font-family:'Trebuchet MS', Helvetica, sans-serif;"> | 
+	<span style="font-weight: 600;color:#f44336;">email:&nbsp;</span>
+	<a href="mailto:jorge@jorgematheus.mus.br" style="color:#000001;" target="_blank">
+	jorge@jorgematheus.mus.br</a></div></td></tr>   <tr><td style="padding: 1px 0;"><div 
+	style="font-family:'Trebuchet MS', Helvetica, sans-serif;"> | <span style="font-weight: 
+	600;color:#f44336;">site:&nbsp;</span><br><a href="http://www.jorgematheus.mus.br" 
+	style="color:#000001;" target="_blank">www.jorgematheus.mus.br</a> </div></td></tr>      
+	<tr><td style="color: #000001;padding: 8px 0 3px 0;display: block;"><div 
+	style="font-family:'Trebuchet MS', Helvetica, sans-serif;"> CONTATO: </div></td></tr><tr><td>
+	<table cellspacing="0" cellpadding="0" border="0"><tr> <td style="font-family: Arial;padding: 
+	0 4px 0 0;"><a href="https://www.facebook.com/jorgedersu"><img alt="" style="width:23px;" 
+	width="23" src="https://img.mysignature.io/s/v3/8/b/2/8b2b0dfd-614e-5400-adc0-77c732fe850e.png">
+	</a></td><td style="font-family: Arial;padding: 0 4px 0 0;"><a href="https://twitter.com/jorgedersu">
+	<img alt="" style="width:23px;" width="23" src
+	="https://img.mysignature.io/s/v3/b/f/c/bfcf9f4f-c61f-5871-8b79-c723c0ed3735.png">
+	</a></td><td style="font-family: Arial;padding: 0 4px 0 0;">
+	<a href="https://instagram.com/jorgedersu"><img alt="" style="width:23px;" 
+	width="23" src="https://img.mysignature.io/s/v3/0/e/9/0e977ee8-e03e-5dc9-b870-88cacb1c43ab.png">
+	</a></td><td style="font-family: Arial;padding: 0 4px 0 0;">
+	<a href="https://www.youtube.com/user/jorgematheusfilmes">
+	<img alt="" style="width:23px;" width="23" 
+	src="https://img.mysignature.io/s/v3/d/d/5/dd5927e8-1ac7-5ddc-9e7c-4844529152c5.png">
+	</a></td><td style="font-family: Arial;padding: 0 4px 0 0;">
+	<a href="http://culturadigital.br/jorgedersu"><img alt="" style="width:23px;" 
+	width="23" src="https://img.mysignature.io/s/v3/b/c/6/bc61ccf2-19b9-5a10-99f3-0d87f45db421.png">
+	</a></td><td style="font-family: Arial;padding: 0 4px 0 0;">
+	<a href="https://br.linkedin.com/in/jorge-dersu-06604628https://br.linkedin.com/in/jorge-dersu-06604628https://br.linkedin.com/in/jorge-dersu-06604628https://br.linkedin.com/in/jorge-dersu-06604628https://br.linkedin.com/in/jorge-dersu-06604628">
+	<img alt="" style="width:23px;" width="23" src="https://img.mysignature.io/s/v3/5/9/9/599a76e8-1f12-5445-8de4-0a567ab3b6e8.png">
+	</a></td><td style="font-family: Arial;padding: 0 4px 0 0;">
+	<a href="http://jorgedersumatheus.tumblr.com/"><img alt="" style="width:23px;" width="23" 
+	src="https://img.mysignature.io/s/v3/f/7/5/f758c1d2-4f1c-5f56-adb0-c2282911ca12.png">
+	</a></td><td style="font-family: Arial;padding: 0 4px 0 0;">
+	<a href="https://api.whatsapp.com/send?phone=5511991720380"><img alt="" style="width:23px;" 
+	width="23" src="https://img.mysignature.io/s/v3/0/9/6/096dc83f-d6c5-55d0-82ee-531505bb54a3.png">
+	</a></td> </tr></table></td></tr>  </table></td></tr></table><table class="branding" 
+	cellspacing="0" cellpadding="0" border="0"><tr><td style="padding:15px 0 0 0;"></td></tr><tr><td 
+	style="border-top: 1px solid #eeeeee;padding-top: 5px;font-size:10px;font-family: Arial;">
+	</td></tr></table><p><br>
+	
+</center>
+
+
+        </div>
+       
+          <div class="col-lg-6">
+            <a class="portfolio-item" href="#">
+              <span class="caption">
+                <span class="caption-content">
+                  
+				  
+				</section>
+
+
+
+
+	
+<p class="text-muted small mb-0">Copyleft &copy; 2018</p>
+	
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
