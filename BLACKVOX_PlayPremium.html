@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>BLACKVOX - Carregar Áudio</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        audio {
+            margin-bottom: 10px;
+        }
+        .playlist {
+            list-style-type: none;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        .playlist li {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <center>
+        <h1>Playlist de Áudio</h1>
+        <button id="addAudioBtn">Adicionar Áudio</button>
+        <input type="file" id="audio" accept="audio/*" style="display: none;">
+        <div id="playlistContainer">
+            <ul id="playlist" class="playlist"></ul>
+        </div>
+        <audio id="audioPlayer" controls></audio>
+        <p><a href="blackvox.html">Voltar à Página Inicial</a></p>
+    </center>
+    <script>
+        const addAudioBtn = document.getElementById("addAudioBtn");
+        const audioInput = document.getElementById("audio");
+        const audioPlayer = document.getElementById("audioPlayer");
+        const playlist = document.getElementById("playlist");
+
+        let audios = [];
+
+        addAudioBtn.addEventListener("click", () => {
+            audioInput.click();
+        });
+
+        audioInput.addEventListener("change", () => {
+            const file = audioInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = (event) => {
+                const audioData = event.target.result;
+                const audio = new Audio(audioData);
+                audios.push(audio);
+                const li = document.createElement("li");
+                li.textContent = file.name;
+                li.addEventListener("click", () => {
+                    audioPlayer.src = audioData;
+                    audioPlayer.play();
+                });
+                const removeBtn = document.createElement("button");
+                removeBtn.textContent = "Remover";
+                removeBtn.addEventListener("click", () => {
+                    const index = audios.indexOf(audio);
+                    if (index !== -1) {
+                        audios.splice(index, 1);
+                        li.remove();
+                    }
+                });
+                li.appendChild(removeBtn);
+                playlist.appendChild(li);
+            };
+
+            reader.readAsDataURL(file);
+            audioInput.value = "";
+        });
+    </script>
+</body>
+</html>
