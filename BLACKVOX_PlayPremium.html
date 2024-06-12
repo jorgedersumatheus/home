@@ -1,3 +1,5 @@
+html
+Copiar código
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -67,6 +69,7 @@
 </head>
 <body>
     <h1>BLACKVOX - Áudios & Playlists</h1>
+    <button onclick="login()">Login com Spotify</button>
     <input type="text" id="playlistName" placeholder="Nome da Playlist">
     <input type="file" id="audioInput" accept="audio/*">
     <button onclick="addAudio()">Adicionar Áudio</button>
@@ -83,6 +86,28 @@
     <script>
         let audioList = [];
         let playlists = {};
+
+        function login() {
+            window.location.href = 'http://localhost:8888/login';
+        }
+
+        function getQueryStringParams() {
+            const params = {};
+            window.location.search.substr(1).split('&').forEach(function(pair) {
+                const [key, value] = pair.split('=');
+                params[key] = decodeURIComponent(value);
+            });
+            return params;
+        }
+
+        window.onload = function() {
+            const params = getQueryStringParams();
+            if (params.access_token) {
+                localStorage.setItem('spotifyAccessToken', params.access_token);
+            }
+            loadPlaylists();
+            getRecommendations();
+        }
 
         function addAudio() {
             const audioInput = document.getElementById("audioInput");
@@ -231,14 +256,26 @@
         }
 
         function getRecommendations() {
-            // Função que chamará a API ou sistema de IA para obter recomendações
-            // Isso é apenas um exemplo fictício, a implementação real dependeria de um back-end com um modelo de IA treinado
-            const recommendations = [
-                { name: "Música Recomendada 1" },
-                { name: "Música Recomendada 2" },
-                { name: "Música Recomendada 3" }
-            ];
-            displayRecommendations(recommendations);
+            const token = localStorage.getItem('spotifyAccessToken');
+            if (!token) {
+                alert('Você precisa fazer login no Spotify primeiro.');
+                return;
+            }
+
+            fetch('https://api.spotify.com/v1/me/top/tracks', {
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const recommendations = data.items.map(item => ({
+                    name: item.name,
+                    artist: item.artists.map(artist => artist.name).join(', ')
+                }));
+                displayRecommendations(recommendations);
+            })
+            .catch(error => console.error('Erro ao obter recomendações:', error));
         }
 
         function displayRecommendations(recommendations) {
@@ -246,14 +283,9 @@
             recommendationListElement.innerHTML = "";
             recommendations.forEach((rec) => {
                 const li = document.createElement("li");
-                li.innerHTML = rec.name;
+                li.innerHTML = `${rec.name} - ${rec.artist}`;
                 recommendationListElement.appendChild(li);
             });
-        }
-
-        window.onload = function() {
-            loadPlaylists();
-            getRecommendations();
         }
     </script>
 </body>
