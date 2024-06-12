@@ -86,7 +86,11 @@
         let playlists = {};
 
         function login() {
-            window.location.href = 'http://localhost:8888/login';
+            const clientId = '1cb62fe9ab624385b5756ecf29e3edbf';  // Substitua por seu Client ID
+            const redirectUri = 'http://www.jorgematheus.mus.br/BLACKVOX_PlayPremium.html';
+            const scopes = 'user-read-private user-read-email playlist-read-private playlist-read-collaborative';
+            const url = `https://accounts.spotify.com/authorize?response_type=code&client_id=${clientId}&scope=${encodeURIComponent(scopes)}&redirect_uri=${encodeURIComponent(redirectUri)}`;
+            window.location.href = url;
         }
 
         function getQueryStringParams() {
@@ -240,50 +244,23 @@
                         for (const [name, audios] of Object.entries(importedPlaylists)) {
                             playlists[name] = audios;
                         }
-                        localStorage.setItem("playlists", JSON.stringify(playlists));
-                        displayPlaylistList();
-                        alert("Playlists importadas com sucesso!");
-                    } catch (error) {
-                        console.error("Erro ao importar playlists:", error);
-                        alert("Erro ao importar playlists.");
-                    }
-                };
-                reader.readAsText(file);
-            };
-            input.click();
+                        localStorage.setItem("playlists", JSON.stringify(playlists recommendationList.appendChild(li);
+                });
+            })
+            .catch(error => {
+                console.error('Erro ao obter recomendações do Spotify:', error);
+                alert('Erro ao obter recomendações. Verifique se o token de acesso está válido.');
+            });
         }
 
-        function getRecommendations() {
-            const token = localStorage.getItem('spotifyAccessToken');
-            if (!token) {
-                alert('Você precisa fazer login no Spotify primeiro.');
+        function addRecommendationToPlaylist(name, artist, url) {
+            if (!url) {
+                alert('Prévia da música não disponível.');
                 return;
             }
-
-            fetch('https://api.spotify.com/v1/me/top/tracks', {
-                headers: {
-                    'Authorization': 'Bearer ' + token
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                const recommendations = data.items.map(item => ({
-                    name: item.name,
-                    artist: item.artists.map(artist => artist.name).join(', ')
-                }));
-                displayRecommendations(recommendations);
-            })
-            .catch(error => console.error('Erro ao obter recomendações:', error));
-        }
-
-        function displayRecommendations(recommendations) {
-            const recommendationListElement = document.getElementById("recommendationList");
-            recommendationListElement.innerHTML = "";
-            recommendations.forEach((rec) => {
-                const li = document.createElement("li");
-                li.innerHTML = `${rec.name} - ${rec.artist}`;
-                recommendationListElement.appendChild(li);
-            });
+            const audio = { url: url, name: `${name} - ${artist}` };
+            audioList.push(audio);
+            displayAudioList();
         }
     </script>
 </body>
