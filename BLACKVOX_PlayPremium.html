@@ -80,6 +80,16 @@
         <h2>Recomendações</h2>
         <ul id="recommendationList"></ul>
     </div>
+	
+	
+	<script>
+        function loginSpotify() {
+            window.location.href = 'http://www.jorgematheus.mus.br/BLACKVOX_PlayPremium.html/callback';
+        }
+    </script>
+	
+	
+	
     <audio id="audioPlayer" controls style="display: none;"></audio>
     <script>
         let audioList = [];
@@ -87,7 +97,7 @@
 
         function login() {
             const clientId = '1cb62fe9ab624385b5756ecf29e3edbf';  // Substitua por seu Client ID
-            const redirectUri = 'http://www.jorgematheus.mus.br/BLACKVOX_PlayPremium.html';
+            const redirectUri = 'http://www.jorgematheus.mus.br/BLACKVOX_PlayPremium.html/callback';
             const scopes = 'user-read-private user-read-email playlist-read-private playlist-read-collaborative';
             const url = `https://accounts.spotify.com/authorize?response_type=code&client_id=${clientId}&scope=${encodeURIComponent(scopes)}&redirect_uri=${encodeURIComponent(redirectUri)}`;
             window.location.href = url;
@@ -265,3 +275,8 @@
     </script>
 </body>
 </html>
+
+
+
+
+
