@@ -54,7 +54,7 @@ class API:
         }
         response = requests.get(f"https://api.spotify.com/v1/users/{spotify_user_id}/playlists", headers=headers)
         if response.status_code == 200:
-            return response.json()["items"]
+            return {"playlists": response.json()["items"]}
         else:
             return {"error": "Erro ao obter playlists"}
 
