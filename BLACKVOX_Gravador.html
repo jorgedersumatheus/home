@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gravador de Áudio Multipista - BLACKVOX</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: black;
+            margin: 0;
+            padding: 20px;
+            color: white;
+        }
+        .track {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #222;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap; /* Adicionado para permitir flexibilidade */
+        }
+        .track button {
+            margin: 5px;
+            background-color: #fff;
+            color: #222;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .track button:hover {
+            background-color: #ddd;
+        }
+        .track audio {
+            display: none;
+        }
+        .track progress {
+            width: 100%;
+            height: 10px;
+        }
+        .controls {
+            margin: 20px 0;
+        }
+        .controls button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 5px;
+            border: none;
+            background-color: #fff;
+            color: #222;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .controls button:hover {
+            background-color: #ddd;
+        }
+        .led {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background-color: gray;
+            margin-right: 10px;
+        }
+        .timer {
+            font-size: 14px;
+            color: #aaa;
+            margin-left: 10px;
+        }
+        .play-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 5px;
+            border: none;
+            background-color: #fff;
+            color: #222;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .play-button:hover {
+            background-color: #ddd;
+        }
+        .save-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 5px;
+            border: none;
+            background-color: #fff;
+            color: #222;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .save-button:hover {
+            background-color: #ddd;
+        }
+    </style>
+</head>
+<body>
+    <h1>Gravador de Áudio Multipista - BLACKVOX</h1>
+    <div id="tracks"></div>
+    <div class="controls">
+        <button onclick="addTrack()" style="padding: 20px 40px; font-size: 18px;">Adicionar Pista</button>
+    </div>
+    <script>
+        let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        let tracks = [];
+
+        function formatTime(ms) {
+            let seconds = Math.floor(ms / 1000);
+            let minutes = Math.floor(seconds / 60);
+            seconds = seconds % 60;
+            return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        }
+
+        async function addTrack() {
+            let track = document.createElement('div');
+            track.className = 'track';
+            let led = document.createElement('div');
+            led.className = 'led';
+            let recordButton = document.createElement('button');
+            recordButton.innerText = 'Gravar';
+            let stopButton = document.createElement('button');
+            stopButton.innerText = 'Parar';
+            let deleteButton = document.createElement('button');
+            deleteButton.innerText = 'Apagar';
+            let playButton = document.createElement('button');
+            playButton.innerText = 'Reproduzir';
+            playButton.className = 'play-button';
+            let pauseButton = document.createElement('button');
+            pauseButton.innerText = 'Pausar';
+            let stopPlaybackButton = document.createElement('button');
+            stopPlaybackButton.innerText = 'Parar Reprodução';
+            let saveButton = document.createElement('button');
+            saveButton.innerText = 'Salvar';
+            saveButton.className = 'save-button';
+            let audioElement = document.createElement('audio');
+            audioElement.controls = true;
+            let progressBar = document.createElement('progress');
+            progressBar.value = 0;
+            progressBar.max = 100;
+            let timer = document.createElement('div');
+            timer.className = 'timer';
+            timer.innerText = '0:00';
+
+            let mediaRecorder;
+            let chunks = [];
+            let startTime;
+            let analyser;
+            let dataArray;
+
+            try {
+                let stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+                recordButton.onclick = () => {
+                    mediaRecorder = new MediaRecorder(stream);
+                    mediaRecorder.start();
+                    startTime = Date.now();
+
+                    const source = audioCtx.createMediaStreamSource(stream);
+                    analyser = audioCtx.createAnalyser();
+                    source.connect(analyser);
+                    analyser.fftSize = 256;
+                    const bufferLength = analyser.frequencyBinCount;
+                    dataArray = new Uint8Array(bufferLength);
+
+                    mediaRecorder.ondataavailable = e => {
+                        chunks.push(e.data);
+                    };
+
+                    mediaRecorder.onstop = () => {
+                        let blob = new Blob(chunks, { type: 'audio/ogg; codecs=opus' });
+                        chunks = [];
+                        let audioURL = URL.createObjectURL(blob);
+                        audioElement.src = audioURL;
+                        audioElement.load();
+                        saveButton.onclick = () => {
+                            let a = document.createElement('a');
+                            a.style.display = 'none';
+                            a.href = audioURL;
+                            a.download = 'recording.ogg';
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                        };
+                    };
+
+                    recordButton.disabled = true;
+                    stopButton.disabled = false;
+                    updateProgress();
+                    updateLED();
+                    updateTimer();
+                };
+
+                stopButton.onclick = () => {
+                    mediaRecorder.stop();
+                    recordButton.disabled = false;
+                    stopButton.disabled = true;
+                    progressBar.value = 0;
+                };
+
+                playButton.onclick = () => {
+                    audioElement.play();
+                };
+
+                pauseButton.onclick = () => {
+                    audioElement.pause();
+                };
+
+                stopPlaybackButton.onclick = () => {
+                    audioElement.pause();
+                    audioElement.currentTime = 0;
+                };
+
+                deleteButton.onclick = () => {
+                    track.remove();
+                    tracks = tracks.filter(t => t !== track);
+                };
+
+                stopButton.disabled = true;
+                track.appendChild(led);
+                track.appendChild(progressBar);
+                track.appendChild(timer);
+                track.appendChild(recordButton);
+                track.appendChild(stopButton);
+                track.appendChild(pauseButton);
+                track.appendChild(stopPlaybackButton);
+                track.appendChild(deleteButton);
+                track.appendChild(playButton);
+                track.appendChild(saveButton);
+                track.appendChild(audioElement);
+                document.getElementById('tracks').appendChild(track);
+                tracks.push(track);
+
+                function updateProgress() {
+                    if (!mediaRecorder || mediaRecorder.state !== 'recording') return;
+                    let elapsedTime = Date.now() - startTime;
+                    progressBar.value = (elapsedTime / 60000) * 100;
+                    requestAnimationFrame(updateProgress);
+                }
+
+                function updateLED() {
+                    if (!analyser) return;
+                    analyser.getByteFrequencyData(dataArray);
+                    let average = dataArray.reduce((a, b) => a + b) / dataArray.length;
+                    if (average > 128) {
+                        led.style.backgroundColor = 'red';
+                    } else if (average > 64) {
+                        led.style.backgroundColor = 'yellow';
+                    } else {
+                        led.style.backgroundColor = 'green';
+                    }
+                    requestAnimationFrame(updateLED);
+                }
+
+                function updateTimer() {
+                    if (!mediaRecorder || mediaRecorder.state !== 'recording') return;
+                    let elapsedTime = Date.now() - startTime;
+                    timer.innerText = formatTime(elapsedTime);
+                    requestAnimationFrame(updateTimer);
+                }
+            } catch (err) {
+                console.error('Erro ao acessar o microfone: ', err);
+            }
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Playlist Manager</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    #playlist {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    #playlist li {
+      padding: 10px;
+      border-bottom: 1px solid #ccc;
+    }
+    #playlist li:last-child {
+      border-bottom: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Playlist Manager</h1>
+  <form>
+    <label for="artista">Artista:</label>
+    <input type="text" id="artista" />
+    <br />
+    <label for="titulo">Título:</label>
+    <input type="text" id="titulo" />
+    <br />
+    <button id="adicionarMusica">Adicionar Música</button>
+  </form>
+  <input type="file" id="fileInput" />
+  <button id="salvarPlaylist">Salvar Playlist</button>
+  <button id="carregarPlaylist">Carregar Playlist</button>
+  <button id="importarPlaylist">Importar Playlist</button>
+  <ul id="playlist"></ul>
+
+  <script>
+    let playlist = [];
+
+    function adicionarMusica() {
+      const artista = document.getElementById('artista').value;
+      const titulo = document.getElementById('titulo').value;
+      const musica = { artista, titulo };
+      playlist.push(musica);
+      atualizarPlaylist();
+      document.getElementById('artista').value = '';
+      document.getElementById('titulo').value = '';
+    }
+
+    function salvarPlaylist() {
+      const jsonPlaylist = JSON.stringify(playlist);
+      const blob = new Blob([jsonPlaylist], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'playlist.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function carregarPlaylist() {
+      const input = document.getElementById('fileInput');
+      const file = input.files[0];
+      const reader = new FileReader();
+      reader.onload = function() {
+        const jsonPlaylist = reader.result;
+        playlist = JSON.parse(jsonPlaylist);
+        atualizarPlaylist();
+      };
+      reader.readAsText(file);
+    }
+
+    function importarPlaylist() {
+      const input = document.getElementById('fileInput');
+      const file = input.files[0];
+      const reader = new FileReader();
+      reader.onload = function() {
+        const jsonPlaylist = reader.result;
+        playlist = JSON.parse(jsonPlaylist);
+        atualizarPlaylist();
+      };
+      reader.readAsText(file);
+    }
+
+    function atualizarPlaylist() {
+      const playlistElement = document.getElementById('playlist');
+      playlistElement.innerHTML = '';
+      playlist.forEach((musica) => {
+        const li = document.createElement('li');
+        li.textContent = `${musica.artista} - ${musica.titulo}`;
+        playlistElement.appendChild(li);
+      });
+    }
+
+    document.getElementById('adicionarMusica').addEventListener('click', adicionarMusica);
+    document.getElementById('salvarPlaylist').addEventListener('click', salvarPlaylist);
+    document.getElementById('carregarPlaylist').addEventListener('click', carregarPlaylist);
+    document.getElementById('importarPlaylist').addEventListener('click', importarPlaylist);
+  </script>
+</body>
+</html>

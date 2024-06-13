@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>BLACKVOX - Carregar Imagem</title>
+    <style>
+        /* Estilo global */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        /* Background preto */
+        body {
+            background-color: #000;
+            font-family: Arial, sans-serif;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        
+        /* Container principal */
+       .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        
+        /* Estilo para a imagem carregada */
+        #imagemCarregada img {
+            width: 300px;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        
+        /* Estilo para o botão */
+       .btn {
+            background-color: #333;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 10px;
+        }
+        
+       .btn:hover {
+            background-color: #444;
+        }
+        
+        /* Estilo para o textarea */
+        textarea {
+            font-family: Arial, sans-serif;
+            font-size: 18px;
+            padding: 10px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Carregar Imagem</h1>
+        <input type="file" id="imagem" accept="image/*">
+        <button id="carregarImagemBtn" class="btn">Carregar</button>
+        <div id="imagemCarregada"></div>
+        <textarea rows="10" cols="40" id="texto"></textarea>
+        <p><a href="blackvox.html" class="btn">Voltar à Página Inicial</a></p>
+    </div>
+    
+    <script>
+        const carregarImagemBtn = document.getElementById("carregarImagemBtn");
+        const imagemInput = document.getElementById("imagem");
+        const imagemCarregada = document.getElementById("imagemCarregada");
+
+        carregarImagemBtn.addEventListener("click", () => {
+          const file = imagemInput.files[0];
+          const reader = new FileReader();
+
+          reader.onload = (event) => {
+            const imageData = event.target.result;
+            const img = document.createElement("img");
+            img.src = imageData;
+            imagemCarregada.innerHTML = "";
+            imagemCarregada.appendChild(img);
+          };
+
+          reader.readAsDataURL(file);
+        });
+    </script>
+</body>
+</html>

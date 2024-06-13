@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login - BLACKVOX</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .form-container {
+            display: flex;
+            flex-direction: column;
+        }
+        .input {
+            margin: 10px;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+        }
+        .button {
+            background-color: white;
+            color: black;
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Login</h1>
+    <div class="form-container">
+        <form action="send_email.php" method="post">
+            <input type="email" name="email" class="input" placeholder="Email" required>
+            <input type="password" name="password" class="input" placeholder="Senha" required>
+            <button type="submit" class="button">Login</button>
+        </form>
+    </div>
+</body>
+</html>

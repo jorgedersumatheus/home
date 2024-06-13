@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BLACKVOX Playlists</title>
+    <style>
+        /* Seu estilo CSS aqui */
+    </style>
+</head>
+<body>
+    <h1>BLACKVOX - Áudios & Playlists</h1>
+    <input type="text" id="artistName" placeholder="Nome do Artista">
+    <button onclick="showArtistInfo()">Buscar Informações do Artista</button>
+    <div id="artistInfo"></div>
+
+    <script>
+        let accessToken = "";
+
+        function getAccessToken(clientId, clientSecret) {
+            const authUrl = "https://accounts.spotify.com/api/token";
+            const authHeader = btoa(`${clientId}:${clientSecret}`);
+
+            return fetch(authUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "Authorization": `Basic ${authHeader}`
+                },
+                body: "grant_type=client_credentials"
+            })
+            .then(response => response.json())
+            .then(data => data.access_token);
+        }
+
+        function getArtistInfo(artistName) {
+            const searchUrl = `https://api.spotify.com/v1/search?q=${encodeURIComponent(artistName)}&type=artist&limit=1`;
+            return fetch(searchUrl, {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${accessToken}`
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.artists.items.length > 0) {
+                    return data.artists.items[0];
+                } else {
+                    throw new Error("Artist not found");
+                }
+            });
+        }
+
+        function displayArtistInfo(artistInfo) {
+            const artistInfoDiv = document.getElementById("artistInfo");
+            artistInfoDiv.innerHTML = `
+                <h2>${artistInfo.name}</h2>
+                <p>Gêneros: ${artistInfo.genres.join(", ")}</p>
+                <p>Seguidores: ${artistInfo.followers.total}</p>
+                <p>Popularidade: ${artistInfo.popularity}</p>
+            `;
+        }
+
+        function showArtistInfo() {
+            const artistName = document.getElementById("artistName").value;
+            getArtistInfo(artistName)
+                .then(artistInfo => {
+                    displayArtistInfo(artistInfo);
+                })
+                .catch(error => {
+                    console.error("Erro ao obter informações do artista:", error);
+                    const artistInfoDiv = document.getElementById("artistInfo");
+                    artistInfoDiv.innerHTML = "<p>Erro ao obter informações do artista.</p>";
+                });
+        }
+
+        // Substitua com suas credenciais do Spotify
+        const clientId = "1cb62fe9ab624385b5756ecf29e3edbf";
+        const clientSecret = "760dad93480d4cbb971e1ea1fb5f5821";
+
+        getAccessToken(clientId, clientSecret)
+            .then(token => {
+                accessToken = token;
+                console.log("Token de acesso obtido com sucesso:", accessToken);
+            })
+            .catch(error => {
+                console.error("Erro ao obter token de acesso:", error);
+            });
+    </script>
+</body>
+</html>

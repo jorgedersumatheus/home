@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>BLACKVOX - Carregar Áudio</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        audio {
+            margin-bottom: 10px;
+        }
+        .playlist {
+            list-style-type: none;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        .playlist li {
+            margin-bottom: 10px;
+        }
+        button {
+            margin: 5px;
+            padding: 10px;
+            font-size: 16px;
+            background-color: white;
+            color: black;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: gray;
+        }
+    </style>
+</head>
+<body>
+    <center>
+        <h1>Playlist de Áudio</h1>
+        <button id="addAudioBtn">Adicionar Áudio</button>
+        <input type="file" id="audio" accept="audio/*" style="display: none;">
+        <div id="playlistContainer">
+            <ul id="playlist" class="playlist"></ul>
+        </div>
+        <button id="savePlaylistBtn">Salvar Playlist</button>
+        <button id="loadPlaylistBtn">Carregar Playlist</button>
+        <audio id="audioPlayer" controls></audio>
+        <p><a href="blackvox.html">Voltar à Página Inicial</a></p>
+    </center>
+    <script>
+        const addAudioBtn = document.getElementById("addAudioBtn");
+        const audioInput = document.getElementById("audio");
+        const audioPlayer = document.getElementById("audioPlayer");
+        const playlist = document.getElementById("playlist");
+        const savePlaylistBtn = document.getElementById("savePlaylistBtn");
+        const loadPlaylistBtn = document.getElementById("loadPlaylistBtn");
+
+        let audios = [];
+        let currentIndex = 0;
+
+        addAudioBtn.addEventListener("click", () => {
+            audioInput.click();
+        });
+
+        audioInput.addEventListener("change", () => {
+            const file = audioInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = (event) => {
+                const audioData = event.target.result;
+                const audio = new Audio(audioData);
+                audios.push(audio);
+                const li = document.createElement("li");
+                li.textContent = file.name;
+                li.addEventListener("click", () => {
+                    currentIndex = audios.indexOf(audio);
+                    audioPlayer.src = audioData;
+                    audioPlayer.play();
+                });
+                const removeBtn = document.createElement("button");
+                removeBtn.textContent = "Remover";
+                removeBtn.addEventListener("click", () => {
+                    const index = audios.indexOf(audio);
+                    if (index !== -1) {
+                        audios.splice(index, 1);
+                        li.remove();
+                    }
+                });
+                li.appendChild(removeBtn);
+                playlist.appendChild(li);
+            };
+
+            reader.readAsDataURL(file);
+            audioInput.value = "";
+        });
+
+        audioPlayer.addEventListener("ended", () => {
+            currentIndex++;
+            if (currentIndex < audios.length) {
+                audioPlayer.src = audios[currentIndex].src;
+                audioPlayer.play();
+            }
+        });
+
+        savePlaylistBtn.addEventListener("click", () => {
+            const playlistData = audios.map(audio => audio.src);
+            localStorage.setItem('playlist', JSON.stringify(playlistData));
+            alert('Playlist salva com sucesso!');
+        });
+
+        loadPlaylistBtn.addEventListener("click", () => {
+            const savedPlaylist = localStorage.getItem('playlist');
+            if (savedPlaylist) {
+                const playlistData = JSON.parse(savedPlaylist);
+                playlist.innerHTML = '';
+                audios = [];
+                playlistData.forEach(audioSrc => {
+                    const audio = new Audio(audioSrc);
+                    audios.push(audio);
+                    const li = document.createElement("li");
+                    li.textContent = "Audio";
+                    li.addEventListener("click", () => {
+                        currentIndex = audios.indexOf(audio);
+                        audioPlayer.src = audioSrc;
+                        audioPlayer.play();
+                    });
+                    const removeBtn = document.createElement("button");
+                    removeBtn.textContent = "Remover";
+                    removeBtn.addEventListener("click", () => {
+                        const index = audios.indexOf(audio);
+                        if (index !== -1) {
+                            audios.splice(index, 1);
+                            li.remove();
+                        }
+                    });
+                    li.appendChild(removeBtn);
+                    playlist.appendChild(li);
+                });
+                alert('Playlist carregada com sucesso!');
+            } else {
+                alert('Nenhuma playlist salva encontrada.');
+            }
+        });
+    </script>
+</body>
+</html>

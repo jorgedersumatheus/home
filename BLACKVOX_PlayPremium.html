@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BLACKVOX Playlists</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #ffcc00;
+        }
+        button {
+            background-color: white;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #ffcc00;
+            color: black;
+        }
+        input[type="text"], input[type="file"] {
+            padding: 10px;
+            margin: 10px;
+            border-radius: 5px;
+            border: 1px solid white;
+            background-color: black;
+            color: white;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            background-color: #333;
+            padding: 10px;
+            margin: 5px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        li button {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        li button:hover {
+            background-color: darkred;
+        }
+        .recommendations {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>BLACKVOX - Áudios & Playlists</h1>
+    <button onclick="login()">Login com Spotify</button>
+    <input type="text" id="playlistName" placeholder="Nome da Playlist">
+    <input type="file" id="audioInput" accept="audio/*">
+    <button onclick="addAudio()">Adicionar Áudio</button>
+    <ul id="audioList"></ul>
+    <button onclick="savePlaylist()">Salvar Playlist</button>
+    <button onclick="loadPlaylists()">Carregar Playlists</button>
+    <button onclick="importPlaylists()">Importar Playlists</button>
+    <ul id="playlistList"></ul>
+    <div class="recommendations">
+        <h2>Recomendações</h2>
+        <ul id="recommendationList"></ul>
+    </div>
+	
+	
+	<script>
+        function loginSpotify() {
+            window.location.href = 'http://www.jorgematheus.mus.br/BLACKVOX_PlayPremium.html/callback';
+        }
+    </script>
+	
+	
+	
+    <audio id="audioPlayer" controls style="display: none;"></audio>
+    <script>
+        let audioList = [];
+        let playlists = {};
+
+        function login() {
+            const clientId = '1cb62fe9ab624385b5756ecf29e3edbf';  // Substitua por seu Client ID
+            const redirectUri = 'http://www.jorgematheus.mus.br/BLACKVOX_PlayPremium.html/callback';
+            const scopes = 'user-read-private user-read-email playlist-read-private playlist-read-collaborative';
+            const url = `https://accounts.spotify.com/authorize?response_type=code&client_id=${clientId}&scope=${encodeURIComponent(scopes)}&redirect_uri=${encodeURIComponent(redirectUri)}`;
+            window.location.href = url;
+        }
+
+        function getQueryStringParams() {
+            const params = {};
+            window.location.search.substr(1).split('&').forEach(function(pair) {
+                const [key, value] = pair.split('=');
+                params[key] = decodeURIComponent(value);
+            });
+            return params;
+        }
+
+        window.onload = function() {
+            const params = getQueryStringParams();
+            if (params.access_token) {
+                localStorage.setItem('spotifyAccessToken', params.access_token);
+            }
+            loadPlaylists();
+            getRecommendations();
+        }
+
+        function addAudio() {
+            const audioInput = document.getElementById("audioInput");
+            const file = audioInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const audio = { url: e.target.result, name: file.name };
+                    audioList.push(audio);
+                    displayAudioList();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function displayAudioList() {
+            const audioListElement = document.getElementById("audioList");
+            audioListElement.innerHTML = "";
+            audioList.forEach((audio, index) => {
+                const li = document.createElement("li");
+                li.innerHTML = `
+                    ${audio.name}
+                    <div>
+                        <button onclick="playAudio(${index})">Tocar</button>
+                        <button onclick="removeAudio(${index})">Remover</button>
+                    </div>
+                `;
+                audioListElement.appendChild(li);
+            });
+        }
+
+        function playAudio(index) {
+            const audioPlayer = document.getElementById("audioPlayer");
+            audioPlayer.src = audioList[index].url;
+            audioPlayer.style.display = "block";
+            audioPlayer.play();
+            audioPlayer.onended = () => {
+                const nextIndex = index + 1;
+                if (nextIndex < audioList.length) {
+                    playAudio(nextIndex);
+                }
+            };
+        }
+
+        function removeAudio(index) {
+            audioList.splice(index, 1);
+            displayAudioList();
+        }
+
+        function savePlaylist() {
+            const playlistName = document.getElementById("playlistName").value;
+            if (!playlistName) {
+                alert("Por favor, insira um nome para a Playlist");
+                return;
+            }
+            if (audioList.length === 0) {
+                alert("Por favor, adicione pelo menos um áudio à Playlist");
+                return;
+            }
+            try {
+                playlists[playlistName] = audioList;
+                exportToJsonFile(playlists);
+            } catch (e) {
+                console.error(e);
+                alert("Erro ao salvar a playlist. O armazenamento local pode estar cheio.");
+            }
+        }
+
+        function loadPlaylists() {
+            try {
+                const storedPlaylists = localStorage.getItem("playlists");
+                if (storedPlaylists) {
+                    playlists = JSON.parse(storedPlaylists);
+                    displayPlaylistList();
+                } else {
+                    alert("Nenhuma playlist salva encontrada.");
+                }
+            } catch (e) {
+                console.error(e);
+                alert("Erro ao carregar as playlists.");
+            }
+        }
+
+        function displayPlaylistList() {
+            const playlistListElement = document.getElementById("playlistList");
+            playlistListElement.innerHTML = "";
+            for (const [name, audios] of Object.entries(playlists)) {
+                const li = document.createElement("li");
+                li.innerHTML = `
+                    ${name}
+                    <div>
+                        <button onclick="loadPlaylist('${name}')">Carregar</button>
+                        <button onclick="deletePlaylist('${name}')">Excluir</button>
+                    </div>
+                `;
+                playlistListElement.appendChild(li);
+            }
+        }
+
+        function loadPlaylist(name) {
+            audioList = playlists[name];
+            displayAudioList();
+        }
+
+        function deletePlaylist(name) {
+            delete playlists[name];
+            localStorage.setItem("playlists", JSON.stringify(playlists));
+            displayPlaylistList();
+        }
+
+        function exportToJsonFile(jsonData) {
+            const dataStr = JSON.stringify(jsonData);
+            const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+            const exportFileDefaultName = 'playlists_backup.json';
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+        }
+
+        function importPlaylists() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = async function() {
+                const file = this.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = function() {
+                    try {
+                        const importedPlaylists = JSON.parse(reader.result);
+                        for (const [name, audios] of Object.entries(importedPlaylists)) {
+                            playlists[name] = audios;
+                        }
+                        localStorage.setItem("playlists", JSON.stringify(playlists recommendationList.appendChild(li);
+                });
+            })
+            .catch(error => {
+                console.error('Erro ao obter recomendações do Spotify:', error);
+                alert('Erro ao obter recomendações. Verifique se o token de acesso está válido.');
+            });
+        }
+
+        function addRecommendationToPlaylist(name, artist, url) {
+            if (!url) {
+                alert('Prévia da música não disponível.');
+                return;
+            }
+            const audio = { url: url, name: `${name} - ${artist}` };
+            audioList.push(audio);
+            displayAudioList();
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

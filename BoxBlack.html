@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BLACKVOX Áudios & Playlists</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #ffffff;
+        }
+        button {
+            background-color: white;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #000000;
+            color: black;
+        }
+        input[type="text"], input[type="file"] {
+            padding: 10px;
+            margin: 10px;
+            border-radius: 5px;
+            border: 1px solid white;
+            background-color: black;
+            color: white;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            background-color: #333;
+            padding: 10px;
+            margin: 5px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        li button {
+            background-color: black;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        li button:hover {
+            background-color: darkred;
+        }
+        .recommendations {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>BLACKVOX - Áudios & Playlists</h1>
+    <input type="text" id="playlistName" placeholder="Nome da Playlist">
+    <input type="file" id="audioInput" accept="audio/*">
+    <button onclick="addAudio()">Adicionar Áudio</button>
+    <ul id="audioList"></ul>
+    <button onclick="savePlaylist()">Salvar Playlist</button>
+    <button onclick="loadPlaylists()">Carregar Playlists</button>
+    <button onclick="importPlaylists()">Importar Playlists</button>
+    <ul id="playlistList"></ul>
+    <div class="recommendations">
+        <ul id="recommendationList"></ul>
+    </div>
+    <audio id="audioPlayer" controls style="display: none;"></audio>
+	
+	
+  <script>
+    let playlist = [];
+
+    function salvarPlaylist() {
+      const jsonPlaylist = JSON.stringify(playlist);
+      const blob = new Blob([jsonPlaylist], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'playlist.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function carregarPlaylist() {
+      const input = document.getElementById('fileInput');
+      const file = input.files[0];
+      const reader = new FileReader();
+      reader.onload = function() {
+        const jsonPlaylist = reader.result;
+        playlist = JSON.parse(jsonPlaylist);
+        atualizarPlaylist();
+      };
+      reader.readAsText(file);
+    }
+
+    function importarPlaylist() {
+      const input = document.getElementById('fileInput');
+      const file = input.files[0];
+      const reader = new FileReader();
+      reader.onload = function() {
+        const jsonPlaylist = reader.result;
+        playlist = JSON.parse(jsonPlaylist);
+        atualizarPlaylist();
+      };
+      reader.readAsText(file);
+    }
+
+    function atualizarPlaylist() {
+      const playlistElement = document.getElementById('playlist');
+      playlistElement.innerHTML = '';
+      playlist.forEach((musica) => {
+        const li = document.createElement('li');
+        li.textContent = `${musica.artista} - ${musica.titulo}`;
+        playlistElement.appendChild(li);
+      });
+    }
+
+    document.getElementById('salvarPlaylist').addEventListener('click', salvarPlaylist);
+    document.getElementById('carregarPlaylist').addEventListener('click', carregarPlaylist);
+    document.getElementById('importarPlaylist').addEventListener('click', importarPlaylist);
+  </script>
+
+    <script>
+        let audioList = [];
+        let playlists = {};
+        let currentAudioIndex = 0;
+
+        function addAudio() {
+            const audioInput = document.getElementById("audioInput");
+            const file = audioInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const audio = { url: e.target.result, name: file.name };
+                    audioList.push(audio);
+                    displayAudioList();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function displayAudioList() {
+            const audioListElement = document.getElementById("audioList");
+            audioListElement.innerHTML = "";
+            audioList.forEach((audio, index) => {
+                const li = document.createElement("li");
+                li.innerHTML = `
+                    ${audio.name}
+                    <div>
+                        <button onclick="playAudio(${index})">Toca</button>
+                        <button onclick="removeAudio(${index})">Remove</button>
+                    </div>
+                `;
+                audioListElement.appendChild(li);
+            });
+        }
+
+        function playAudio(index) {
+            const audioPlayer = document.getElementById("audioPlayer");
+            audioPlayer.src = audioList[index].url;
+            audioPlayer.style.display = "block";
+            audioPlayer.play();
+            audioPlayer.onended = () => {
+                currentAudioIndex++;
+                if (currentAudioIndex < audioList.length) {
+                    playAudio(currentAudioIndex);
+                }
+            };
+        }
+
+        function removeAudio(index) {
+            audioList.splice(index, 1);
+            displayAudioList();
+        }
+
+        function savePlaylist() {
+            const playlistName = document.getElementById("playlistName").value;
+            if (!playlistName) {
+                alert("Insira um nome para a playlist");
+                return;
+            }
+            playlists[playlistName] = audioList;
+            localStorage.setItem("playlists", JSON.stringify(playlists));
+            displayPlaylistList();
+        }
+
+        function loadPlaylists() {
+            const storedPlaylists = localStorage.getItem("playlists");
+            if (storedPlaylists) {
+                playlists = JSON.parse(storedPlaylists);
+                displayPlaylistList();
+           }
+        }
+
+        function displayPlaylistList() {
+            const playlistListElement = document.getElementById("playlistList");
+            playlistListElement.innerHTML = "";
+            for (const playlistName in playlists) {
+                const li = document.createElement("li");
+                li.innerHTML = `
+                    ${playlistName}
+                    <button onclick="loadPlaylist('${playlistName}')">Carregar</button>
+                `;
+                playlistListElement.appendChild(li);
+            }
+        }
+
+        function loadPlaylist(playlistName) {
+            audioList = playlists[playlistName];
+            displayAudioList();
+        }
+
+        function importPlaylists() {
+            const importedPlaylists = JSON.parse(prompt("Insira as playlists importadas (em formato JSON):"));
+            if (importedPlaylists) {
+                for (const playlistName in importedPlaylists) {
+                    playlists[playlistName] = importedPlaylists[playlistName];
+                }
+                displayPlaylistList();
+            }
+        }
+    </script>
+</body>
+</html>

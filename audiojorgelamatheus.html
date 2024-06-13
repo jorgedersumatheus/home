@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>BLACKVOX - Carregar Áudio</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        audio {
+            margin-bottom: 10px;
+        }
+        .playlist {
+            list-style-type: none;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        .playlist li {
+            margin-bottom: 10px;
+        }
+        .audio-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 300px;
+        }
+        .audio-item button {
+            margin-left: 10px;
+            background-color: white;
+            color: black;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .audio-item button:hover {
+            background-color: gray;
+        }
+    </style>
+</head>
+<body>
+    <center>
+        <h1>Playlist de Áudio</h1>
+        <button id="addAudioBtn">Adicionar Áudio</button>
+        <div id="playlistContainer">
+            <ul id="playlist" class="playlist"></ul>
+        </div>
+        <audio id="audioPlayer" controls></audio>
+        <p>
+            <input type="text" id="playlistNameInput" placeholder="Nome da Playlist">
+            <button id="savePlaylistBtn">Salvar Playlist</button>
+            <button id="loadPlaylistsBtn">Carregar Playlists</button>
+        </p>
+        <div id="savedPlaylistsContainer"></div>
+        <p><a href="blackvox.html">Voltar à Página Inicial</a></p>
+    </center>
+    <script>
+        // Adicionei o polyfill para IndexedDB
+        if (!window.indexedDB) {
+            window.indexedDB = window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+        }
+
+        const addAudioBtn = document.getElementById("addAudioBtn");
+        const audioPlayer = document.getElementById("audioPlayer");
+        const playlist = document.getElementById("playlist");
+        const savePlaylistBtn = document.getElementById("savePlaylistBtn");
+        const loadPlaylistsBtn = document.getElementById("loadPlaylistsBtn");
+        const playlistNameInput = document.getElementById("playlistNameInput");
+        const savedPlaylistsContainer = document.getElementById("savedPlaylistsContainer");
+
+        let audios = [];
+        let currentIndex = 0;
+
+        let db;
+        const request = indexedDB.open("PlaylistDB", 1);
+
+        request.onupgradeneeded = (event) => {
+            db = event.target.result;
+            if (!db.objectStoreNames.contains("playlists")) {
+                db.createObjectStore("playlists", { keyPath: "name" });
+            }
+        };
+
+        request.onsuccess = (event) => {
+            db = event.target.result;
+        };
+
+        request.onerror = (event) => {
+            console.error("Database error: " + event.target.errorCode);
+        };
+
+        // Verifique se o navegador suporta IndexedDB
+        if (!db) {
+            alert("Seu navegador não suporta IndexedDB.");
+            return;
+        }
+
+        // Resto do código...
+    </script>
+</body>
+</html>

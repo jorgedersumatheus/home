@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>BLACKVOX - Playlist</title>
+    <style>
+        body {
+            background-color: #000;
+            font-family: Arial, sans-serif;
+            color: #fff;
+        }
+        .playlist-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+        .playlist {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .playlist li {
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+        .playlist li:last-child {
+            border-bottom: none;
+        }
+        .playlist li a {
+            color: #fff;
+            text-decoration: none;
+        }
+        .playlist li a:hover {
+            color: #ccc;
+        }
+    </style>
+</head>
+
+<p><a href="blackvox.html">Voltar à Página Inicial</a></p>
+<body>
+    <div class="playlist-container">
+        <h1>Playlist</h1>
+        <ul class="playlist">
+            <!-- Aqui você pode adicionar os áudios da playlist -->
+            <li><a href="#" onclick="playAudio('audio1')">Áudio 1</a></li>
+            <li><a href="#" onclick="playAudio('audio2')">Áudio 2</a></li>
+            <li><a href="#" onclick="playAudio('audio3')">Áudio 3</a></li>
+            <!-- ... -->
+        </ul>
+        <audio id="audio-player" controls></audio>
+    </div>
+    <script>
+        function playAudio(audioId) {
+            const audioPlayer = document.getElementById('audio-player');
+            const audioSource = document.getElementById(audioId);
+            audioPlayer.src = audioSource.src;
+            audioPlayer.play();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BLACKVOX Playlists</title>
+    <style>
+        /* Estilos CSS aqui */
+    </style>
+</head>
+<body>
+    <h1>BLACKVOX - Carregar Áudio</h1>
+    <input type="text" id="playlistName" placeholder="Nome da Playlist">
+    <input type="file" id="audioInput" accept="audio/*">
+    <button onclick="addAudio()">Adicionar Áudio</button>
+    <ul id="audioList"></ul>
+    <button onclick="savePlaylist()">Salvar Playlist</button>
+    <button onclick="loadPlaylists()">Carregar Playlists</button>
+    <ul id="playlistList"></ul>
+
+    <audio id="audioPlayer" controls style="display: none;"></audio>
+
+    <!-- Novo botão e campo de arquivo para importar playlists -->
+    <button onclick="importPlaylists()">Importar Playlists</button>
+    <input type="file" id="importInput" style="display: none;" accept=".json">
+
+    <script>
+        let audioList = [];
+        let playlists = {};
+
+        // Funções para manipulação de áudios
+        function addAudio() {
+            // Implementação aqui
+        }
+
+        function displayAudioList() {
+            // Implementação aqui
+        }
+
+        function playAudio(index) {
+            // Implementação aqui
+        }
+
+        function removeAudio(index) {
+            // Implementação aqui
+        }
+
+        // Funções para manipulação de playlists
+        function savePlaylist() {
+            // Implementação aqui
+        }
+
+        function loadPlaylists() {
+            // Implementação aqui
+        }
+
+        function displayPlaylistList() {
+            // Implementação aqui
+        }
+
+        function removePlaylist(name) {
+            // Implementação aqui
+        }
+
+        // Função para importar playlists
+        function importPlaylists() {
+            document.getElementById("importInput").click();
+        }
+
+        document.getElementById("importInput").addEventListener("change", function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const importedPlaylists = JSON.parse(e.target.result);
+                        for (const [name, audios] of Object.entries(importedPlaylists)) {
+                            playlists[name] = audios;
+                        }
+                        localStorage.setItem("playlists", JSON.stringify(playlists));
+                        alert("Playlists importadas com sucesso!");
+                        displayPlaylistList();
+                    } catch (error) {
+                        console.error("Erro ao importar playlists:", error);
+                        alert("Erro ao importar playlists.");
+                    }
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        // Chamando o carregamento das playlists ao iniciar
+        window.onload = loadPlaylists;
+    </script>
+</body>
+</html>
+
