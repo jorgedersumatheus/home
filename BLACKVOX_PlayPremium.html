@@ -50,7 +50,7 @@
             align-items: center;
         }
         li button {
-            background-color: red;
+            background-color: black;
             color: white;
             border: none;
             padding: 5px 10px;
@@ -106,8 +106,8 @@
                 li.innerHTML = `
                     ${audio.name}
                     <div>
-                        <button onclick="playAudio(${index})">Tocar</button>
-                        <button onclick="removeAudio(${index})">Remover</button>
+                        <button onclick="playAudio(${index})">Toca</button>
+                        <button onclick="removeAudio(${index})">Remove</button>
                     </div>
                 `;
                 audioListElement.appendChild(li);
