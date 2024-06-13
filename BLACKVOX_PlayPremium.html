@@ -67,7 +67,12 @@
 </head>
 <body>
     <h1>BLACKVOX - Áudios & Playlists</h1>
-    <button onclick="login()">Login com Spotify</button>
+    <input type="text" id="artistName" placeholder="Nome do Artista">
+    <button onclick="fetchArtistInfo()">Buscar Informações do Artista</button>
+    <div id="artistInfo"></div>
+    <input type="text" id="spotifyUserId" placeholder="ID do Usuário do Spotify">
+    <button onclick="fetchSpotifyPlaylists()">Buscar Playlists do Spotify</button>
+    <div id="spotifyPlaylists"></div>
     <input type="text" id="playlistName" placeholder="Nome da Playlist">
     <input type="file" id="audioInput" accept="audio/*">
     <button onclick="addAudio()">Adicionar Áudio</button>
@@ -80,9 +85,9 @@
         <h2>Recomendações</h2>
         <ul id="recommendationList"></ul>
     </div>
-	
-	
-	<script>
+
+
+<script>
         function loginSpotify() {
             window.location.href = 'http://www.jorgematheus.mus.br/BLACKVOX_PlayPremium.html/callback';
         }
@@ -112,14 +117,11 @@
             return params;
         }
 
-        window.onload = function() {
-            const params = getQueryStringParams();
-            if (params.access_token) {
-                localStorage.setItem('spotifyAccessToken', params.access_token);
-            }
-            loadPlaylists();
-            getRecommendations();
-        }
+
+    <audio id="audioPlayer" controls style="display: none;"></audio>
+    <script>
+        let audioList = [];
+        let playlists = {};
 
         function addAudio() {
             const audioInput = document.getElementById("audioInput");
@@ -226,51 +228,87 @@
 
         function deletePlaylist(name) {
             delete playlists[name];
-            localStorage.setItem("playlists", JSON.stringify(playlists));
             displayPlaylistList();
         }
 
         function exportToJsonFile(jsonData) {
             const dataStr = JSON.stringify(jsonData);
             const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
-            const exportFileDefaultName = 'playlists_backup.json';
-            const linkElement = document.createElement('a');
+
+            const exportFileDefaultName = 'playlists.json';
+
+            let linkElement = document.createElement('a');
             linkElement.setAttribute('href', dataUri);
             linkElement.setAttribute('download', exportFileDefaultName);
             linkElement.click();
         }
 
         function importPlaylists() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = '.json';
-            input.onchange = async function() {
-                const file = this.files[0];
-                if (!file) return;
+            const fileInput = document.createElement("input");
+            fileInput.type = "file";
+            fileInput.accept = "application/json";
+            fileInput.onchange = (event) => {
+                const file = event.target.files[0];
                 const reader = new FileReader();
-                reader.onload = function() {
-                    try {
-                        const importedPlaylists = JSON.parse(reader.result);
-                        for (const [name, audios] of Object.entries(importedPlaylists)) {
-                            playlists[name] = audios;
-                        }
-                        localStorage.setItem("playlists", JSON.stringify(playlists recommendationList.appendChild(li);
-                });
-            })
-            .catch(error => {
-                console.error('Erro ao obter recomendações do Spotify:', error);
-                alert('Erro ao obter recomendações. Verifique se o token de acesso está válido.');
-            });
+                reader.onload = (e) => {
+                    playlists = JSON.parse(e.target.result);
+                    displayPlaylistList();
+                };
+                reader.readAsText(file);
+            };
+            fileInput.click();
         }
 
-        function addRecommendationToPlaylist(name, artist, url) {
-            if (!url) {
-                alert('Prévia da música não disponível.');
-                return;
-            }
-            const audio = { url: url, name: `${name} - ${artist}` };
-            audioList.push(audio);
-            displayAudioList();
+        function fetchArtistInfo() {
+            const artistName = document.getElementById("artistName").value;
+            fetch("/get_artist_info", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ artist_name: artistName })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    const artistInfoElement = document.getElementById("artistInfo");
+                    artistInfoElement.innerHTML = `
+                        <h2>${data.name}</h2>
+                        <p>Gêneros: ${data.genres.join(", ")}</p>
+                        <p>Seguidores: ${data.followers.total}</p>
+                        <p>Popularidade: ${data.popularity}</p>
+                    `;
+                }
+            })
+            .catch(error => console.error("Erro ao obter informações do artista:", error));
+        }
+
+        function fetchSpotifyPlaylists() {
+            const spotifyUserId = document.getElementById("spotifyUserId").value;
+            fetch("/get_spotify_playlists", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ spotify_user_id: spotifyUserId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    const spotifyPlaylistsElement = document.getElementById("spotifyPlaylists");
+                    spotifyPlaylistsElement.innerHTML = `
+                        <h2>Playlists do Spotify</h2>
+                        <ul>
+                            ${data.map(playlist => `<li>${playlist.name}</li>`).join("")}
+                        </ul>
+                    `;
+                }
+            })
+            .catch(error => console.error("Erro ao obter playlists do Spotify:", error));
         }
     </script>
 </body>
