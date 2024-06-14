@@ -1,3 +1,5 @@
+html
+Copiar código
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -5,64 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BLACKVOX Playlists</title>
     <style>
-        body {
-            background-color: black;
-            color: white;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-        }
-        h1 {
-            color: #ffffff;
-        }
-        button {
-            background-color: white;
-            color: black;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            border-radius: 5px;
-            margin: 5px;
-        }
-        button:hover {
-            background-color: #000000;
-            color: black;
-        }
-        input[type="text"], input[type="file"] {
-            padding: 10px;
-            margin: 10px;
-            border-radius: 5px;
-            border: 1px solid white;
-            background-color: black;
-            color: white;
-        }
-        ul {
-            list-style: none;
-            padding: 0;
-        }
-        li {
-            background-color: #333;
-            padding: 10px;
-            margin: 5px;
-            border-radius: 5px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        li button {
-            background-color: black;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        li button:hover {
-            background-color: darkred;
-        }
-        .recommendations {
-            margin-top: 20px;
-        }
+        /* Seu estilo CSS aqui */
     </style>
 </head>
 <body>
@@ -77,11 +22,12 @@
     <input type="file" id="audioInput" accept="audio/*">
     <button onclick="addAudio()">Adicionar Áudio</button>
     <ul id="audioList"></ul>
-	<div id="saveStatus">
-    <button onclick="savePlaylist()">Salvar Playlist</button>
-    <button onclick="loadPlaylists()">Carregar Playlists</button>
-    <button onclick="importPlaylists()">Importar Playlists</button>
-    <ul id="playlistList"></ul></div>
+    <div id="saveStatus">
+        <button onclick="savePlaylist()">Salvar Playlist</button>
+        <button onclick="loadPlaylists()">Carregar Playlists</button>
+        <button onclick="importPlaylists()">Importar Playlists</button>
+        <ul id="playlistList"></ul>
+    </div>
     <div class="recommendations">
         <h2>Recomendações</h2>
         <ul id="recommendationList"></ul>
@@ -90,6 +36,7 @@
     <script>
         let audioList = [];
         let playlists = {};
+        let accessToken = "";
 
         function addAudio() {
             const audioInput = document.getElementById("audioInput");
@@ -113,8 +60,8 @@
                 li.innerHTML = `
                     ${audio.name}
                     <div>
-                        <button onclick="playAudio(${index})">Toca</button>
-                        <button onclick="removeAudio(${index})">Remove</button>
+                        <button onclick="playAudio(${index})">Tocar</button>
+                        <button onclick="removeAudio(${index})">Remover</button>
                     </div>
                 `;
                 audioListElement.appendChild(li);
@@ -265,11 +212,7 @@
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ spotify_user
-				
-				
-				javascript
-_id: spotifyUserId })
+                body: JSON.stringify({ spotify_user_id: spotifyUserId })
             })
             .then(response => response.json())
             .then(data => {
@@ -277,115 +220,16 @@ _id: spotifyUserId })
                     alert(data.error);
                 } else {
                     const spotifyPlaylistsElement = document.getElementById("spotifyPlaylists");
-                    spotifyPlaylistsElement.innerHTML = `
-                        <h2>Playlists do Spotify</h2>
-                        <ul>
-                            ${data.map(playlist => `<li>${playlist.name}</li>`).join("")}
-                        </ul>
-                    `;
+                    spotifyPlaylistsElement.innerHTML = data.items.map(item => `
+                        <div>
+                            <h3>${item.name}</h3>
+                            <p>${item.description}</p>
+                        </div>
+                    `).join("");
                 }
             })
             .catch(error => console.error("Erro ao obter playlists do Spotify:", error));
         }
-    
-
-    <script>
-        let accessToken = "";
-
-        function getAccessToken(clientId, clientSecret) {
-            const authUrl = "https://accounts.spotify.com/api/token";
-            const authHeader = btoa(`${clientId}:${clientSecret}`);
-
-            return fetch(authUrl, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
-                    "Authorization": `Basic ${authHeader}`
-                },
-                body: "grant_type=client_credentials"
-            })
-            .then(response => response.json())
-            .then(data => data.access_token);
-        }
-
-        function getArtistInfo(artistName) {
-            const searchUrl = `https://api.spotify.com/v1/search?q=${encodeURIComponent(artistName)}&type=artist&limit=1`;
-            return fetch(searchUrl, {
-                method: "GET",
-                headers: {
-                    "Authorization": `Bearer ${accessToken}`
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.artists.items.length > 0) {
-                    const artistId = data.artists.items[0].id;
-                    return fetch(`https://api.spotify.com/v1/artists/${artistId}/top-tracks?market=BR`, {
-                        method: "GET",
-                        headers: {
-                            "Authorization": `Bearer ${accessToken}`
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(tracksData => {
-                        return {
-                            artist: data.artists.items[0],
-                            tracks: tracksData.tracks
-                        };
-                    });
-                } else {
-                    throw new Error("Artist not found");
-                }
-            });
-        }
-
-        function downloadTrack(trackUrl) {
-            // Implementar o código para baixar a música
-        }
-
-        function downloadPlaylist(playlistUrl) {
-            // Implementar o código para baixar a playlist
-        }
-
-        function displayArtistInfo(artistInfo) {
-            const artistInfoDiv = document.getElementById("artistInfo");
-            artistInfoDiv.innerHTML = `
-                <h2>${artistInfo.artist.name}</h2>
-                <p>Gêneros: ${artistInfo.artist.genres.join(", ")}</p>
-                <p>Seguidores: ${artistInfo.artist.followers.total}</p>
-                <p>Popularidade: ${artistInfo.artist.popularity}</p>
-                <h3>Músicas:</h3>
-                <ul>
-                    ${artistInfo.tracks.map(track => `<li>${track.name} - <a href="#" onclick="downloadTrack('${track.preview_url}')">Download</a></li>`).join("")}
-                </ul>
-            `;
-        }
-
-        function showArtistInfo() {
-            const artistName = document.getElementById("artistName").value;
-            getArtistInfo(artistName)
-                .then(artistInfo => {
-                    displayArtistInfo(artistInfo);
-                })
-                .catch(error => {
-                    console.error("Erro ao obter informações do artista:", error);
-                    const artistInfoDiv = document.getElementById("artistInfo");
-                    artistInfoDiv.innerHTML = "<p>Erro ao obter informações do artista.</p>";
-                });
-        }
-
-        // Substitua com suas credenciais do Spotify
-        const clientId = "1cb62fe9ab624385b5756ecf29e3edbf";
-        const clientSecret = "760dad93480d4cbb971e1ea1fb5f5821";
-
-        getAccessToken(clientId, clientSecret)
-            .then(token => {
-                accessToken = token;
-                console.log("Token de acesso obtido com sucesso:", accessToken);
-            })
-            .catch(error => {
-                console.error("Erro ao obter token de acesso:", error);
-            });
     </script>
 </body>
 </html>
