@@ -1,67 +1,33 @@
-const express = require('express');
-const request = require('request');
-const querystring = require('querystring');
-const cors = require('cors');
-const app = express();
+from flask import Flask, request, redirect
+import requests
 
-const clientId = '1cb62fe9ab624385b5756ecf29e3edbf';
-const clientSecret = '760dad93480d4cbb971e1ea1fb5f5821';
-const redirectUri = 'https://jorgedersumatheus.github.io/home/BLACKVOX_PlayPremium.html';
+app = Flask(__name__)
 
-app.use(cors());
-app.use(express.json());
+# Configurações do Spotify
+CLIENT_ID = '1cb62fe9ab624385b5756ecf29e3edbf'
+CLIENT_SECRET = '760dad93480d4cbb971e1ea1fb5f5821'
+REDIRECT_URI = 'https://jorgedersumatheus.github.io/home/BLACKVOX_PlayPremium.html'
 
-app.get('/callback', (req, res) => {
-    const code = req.query.code || null;
-    const state = req.query.state || null;
+@app.route('/')
+def home():
+    auth_url = f'https://accounts.spotify.com/authorize?response_type=code&client_id={CLIENT_ID}&scope=user-read-private%20user-read-email%20playlist-read-private%20playlist-read-collaborative&redirect_uri={REDIRECT_URI}'
+    return redirect(auth_url)
 
-    if (state === null) {
-        res.redirect('/#' +
-            querystring.stringify({
-                error: 'state_mismatch'
-            }));
-    } else {
-        const authOptions = {
-            url: 'https://accounts.spotify.com/api/token',
-            form: {
-                code: code,
-                redirect_uri: redirectUri,
-                grant_type: 'authorization_code'
-            },
-            headers: {
-                'Authorization': 'Basic ' + (new Buffer.from(clientId + ':' + clientSecret).toString('base64'))
-            },
-            json: true
-        };
+@app.route('/callback')
+def callback():
+    code = request.args.get('code')
+    response = requests.post('https://accounts.spotify.com/api/token', data={
+        'grant_type': 'authorization_code',
+        'code': code,
+        'redirect_uri': REDIRECT_URI,
+        'client_id': CLIENT_ID,
+        'client_secret': CLIENT_SECRET
+    })
+    tokens = response.json()
+    access_token = tokens.get('access_token')
+    refresh_token = tokens.get('refresh_token')
+    redirect_uri_with_tokens = f'{REDIRECT_URI}#access_token={access_token}&refresh_token={refresh_token}'
+    return redirect(redirect_uri_with_tokens)
 
-        request.post(authOptions, (error, response, body) => {
-            if (!error && response.statusCode === 200) {
-                const accessToken = body.access_token;
-                const refreshToken = body.refresh_token;
-
-                res.redirect('/#' +
-                    querystring.stringify({
-                        access_token: accessToken,
-                        refresh_token: refreshToken
-                    }));
-            } else {
-                res.redirect('/#' +
-                    querystring.stringify({
-                        error: 'invalid_token'
-                    }));
-            }
-        });
-    }
-});
-
-// Outras rotas e configuração do servidor...
-
-const port = process.env.PORT || 8888;
-app.listen(port, () => {
-    console.log(`Servidor rodando na porta ${port}`);
-});
-    console.log(`Servidor rodando na porta ${port}`);
-});
-
-
-
+if __name__ == '__main__':
+    app.run(debug=True)
