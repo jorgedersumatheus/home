@@ -1,0 +1,43 @@
+<html>
+    <head>
+        <style>
+			/* Define o estilo para o tabuleiro de xadrez */
+            div.board {
+                width: 8em;
+				height: 8em;
+				float: left;
+            }
+            div.black {
+                background-color: #000000;
+            }
+            div.white {
+                background-color: #FFFFFF;
+            }
+			
+			/* Define o estilo para os números */
+            input {
+                font-family: arial;
+                font-size: 0.7em;
+                font-weight: bold;
+                width: 1.2em;
+                border: 0;
+                background-color: #FFFFFF;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- Cria o tabuleiro de xadrez -->
+		<?php
+			for($i=1;$i<=8;$i++) {
+				for($j=1;$j<=8;$j++) {
+					$num = $i*8+$j;
+					echo "<div class='board";
+					if(($i+$j)%2 == 0) echo " white";
+					else echo " black";
+					echo "'><input type='text' value='$num'></div>";
+				}
+				echo "<br>";
+			}
+		?>
+    </body>
+</html>

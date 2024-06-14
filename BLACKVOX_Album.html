@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html>
 <head>
@@ -26,4 +27,34 @@
      .catch(error => console.error('Erro ao carregar as imagens:', error));
   </script>
 </body>
+=======
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Álbum de Fotografias</title>
+  <style>
+    /* Adicione estilos para a página aqui */
+  </style>
+</head>
+<body>
+  <h1>Álbum de Fotografias</h1>
+  <div id="album">
+    <!-- As imagens carregadas serão exibidas aqui -->
+  </div>
+  <script>
+    // Faça uma requisição ao servidor para obter as imagens carregadas
+    fetch('album.php')
+     .then(response => response.json())
+     .then(data => {
+        // Exiba as imagens carregadas na página
+        data.forEach(image => {
+          const img = document.createElement('img');
+          img.src = `data:image/jpeg;base64,${image.imagem}`;
+          albumDiv.appendChild(img);
+        });
+      })
+     .catch(error => console.error('Erro ao carregar as imagens:', error));
+  </script>
+</body>
+>>>>>>> 9bf90f6bd409f91c56e1d8c3f6959d71622b6345
 </html>

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html>
 <head>
@@ -62,4 +63,70 @@
         });
     </script>
 </body>
+=======
+<!DOCTYPE html>
+<html>
+<head>
+    <title>BLACKVOX - Carregar Áudio</title>
+    <style>
+        body {
+            background-color: #333; /* Fundo preto */
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            color: #fff; /* Texto branco */
+        }
+        audio {
+            display: block;
+            margin-bottom: 10px;
+        }
+        input[type="file"] {
+            background-color: #444; /* Fundo cinza escuro */
+            color: #fff; /* Texto branco */
+            border: none;
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        input[type="file"]:hover {
+            background-color: #555; /* Fundo cinza mais escuro */
+        }
+        button {
+            background-color: #444; /* Fundo cinza escuro */
+            color: #fff; /* Texto branco */
+            border: none;
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #555; /* Fundo cinza mais escuro */
+        }
+    </style>
+</head>
+<body>
+    <center>
+        <input type="file" id="audio" accept="audio/*">
+        <button id="carregarAudioBtn">Carregar</button>
+        <audio id="audioCarregado" controls loop></audio>
+        <p><a href="blackvox.html" style="color: #fff; text-decoration: none;">Voltar à Página Inicial</a></p>
+    </center>
+    <script>
+        const carregarAudioBtn = document.getElementById("carregarAudioBtn");
+        const audioInput = document.getElementById("audio");
+        const audioCarregado = document.getElementById("audioCarregado");
+
+        carregarAudioBtn.addEventListener("click", () => {
+            const file = audioInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = (event) => {
+                const audioData = event.target.result;
+                audioCarregado.src = audioData;
+            };
+
+            reader.readAsDataURL(file);
+        });
+    </script>
+</body>
+>>>>>>> 9bf90f6bd409f91c56e1d8c3f6959d71622b6345
 </html>

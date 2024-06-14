@@ -1,0 +1,72 @@
+/* Estilos gerais */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+
+
+/* Estilos para a seção de banner */
+.banner {
+    background-color: #eeeeee;
+    text-align: center;
+    padding: 8px 0;
+    color: #333;
+}
+
+.banner img {
+    width: 50px;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+.banner h1 {
+    font-size: 36px;
+    margin-bottom: 10px;
+}
+
+.banner p {
+    font-size: 18px;
+    text-align: justify;
+    text-indent: 80px;
+}
+
+/* Estilos para a seção de destaques */
+.destaques {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px;
+}
+
+.destaque-item {
+    text-align: justify;
+	width: 90%
+}
+
+.destaque-item img {
+    max-width: 80%;
+    height: auto;
+    margin-bottom: 10px;
+}
+
+/* Estilos para a seção de newsletter */
+.newsletter {
+    background-color: #eee;
+    text-align: center;
+    padding: 30px 30;
+}
+
+.newsletter h2 {
+    font-size: 24px;
+    margin-bottom: 30px;
+	width; 50px;
+}
+
+/* Estilos para o rodapé */
+footer {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 1px;
+}

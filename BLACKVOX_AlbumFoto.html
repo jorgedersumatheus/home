@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html>
 <head>
@@ -37,4 +38,45 @@
     });
   </script>
 </body>
+=======
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Álbum de Fotografias</title>
+</head>
+<body>
+  <h1>Carregar Imagens no Álbum</h1>
+  <input type="file" id="imagens" multiple accept="image/*">
+  <button id="carregar">Carregar</button>
+  <div id="mensagem"></div>
+  <div id="album"></div>
+
+  <script>
+    document.getElementById('carregar').addEventListener('click', function() {
+      var imagens = document.getElementById('imagens').files;
+      var formData = new FormData();
+      for (var i = 0; i < imagens.length; i++) {
+        formData.append('imagens[]', imagens[i]);
+      }
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', 'upload.php', true);
+      xhr.onload = function() {
+        if (xhr.status === 200) {
+          var response = JSON.parse(xhr.responseText);
+          var album = document.getElementById('album');
+          for (var i = 0; i < response.length; i++) {
+            var imagem = document.createElement('img');
+            imagem.src = 'uploads/' + response[i].nome;
+            album.appendChild(imagem);
+          }
+          document.getElementById('mensagem').innerHTML = 'Imagens carregadas com sucesso!';
+        } else {
+          document.getElementById('mensagem').innerHTML = 'Ocorreu um erro ao carregar as imagens.';
+        }
+      };
+      xhr.send(formData);
+    });
+  </script>
+</body>
+>>>>>>> 9bf90f6bd409f91c56e1d8c3f6959d71622b6345
 </html>
