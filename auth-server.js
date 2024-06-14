@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 const express = require('express');
 const request = require('request');
 const querystring = require('querystring');
@@ -181,7 +180,3 @@ function generateRandomString(length) {
     return text;
 }
 
-
-
-
->>>>>>> 9bf90f6bd409f91c56e1d8c3f6959d71622b6345
