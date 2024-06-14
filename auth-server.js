@@ -1,5 +1,3 @@
-javascript
-Copiar código
 const express = require('express');
 const request = require('request');
 const querystring = require('querystring');
@@ -12,18 +10,6 @@ const redirectUri = 'https://jorgedersumatheus.github.io/home/BLACKVOX_PlayPremi
 
 app.use(cors());
 app.use(express.json());
-
-app.get('/login', (req, res) => {
-    const scope = 'user-read-private user-read-email';
-    res.redirect('https://accounts.spotify.com/authorize?' +
-        querystring.stringify({
-            response_type: 'code',
-            client_id: clientId,
-            scope: scope,
-            redirect_uri: redirectUri,
-            state: 'some-state-of-my-choice'
-        }));
-});
 
 app.get('/callback', (req, res) => {
     const code = req.query.code || null;
@@ -43,7 +29,7 @@ app.get('/callback', (req, res) => {
                 grant_type: 'authorization_code'
             },
             headers: {
-                'Authorization': 'Basic ' + (new Buffer(clientId + ':' + clientSecret).toString('base64'))
+                'Authorization': 'Basic ' + (new Buffer.from(clientId + ':' + clientSecret).toString('base64'))
             },
             json: true
         };
@@ -68,49 +54,12 @@ app.get('/callback', (req, res) => {
     }
 });
 
-app.post('/get_artist_info', (req, res) => {
-    const { artist_name } = req.body;
-
-    const options = {
-        url: `https://api.spotify.com/v1/search?q=${artist_name}&type=artist`,
-        headers: {
-            'Authorization': 'Bearer ' + accessToken
-        },
-        json: true
-    };
-
-    request.get(options, (error, response, body) => {
-        if (!error && response.statusCode === 200) {
-            const artist = body.artists.items[0];
-            res.json(artist);
-        } else {
-            res.status(response.statusCode).json(body);
-        }
-    });
-});
-
-app.post('/get_spotify_playlists', (req, res) => {
-    const { spotify_user_id } = req.body;
-
-    const options = {
-        url: `https://api.spotify.com/v1/users/${spotify_user_id}/playlists`,
-        headers: {
-            'Authorization': 'Bearer ' + accessToken
-        },
-        json: true
-    };
-
-    request.get(options, (error, response, body) => {
-        if (!error && response.statusCode === 200) {
-            res.json(body);
-        } else {
-            res.status(response.statusCode).json(body);
-        }
-    });
-});
+// Outras rotas e configuração do servidor...
 
 const port = process.env.PORT || 8888;
 app.listen(port, () => {
+    console.log(`Servidor rodando na porta ${port}`);
+});
     console.log(`Servidor rodando na porta ${port}`);
 });
 
