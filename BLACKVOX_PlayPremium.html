@@ -4,9 +4,56 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BLACKVOX Playlists</title>
-    <style>
-        /* Seu estilo CSS aqui */
-    </style>
+    <script>
+        // Função para capturar tokens e armazená-los no localStorage
+        window.onload = function() {
+            const params = new URLSearchParams(window.location.hash.substring(1));
+            const accessToken = params.get('access_token');
+            const refreshToken = params.get('refresh_token');
+
+            if (accessToken) {
+                localStorage.setItem('spotify_access_token', accessToken);
+            }
+            if (refreshToken) {
+                localStorage.setItem('spotify_refresh_token', refreshToken);
+            }
+        };
+
+        // Função para buscar informações do artista
+        function buscarInformacoesDoArtista() {
+            const accessToken = localStorage.getItem('spotify_access_token');
+            const nomeArtista = document.getElementById('nomeArtista').value;
+
+            fetch(`https://api.spotify.com/v1/search?q=${nomeArtista}&type=artist`, {
+                headers: {
+                    'Authorization': 'Bearer ' + accessToken
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                // Lógica para exibir informações do artista
+            });
+        }
+
+        // Função para buscar playlists do usuário
+        function buscarPlaylistsDoUsuario() {
+            const accessToken = localStorage.getItem('spotify_access_token');
+            const userId = document.getElementById('userId').value;
+
+            fetch(`https://api.spotify.com/v1/users/${userId}/playlists`, {
+                headers: {
+                    'Authorization': 'Bearer ' + accessToken
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                // Lógica para exibir playlists do usuário
+            });
+        }
+    </script>
+</head>
 </head>
 <body>
     <h1>BLACKVOX - Áudios & Playlists</h1>
