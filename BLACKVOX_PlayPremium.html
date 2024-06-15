@@ -134,6 +134,15 @@
 </head>
 <body>
     <h1>BLACKVOX - Áudios & Playlists</h1>
+
+    <input type="text" id="audioName" placeholder="Nome do áudio">
+    <input type="file" id="audioFile">
+    <button onclick="addAudio(document.getElementById('audioName').value, document.getElementById('audioFile').files[0])">Adicionar Pista</button>
+    <ul id="audioList"></ul>
+    <audio id="audioPlayer" controls style="display: none;"></audio>
+    <div id="nowPlaying"></div>
+
+
     <button onclick="loginSpotify()">Login no Spotify</button>
     <input type="text" id="artistName" placeholder="Nome do Artista">
     <button onclick="buscarInformacoesDoArtista()">Buscar Informações do Artista</button>
@@ -159,6 +168,14 @@
     <script>
         let audioList = [];
         let playlists = {};
+
+        let audioPlayer = document.getElementById('audioPlayer');
+        
+        let currentAudioIndex = -1;
+        let nowPlaying = document.getElementById('nowPlaying');
+        let timelineInterval;
+
+	    
 
         function addAudio() {
             const audioInput = document.getElementById("audioInput");
@@ -305,6 +322,67 @@
             linkElement.setAttribute('download', exportFileDefaultName);
             linkElement.click();
         }
+
+
+ function playAudio(index) {
+            if (index < 0 || index >= audioList.length) return;
+            currentAudioIndex = index;
+            audioPlayer.src = URL.createObjectURL(audioList[index].file);
+            audioPlayer.play();
+            nowPlaying.innerHTML = `Now Playing: ${audioList[index].name}`;
+            audioPlayer.style.display = 'block';
+            updateTimeline();
+            clearInterval(timelineInterval);
+            timelineInterval = setInterval(updateTimeline, 1000);
+        }
+
+        function updateTimeline() {
+            let currentTime = audioPlayer.currentTime;
+            let duration = audioPlayer.duration;
+            if (!isNaN(duration)) {
+                nowPlaying.innerHTML = `Now Playing: ${audioList[currentAudioIndex].name} (${formatTime(currentTime)} / ${formatTime(duration)})`;
+            }
+        }
+
+        function formatTime(seconds) {
+            let minutes = Math.floor(seconds / 60);
+            let remainingSeconds = Math.floor(seconds % 60);
+            return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+        }
+
+        function nextAudio() {
+            if (currentAudioIndex < audioList.length - 1) {
+                playAudio(currentAudioIndex + 1);
+            }
+        }
+
+        function addAudio(name, file) {
+            audioList.push({name: name, file: file});
+            let li = document.createElement('li');
+            li.innerHTML = `
+                ${name}
+                <button onclick="playAudio(${audioList.length - 1})">Play</button>
+                <button onclick="removeAudio(${audioList.length - 1})">Remove</button>
+            `;
+            document.getElementById('audioList').appendChild(li);
+        }
+
+        audioPlayer.addEventListener('ended', nextAudio);
+
+        function removeAudio(index) {
+            if (index < 0 || index >= audioList.length) return;
+            audioList.splice(index, 1);
+            let ul = document.getElementById('audioList');
+            ul.removeChild(ul.childNodes[index]);
+            if (currentAudioIndex === index) {
+                audioPlayer.pause();
+                audioPlayer.style.display = 'none';
+                nowPlaying.innerHTML = '';
+                clearInterval(timelineInterval);
+            }
+        }
+
+
     </script>
 </body>
 </html>
