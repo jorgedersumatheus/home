@@ -3,8 +3,8 @@ from flask import Flask, request, redirect
 app = Flask(__name__)
 
 # Configurações do Spotify
-CLIENT_ID = 'SEU_CLIENT_ID_DO_SPOTIFY'
-CLIENT_SECRET = 'SEU_CLIENT_SECRET_DO_SPOTIFY'
+CLIENT_ID = '1cb62fe9ab624385b5756ecf29e3edbf'
+CLIENT_SECRET = '760dad93480d4cbb971e1ea1fb5f5821'
 REDIRECT_URI = 'https://jorgedersumatheus.github.io/home/BLACKVOX_PlayPremium.html'
 
 @app.route('/')
