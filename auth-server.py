@@ -28,6 +28,12 @@ def callback():
     refresh_token = tokens.get('refresh_token')
     redirect_uri_with_tokens = f'{REDIRECT_URI}#access_token={access_token}&refresh_token={refresh_token}'
     return redirect(redirect_uri_with_tokens)
+    @app.route('/login')
+def login():
+    # Sua lógica de login aqui
+    return redirect('/')  # Redireciona de volta para a página inicial após o login
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
