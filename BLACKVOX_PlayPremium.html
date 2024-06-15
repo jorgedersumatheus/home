@@ -142,6 +142,23 @@
     <audio id="audioPlayer" controls style="display: none;"></audio>
     <div id="nowPlaying"></div>
 
+	 <button onclick="window.location.href='http://127.0.0.1:5000/login'">Login with Spotify</button>
+    <div id="artistInfo"></div>
+    <div id="spotifyPlaylists"></div>
+    <ul id="audioList"></ul>
+    <div id="saveStatus">
+        <button onclick="savePlaylist()">Salvar Playlist</button>
+        <button onclick="loadPlaylists()">Carregar Playlists</button>
+        <button onclick="importPlaylists()">Importar Playlists</button>
+        <ul id="playlistList"></ul>
+        <audio id="audioPlayer" controls style="display: none;"></audio>
+    </div>
+    <ul id="playlistList"></ul>
+    <div class="recommendations">
+        <h2>Recomendações</h2>
+        <ul id="recommendationList"></ul>
+    </div>
+
 
     <button onclick="loginSpotify()">Login no Spotify</button>
     <input type="text" id="artistName" placeholder="Nome do Artista">
