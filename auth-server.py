@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, url_for
+from flask import Flask, request, redirect
 import requests
 
 app = Flask(__name__)
@@ -10,21 +10,17 @@ REDIRECT_URI = 'http://127.0.0.1:5000/callback'
 
 @app.route('/')
 def home():
-    print("Home route accessed")
     return 'Página inicial do seu aplicativo'
 
 @app.route('/login')
 def login_spotify():
-    print("Login route accessed")
     auth_url = f'https://accounts.spotify.com/authorize?response_type=code&client_id={CLIENT_ID}&scope=user-read-private%20user-read-email%20playlist-read-private%20playlist-read-collaborative&redirect_uri={REDIRECT_URI}'
     return redirect(auth_url)
 
 @app.route('/callback')
 def callback():
-    print("Callback route accessed")
     code = request.args.get('code')
     if not code:
-        print("Authorization code not found in the callback request")
         return 'Authorization code not found in the callback request', 400
     
     response = requests.post('https://accounts.spotify.com/api/token', data={
@@ -36,7 +32,6 @@ def callback():
     })
 
     if response.status_code != 200:
-        print(f"Error retrieving access token: {response.json()}")
         return f'Error retrieving access token: {response.json()}', response.status_code
 
     tokens = response.json()
@@ -47,8 +42,3 @@ def callback():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-
-
-
-
