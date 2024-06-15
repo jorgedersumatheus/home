@@ -20,6 +20,9 @@ def login_spotify():
 @app.route('/callback')
 def callback():
     code = request.args.get('code')
+    if not code:
+        return 'Authorization code not found in the callback request', 400
+    
     response = requests.post('https://accounts.spotify.com/api/token', data={
         'grant_type': 'authorization_code',
         'code': code,
@@ -27,6 +30,10 @@ def callback():
         'client_id': CLIENT_ID,
         'client_secret': CLIENT_SECRET
     })
+
+    if response.status_code != 200:
+        return f'Error retrieving access token: {response.json()}', response.status_code
+
     tokens = response.json()
     access_token = tokens.get('access_token')
     refresh_token = tokens.get('refresh_token')
@@ -35,5 +42,6 @@ def callback():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
 
 
