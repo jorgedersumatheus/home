@@ -199,8 +199,8 @@
                 li.innerHTML = `
                     ${audio.name}
                     <div>
-                        <button onclick="playAudio(${index})">Tocar</button>
-                        <button onclick="removeAudio(${index})">Remover</button>
+                        <button onclick="playAudio(${index})">></button>
+                        <button onclick="removeAudio(${index})">X</button>
                     </div>
                 `;
                 audioListElement.appendChild(li);
@@ -272,8 +272,8 @@
                 li.innerHTML = `
                     ${playlistName}
                     <div>
-                        <button onclick="loadPlaylist('${playlistName}')">Carregar</button>
-                        <button onclick="deletePlaylist('${playlistName}')">Excluir</button>
+                        <button onclick="loadPlaylist('${playlistName}')">Carrega</button>
+                        <button onclick="deletePlaylist('${playlistName}')">Exclui</button>
                     </div>
                 `;
                 playlistListElement.appendChild(li);
@@ -340,7 +340,7 @@
             let currentTime = audioPlayer.currentTime;
             let duration = audioPlayer.duration;
             if (!isNaN(duration)) {
-                nowPlaying.innerHTML = `Now Playing: ${audioList[currentAudioIndex].name} (${formatTime(currentTime)} / ${formatTime(duration)})`;
+                nowPlaying.innerHTML = `Faixa Atual: ${audioList[currentAudioIndex].name} (${formatTime(currentTime)} / ${formatTime(duration)})`;
             }
         }
 
