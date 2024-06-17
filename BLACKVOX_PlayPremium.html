@@ -26,7 +26,7 @@
         }
         button:hover {
             background-color: #000000;
-            color: black;
+            color: white;
         }
         input[type="text"], input[type="file"] {
             padding: 10px;
@@ -64,6 +64,63 @@
             margin-top: 20px;
         }
     </style>
+</head>
+<body>
+    <h1>BLACKVOX Playlists</h1>
+
+    <div>
+        <h2>Buscar informações do artista</h2>
+        <input type="text" id="artistName" placeholder="Nome do Artista">
+        <button onclick="buscarInformacoesDoArtista()">Buscar</button>
+        <div id="artistInfo"></div>
+    </div>
+
+    <div>
+        <h2>Buscar playlists do usuário</h2>
+        <input type="text" id="spotifyUserId" placeholder="ID do Usuário Spotify">
+        <button onclick="buscarPlaylistsDoUsuario()">Buscar</button>
+        <ul id="spotifyPlaylists"></ul>
+    </div>
+
+    <div>
+        <h2>Adicionar Áudio</h2>
+        <input type="file" id="audioInput">
+        <button onclick="addAudio()">Adicionar</button>
+    </div>
+
+    <div>
+        <h2>Lista de Áudios</h2>
+        <ul id="audioList"></ul>
+    </div>
+
+    <div>
+        <audio id="audioPlayer" controls style="display:none;"></audio>
+        <div id="nowPlaying"></div>
+    </div>
+
+    <div>
+        <h2>Salvar Playlist</h2>
+        <input type="text" id="playlistName" placeholder="Nome da Playlist">
+        <button onclick="savePlaylist()">Salvar</button>
+        <div id="saveStatus"></div>
+    </div>
+
+    <div>
+        <h2>Carregar Playlists</h2>
+        <button onclick="loadPlaylists()">Carregar</button>
+        <ul id="playlistList"></ul>
+    </div>
+
+    <div>
+        <h2>Importar Playlists de Arquivo</h2>
+        <input type="file" id="playlistFileInput" onchange="importPlaylistsFromFile(event)">
+        <div id="loadingIndicator" style="display:none;">Carregando...</div>
+    </div>
+
+    <div>
+        <button onclick="removeCurrentPlaylist()">Remover Playlist Atual</button>
+    </div>
+
     <script>
         const clientId = '1cb62fe9ab624385b5756ecf29e3edbf';
         const redirectUri = 'https://jorgedersumatheus.github.io/home/BLACKVOX_PlayPremium.html';
@@ -84,6 +141,12 @@
             }
             if (refreshToken) {
                 localStorage.setItem('spotify_refresh_token', refreshToken);
+            }
+
+            // Chama as funções para buscar informações do artista e playlists do usuário se o token estiver presente
+            if (accessToken) {
+                buscarInformacoesDoArtistaComToken(accessToken);
+                buscarPlaylistsDoUsuarioComToken(accessToken);
             }
         };
 
@@ -133,9 +196,6 @@
 
         let audioList = [];
         let playlists = {};
-
-        let audioPlayer = document.getElementById('audioPlayer');
-        
         let currentAudioIndex = -1;
         let nowPlaying = document.getElementById('nowPlaying');
         let timelineInterval;
@@ -160,7 +220,7 @@
             audioList.forEach((audio, index) => {
                 const li = document.createElement("li");
                 li.innerHTML = `
-                    ${audio.name}
+                    <input type="text" value="${audio.name}" onchange="renameAudio(${index}, this.value)">
                     <div>
                         <button onclick="playAudio(${index})"> ->Toca</button>
                         <button onclick="removeAudio(${index})">Apaga X</button>
@@ -204,367 +264,70 @@
                 playlists[playlistName] = audioList;
                 exportToJsonFile(playlists);
                 saveStatus.innerHTML = "Playlist salva com sucesso!";
-                setTimeout(() => { saveStatus.innerHTML = ""; }, 3000);
-            } catch (e) {
-                console.error(e);
-                saveStatus.innerHTML = "Erro ao salvar a playlist. O armazenamento local pode estar cheio.";
-                setTimeout(() => { saveStatus.innerHTML = ""; }, 3000);
-            }
-        }
-
-        function loadPlaylists() {
-            try {
-                const storedPlaylists = localStorage.getItem("playlists");
-                if (storedPlaylists) {
-                    playlists = JSON.parse(storedPlaylists);
-                    displayPlaylistList();
-                } else {
-                    alert("Nenhuma Playlist salva encontrada.");
-                }
-            } catch (e) {
-                console.error(e);
-                alert("Erro ao carregar playlists.");
-            }
-        }
-
-        function displayPlaylistList() {
-            const playlistListElement = document.getElementById("playlistList");
-            playlistListElement.innerHTML = "";
-            for (const playlistName in playlists) {
-                const li = document.createElement("li");
-                li.innerHTML = `
-                    ${playlistName}
-                    <div>
-                        <button onclick="loadPlaylist('${playlistName}')">Carrega</button>
-                        <button onclick="deletePlaylist('${playlistName}')">Exclui</button>
-                    </div>
-                `;
-                playlistListElement.appendChild(li);
-            }
-        }
-
-        function loadPlaylist(name) {
-            audioList = playlists[name];
-            displayAudioList();
-        }
-
-        function deletePlaylist(name) {
-            delete playlists[name];
-            displayPlaylistList();
-        }
-
-        function importPlaylistsFromFile(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const importedPlaylists = JSON.parse(e.target.result);
-                    playlists = { ...playlists, ...importedPlaylists };
-                    displayPlaylistList();
-                };
-                reader.readAsText(file);
+            } catch (error) {
+                saveStatus.innerHTML = "Erro ao salvar playlist";
             }
         }
 
         function exportToJsonFile(jsonData) {
             const dataStr = JSON.stringify(jsonData);
-            const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
-
-            const exportFileDefaultName = 'playlists.json';
-
-            const linkElement = document.createElement('a');
-            linkElement.setAttribute('href', dataUri);
-            linkElement.setAttribute('download', exportFileDefaultName);
+            const dataUri = "data:application/json;charset=utf-8," + encodeURIComponent(dataStr);
+            const exportFileDefaultName = "playlists.json";
+            const linkElement = document.createElement("a");
+            linkElement.setAttribute("href", dataUri);
+            linkElement.setAttribute("download", exportFileDefaultName);
             linkElement.click();
+        }
+
+        function loadPlaylists() {
+            const playlistListElement = document.getElementById("playlistList");
+            playlistListElement.innerHTML = "";
+            for (const playlistName in playlists) {
+                const li = document.createElement("li");
+                li.innerHTML = `
+                    <span>${playlistName}</span>
+                    <button onclick="loadPlaylist('${playlistName}')">Carregar</button>
+                `;
+                playlistListElement.appendChild(li);
+            }
+        }
+
+        function loadPlaylist(playlistName) {
+            audioList = playlists[playlistName] || [];
+            displayAudioList();
+        }
+
+        function importPlaylistsFromFile(event) {
+            const file = event.target.files[0];
+            if (!file) {
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    playlists = JSON.parse(e.target.result);
+                    loadPlaylists();
+                } catch (error) {
+                    alert("Erro ao importar playlists: " + error);
+                }
+            };
+            reader.readAsText(file);
         }
 
         function removeCurrentPlaylist() {
             const playlistName = document.getElementById("playlistName").value;
-            if (playlistName in playlists) {
+            if (playlists.hasOwnProperty(playlistName)) {
                 delete playlists[playlistName];
-                localStorage.setItem("playlists", JSON.stringify(playlists));
-                displayPlaylistList();
-                document.getElementById("playlistName").value = '';
-                audioList = [];
-                displayAudioList();
-                alert(`A playlist '${playlistName}' foi removida.`);
+                loadPlaylists();
+                alert(`Playlist '${playlistName}' removida com sucesso.`);
             } else {
-                alert("Nenhuma playlist com esse nome encontrada.");
+                alert(`Playlist '${playlistName}' não encontrada.`);
             }
         }
     </script>
-
-
-
-<!-- Adicione um div para o indicador de carregamento -->
-<div id="loadingIndicator" style="display:none;">Carregando...</div>
-
-<script>
-    function importPlaylistsFromFile(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            
-            // Mostra o indicador de carregamento
-            document.getElementById('loadingIndicator').style.display = 'block';
-            
-            reader.onload = function(e) {
-                const importedPlaylists = JSON.parse(e.target.result);
-                playlists = { ...playlists, ...importedPlaylists };
-                displayPlaylistList();
-                
-                // Esconde o indicador de carregamento após a importação
-                document.getElementById('loadingIndicator').style.display = 'none';
-            };
-            reader.readAsText(file);
-        }
-    }
-</script>
-
-
-	<script>
-    function displayAudioList() {
-        const audioListElement = document.getElementById("audioList");
-        audioListElement.innerHTML = "";
-        audioList.forEach((audio, index) => {
-            const li = document.createElement("li");
-            li.innerHTML = `
-                <input type="text" value="${audio.name}" onchange="renameAudio(${index}, this.value)">
-                <div>
-                    <button onclick="playAudio(${index})"> ->Toca</button>
-                    <button onclick="removeAudio(${index})">Apaga X</button>
-                </div>
-            `;
-            audioListElement.appendChild(li);
-        });
-    }
-
-    function renameAudio(index, newName) {
-        audioList[index].name = newName;
-    }
-</script>
-
-
-window.onload = function() {
-    // Obtém o token da URL
-    const hash = window.location.hash.substring(1);
-    const params = new URLSearchParams(hash);
-    const accessToken = params.get('access_token');
-
-    if (accessToken) {
-        // Armazena o token em localStorage para uso posterior
-        localStorage.setItem('spotifyAccessToken', accessToken);
-        console.log('Access Token:', accessToken);
-
-        // Faça as chamadas da API do Spotify com o token
-        buscarInformacoesDoArtistaComToken(accessToken);
-        buscarPlaylistsDoUsuarioComToken(accessToken);
-    } else {
-        console.log('Token não encontrado na URL');
-    }
-};
-
-
-function buscarInformacoesDoArtistaComToken(token) {
-    const artistName = document.getElementById("artistName").value;
-    if (artistName) {
-        fetch(`https://api.spotify.com/v1/search?q=${artistName}&type=artist`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            const artistInfo = data.artists.items[0];
-            document.getElementById("artistInfo").innerHTML = `
-                <p>Nome: ${artistInfo.name}</p>
-                <p>Gêneros: ${artistInfo.genres.join(', ')}</p>
-                <p>Popularidade: ${artistInfo.popularity}</p>
-                <img src="${artistInfo.images[0].url}" alt="${artistInfo.name}">
-            `;
-        })
-        .catch(error => console.error('Erro ao buscar informações do artista:', error));
-    } else {
-        alert('Por favor, insira o nome de um artista.');
-    }
-}
-
-function buscarPlaylistsDoUsuarioComToken(token) {
-    const userId = document.getElementById("spotifyUserId").value;
-    if (userId) {
-        fetch(`https://api.spotify.com/v1/users/${userId}/playlists`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            const playlists = data.items;
-            const playlistElement = document.getElementById("spotifyPlaylists");
-            playlistElement.innerHTML = '';
-            playlists.forEach(playlist => {
-                const li = document.createElement("li");
-                li.textContent = playlist.name;
-                playlistElement.appendChild(li);
-            });
-        })
-        .catch(error => console.error('Erro ao buscar playlists do usuário:', error));
-    } else {
-        alert('Por favor, insira o ID do usuário.');
-    }
-}
-
-
-	function buscarInformacoesDoArtistaComToken(token) {
-    const artistName = document.getElementById("artistName").value;
-    if (artistName) {
-        fetch(`https://api.spotify.com/v1/search?q=${artistName}&type=artist`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            const artistInfo = data.artists.items[0];
-            document.getElementById("artistInfo").innerHTML = `
-                <p>Nome: ${artistInfo.name}</p>
-                <p>Gêneros: ${artistInfo.genres.join(', ')}</p>
-                <p>Popularidade: ${artistInfo.popularity}</p>
-                <img src="${artistInfo.images[0].url}" alt="${artistInfo.name}">
-            `;
-        })
-        .catch(error => console.error('Erro ao buscar informações do artista:', error));
-    } else {
-        alert('Por favor, insira o nome de um artista.');
-    }
-}
-
-function buscarPlaylistsDoUsuarioComToken(token) {
-    const userId = document.getElementById("spotifyUserId").value;
-    if (userId) {
-        fetch(`https://api.spotify.com/v1/users/${userId}/playlists`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            const playlists = data.items;
-            const playlistElement = document.getElementById("spotifyPlaylists");
-            playlistElement.innerHTML = '';
-            playlists.forEach(playlist => {
-                const li = document.createElement("li");
-                li.textContent = playlist.name;
-                playlistElement.appendChild(li);
-            });
-        })
-        .catch(error => console.error('Erro ao buscar playlists do usuário:', error));
-    } else {
-        alert('Por favor, insira o ID do usuário.');
-    }
-}
-
-
-function buscarMusicasDoArtista(token, artistId) {
-    fetch(`https://api.spotify.com/v1/artists/${artistId}/top-tracks?market=BR`, {
-        headers: {
-            'Authorization': `Bearer ${token}`
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        const tracks = data.tracks;
-        const tracksElement = document.getElementById("artistTracks");
-        tracksElement.innerHTML = '';
-        tracks.forEach(track => {
-            const li = document.createElement("li");
-            li.textContent = `${track.name} - ${track.album.name}`;
-            tracksElement.appendChild(li);
-        });
-    })
-    .catch(error => console.error('Erro ao buscar músicas do artista:', error));
-}
-
-// Adicione esta função no script acima, logo após buscarInformacoesDoArtistaComToken
-function buscarInformacoesDoArtistaComToken(token) {
-    const artistName = document.getElementById("artistName").value;
-    if (artistName) {
-        fetch(`https://api.spotify.com/v1/search?q=${artistName}&type=artist`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            const artistInfo = data.artists.items[0];
-            document.getElementById("artistInfo").innerHTML = `
-                <p>Nome: ${artistInfo.name}</p>
-                <p>Gêneros: ${artistInfo.genres.join(', ')}</p>
-                <p>Popularidade: ${artistInfo.popularity}</p>
-                <img src="${artistInfo.images[0].url}" alt="${artistInfo.name}">
-            `;
-
-            // Chama a função para buscar músicas do artista
-            buscarMusicasDoArtista(token, artistInfo.id);
-        })
-        .catch(error => console.error('Erro ao buscar informações do artista:', error));
-    } else {
-        alert('Por favor, insira o nome de um artista.');
-    }
-}
-
-
-
-	
-	
-
-</head>
-<body>
-    <h1>BLACKVOX Áudios e Playlists</h1>
-    <button onclick="loginSpotify()">Login Spotify</button>
-    <div>
-        <h2>Buscar Informações do Artista no Spotify</h2>
-        <input type="text" id="artistName" placeholder="Nome do Artista">
-        <button onclick="buscarInformacoesDoArtista()">Buscar</button>
-        <div id="artistInfo"></div>
-    </div>
-    <div>
-        <h2>Buscar Playlists do Usuário no Spotify</h2>
-        <input type="text" id="spotifyUserId" placeholder="ID do Usuário">
-        <button onclick="buscarPlaylistsDoUsuario()">Buscar</button>
-        <div id="spotifyPlaylists"></div>
-    </div>
-    <div>
-        <h2>Criar Playlist</h2>
-        <input type="text" id="playlistName" placeholder="Nome da Playlist">
-        <input type="file" id="audioInput" accept="audio/*">
-        <button onclick="addAudio()">Adicionar Áudio</button>
-        <ul id="audioList"></ul>
-        <button onclick="savePlaylist()">Salvar Playlist</button>
-        <div id="saveStatus"></div>
-    </div>
-    <div>
-        <h2>Playlists Salvas</h2>
-        <ul id="playlistList"></ul>
-        <button onclick="loadPlaylists()">Carregar Playlists</button>
-        <input type="file" id="playlistFileInput" accept=".json" onchange="importPlaylistsFromFile(event)">
-    </div>
-    <div>
-        <audio id="audioPlayer" controls style="display:none;"></audio>
-
-
-<div id="artistInfo"></div>
-<ul id="artistTracks"></ul>
-
-
-	    
-    </div>
-
-
-
-
 </body>
 </html>
+
 
 
 
