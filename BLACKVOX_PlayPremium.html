@@ -122,7 +122,7 @@
 # BLACKVOX Playlists
 
 ## Descrição
-O aplicativo BLACKVOX permite criar, salvar, carregar e gerenciar playlists de áudio.<br> Também é possível buscar informações de artistas e playlists de usuários no Spotify.
+O aplicativo BLACKVOX permite criar, salvar, carregar e gerenciar playlists de áudio. Também é possível buscar informações de artistas e playlists de usuários no Spotify.
 
 ## Funcionalidades
 - Login com Spotify
@@ -149,10 +149,7 @@ O aplicativo BLACKVOX permite criar, salvar, carregar e gerenciar playlists de �
 - Spotify API
 
 ## Autor
-Jorge Luis Aparecido Matheus
-@jorgelamatheus
-São Paulo - SP - Brasil
-2024
+Jorge LA Matheus
         </pre>
     </div>
 
@@ -162,7 +159,7 @@ São Paulo - SP - Brasil
         const scopes = 'user-library-read playlist-read-private';
 
         function loginSpotify() {
-            const authUrl = `https://accounts.spotify.com/authorize?response_type=token&client_id=${clientId}&scope=${scopes}&redirect_uri=${redirectUri}`;
+            const authUrl = `https://accounts.spotify.com/authorize?response_type=token&client_id=${clientId}&scope=${scopes}&redirect_uri=${encodeURIComponent(redirectUri)}`;
             window.location.href = authUrl;
         }
 
@@ -361,3 +358,4 @@ São Paulo - SP - Brasil
     </script>
 </body>
 </html>
+
