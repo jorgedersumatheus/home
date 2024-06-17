@@ -6,7 +6,7 @@ app = Flask(__name__)
 # Configurações do Spotify
 CLIENT_ID = '1cb62fe9ab624385b5756ecf29e3edbf'
 CLIENT_SECRET = '760dad93480d4cbb971e1ea1fb5f5821'
-REDIRECT_URI = 'https://jorgedersumatheus.github.io/home/BLACKVOX_PlayPremium.html/callback'
+REDIRECT_URI = 'https://jorgedersumatheus.github.io/home/BLACKVOX_PlayPremium.html'
 
 @app.route('/')
 def home():
@@ -22,7 +22,7 @@ def callback():
     code = request.args.get('code')
     if not code:
         return 'Authorization code not found in the callback request', 400
-    
+
     response = requests.post('https://accounts.spotify.com/api/token', data={
         'grant_type': 'authorization_code',
         'code': code,
@@ -42,4 +42,5 @@ def callback():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
 
