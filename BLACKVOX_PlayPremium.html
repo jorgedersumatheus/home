@@ -4,40 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BLACKVOX</title>
-    <style>
-        body {
-            background-color: #000;
-            color: #fff;
-            font-family: Arial, sans-serif;
-            text-align: center;
-        }
-        button {
-            background-color: #fff;
-            color: #000;
-            border: none;
-            padding: 10px 20px;
-            margin: 10px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        button:hover {
-            background-color: #ccc;
-        }
-        input {
-            padding: 10px;
-            margin: 10px;
-            border-radius: 5px;
-            border: none;
-        }
-        img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 5px;
-        }
-        #artistInfo, #spotifyPlaylists, #artistTracks {
-            margin: 20px;
-        }
-    </style>
 </head>
 <body>
     <h1>BLACKVOX - App de Playlists e Músicas</h1>
@@ -62,15 +28,15 @@
     <script>
         // Função para redirecionar o usuário para o login do Spotify
         function loginSpotify() {
-            const clientId = '1cb62fe9ab624385b5756ecf29e3edbf';
-            const redirectUri = 'https://www.jorgematheus.mus.br/BLACKBOX_PlayPremium.html';
+            const clientId = 'SEU_CLIENT_ID';
+            const redirectUri = 'https://www.jorgematheus.mus.br/BLACKVOX_PlayPremium.html';
             const scopes = 'user-read-private user-read-email playlist-read-private';
             const authUrl = `https://accounts.spotify.com/authorize?response_type=token&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scopes)}`;
 
             window.location = authUrl;
         }
 
-        // Extração do token da URL e armazenamento no localStorage
+        // Extração do token da URL
         window.onload = function() {
             const hash = window.location.hash.substring(1);
             const params = new URLSearchParams(hash);
@@ -78,24 +44,18 @@
 
             if (accessToken) {
                 localStorage.setItem('spotifyAccessToken', accessToken);
-                console.log('Access Token armazenado:', accessToken);
+                console.log('Access Token:', accessToken);
+
+                // Chama as funções para buscar informações e playlists usando o token
+                buscarInformacoesDoArtistaComToken(accessToken);
+                buscarPlaylistsDoUsuarioComToken(accessToken);
             } else {
                 console.log('Token não encontrado na URL');
             }
         };
 
-        // Função para recuperar o token do localStorage
-        function getAccessToken() {
-            return localStorage.getItem('spotifyAccessToken');
-        }
-
         // Função para buscar informações do artista
-        function buscarInformacoesDoArtista() {
-            const token = getAccessToken();
-            if (!token) {
-                alert('Por favor, faça login no Spotify primeiro.');
-                return;
-            }
+        function buscarInformacoesDoArtistaComToken(token) {
             const artistName = document.getElementById("artistName").value;
             if (artistName) {
                 fetch(`https://api.spotify.com/v1/search?q=${artistName}&type=artist`, {
@@ -144,12 +104,7 @@
         }
 
         // Função para buscar playlists do usuário
-        function buscarPlaylistsDoUsuario() {
-            const token = getAccessToken();
-            if (!token) {
-                alert('Por favor, faça login no Spotify primeiro.');
-                return;
-            }
+        function buscarPlaylistsDoUsuarioComToken(token) {
             const userId = document.getElementById("spotifyUserId").value;
             if (userId) {
                 fetch(`https://api.spotify.com/v1/users/${userId}/playlists`, {
@@ -173,10 +128,28 @@
                 alert('Por favor, insira o ID do usuário.');
             }
         }
+
+        // Funções sem token (são chamadas pelos botões)
+        function buscarInformacoesDoArtista() {
+            const token = localStorage.getItem('spotifyAccessToken');
+            if (token) {
+                buscarInformacoesDoArtistaComToken(token);
+            } else {
+                alert('Por favor, faça login no Spotify primeiro.');
+            }
+        }
+
+        function buscarPlaylistsDoUsuario() {
+            const token = localStorage.getItem('spotifyAccessToken');
+            if (token) {
+                buscarPlaylistsDoUsuarioComToken(token);
+            } else {
+                alert('Por favor, faça login no Spotify primeiro.');
+            }
+        }
     </script>
 </body>
 </html>
-
 
 
 	
