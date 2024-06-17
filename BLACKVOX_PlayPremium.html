@@ -122,7 +122,7 @@
 # BLACKVOX Playlists
 
 ## Descrição
-O aplicativo BLACKVOX permite criar, salvar, carregar e gerenciar playlists de áudio. Também é possível buscar informações de artistas e playlists de usuários no Spotify.
+O aplicativo BLACKVOX permite criar, salvar, carregar e gerenciar playlists de áudio. <br>Também é possível buscar informações de artistas e playlists de usuários no Spotify.
 
 ## Funcionalidades
 - Login com Spotify
@@ -149,7 +149,10 @@ O aplicativo BLACKVOX permite criar, salvar, carregar e gerenciar playlists de �
 - Spotify API
 
 ## Autor
-Jorge LA Matheus
+Jorge Luis Aparecido Matheus
+@jorgelamatheus
+São Paulo - SP - Brasil
+2024
         </pre>
     </div>
 
@@ -160,22 +163,29 @@ Jorge LA Matheus
 
         function loginSpotify() {
             const authUrl = `https://accounts.spotify.com/authorize?response_type=token&client_id=${clientId}&scope=${scopes}&redirect_uri=${encodeURIComponent(redirectUri)}`;
+            console.log('Redirecting to Spotify login:', authUrl); // Debug message
             window.location.href = authUrl;
         }
 
         window.onload = function() {
-            const params = new URLSearchParams(window.location.hash.substring(1));
+            const hash = window.location.hash.substring(1);
+            const params = new URLSearchParams(hash);
             const accessToken = params.get('access_token');
             const refreshToken = params.get('refresh_token');
 
+            console.log('Window loaded. Hash:', hash); // Debug message
+            console.log('Access Token:', accessToken); // Debug message
+            console.log('Refresh Token:', refreshToken); // Debug message
+
             if (accessToken) {
                 localStorage.setItem('spotify_access_token', accessToken);
+                console.log('Access token saved to localStorage'); // Debug message
             }
             if (refreshToken) {
                 localStorage.setItem('spotify_refresh_token', refreshToken);
+                console.log('Refresh token saved to localStorage'); // Debug message
             }
 
-            // Chama as funções para buscar informações do artista e playlists do usuário se o token estiver presente
             if (accessToken) {
                 buscarInformacoesDoArtistaComToken(accessToken);
                 buscarPlaylistsDoUsuarioComToken(accessToken);
@@ -250,110 +260,100 @@ Jorge LA Matheus
             const audioListElement = document.getElementById("audioList");
             audioListElement.innerHTML = "";
             audioList.forEach((audio, index) => {
-                const li = document.createElement("li");
+                            const li = document.createElement("li");
                 li.innerHTML = `
-                    <input type="text" value="${audio.name}" onchange="renameAudio(${index}, this.value)">
-                    <div>
-                        <button onclick="playAudio(${index})"> ->Toca</button>
-                        <button onclick="removeAudio(${index})">Apaga X</button>
-                    </div>
+                    <span>${audio.name}</span>
+                    <button onclick="playAudio(${index})">Play</button>
+                    <button onclick="removeAudio(${index})">Remove</button>
                 `;
                 audioListElement.appendChild(li);
             });
         }
 
-        function renameAudio(index, newName) {
-            audioList[index].name = newName;
+        function playAudio(index) {
+            const audio = new Audio(audioList[index].url);
+            audio.play();
+            currentAudioIndex = index;
+            startTimeline();
         }
 
-        function playAudio(index) {
-            if (index >= 0 && index < audioList.length) {
-                currentAudioIndex = index;
-                const audioElement = new Audio(audioList[index].url);
-                audioElement.play();
-                nowPlaying.innerHTML = `Tocando: ${audioList[index].name}`;
-                clearInterval(timelineInterval);
-                timelineInterval = setInterval(() => {
-                    nowPlaying.innerHTML = `Tocando: ${audioList[index].name} (${Math.floor(audioElement.currentTime)}/${Math.floor(audioElement.duration)}s)`;
-                }, 1000);
-                audioElement.onended = function() {
-                    clearInterval(timelineInterval);
-                    nowPlaying.innerHTML = "Reprodução terminada";
-                };
-            }
+        function startTimeline() {
+            const audio = new Audio(audioList[currentAudioIndex].url);
+            const duration = audio.duration;
+            const timeline = document.getElementById("timeline");
+            timeline.value = 0;
+            clearInterval(timelineInterval);
+            timelineInterval = setInterval(() => {
+                timeline.value = audio.currentTime / duration * 100;
+            }, 1000);
+        }
+
+        function stopTimeline() {
+            clearInterval(timelineInterval);
         }
 
         function removeAudio(index) {
+            if (currentAudioIndex === index) {
+                stopTimeline();
+                currentAudioIndex = -1;
+            }
             audioList.splice(index, 1);
             displayAudioList();
         }
 
         function savePlaylist() {
             const playlistName = document.getElementById("playlistName").value;
-            if (playlistName) {
-                playlists[playlistName] = audioList;
-                exportToJsonFile(playlists);
-                loadPlaylists();
-                document.getElementById("saveStatus").innerHTML = "Playlist salva com sucesso!";
-            } catch (error) {
-                saveStatus.innerHTML = "Erro ao salvar playlist";
-            }
-        }
-
-        function exportToJsonFile(jsonData) {
-            const dataStr = JSON.stringify(jsonData);
-            const dataUri = "data:application/json;charset=utf-8," + encodeURIComponent(dataStr);
-            const exportFileDefaultName = "playlists.json";
-            const linkElement = document.createElement("a");
-            linkElement.setAttribute("href", dataUri);
-            linkElement.setAttribute("download", exportFileDefaultName);
-            linkElement.click();
+            playlists[playlistName] = audioList.map(audio => audio.url);
+            displayPlaylists();
+            document.getElementById("playlistName").value = "";
         }
 
         function loadPlaylists() {
             const playlistListElement = document.getElementById("playlistList");
             playlistListElement.innerHTML = "";
-            for (const playlistName in playlists) {
+            Object.keys(playlists).forEach(playlistName => {
                 const li = document.createElement("li");
                 li.innerHTML = `
                     <span>${playlistName}</span>
-                    <button onclick="loadPlaylist('${playlistName}')">Carregar</button>
+                    <button onclick="playPlaylist('${playlistName}')">Play</button>
+                    <button onclick="removePlaylist('${playlistName}')">Remove</button>
                 `;
                 playlistListElement.appendChild(li);
-            }
+            });
         }
 
-        function loadPlaylist(playlistName) {
-            audioList = playlists[playlistName] || [];
+        function playPlaylist(playlistName) {
+            audioList = playlists[playlistName].map(url => ({ url: url, name: url.split("/").pop() }));
             displayAudioList();
+            playAudio(0);
+        }
+
+        function removePlaylist(playlistName) {
+            delete playlists[playlistName];
+            displayPlaylists();
+        }
+
+        function displayPlaylists() {
+            loadPlaylists();
         }
 
         function importPlaylistsFromFile(event) {
             const file = event.target.files[0];
-            if (!file) {
-                return;
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const importedPlaylists = JSON.parse(e.target.result);
+                    Object.assign(playlists, importedPlaylists);
+                    displayPlaylists();
+                };
+                reader.readAsText(file);
             }
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    playlists = JSON.parse(e.target.result);
-                    loadPlaylists();
-                } catch (error) {
-                    alert("Erro ao importar playlists: " + error);
-                }
-            };
-            reader.readAsText(file);
         }
 
         function removeCurrentPlaylist() {
-            const playlistName = document.getElementById("playlistName").value;
-            if (playlists.hasOwnProperty(playlistName)) {
-                delete playlists[playlistName];
-                loadPlaylists();
-                alert(`Playlist '${playlistName}' removida com sucesso.`);
-            } else {
-                alert(`Playlist '${playlistName}' não encontrada.`);
-            }
+            audioList = [];
+            currentAudioIndex = -1;
+            displayAudioList();
         }
     </script>
 </body>
