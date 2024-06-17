@@ -6,7 +6,7 @@ app = Flask(__name__)
 # Configurações do Spotify
 CLIENT_ID = '1cb62fe9ab624385b5756ecf29e3edbf'
 CLIENT_SECRET = '760dad93480d4cbb971e1ea1fb5f5821'
-REDIRECT_URI = 'https://jorgedersumatheus.github.io/home/BLACKVOX_PlayPremium.html'
+REDIRECT_URI = 'https://jorgedersumatheus.github.io/home/BLACKVOX_PlayPremium.html/callback'
 
 @app.route('/')
 def home():
