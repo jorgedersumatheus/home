@@ -80,35 +80,26 @@
  
 
     <div>
-        <h2>Criar Playlist</h2>
+        <h3>Criar Playlist</h3>
         <input type="file" id="audioInput">
         <button onclick="addAudio()">Adicionar</button>
     </div>
 
-   
-
     <div>
-        <h2>Buscar Playlists do Usuário</h2>
-        <input type="text" id="spotifyUserId" placeholder="ID do Usuário Spotify">
-        <button onclick="buscarPlaylistsDoUsuario()">Buscar</button>
-        <ul id="spotifyPlaylists"></ul>
-    </div>
-
-    <div>
-        <h2>Salvar Playlist</h2>
+        <h3>Salvar Playlist</h3>
         <input type="text" id="playlistName" placeholder="Nome da Playlist">
         <button onclick="savePlaylist()">Salvar</button>
         <div id="saveStatus"></div>
     </div>
 
     <div>
-        <h2>Carregar Playlists</h2>
+        <h3>Carregar Playlists</h3>
         <button onclick="loadPlaylists()">Carregar</button>
         <ul id="playlistList"></ul>
     </div>
 
     <div>
-        <h2>Importar Playlists de Arquivo</h2>
+        <h3>Importar Playlists de Arquivo</h3>
         <input type="file" id="playlistFileInput" onchange="importPlaylistsFromFile(event)">
         <div id="loadingIndicator" style="display:none;">Carregando...</div>
     </div>
@@ -117,20 +108,29 @@
         <button onclick="removeCurrentPlaylist()">Remover Playlist Atual</button>
     </div>
 
+<div>
+        <h3>Buscar Playlists do Usuário</h3>
+        <input type="text" id="spotifyUserId" placeholder="ID do Usuário Spotify">
+        <button onclick="buscarPlaylistsDoUsuario()">Buscar</button>
+        <ul id="spotifyPlaylists"></ul>
+    </div>
+    
+
      <div>
-        <h2>Buscar Informações do Artista</h2>
+        <h3>Buscar Informações do Artista</h3>
         <input type="text" id="artistName" placeholder="Nome do Artista">
         <button onclick="buscarInformacoesDoArtista()">Buscar</button>
         <div id="artistInfo"></div>
     </div>
 
     <div>
-        <h2>README.md</h2>
+        <h4>README.md</h4>
         <pre>
 # BLACKVOX Playlists
 
 ## Descrição
-O aplicativo BLACKVOX permite criar, salvar, carregar e gerenciar playlists de áudio. Também é possível buscar informações de artistas e playlists de usuários no Spotify.
+O aplicativo BLACKVOX permite criar, salvar, carregar e gerenciar playlists de áudio.<br> 
+            Também é possível buscar informações de artistas e playlists de usuários no Spotify.
 
 ## Funcionalidades
 - Login com Spotify
@@ -157,7 +157,10 @@ O aplicativo BLACKVOX permite criar, salvar, carregar e gerenciar playlists de �
 - Spotify API
 
 ## Autor
-Jorge LA Matheus
+Jorge Luis Aparecido Matheus
+            @jorgelamatheus
+            São Paulo - SP - Brasil
+            2024
         </pre>
     </div>
 
