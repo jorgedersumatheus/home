@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BLACKVOX Playlists</title>
+    <title>BLACKVOX Playlists - Versão Atualizada</title>
     <style>
         body {
             background-color: black;
@@ -12,8 +12,10 @@
             margin: 0;
             padding: 20px;
         }
-        h1 {
+        h3 {
             color: #ffffff;
+            border: 2px solid white;
+            padding: 10px;
         }
         button {
             background-color: white;
@@ -66,10 +68,10 @@
     </style>
 </head>
 <body>
-    <h3>BLACKVOX Playlists</h3>
+    <h3>BLACKVOX Playlists - Versão Atualizada</h3>
     
     <input type="file" id="audioInput" accept="audio/*">
-    <button onclick="addAudio()">Baixar Áudio</button>
+    <button onclick="addAudio()" style="background-color: #4CAF50;">Baixar Áudio</button>
     
     <input type="text" id="playlistName" placeholder="Nome da Playlist">
     <ul id="audioList"></ul>
@@ -263,6 +265,7 @@ São Paulo - SP - Brasil
     
 </body>
 </html>
+
 
 
 
