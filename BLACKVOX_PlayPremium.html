@@ -66,18 +66,17 @@
     </style>
 </head>
 <body>
-   <center> <h1><b></b>BLACKvox Playlists<b></b></h1></center>
+    <center><h1><b>BLACKVOX Playlists</b></h1></center>
 
- <button id="login-button">Login com Spotify</button>
+    <button id="login-button">Login com Spotify</button>
     <div id="user-info"></div>
     <div id="playlists"></div>
+
     <div>
         <input type="text" id="search-query" placeholder="Buscar faixas no Spotify">
         <button id="search-button">Buscar</button>
     </div>
     <div id="search-results"></div>
-
- 
 
     <div>
         <h3>Criar Playlist</h3>
@@ -108,15 +107,14 @@
         <button onclick="removeCurrentPlaylist()">Remover Playlist Atual</button>
     </div>
 
-<div>
+    <div>
         <h3>Buscar Playlists do Usuário</h3>
         <input type="text" id="spotifyUserId" placeholder="ID do Usuário Spotify">
         <button onclick="buscarPlaylistsDoUsuario()">Buscar</button>
         <ul id="spotifyPlaylists"></ul>
     </div>
-    
 
-     <div>
+    <div>
         <h3>Buscar Informações do Artista</h3>
         <input type="text" id="artistName" placeholder="Nome do Artista">
         <button onclick="buscarInformacoesDoArtista()">Buscar</button>
@@ -163,7 +161,6 @@ São Paulo - SP - Brasil
 2024
         </pre>
     </div>
-
 
     <script>
         const clientId = '1cb62fe9ab624385b5756ecf29e3edbf';
@@ -229,80 +226,6 @@ São Paulo - SP - Brasil
                 console.error('Erro ao buscar faixas:', response.statusText);
             }
         }
-    </script>
-
-    <script>
-        const clientId = '1cb62fe9ab624385b5756ecf29e3edbf';
-        const redirectUri = 'https://jorgedersumatheus.github.io/home/BLACKVOX_PlayPremium.html';
-        const scopes = 'user-library-read playlist-read-private';
-
-        function loginSpotify() {
-            const authUrl = `https://accounts.spotify.com/authorize?response_type=token&client_id=${clientId}&scope=${scopes}&redirect_uri=${redirectUri}`;
-            window.location.href = authUrl;
-        }
-
-        window.onload = function() {
-            const params = new URLSearchParams(window.location.hash.substring(1));
-            const accessToken = params.get('access_token');
-            const refreshToken = params.get('refresh_token');
-
-            if (accessToken) {
-                localStorage.setItem('spotify_access_token', accessToken);
-            }
-            if (refreshToken) {
-                localStorage.setItem('spotify_refresh_token', refreshToken);
-            }
-
-            // Chama as funções para buscar informações do artista e playlists do usuário se o token estiver presente
-            if (accessToken) {
-                buscarInformacoesDoArtistaComToken(accessToken);
-                buscarPlaylistsDoUsuarioComToken(accessToken);
-            }
-        };
-
-        function buscarInformacoesDoArtista() {
-            const accessToken = localStorage.getItem('spotify_access_token');
-            const nomeArtista = document.getElementById('artistName').value;
-
-            fetch(`https://api.spotify.com/v1/search?q=${nomeArtista}&type=artist`, {
-                headers: {
-                    'Authorization': 'Bearer ' + accessToken
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                const artistInfoElement = document.getElementById('artistInfo');
-                artistInfoElement.innerHTML = `
-                    <h2>${data.artists.items[0].name}</h2>
-                    <p>Gêneros: ${data.artists.items[0].genres.join(", ")}</p>
-                    <p>Seguidores: ${data.artists.items[0].followers.total}</p>
-                    <p>Popularidade: ${data.artists.items[0].popularity}</p>
-                `;
-            })
-            .catch(error => console.error("Erro ao obter informações do artista:", error));
-        }
-
-        function buscarPlaylistsDoUsuario() {
-            const accessToken = localStorage.getItem('spotify_access_token');
-            const userId = document.getElementById('spotifyUserId').value;
-
-            fetch(`https://api.spotify.com/v1/users/${userId}/playlists`, {
-                headers: {
-                    'Authorization': 'Bearer ' + accessToken
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                const spotifyPlaylistsElement = document.getElementById('spotifyPlaylists');
-                spotifyPlaylistsElement.innerHTML = data.items.map(item => `
-                    <div>
-                        <h3>${item.name}</h3>
-                        <p>${item.description}</p>
-                    </div>
-                `).join("");
-            })
-            .catch(error => console.error("Erro ao obter playlists do Spotify:", error));
-        }
 
         let audioList = [];
         let playlists = {};
@@ -332,7 +255,7 @@ São Paulo - SP - Brasil
                 li.innerHTML = `
                     <input type="text" value="${audio.name}" onchange="renameAudio(${index}, this.value)">
                     <div>
-                        <button onclick="playAudio(${index})"> ->Toca</button>
+                        <button onclick="playAudio(${index})">Toca -></button>
                         <button onclick="removeAudio(${index})">Apaga X</button>
                     </div>
                 `;
@@ -344,97 +267,140 @@ São Paulo - SP - Brasil
             audioList[index].name = newName;
         }
 
-        function playAudio(index) {
-            if (index >= 0 && index < audioList.length) {
-                currentAudioIndex = index;
-                const audioElement = new Audio(audioList[index].url);
-                audioElement.play();
-                nowPlaying.innerHTML = `Tocando: ${audioList[index].name}`;
-                clearInterval(timelineInterval);
-                timelineInterval = setInterval(() => {
-                    nowPlaying.innerHTML = `Tocando: ${audioList[index].name} (${Math.floor(audioElement.currentTime)}/${Math.floor(audioElement.duration)}s)`;
-                }, 1000);
-                audioElement.onended = function() {
-                    clearInterval(timelineInterval);
-                    nowPlaying.innerHTML = "Reprodução terminada";
-                };
-            }
-        }
-
         function removeAudio(index) {
             audioList.splice(index, 1);
             displayAudioList();
         }
 
-        function savePlaylist() {
-            const playlistName = document.getElementById("playlistName").value;
-            if (playlistName) {
-                playlists[playlistName] = audioList;
-                exportToJsonFile(playlists);
-                loadPlaylists();
-                document.getElementById("saveStatus").innerHTML = "Playlist salva com sucesso!";
-            } catch (error) {
-                saveStatus.innerHTML = "Erro ao salvar playlist";
+        function playAudio(index) {
+            if (index >= 0 && index < audioList.length) {
+                currentAudioIndex = index;
+                const audio = audioList[index];
+                nowPlaying.src = audio.url;
+                nowPlaying.play();
+                updateTimeline();
             }
         }
 
-        function exportToJsonFile(jsonData) {
-            const dataStr = JSON.stringify(jsonData);
-            const dataUri = "data:application/json;charset=utf-8," + encodeURIComponent(dataStr);
-            const exportFileDefaultName = "playlists.json";
-            const linkElement = document.createElement("a");
-            linkElement.setAttribute("href", dataUri);
-            linkElement.setAttribute("download", exportFileDefaultName);
-            linkElement.click();
+        nowPlaying.addEventListener('ended', () => {
+            currentAudioIndex++;
+            if (currentAudioIndex < audioList.length) {
+                playAudio(currentAudioIndex);
+            } else {
+                currentAudioIndex = -1;
+            }
+        });
+
+        function updateTimeline() {
+            if (timelineInterval) {
+                clearInterval(timelineInterval);
+            }
+            timelineInterval = setInterval(() => {
+                const currentTime = nowPlaying.currentTime;
+                const duration = nowPlaying.duration;
+                const progress = (currentTime / duration) * 100;
+                document.getElementById("timeline").value = progress;
+            }, 1000);
         }
 
-        function loadPlaylists() {
+        async function savePlaylist() {
+            const playlistName = document.getElementById("playlistName").value;
+            if (playlistName && audioList.length > 0) {
+                playlists[playlistName] = audioList;
+                updatePlaylistList();
+                document.getElementById("saveStatus").innerText = "Playlist salva com sucesso!";
+                setTimeout(() => {
+                    document.getElementById("saveStatus").innerText = "";
+                }, 2000);
+            }
+        }
+
+        async function loadPlaylists() {
             const playlistListElement = document.getElementById("playlistList");
             playlistListElement.innerHTML = "";
-            for (const playlistName in playlists) {
+            Object.keys(playlists).forEach((playlistName) => {
                 const li = document.createElement("li");
                 li.innerHTML = `
-                    <span>${playlistName}</span>
-                    <button onclick="loadPlaylist('${playlistName}')">Carregar</button>
+                    ${playlistName}
+                    <div>
+                        <button onclick="loadPlaylist('${playlistName}')">Carregar</button>
+                        <button onclick="deletePlaylist('${playlistName}')">Deletar</button>
+                    </div>
                 `;
                 playlistListElement.appendChild(li);
-            }
+            });
         }
 
         function loadPlaylist(playlistName) {
-            audioList = playlists[playlistName] || [];
+            if (playlists[playlistName]) {
+                audioList = playlists[playlistName];
+                displayAudioList();
+            }
+        }
+
+        function deletePlaylist(playlistName) {
+            delete playlists[playlistName];
+            loadPlaylists();
+        }
+
+        function removeCurrentPlaylist() {
+            audioList = [];
             displayAudioList();
         }
 
         function importPlaylistsFromFile(event) {
             const file = event.target.files[0];
-            if (!file) {
-                return;
-            }
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
                     playlists = JSON.parse(e.target.result);
                     loadPlaylists();
-                } catch (error) {
-                    alert("Erro ao importar playlists: " + error);
-                }
-            };
-            reader.readAsText(file);
+                };
+                reader.readAsText(file);
+            }
         }
 
-        function removeCurrentPlaylist() {
-            const playlistName = document.getElementById("playlistName").value;
-            if (playlists.hasOwnProperty(playlistName)) {
-                delete playlists[playlistName];
-                loadPlaylists();
-                alert(`Playlist '${playlistName}' removida com sucesso.`);
-            } else {
-                alert(`Playlist '${playlistName}' não encontrada.`);
+        function buscarPlaylistsDoUsuario() {
+            const userId = document.getElementById('spotifyUserId').value;
+            if (accessToken && userId) {
+                fetch(`/get_spotify_playlists?access_token=${accessToken}&user_id=${encodeURIComponent(userId)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const spotifyPlaylists = document.getElementById('spotifyPlaylists');
+                        spotifyPlaylists.innerHTML = '';
+                        data.items.forEach(playlist => {
+                            const li = document.createElement('li');
+                            li.innerText = playlist.name;
+                            spotifyPlaylists.appendChild(li);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Erro ao buscar playlists do usuário:', error);
+                    });
+            }
+        }
+
+        function buscarInformacoesDoArtista() {
+            const artistName = document.getElementById('artistName').value;
+            if (accessToken && artistName) {
+                fetch(`/get_artist_info?access_token=${accessToken}&artist_name=${encodeURIComponent(artistName)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const artistInfo = document.getElementById('artistInfo');
+                        artistInfo.innerHTML = `
+                            <p>Nome: ${data.name}</p>
+                            <p>Gêneros: ${data.genres.join(', ')}</p>
+                            <p>Popularidade: ${data.popularity}</p>
+                        `;
+                    })
+                    .catch(error => {
+                        console.error('Erro ao buscar informações do artista:', error);
+                    });
             }
         }
     </script>
 </body>
 </html>
+
 
 
