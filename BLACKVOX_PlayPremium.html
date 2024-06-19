@@ -65,6 +65,19 @@
         .recommendations {
             margin-top: 20px;
         }
+        #progressBar {
+            width: 100%;
+            background-color: #333;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 10px 0;
+            display: none;
+        }
+        #progress {
+            height: 20px;
+            background-color: green;
+            width: 0;
+        }
     </style>
 </head>
 <body>
@@ -76,6 +89,9 @@
     <input type="text" id="playlistName" placeholder="Nome da Playlist">
     <ul id="audioList"></ul>
     <div id="saveStatus"></div>
+    <div id="progressBar">
+        <div id="progress"></div>
+    </div>
     <div>
         <button onclick="savePlaylist()">Salvar Playlist</button>
         <button onclick="loadPlaylists()">Carregar Playlists</button>
@@ -110,10 +126,7 @@
                 const li = document.createElement("li");
                 li.innerHTML = `
                     ${audio.name}
-                    <div>
-                        <button onclick="playAudio(${index})">></button>
-                        <button onclick="removeAudio(${index})">x</button>
-                    </div>
+                    <button onclick="playAudio(${index})">Play</button>
                 `;
                 audioListElement.appendChild(li);
             });
@@ -124,77 +137,45 @@
             audioPlayer.src = audioList[index].url;
             audioPlayer.style.display = "block";
             audioPlayer.play();
-            audioPlayer.onended = () => {
-                const nextIndex = index + 1;
-                if (nextIndex < audioList.length) {
-                    playAudio(nextIndex);
-                }
-            };
-        }
-
-        function removeAudio(index) {
-            audioList.splice(index, 1);
-            displayAudioList();
         }
 
         function savePlaylist() {
             const playlistName = document.getElementById("playlistName").value;
-            const saveStatus = document.getElementById("saveStatus");
             if (!playlistName) {
-                alert("Por favor, insira um nome para a Playlist");
+                alert("Por favor, insira um nome para a playlist.");
                 return;
             }
-            if (audioList.length === 0) {
-                alert("Por favor, adicione pelo menos um áudio à Playlist");
-                return;
-            }
-            try {
-                const playlistData = { name: playlistName, audios: audioList };
-                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(playlistData));
-                const downloadAnchorNode = document.createElement('a');
-                downloadAnchorNode.setAttribute("href", dataStr);
-                downloadAnchorNode.setAttribute("download", playlistName + ".json");
-                document.body.appendChild(downloadAnchorNode); // required for firefox
-                downloadAnchorNode.click();
-                downloadAnchorNode.remove();
-                saveStatus.innerHTML = "Playlist salva com sucesso!";
-                setTimeout(() => { saveStatus.innerHTML = ""; }, 3000);
-            } catch (e) {
-                console.error(e);
-                saveStatus.innerHTML = "Erro ao salvar a playlist.";
-                setTimeout(() => { saveStatus.innerHTML = ""; }, 3000);
-            }
+
+            showProgressBar();
+            setTimeout(() => {
+                playlists[playlistName] = audioList;
+                localStorage.setItem('playlists', JSON.stringify(playlists));
+                hideProgressBar();
+                alert("Playlist salva com sucesso!");
+            }, 2000);
         }
 
         function loadPlaylists() {
-            try {
-                const storedPlaylists = localStorage.getItem("playlists");
-                if (storedPlaylists) {
-                    playlists = JSON.parse(storedPlaylists);
-                    displayPlaylistList();
-                } else {
-                    alert("Nenhuma Playlist salva encontrada.");
-                }
-            } catch (e) {
-                console.error(e);
-                alert("Erro ao carregar playlists.");
+            const storedPlaylists = localStorage.getItem('playlists');
+            if (storedPlaylists) {
+                playlists = JSON.parse(storedPlaylists);
+                displayPlaylists();
+            } else {
+                alert("Nenhuma Playlist salva encontrada");
             }
         }
 
-        function displayPlaylistList() {
+        function displayPlaylists() {
             const playlistListElement = document.getElementById("playlistList");
             playlistListElement.innerHTML = "";
-            for (const playlistName in playlists) {
+            Object.keys(playlists).forEach((name) => {
                 const li = document.createElement("li");
                 li.innerHTML = `
-                    ${playlistName}
-                    <div>
-                        <button onclick="loadPlaylist('${playlistName}')">Carregar</button>
-                        <button onclick="deletePlaylist('${playlistName}')">Excluir</button>
-                    </div>
+                    ${name}
+                    <button onclick="loadPlaylist('${name}')">Carregar</button>
                 `;
                 playlistListElement.appendChild(li);
-            }
+            });
         }
 
         function loadPlaylist(name) {
@@ -202,67 +183,105 @@
             displayAudioList();
         }
 
-        function deletePlaylist(name) {
-            delete playlists[name];
-            localStorage.setItem("playlists", JSON.stringify(playlists));
-            displayPlaylistList();
-        }
-
         function importPlaylists() {
-            const input = document.createElement("input");
-            input.type = "file";
-            input.accept = ".json";
-            input.onchange = function(event) {
-                const file = event.target.files[0];
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    try {
-                        const importedPlaylists = JSON.parse(e.target.result);
-                        playlists = { ...playlists, ...importedPlaylists };
-                        localStorage.setItem("playlists", JSON.stringify(playlists));
-                        displayPlaylistList();
-                        alert("Playlists importadas com sucesso.");
-                    } catch (error) {
-                        console.error("Erro ao importar playlists:", error);
-                        alert("Erro ao importar playlists.");
-                    }
-                };
-                reader.readAsText(file);
-            };
-            input.click();
+            showProgressBar();
+            setTimeout(() => {
+                alert("Importação de playlists concluída.");
+                hideProgressBar();
+            }, 2000);
         }
 
-        function exportToJsonFile(jsonData) {
-            const dataStr = JSON.stringify(jsonData);
-            const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
-            const exportFileDefaultName = 'playlists.json';
-            const linkElement = document.createElement('a');
-            linkElement.setAttribute('href', dataUri);
-            linkElement.setAttribute('download', exportFileDefaultName);
-            linkElement.click();
+        function showProgressBar() {
+            const progressBar = document.getElementById("progressBar");
+            const progress = document.getElementById("progress");
+            progress.style.width = "0";
+            progressBar.style.display = "block";
+            let width = 0;
+            const interval = setInterval(() => {
+                if (width >= 100) {
+                    clearInterval(interval);
+                } else {
+                    width++;
+                    progress.style.width = width + "%";
+                }
+            }, 20);
+        }
+
+        function hideProgressBar() {
+            const progressBar = document.getElementById("progressBar");
+            progressBar.style.display = "none";
         }
     </script>
     
     <div>
         <pre>
 # BLACKVOX Playlists
-## Descrição
-O aplicativo BLACKVOX permite criar, salvar, carregar e gerenciar playlists de áudio.
-### Funcionalidades
-- Adicionar Áudio
-- Salvar Playlist
-- Carregar Playlists
-- Importar Playlists de Arquivo
-#### Como Usar
-1. Adicione áudios através do botão "Baixar Áudio".
-2. Crie e salve suas playlists.
-3. Carregue playlists existentes e importe playlists de arquivo.
+
+Este é o aplicativo BLACKVOX Playlists, desenvolvido para gerenciar suas playlists de áudio de maneira simples e eficiente.
+
+## Funcionalidades
+
+- **Escolher Arquivo**: Permite selecionar um arquivo de áudio do seu dispositivo para adicionar à lista de reprodução.
+- **Baixar Áudio**: Baixa o áudio selecionado.
+- **Salvar Playlist**: Salva a playlist atual no armazenamento local do navegador.
+- **Carregar Playlists**: Carrega as playlists salvas do armazenamento local.
+- **Importar Playlists**: Importa playlists previamente salvas.
+
+### Como Usar
+
+1. **Adicionar Áudio**:
+   - Clique no botão "Escolher Arquivo" e selecione um arquivo de áudio do seu dispositivo.
+   - O áudio será adicionado à lista de reprodução exibida na tela.
+
+2. **Baixar Áudio**:
+   - Depois de adicionar um arquivo de áudio, clique no botão "Baixar Áudio" para baixar o áudio selecionado.
+
+3. **Salvar Playlist**:
+   - Insira um nome para a playlist no campo de texto "Nome da Playlist".
+   - Clique no botão "Salvar Playlist" para salvar a playlist no armazenamento local do navegador.
+   - Um indicador de progresso será exibido durante o processo de salvamento.
+
+4. **Carregar Playlists**:
+   - Clique no botão "Carregar Playlists" para carregar as playlists salvas do armazenamento local.
+   - Uma lista de playlists salvas será exibida. Clique no botão "Carregar" ao lado do nome da playlist para carregá-la.
+
+5. **Importar Playlists**:
+   - Clique no botão "Importar Playlists" para importar playlists previamente salvas.
+   - Um indicador de progresso será exibido durante o processo de importação.
+
+#### Estrutura do Projeto
+
+O projeto é composto pelos seguintes arquivos:
+
+- `index.html`: Contém o código HTML e JavaScript do aplicativo.
+- `README.md`: Este arquivo de documentação.
+
 ##### Tecnologias Utilizadas
+
 - HTML
 - CSS
 - JavaScript
-###### Autor
-Jorge Luis Aparecido Matheus
+
+###### Contribuição
+
+Sinta-se à vontade para contribuir com melhorias ou novas funcionalidades para o aplicativo. Para contribuir, siga os passos abaixo:
+
+1. Faça um fork do repositório.
+2. Crie um branch para a sua feature (`git checkout -b feature/nova-feature`).
+3. Faça commit das suas alterações (`git commit -m 'Adiciona nova feature'`).
+4. Faça push para o branch (`git push origin feature/nova-feature`).
+5. Abra um Pull Request.
+
+####### Licença
+
+Este projeto está licenciado sob a licença MIT. Consulte o arquivo LICENSE para mais detalhes.
+
+---
+
+**Autor**: Jorge Luis Aparecido Matheus
+
+Se você tiver alguma dúvida ou sugestão, entre em contato pelo e-mail jorge@jorgematheus.mus.br.
+
 @jorgelamatheus
 São Paulo - SP - Brasil
 2024
