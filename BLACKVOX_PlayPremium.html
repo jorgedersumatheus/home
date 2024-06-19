@@ -149,13 +149,19 @@
                 return;
             }
             try {
-                playlists[playlistName] = audioList;
-                localStorage.setItem("playlists", JSON.stringify(playlists));
+                const playlistData = { name: playlistName, audios: audioList };
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(playlistData));
+                const downloadAnchorNode = document.createElement('a');
+                downloadAnchorNode.setAttribute("href", dataStr);
+                downloadAnchorNode.setAttribute("download", playlistName + ".json");
+                document.body.appendChild(downloadAnchorNode); // required for firefox
+                downloadAnchorNode.click();
+                downloadAnchorNode.remove();
                 saveStatus.innerHTML = "Playlist salva com sucesso!";
                 setTimeout(() => { saveStatus.innerHTML = ""; }, 3000);
             } catch (e) {
                 console.error(e);
-                saveStatus.innerHTML = "Erro ao salvar a playlist. O armazenamento local pode estar cheio.";
+                saveStatus.innerHTML = "Erro ao salvar a playlist.";
                 setTimeout(() => { saveStatus.innerHTML = ""; }, 3000);
             }
         }
@@ -265,6 +271,7 @@ São Paulo - SP - Brasil
     
 </body>
 </html>
+
 
 
 
