@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BLACKVOX Playlists - Versão Atualizada</title>
+    <title>BLACKVOX Playlists </title>
     <style>
         body {
             background-color: black;
@@ -81,10 +81,10 @@
     </style>
 </head>
 <body>
-    <h3>BLACKVOX Playlists - Versão Atualizada</h3>
+    <h3>BLACKVOX Playlists - Versão Atual</h3>
     
     <input type="file" id="audioInput" accept="audio/*">
-    <button onclick="addAudio()" style="background-color: red;">Baixar Áudio</button>
+    <button onclick="addAudio()" style="background-color: brown;">Baixar Áudio</button>
     
     <input type="text" id="playlistName" placeholder="Nome da Playlist">
     <ul id="audioList"></ul>
@@ -126,7 +126,10 @@
                 const li = document.createElement("li");
                 li.innerHTML = `
                     ${audio.name}
-                    <button onclick="playAudio(${index})">Play</button>
+                <div>
+                        <button onclick="playAudio(${index})">></button>
+                        <button onclick="removeAudio(${index})">x</button>
+                    </div>
                 `;
                 audioListElement.appendChild(li);
             });
@@ -137,10 +140,22 @@
             audioPlayer.src = audioList[index].url;
             audioPlayer.style.display = "block";
             audioPlayer.play();
+             audioPlayer.onended = () => {
+                const nextIndex = index + 1;
+                if (nextIndex < audioList.length) {
+                    playAudio(nextIndex);
+                }
+            };
+        }
+
+        function removeAudio(index) {
+            audioList.splice(index, 1);
+            displayAudioList();
         }
 
         function savePlaylist() {
             const playlistName = document.getElementById("playlistName").value;
+            const saveStatus = document.getElementById("saveStatus");
             if (!playlistName) {
                 alert("Por favor, insira um nome para a playlist.");
                 return;
