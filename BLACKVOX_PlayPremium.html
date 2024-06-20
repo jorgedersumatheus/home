@@ -86,18 +86,13 @@
     <input type="file" id="audioInput" accept="audio/*">
     <button onclick="addAudio()" style="background-color: brown;">Baixar Áudio</button>
     
-    <input type="text" id="playlistName" placeholder="Nome da Playlist">
+
     <ul id="audioList"></ul>
     <div id="saveStatus"></div>
     <div id="progressBar">
         <div id="progress"></div>
     </div>
-    <div>
-        <button onclick="savePlaylist()">Salvar Playlist</button>
-        <button onclick="loadPlaylists()">Carregar Playlists</button>
-        <button onclick="importPlaylists()">Importar Playlists</button>
-        <ul id="playlistList"></ul>
-    </div>
+ 
     
     <audio id="audioPlayer" controls style="display: none;"></audio>
     
@@ -238,9 +233,6 @@ Este é o aplicativo BLACKVOX Playlists, desenvolvido para gerenciar suas playli
 
 - **Escolher Arquivo**: Permite selecionar um arquivo de áudio do seu dispositivo para adicionar à lista de reprodução.
 - **Baixar Áudio**: Baixa o áudio selecionado.
-- **Salvar Playlist**: Salva a playlist atual no armazenamento local do navegador.
-- **Carregar Playlists**: Carrega as playlists salvas do armazenamento local.
-- **Importar Playlists**: Importa playlists previamente salvas.
 
 ### Como Usar
 
@@ -250,19 +242,6 @@ Este é o aplicativo BLACKVOX Playlists, desenvolvido para gerenciar suas playli
 
 2. **Baixar Áudio**:
    - Depois de adicionar um arquivo de áudio, clique no botão "Baixar Áudio" para baixar o áudio selecionado.
-
-3. **Salvar Playlist**:
-   - Insira um nome para a playlist no campo de texto "Nome da Playlist".
-   - Clique no botão "Salvar Playlist" para salvar a playlist no armazenamento local do navegador.
-   - Um indicador de progresso será exibido durante o processo de salvamento.
-
-4. **Carregar Playlists**:
-   - Clique no botão "Carregar Playlists" para carregar as playlists salvas do armazenamento local.
-   - Uma lista de playlists salvas será exibida. Clique no botão "Carregar" ao lado do nome da playlist para carregá-la.
-
-5. **Importar Playlists**:
-   - Clique no botão "Importar Playlists" para importar playlists previamente salvas.
-   - Um indicador de progresso será exibido durante o processo de importação.
 
 #### Estrutura do Projeto
 
@@ -276,6 +255,7 @@ O projeto é composto pelos seguintes arquivos:
 - HTML
 - CSS
 - JavaScript
+- ChatGPT 3.5 e 4o            
 
 ###### Contribuição
 
@@ -293,7 +273,7 @@ Este projeto está licenciado sob a licença MIT. Consulte o arquivo LICENSE par
 
 ---
 
-**Autor**: Jorge Luis Aparecido Matheus
+**Desenvolvedor**: Jorge Luis Aparecido Matheus
 
 Se você tiver alguma dúvida ou sugestão, entre em contato pelo e-mail jorge@jorgematheus.mus.br.
 
