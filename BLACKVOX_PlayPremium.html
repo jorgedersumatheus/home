@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BLACKVOX Playlists </title>
+    <title>BLACKVOX Playlists</title>
     <style>
         body {
             background-color: black;
@@ -78,24 +78,42 @@
             background-color: green;
             width: 0;
         }
+        .audio-playing {
+            color: lightgreen;
+        }
     </style>
 </head>
 <body>
-   <center><h1><b>BLACKVOX Playlists</b></h1></center> 
+    <center><h1><b>BLACKVOX Playlists</b></h1></center> 
     <center>
-    <input type="file" id="audioInput" accept="audio/*">
-    <button onclick="addAudio()" style="background-color: white;">Baixar Áudio</button>
+        <input type="file" id="audioInput" accept="audio/*"><br>
+        <button onclick="addAudio()" style="background-color: white;">Baixar Áudio</button>
     </center>
-
+    
     <ul id="audioList"></ul>
     <div id="saveStatus"></div>
     <div id="progressBar">
         <div id="progress"></div>
     </div>
- 
+    <center>
+    <audio id="audioPlayer" controls style="display: none;"></audio></center>
+    <div id="audioName" style="text-align: center; margin-top: 20px;"></div>
     
-    <audio id="audioPlayer" controls style="display: none;"></audio>
-    
+    <center>
+               
+        <a href="https://drive.google.com/file/d/17WkVQYucCdwfVIF_7-N9g4DX7RvqeeZ1/view?usp=drive_link" target="_blank"  
+		style="background-color: white; padding: 10px 20px; border-radius: 5px; display: i
+		nline-block; 
+		margin-top: 20px; color: black;">Baixar oCam para Gravar/Salvar a Playlist</a>
+    </center>
+	
+	<center>
+               
+        <a href="https://www.jorgematheus.mus.br/BLACKVOX_Gravador.html" target="_blank"  
+		style="background-color: white; padding: 10px 20px; border-radius: 5px; display: inline-block; 
+		margin-top: 20px; color: black;">Salvar Playlist com o Gravador de Áudio BLACKVOX Playlists</a>
+    </center>
+
     <script>
         let audioList = [];
         let playlists = {};
@@ -121,9 +139,11 @@
                 const li = document.createElement("li");
                 li.innerHTML = `
                     ${audio.name}
-                <div>
+                    <div>
                         <button onclick="playAudio(${index})">></button>
                         <button onclick="removeAudio(${index})">x</button>
+                        <button onclick="moveAudioUp(${index})">↑</button>
+                        <button onclick="moveAudioDown(${index})">↓</button>
                     </div>
                 `;
                 audioListElement.appendChild(li);
@@ -132,10 +152,12 @@
 
         function playAudio(index) {
             const audioPlayer = document.getElementById("audioPlayer");
+            const audioName = document.getElementById("audioName");
             audioPlayer.src = audioList[index].url;
             audioPlayer.style.display = "block";
+            audioName.textContent = `Tocando: ${audioList[index].name}`;
             audioPlayer.play();
-             audioPlayer.onended = () => {
+            audioPlayer.onended = () => {
                 const nextIndex = index + 1;
                 if (nextIndex < audioList.length) {
                     playAudio(nextIndex);
@@ -146,6 +168,20 @@
         function removeAudio(index) {
             audioList.splice(index, 1);
             displayAudioList();
+        }
+
+        function moveAudioUp(index) {
+            if (index > 0) {
+                [audioList[index], audioList[index - 1]] = [audioList[index - 1], audioList[index]];
+                displayAudioList();
+            }
+        }
+
+        function moveAudioDown(index) {
+            if (index < audioList.length - 1) {
+                [audioList[index], audioList[index + 1]] = [audioList[index + 1], audioList[index]];
+                displayAudioList();
+            }
         }
 
         function savePlaylist() {
@@ -165,7 +201,7 @@
             }, 2000);
         }
 
-        function loadPlaylists() {
+        function loadPlaylist() {
             const storedPlaylists = localStorage.getItem('playlists');
             if (storedPlaylists) {
                 playlists = JSON.parse(storedPlaylists);
@@ -176,29 +212,29 @@
         }
 
         function displayPlaylists() {
-            const playlistListElement = document.getElementById("playlistList");
+            const playlistListElement = document.getElementById("audioList");
             playlistListElement.innerHTML = "";
             Object.keys(playlists).forEach((name) => {
                 const li = document.createElement("li");
                 li.innerHTML = `
                     ${name}
-                    <button onclick="loadPlaylist('${name}')">Carregar</button>
+                    <button onclick="loadPlaylistByName('${name}')">Carregar</button>
                 `;
                 playlistListElement.appendChild(li);
             });
         }
 
-        function loadPlaylist(name) {
+        function loadPlaylistByName(name) {
             audioList = playlists[name];
             displayAudioList();
         }
 
-        function importPlaylists() {
-            showProgressBar();
-            setTimeout(() => {
-                alert("Importação de playlists concluída.");
-                hideProgressBar();
-            }, 2000);
+        function playPlaylist() {
+            if (audioList.length > 0) {
+                playAudio(0);
+            } else {
+                alert("Nenhuma música na playlist para tocar.");
+            }
         }
 
         function showProgressBar() {
@@ -221,9 +257,26 @@
             const progressBar = document.getElementById("progressBar");
             progressBar.style.display = "none";
         }
+   
+        function chooseFile() {
+            // Função para escolher arquivo
+            alert('Escolher Arquivo clicado');
+        }
+
+        function downloadAudio() {
+            // Função para baixar áudio
+            alert('Baixar Áudio clicado');
+        }
+
+        function recordPlaylist() {
+            // Função para gravar/salvar playlist
+            alert('Gravar/Salvar Playlist clicado');
+        }
     </script>
+	
+	
     
-    <div>
+   <div>
         <pre>
 # BLACKVOX Playlists
 
@@ -233,6 +286,7 @@ Este é o aplicativo BLACKVOX Playlists, desenvolvido para gerenciar suas playli
 
 - **Escolher Arquivo**: Permite selecionar um arquivo de áudio do seu dispositivo para adicionar à lista de reprodução.
 - **Baixar Áudio**: Baixa o áudio selecionado.
+- **Baixar oCam para Gravar/Salvar a Playlist
 
 ### Como Usar
 
@@ -242,6 +296,7 @@ Este é o aplicativo BLACKVOX Playlists, desenvolvido para gerenciar suas playli
 
 2. **Baixar Áudio**:
    - Depois de adicionar um arquivo de áudio, clique no botão "Baixar Áudio" para baixar o áudio selecionado.
+   - Usar a sua conta no Google, para acessar o Google Drive e fazer o download do oCAM, um gravador de Áudio interno poderoso.
 
 #### Estrutura do Projeto
 
@@ -255,7 +310,7 @@ O projeto é composto pelos seguintes arquivos:
 - HTML
 - CSS
 - JavaScript
-- ChatGPT 3.5 e 4o            
+- ChatGPt 4o para orientação e suporte            
 
 ###### Contribuição
 
@@ -275,9 +330,11 @@ Este projeto está licenciado sob a licença MIT. Consulte o arquivo LICENSE par
 
 **Criador e Desenvolvedor**: Jorge Luis Aparecido Matheus
 
-Se você tiver alguma dúvida ou sugestão, entre em contato pelo e-mail: <p><a href="BLACKVOX_Empresa.html"><h1><b>jorge@jorgematheus.mus.br</b></h1></a></p>
+Se você tiver alguma dúvida ou sugestão, entre em contato pelo e-mail: 
 
-           <center><img src="BlackvoxPlay.jpg" width="180" height="200"><img src="jorlam.jpg" width="180" height="200"><img src="BlackvoxPlay.jpg" width="180" height="200"><br><br></center>
+           <p><center><a href="BLACKVOX_Empresa.html"><h1><i>jorge@jorgematheus.mus.br</i></h1></a></center></p>
+
+           <center><img src="jorlam.jpg" width="180" height="200"><img src="BlackvoxPlay.jpg" width="180" height="200"><img src="fetodosantodia.jpg" width="180" height="200"><br><br></center>
 <center>
 @jorgelamatheus
 Bixiga Bela Vista São Paulo  SP  Brasil Terra Nuvem Ciberespaço Infoesfera
