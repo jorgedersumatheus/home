@@ -22,7 +22,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            flex-wrap: wrap; /* Adicionado para permitir flexibilidade */
+            flex-wrap: wrap;
         }
         .track button {
             margin: 5px;
@@ -71,32 +71,6 @@
             color: #aaa;
             margin-left: 10px;
         }
-        .play-button {
-            padding: 10px 20px;
-            font-size: 16px;
-            margin: 5px;
-            border: none;
-            background-color: #fff;
-            color: #222;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        .play-button:hover {
-            background-color: #ddd;
-        }
-        .save-button {
-            padding: 10px 20px;
-            font-size: 16px;
-            margin: 5px;
-            border: none;
-            background-color: #fff;
-            color: #222;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        .save-button:hover {
-            background-color: #ddd;
-        }
     </style>
 </head>
 <body>
@@ -129,14 +103,12 @@
             deleteButton.innerText = 'Apagar';
             let playButton = document.createElement('button');
             playButton.innerText = 'Reproduzir';
-            playButton.className = 'play-button';
             let pauseButton = document.createElement('button');
             pauseButton.innerText = 'Pausar';
             let stopPlaybackButton = document.createElement('button');
             stopPlaybackButton.innerText = 'Parar Reprodução';
             let saveButton = document.createElement('button');
             saveButton.innerText = 'Salvar';
-            saveButton.className = 'save-button';
             let audioElement = document.createElement('audio');
             audioElement.controls = true;
             let progressBar = document.createElement('progress');
@@ -269,6 +241,7 @@
     </script>
 </body>
 </html>
+
 
 
 
