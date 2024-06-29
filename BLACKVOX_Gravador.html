@@ -71,6 +71,24 @@
             color: #aaa;
             margin-left: 10px;
         }
+        .volume-control {
+            margin: 0 10px;
+        }
+        #history {
+            margin-top: 20px;
+            text-align: left;
+        }
+        #history ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        #history li {
+            background-color: #333;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+            color: #ccc;
+        }
     </style>
 </head>
 <body>
@@ -79,9 +97,18 @@
     <div class="controls">
         <button onclick="addTrack()" style="padding: 20px 40px; font-size: 18px;">Adicionar Pista</button>
     </div>
+    <div id="history">
+        <h2>Histórico de Gravações</h2>
+        <ul id="history-list"></ul>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js"></script>
     <script>
         let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         let tracks = [];
+        let mediaRecorder;
+        let chunks = [];
+        let startTime;
+        let historyList = document.getElementById('history-list');
 
         function formatTime(ms) {
             let seconds = Math.floor(ms / 1000);
@@ -90,7 +117,7 @@
             return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
         }
 
-        async function addTrack() {
+        function addTrack() {
             let track = document.createElement('div');
             track.className = 'track';
             let led = document.createElement('div');
@@ -117,136 +144,164 @@
             let timer = document.createElement('div');
             timer.className = 'timer';
             timer.innerText = '0:00';
+            let volumeControl = document.createElement('input');
+            volumeControl.className = 'volume-control';
+            volumeControl.type = 'range';
+            volumeControl.min = 0;
+            volumeControl.max = 1;
+            volumeControl.step = 0.01;
+            volumeControl.value = 1;
 
-            let mediaRecorder;
-            let chunks = [];
-            let startTime;
             let analyser;
             let dataArray;
 
-            try {
+            async function startRecording() {
                 let stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder.start();
+                startTime = Date.now();
 
-                recordButton.onclick = () => {
-                    mediaRecorder = new MediaRecorder(stream);
-                    mediaRecorder.start();
-                    startTime = Date.now();
+                const source = audioCtx.createMediaStreamSource(stream);
+                analyser = audioCtx.createAnalyser();
+                source.connect(analyser);
+                analyser.fftSize = 256;
+                const bufferLength = analyser.frequencyBinCount;
+                dataArray = new Uint8Array(bufferLength);
 
-                    const source = audioCtx.createMediaStreamSource(stream);
-                    analyser = audioCtx.createAnalyser();
-                    source.connect(analyser);
-                    analyser.fftSize = 256;
-                    const bufferLength = analyser.frequencyBinCount;
-                    dataArray = new Uint8Array(bufferLength);
+                mediaRecorder.ondataavailable = e => {
+                    chunks.push(e.data);
+                };
 
-                    mediaRecorder.ondataavailable = e => {
-                        chunks.push(e.data);
+                mediaRecorder.onstop = async () => {
+                    let blob = new Blob(chunks, { type: 'audio/wav' });
+                    chunks = [];
+                    let audioURL = URL.createObjectURL(blob);
+                    audioElement.src = audioURL;
+                    audioElement.load();
+                    saveButton.onclick = async () => {
+                        let mp3Blob = await convertToMP3(blob);
+                        addRecordingToHistory(mp3Blob, audioURL);
                     };
-
-                    mediaRecorder.onstop = () => {
-                        let blob = new Blob(chunks, { type: 'audio/ogg; codecs=opus' });
-                        chunks = [];
-                        let audioURL = URL.createObjectURL(blob);
-                        audioElement.src = audioURL;
-                        audioElement.load();
-                        saveButton.onclick = () => {
-                            let a = document.createElement('a');
-                            a.style.display = 'none';
-                            a.href = audioURL;
-                            a.download = 'recording.ogg';
-                            document.body.appendChild(a);
-                            a.click();
-                            document.body.removeChild(a);
-                        };
-                    };
-
-                    recordButton.disabled = true;
-                    stopButton.disabled = false;
-                    updateProgress();
-                    updateLED();
-                    updateTimer();
+                    addRecordingToHistory(blob, audioURL);
                 };
 
-                stopButton.onclick = () => {
-                    mediaRecorder.stop();
-                    recordButton.disabled = false;
-                    stopButton.disabled = true;
-                    progressBar.value = 0;
-                };
+                recordButton.disabled = true;
+                stopButton.disabled = false;
+                updateProgress();
+                updateLED();
+                updateTimer();
+            }
 
-                playButton.onclick = () => {
-                    audioElement.play();
-                };
+            recordButton.onclick = startRecording;
 
-                pauseButton.onclick = () => {
-                    audioElement.pause();
-                };
-
-                stopPlaybackButton.onclick = () => {
-                    audioElement.pause();
-                    audioElement.currentTime = 0;
-                };
-
-                deleteButton.onclick = () => {
-                    track.remove();
-                    tracks = tracks.filter(t => t !== track);
-                };
-
+            stopButton.onclick = () => {
+                mediaRecorder.stop();
+                recordButton.disabled = false;
                 stopButton.disabled = true;
-                track.appendChild(led);
-                track.appendChild(progressBar);
-                track.appendChild(timer);
-                track.appendChild(recordButton);
-                track.appendChild(stopButton);
-                track.appendChild(pauseButton);
-                track.appendChild(stopPlaybackButton);
-                track.appendChild(deleteButton);
-                track.appendChild(playButton);
-                track.appendChild(saveButton);
-                track.appendChild(audioElement);
-                document.getElementById('tracks').appendChild(track);
-                tracks.push(track);
+                progressBar.value = 0;
+            };
 
-                function updateProgress() {
-                    if (!mediaRecorder || mediaRecorder.state !== 'recording') return;
-                    let elapsedTime = Date.now() - startTime;
-                    progressBar.value = (elapsedTime / 60000) * 100;
-                    requestAnimationFrame(updateProgress);
-                }
+            playButton.onclick = () => {
+                audioElement.play();
+            };
 
-                function updateLED() {
-                    if (!analyser) return;
-                    analyser.getByteFrequencyData(dataArray);
-                    let average = dataArray.reduce((a, b) => a + b) / dataArray.length;
-                    if (average > 128) {
-                        led.style.backgroundColor = 'red';
-                    } else if (average > 64) {
-                        led.style.backgroundColor = 'yellow';
-                    } else {
-                        led.style.backgroundColor = 'green';
-                    }
-                    requestAnimationFrame(updateLED);
-                }
+            pauseButton.onclick = () => {
+                audioElement.pause();
+            };
 
-                function updateTimer() {
-                    if (!mediaRecorder || mediaRecorder.state !== 'recording') return;
-                    let elapsedTime = Date.now() - startTime;
-                    timer.innerText = formatTime(elapsedTime);
-                    requestAnimationFrame(updateTimer);
+            stopPlaybackButton.onclick = () => {
+                audioElement.pause();
+                audioElement.currentTime = 0;
+            };
+
+            deleteButton.onclick = () => {
+                track.remove();
+                tracks = tracks.filter(t => t !== track);
+            };
+
+            audioElement.onplay = () => {
+                audioElement.volume = volumeControl.value;
+                volumeControl.oninput = () => {
+                    audioElement.volume = volumeControl.value;
+                };
+            };
+
+            stopButton.disabled = true;
+            track.appendChild(led);
+            track.appendChild(progressBar);
+            track.appendChild(timer);
+            track.appendChild(recordButton);
+            track.appendChild(stopButton);
+            track.appendChild(pauseButton);
+            track.appendChild(stopPlaybackButton);
+            track.appendChild(deleteButton);
+            track.appendChild(playButton);
+            track.appendChild(saveButton);
+            track.appendChild(volumeControl);
+            track.appendChild(audioElement);
+            document.getElementById('tracks').appendChild(track);
+            tracks.push(track);
+
+            function updateProgress() {
+                if (!mediaRecorder || mediaRecorder.state !== 'recording') return;
+                let elapsedTime = Date.now() - startTime;
+                progressBar.value = (elapsedTime / 60000) * 100;
+                requestAnimationFrame(updateProgress);
+            }
+
+            function updateLED() {
+                if (!analyser) return;
+                analyser.getByteFrequencyData(dataArray);
+                let average = dataArray.reduce((a, b) => a + b) / dataArray.length;
+                if (average > 128) {
+                    led.style.backgroundColor = 'red';
+                } else if (average > 64) {
+                    led.style.backgroundColor = 'yellow';
+                } else {
+                    led.style.backgroundColor = 'green';
                 }
-            } catch (err) {
-                console.error('Erro ao acessar o microfone: ', err);
+                requestAnimationFrame(updateLED);
+            }
+
+            function updateTimer() {
+                if (!mediaRecorder || mediaRecorder.state !== 'recording') return;
+                let elapsedTime = Date.now() - startTime;
+                timer.innerText = formatTime(elapsedTime);
+                requestAnimationFrame(updateTimer);
+            }
+
+            async function convertToMP3(blob) {
+                const arrayBuffer = await blob.arrayBuffer();
+                const wav = lamejs.WavHeader.readHeader(new DataView(arrayBuffer));
+                const samples = new Int16Array(arrayBuffer, wav.dataOffset, wav.dataLen / 2);
+                const mp3Encoder = new lamejs.Mp3Encoder(1, wav.sampleRate, 128);
+                const mp3Data = mp3Encoder.encodeBuffer(samples);
+                const mp3Blob = new Blob(mp3Data, { type: 'audio/mp3' });
+                return mp3Blob;
+            }
+
+            function addRecordingToHistory(blob, audioURL) {
+                let listItem = document.createElement('li');
+                let link = document.createElement('a');
+                link.href = audioURL;
+                link.innerText = 'Gravação ' + (new Date().toLocaleString());
+                link.download = 'recording.wav';
+                let downloadMP3 = document.createElement('a');
+                downloadMP3.innerText = ' (MP3)';
+                downloadMP3.download = 'recording.mp3';
+                downloadMP3.onclick = async (event) => {
+                    event.preventDefault();
+                    let mp3Blob = await convertToMP3(blob);
+                    let mp3URL = URL.createObjectURL(mp3Blob);
+                    downloadMP3.href = mp3URL;
+                    downloadMP3.click();
+                };
+                listItem.appendChild(link);
+                listItem.appendChild(downloadMP3);
+                historyList.appendChild(listItem);
             }
         }
     </script>
-<center>
-               
-        <a href="https://www.jorgematheus.mus.br/BLACKVOX_PlayPremium.html" target="_blank"  
-		style="background-color: white; padding: 10px 20px; border-radius: 5px; display: inline-block; 
-		margin-top: 20px; color: black;">Voltar Para BLACKVOX Playlists</a>
-    </center>
-
-    
 </body>
 </html>
 
