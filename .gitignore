@@ -1,1 +1,6 @@
-node_modules
+# .gitignore
+# Ignore environment files
+.env
+
+# Ignore other files or directories you want to ignore
+#...
