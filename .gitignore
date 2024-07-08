@@ -1,6 +1,4 @@
-# .gitignore
-# Ignore environment files
 .env
-
-# Ignore other files or directories you want to ignore
-#...
+__pycache__/
+*.pyc
+instance/
