@@ -1,11 +1,19 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
+import os
+from flask import Flask, render_template, request, redirect
+from flask_mail import Mail, Message
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = 'supersecretkey'
-app.config['DEBUG'] = True  # Habilitar o modo de depuração
+
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
+
+mail = Mail(app)
 
 @app.route('/')
 def home():
@@ -13,38 +21,26 @@ def home():
 
 @app.route('/register', methods=['POST'])
 def register():
-    try:
-        username = request.form['username']
-        email = request.form['email']
-        whatsapp = request.form['whatsapp']
-        mensagem = request.form['mensagem']
+    username = request.form['username']
+    email = request.form['email']
+    whatsapp = request.form['whatsapp']
+    mensagem = request.form['mensagem']
 
-        # Configuração do email
-        smtp_server = 'smtp.gmail.com'
-        smtp_port = 587
-        smtp_user = 'www.jorgematheus.mus.br@gmail.com'
-        smtp_password = 'dqua lyrj atat aggg'  # Substitua pela senha do app gerada
+    # Envia e-mail para você
+    admin_msg = Message('Novo Registro de Usuário',
+                        sender=os.environ.get('MAIL_USERNAME'),
+                        recipients=[os.environ.get('MAIL_USERNAME')])
+    admin_msg.body = f'Username: {username}\nEmail: {email}\nWhatsapp: {whatsapp}\nMensagem: {mensagem}'
 
-        msg = MIMEMultipart()
-        msg['From'] = smtp_user
-        msg['To'] = smtp_user
-        msg['Subject'] = 'Novo Registro de Usuário'
+    mail.send(admin_msg)
 
-        body = f'Nome: {username}\nEmail: {email}\nWhatsApp: {whatsapp}\nMensagem: {mensagem}'
-        msg.attach(MIMEText(body, 'plain'))
+    # Envia e-mail para o usuário com a URL principal do BLACKVOX
+    user_msg = Message('Acesso ao BLACKVOX',
+                       sender=os.environ.get('MAIL_USERNAME'),
+                       recipients=[email])
+    user_msg.body = f'Olá {username},\n\nObrigado pelo seu interesse no BLACKVOX.\n\nAqui está a URL principal para acesso ao BLACKVOX: [URL_DO_BLACKVOX]\n\nAtenciosamente,\nEquipe BLACKVOX'
 
-        server = smtplib.SMTP(smtp_server, smtp_port)
-        server.starttls()
-        server.login(smtp_user, smtp_password)
-        server.sendmail(smtp_user, smtp_user, msg.as_string())
-        server.quit()
-        flash('Registro bem-sucedido! Verifique seu e-mail para mais informações.', 'success')
-    except Exception as e:
-        flash(f'Falha ao enviar o e-mail. Por favor, tente novamente. Erro: {str(e)}', 'danger')
-        app.logger.error(f'Erro ao processar registro: {str(e)}')  # Log de erro detalhado
+    mail.send(user_msg)
 
-    return redirect(url_for('home'))
-
-if __name__ == '__main__':
-    app.run(port=5000)
+    return redirect('/')
 
