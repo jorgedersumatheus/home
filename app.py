@@ -1,24 +1,3 @@
-import os
-from flask import Flask, render_template, request, redirect
-from flask_mail import Mail, Message
-from dotenv import load_dotenv
-
-load_dotenv()
-
-app = Flask(__name__)
-
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
-app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
-
-mail = Mail(app)
-
-@app.route('/')
-def home():
-    return render_template('index.html')
-
 @app.route('/register', methods=['POST'])
 def register():
     username = request.form['username']
@@ -44,6 +23,4 @@ def register():
 
     return redirect('/')
 
-if __name__ == '__main__':
-    app.run(port=5000)
 
