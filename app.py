@@ -10,8 +10,8 @@ app = Flask(__name__)
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = os.environ.get('www.jorgematheus.mus.br@gmail.com')
-app.config['MAIL_PASSWORD'] = os.environ.get('dqua lyrj atat aggg')
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
 
 mail = Mail(app)
 
@@ -38,9 +38,12 @@ def register():
     user_msg = Message('Acesso ao BLACKVOX',
                        sender=os.environ.get('MAIL_USERNAME'),
                        recipients=[email])
-    user_msg.body = f'Olá {username},\n\nObrigado pelo seu interesse no BLACKVOX.\n\nAqui está a URL principal para acesso ao BLACKVOX: [URL_DO_BLACKVOX]\n\nAtenciosamente,\nEquipe BLACKVOX'
+    user_msg.body = f'Olá {username},\n\nObrigado pelo seu interesse no BLACKVOX.\n\nAqui está a URL principal para acesso ao BLACKVOX: https://www.jorgematheus.mus.br/BLACKVOX_PlayPremium.html\n\nAtenciosamente,\nEquipe BLACKVOX'
 
     mail.send(user_msg)
 
     return redirect('/')
+
+if __name__ == '__main__':
+    app.run(port=5000)
 
