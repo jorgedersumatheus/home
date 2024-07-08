@@ -13,7 +13,7 @@
             padding: 20px;
         }
         h1 {
-            color: #ffcc00;
+            color: #ffffff;
         }
         button {
             background-color: white;
@@ -25,7 +25,7 @@
             margin: 5px;
         }
         button:hover {
-            background-color: #ffcc00;
+            background-color: #000000;
             color: black;
         }
         input[type="text"], input[type="file"] {
@@ -50,7 +50,7 @@
             align-items: center;
         }
         li button {
-            background-color: red;
+            background-color: black;
             color: white;
             border: none;
             padding: 5px 10px;
@@ -77,11 +77,11 @@
     <input type="file" id="audioInput" accept="audio/*">
     <button onclick="addAudio()">Adicionar Áudio</button>
     <ul id="audioList"></ul>
+	<div id="saveStatus">
     <button onclick="savePlaylist()">Salvar Playlist</button>
-    <div id="saveStatus"></div>
     <button onclick="loadPlaylists()">Carregar Playlists</button>
     <button onclick="importPlaylists()">Importar Playlists</button>
-    <ul id="playlistList"></ul>
+    <ul id="playlistList"></ul></div>
     <div class="recommendations">
         <h2>Recomendações</h2>
         <ul id="recommendationList"></ul>
@@ -113,8 +113,8 @@
                 li.innerHTML = `
                     ${audio.name}
                     <div>
-                        <button onclick="playAudio(${index})">Tocar</button>
-                        <button onclick="removeAudio(${index})">Remover</button>
+                        <button onclick="playAudio(${index})">Toca</button>
+                        <button onclick="removeAudio(${index})">Remove</button>
                     </div>
                 `;
                 audioListElement.appendChild(li);
