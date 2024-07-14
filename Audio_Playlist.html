@@ -322,21 +322,10 @@
     </script>
 </head>
 <body>
-    <h1>BLACKVOX - Criador de Playlists</h1>
-    <div id="spotifyAuth">
-        <button id="login-button">Login com Spotify</button>
-    </div>
-    <div id="spotifyInfo">
-        <h2>Buscar informações do artista</h2>
-        <input type="text" id="artistName" placeholder="Nome do artista">
-        <button onclick="buscarInformacoesDoArtista()">Buscar Artista</button>
-        <div id="artistInfo"></div>
 
-        <h2>Buscar playlists do usuário</h2>
-        <input type="text" id="spotifyUserId" placeholder="ID do Usuário Spotify">
-        <button onclick="buscarPlaylistsDoUsuario()">Buscar Playlists</button>
-        <div id="spotifyPlaylists"></div>
-    </div>
+	<div class="rainbow-line"></div>
+    <h1>BLACKVOX - Criador de Playlists</h1>
+   <br>
     <h2>Adicionar Áudio</h2>
     <input type="file" id="audioInput">
     <button onclick="addAudio()">Adicionar Áudio</button>
@@ -353,7 +342,7 @@
     <h2>Importar Playlists</h2>
     <input type="file" id="importPlaylistsInput" accept=".json" onchange="importPlaylists(event)">
     <div id="importStatus"></div>
-    <div class="rainbow-line"></div>
+    
 
 
 	
