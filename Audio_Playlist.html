@@ -190,7 +190,7 @@
         function playAudio(index) {
             const audioPlayer = document.getElementById("audioPlayer");
             const currentSongElement = document.getElementById("currentSong");
-            currentSongElement.innerText = `Tocando agora: ${audioList[index].name}`;
+            currentSongElement.innerText = `<font color="white">Tocando agora</font>: ${audioList[index].name}`;
 
             audioPlayer.src = audioList[index].url;
             audioPlayer.style.display = "block";
