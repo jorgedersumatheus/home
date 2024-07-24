@@ -118,6 +118,29 @@
                 }
             };
         }
+
+	   
+
+
+function playAudio(index) {
+    const audioPlayer = document.getElementById("audioPlayer");
+    const currentSongElement = document.getElementById("currentSong");
+    audioPlayer.src = audioList[index].url;
+    audioPlayer.style.display = "block";
+    audioPlayer.play();
+    currentSongElement.innerHTML = `Tocando agora: ${audioList[index].name}`;
+    audioPlayer.onended = () => {
+        const nextIndex = index + 1;
+        if (nextIndex < audioList.length) {
+            playAudio(nextIndex);
+        } else {
+            currentSongElement.innerHTML = "";
+        }
+    };
+}
+
+
+	    
 		
 		function loadPlaylistByName(name) {
             audioList = playlists[name];
@@ -285,8 +308,9 @@
     <button onclick="importPlaylists()">Importar Playlist</button>
     <ul id="playlistList"></ul>
 
-    <audio id="audioPlayer" controls style="display:none;"></audio>
-	
+    
+	 <audio id="audioPlayer" controls style="display:none;"></audio>
+<p id="currentSong"></p>
 	<br>
 
 <hr color=#FF0000 width="100%" align="center">
