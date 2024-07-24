@@ -16,6 +16,7 @@
 	      background-repeat: no-repeat;
 	      background-attachment: fixed;
 	      background-position: center
+	    background-color: black;
             color: white;
             font-family: Arial, sans-serif;
             margin: 0;
@@ -23,6 +24,9 @@
         }
         h1 {
             color: #ffffff;
+            border: 2px solid white;
+            padding: 10px;
+		
         }
         button {
             background-color: white;
@@ -35,7 +39,7 @@
         }
         button:hover {
             background-color: #000000;
-            color: black;
+            color: white;
         }
         input[type="text"], input[type="file"] {
             padding: 10px;
@@ -76,6 +80,25 @@
             font-size: 1.2em;
             margin-bottom: 10px;
         }
+        #progressBar {
+            width: 100%;
+            background-color: #333;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 10px 0;
+            display: none;
+        }
+         #progress {
+            height: 20px;
+            background-color: green;
+            width: 0;
+        }
+        .audio-playing {
+            color: lightgreen;
+        }
+	    
+
+	    
         .rainbow-line {
             height: 10px;
             background: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet);
@@ -190,10 +213,10 @@
         function playAudio(index) {
             const audioPlayer = document.getElementById("audioPlayer");
             const currentSongElement = document.getElementById("currentSong");
-            currentSongElement.innerText = `<font color="white">Tocando agora</font>: ${audioList[index].name}`;
-
             audioPlayer.src = audioList[index].url;
             audioPlayer.style.display = "block";
+	    currentSongElement.innerText = `Tocando agora: ${audioList[index].name}`;
+            audioName.textContent = `Tocando: ${audioList[index].name}`;
             audioPlayer.play();
             audioPlayer.onended = () => {
                 const nextIndex = index + 1;
