@@ -65,8 +65,6 @@
         }
     </style>
     <script>
-       
-
         let audioList = [];
         let playlists = {};
 
@@ -94,7 +92,7 @@
                     <div>
                         <button onclick="playAudio(${index})">></button>
                         <button onclick="removeAudio(${index})">x</button>
-		        <button onclick="moveAudioUp(${index})">↑</button>
+                        <button onclick="moveAudioUp(${index})">↑</button>
                         <button onclick="moveAudioDown(${index})">↓</button>
                     </div>
                 `;
@@ -102,7 +100,7 @@
             });
         }
 
-       function playAudio(index) {
+        function playAudio(index) {
             const audioPlayer = document.getElementById("audioPlayer");
             const currentSongElement = document.getElementById("currentSong");
             audioPlayer.src = audioList[index].url;
@@ -119,41 +117,20 @@
             };
         }
 
-	   
-
-
-function playAudio(index) {
-    const audioPlayer = document.getElementById("audioPlayer");
-    const currentSongElement = document.getElementById("currentSong");
-    audioPlayer.src = audioList[index].url;
-    audioPlayer.style.display = "block";
-    audioPlayer.play();
-    currentSongElement.innerHTML = `Tocando agora: ${audioList[index].name}`;
-    audioPlayer.onended = () => {
-        const nextIndex = index + 1;
-        if (nextIndex < audioList.length) {
-            playAudio(nextIndex);
-        } else {
-            currentSongElement.innerHTML = "";
-        }
-    };
-}
-
-
-	    
-		
-		function loadPlaylistByName(name) {
+        function loadPlaylistByName(name) {
             audioList = playlists[name];
             displayAudioList();
+            if (audioList.length > 0) {
+                playAudio(0);
+            }
         }
-
 
         function removeAudio(index) {
             audioList.splice(index, 1);
             displayAudioList();
         }
-		
-		 function moveAudioUp(index) {
+
+        function moveAudioUp(index) {
             if (index > 0) {
                 [audioList[index], audioList[index - 1]] = [audioList[index - 1], audioList[index]];
                 displayAudioList();
@@ -180,8 +157,9 @@ function playAudio(index) {
             }
             saveStatus.innerHTML = "Salvando playlist...";
             try {
-                playlists[playlistName] = audioList;
-                exportToJsonFile(playlists);
+                playlists[playlistName] = [...audioList];
+                localStorage.setItem("playlists", JSON.stringify(playlists));
+                displayPlaylistList();
                 saveStatus.innerHTML = "Playlist salva com sucesso!";
                 setTimeout(() => { saveStatus.innerHTML = ""; }, 3000);
             } catch (e) {
@@ -191,20 +169,23 @@ function playAudio(index) {
             }
         }
 
-        function loadPlaylists() {
-            try {
-                const storedPlaylists = localStorage.getItem("playlists");
-                if (storedPlaylists) {
-                    playlists = JSON.parse(storedPlaylists);
-                    displayPlaylistList();
-                } else {
-                    alert("Nenhuma Playlist salva encontrada.");
-                }
-            } catch (e) {
-                console.error(e);
-                alert("Erro ao carregar playlists.");
-            }
+        function playAudio(index) {
+    const audioPlayer = document.getElementById("audioPlayer");
+    const currentSongElement = document.getElementById("currentSong");
+    audioPlayer.src = audioList[index].url;
+    audioPlayer.style.display = "block";
+    audioPlayer.play();
+    currentSongElement.innerHTML = `Tocando agora: ${audioList[index].name}`;
+    audioPlayer.onended = () => {
+        const nextIndex = index + 1;
+        if (nextIndex < audioList.length) {
+            playAudio(nextIndex);
+        } else {
+            currentSongElement.innerHTML = "";
         }
+    };
+}
+
 
         function displayPlaylistList() {
             const playlistListElement = document.getElementById("playlistList");
@@ -214,7 +195,7 @@ function playAudio(index) {
                 li.innerHTML = `
                     ${playlistName}
                     <div>
-                        <button onclick="loadPlaylist('${playlistName}')">Carregar</button>
+                        <button onclick="loadPlaylistByName('${playlistName}')">Carregar</button>
                         <button onclick="deletePlaylist('${playlistName}')">Excluir</button>
                     </div>
                 `;
@@ -222,34 +203,32 @@ function playAudio(index) {
             }
         }
 
-        function loadPlaylist(name) {
-            audioList = playlists[name];
-            displayAudioList();
-        }
-
         function deletePlaylist(name) {
             delete playlists[name];
+            localStorage.setItem("playlists", JSON.stringify(playlists));
             displayPlaylistList();
         }
 
-        function importPlaylists() {
-            const input = document.createElement("input");
-            input.type = "file";
-            input.accept = "application/json";
-            input.onchange = function(event) {
-                const file = event.target.files[0];
+        function importPlaylists(event) {
+            const file = event.target.files[0];
+            const importStatus = document.getElementById("importStatus");
+            if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     try {
-                        playlists = JSON.parse(e.target.result);
+                        const importedPlaylists = JSON.parse(e.target.result);
+                        playlists = { ...playlists, ...importedPlaylists };
                         displayPlaylistList();
+                        importStatus.innerHTML = "Playlists importadas com sucesso!";
+                        setTimeout(() => { importStatus.innerHTML = ""; }, 3000);
                     } catch (error) {
-                        alert("Erro ao importar playlists.");
+                        console.error("Erro ao importar playlists:", error);
+                        importStatus.innerHTML = "Erro ao importar playlists.";
+                        setTimeout(() => { importStatus.innerHTML = ""; }, 3000);
                     }
                 };
                 reader.readAsText(file);
-            };
-            input.click();
+            }
         }
 
         function exportToJsonFile(jsonData) {
@@ -262,66 +241,51 @@ function playAudio(index) {
             a.click();
             URL.revokeObjectURL(url);
         }
-		
-		 function showProgressBar() {
-            const progressBar = document.getElementById("progressBar");
-            const progress = document.getElementById("progress");
-            progress.style.width = "0";
-            progressBar.style.display = "block";
-            let width = 0;
-            const interval = setInterval(() => {
-                if (width >= 100) {
-                    clearInterval(interval);
-                } else {
-                    width++;
-                    progress.style.width = width + "%";
-                }
-            }, 20);
+
+        function initApp() {
+            loadPlaylists();
         }
+
+        document.addEventListener("DOMContentLoaded", initApp);
     </script>
 </head>
 <body>
     <h1>BLACKVOX Cria Playlists</h1>
-
-   
-<center>
-               
+    <center>
         <a href="https://www.jorgematheus.mus.br/BLACKVOX_PlayPremium.html" target="_blank"  
-		style="background-color: white; padding: 10px 20px; border-radius: 5px; display: inline-block; 
-		margin-top: 20px; color: black;">BLACKVOX Playlists</a>
+           style="background-color: white; padding: 10px 20px; border-radius: 5px; display: inline-block; 
+           margin-top: 20px; color: black;">BLACKVOX Áudios Playlists</a>
     </center><br>
-  
 
     <h2>Áudio</h2>
     <input type="file" id="audioInput" accept="audio/*">
     <button onclick="addAudio()">Adicionar Áudio</button>
-
-   
     <ul id="audioList"></ul>
 
     <h2>Playlist</h2>
     <input type="text" id="playlistName" placeholder="Nome da Playlist">
     <button onclick="savePlaylist()">Salvar Playlist</button>
     <p id="saveStatus"></p>
-
-   
     <button onclick="importPlaylists()">Importar Playlist</button>
     <ul id="playlistList"></ul>
 
-    
+    <audio id="audioPlayer" controls style="display:none;"></audio>
+    <p id="currentSong"></p>
+	
 	 <audio id="audioPlayer" controls style="display:none;"></audio>
 <p id="currentSong"></p>
-	<br>
 
-<hr color=#FF0000 width="100%" align="center">
-<hr color=#FFA500 width="100%" align="center">
-<hr color=#FFFF00 width="100%" align="center">
-<hr color=#008000 width="100%" align="center">
-<hr color=#0000FF width="100%" align="center"> 
-<hr color=#4B0082 width="100%" align="center"> 
-<hr color=#EE82EE width="100%" align="center">
-	<br>
- <br><br><br><br>
+    <br>
+
+    <hr color=#FF0000 width="100%" align="center">
+    <hr color=#FFA500 width="100%" align="center">
+    <hr color=#FFFF00 width="100%" align="center">
+    <hr color=#00FF00 width="100%" align="center">
+    <hr color=#00FFFF width="100%" align="center">
+    <hr color=#0000FF width="100%" align="center">
+    <hr color=#8B00FF width="100%" align="center">
+    
+    <br><br><br><br>
     <center>
         <a href="https://www.jorgelamatheus.mus.br/BLACKVOX_PlayPremium.html" target="_blank"
            style="background-color: white; padding: 10px 20px; border-radius: 5px; display: inline-block; 
@@ -331,6 +295,10 @@ function playAudio(index) {
     <p>
         <small><a href="https://postzap.bubbleapps.io/version-test?debug_mode=true" target="_blank">JORGE LUIS APARECIDO MATHEUS</a></small>
     </p>
+   
+</body>
+</html>
+
 
 	
 </body>
