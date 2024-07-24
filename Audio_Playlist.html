@@ -229,6 +229,31 @@
             };
         }
 
+        function showProgressBar() {
+            const progressBar = document.getElementById("progressBar");
+            const progress = document.getElementById("progress");
+            progress.style.width = "0";
+            progressBar.style.display = "block";
+            let width = 0;
+            const interval = setInterval(() => {
+                if (width >= 100) {
+                    clearInterval(interval);
+                } else {
+                    width++;
+                    progress.style.width = width + "%";
+                }
+            }, 20);
+        }
+
+        function hideProgressBar() {
+            const progressBar = document.getElementById("progressBar");
+            progressBar.style.display = "none";
+        }
+
+
+
+	    
+
         function loadPlaylistByName(name) {
             audioList = playlists[name];
             displayAudioList();
