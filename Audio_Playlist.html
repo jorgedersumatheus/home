@@ -104,7 +104,7 @@
             margin-top: 20px;
         }
     </style>
-    <script>
+   
         const clientId = '1cb62fe9ab624385b5756ecf29e3edbf';
         const redirectUri = 'https://www.jorgematheus.mus.br/BLACKVOX_PlayPremium.html';
         const scopes = 'user-read-private user-read-email playlist-read-private playlist-read-collaborative user-library-read user-top-read';
@@ -173,7 +173,7 @@
             })
             .catch(error => console.error("Erro ao obter playlists do Spotify:", error));
         }
-
+ <script>
         let audioList = [];
         let playlists = {};
 
@@ -211,8 +211,7 @@
 
         function playAudio(index) {
             const audioPlayer = document.getElementById("audioPlayer");
-          
-             const audioName = document.getElementById("audioName");
+            const audioName = document.getElementById("audioName");
 		
 	    audioPlayer.src = audioList[index].url;
             audioPlayer.style.display = "block";
@@ -287,6 +286,16 @@
             if (audioList.length === 0) {
                 alert("Por favor, adicione pelo menos um áudio à Playlist");
                 return;
+
+
+		    showProgressBar();
+            setTimeout(() => {
+                playlists[playlistName] = audioList;
+                localStorage.setItem('playlists', JSON.stringify(playlists));
+                hideProgressBar();
+                alert("Playlist salva com sucesso!");
+            }, 2000);
+        }
             }
             saveStatus.innerHTML = "Salvando playlist...";
             try {
@@ -381,7 +390,7 @@
 <body>
 
 	<div class="rainbow-line"></div>
-    <center><h1>BLACKVOX - Criador de Playlists</h1></center>
+    <center><h1>BLACKVOX - Cria de Playlists</h1></center>
    <br>
 
 	<center>
