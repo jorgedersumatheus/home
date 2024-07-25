@@ -65,6 +65,75 @@
         }
     </style>
     <script>
+        const clientId = '1cb62fe9ab624385b5756ecf29e3edbf';
+        const redirectUri = 'https://www.jorgematheus.mus.br/BLACKVOX_PlayPremium.html';
+        const scopes = 'user-read-private user-read-email playlist-read-private playlist-read-collaborative user-library-read user-top-read';
+
+        function loginSpotify() {
+            const authUrl = `https://accounts.spotify.com/authorize?response_type=token&client_id=${clientId}&scope=${encodeURIComponent(scopes)}&redirect_uri=${encodeURIComponent(redirectUri)}`;
+            window.location.href = authUrl;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginButton = document.getElementById('login-button');
+            if (loginButton) {
+                loginButton.addEventListener('click', loginSpotify);
+            }
+
+            const hash = window.location.hash.substring(1);
+            const params = new URLSearchParams(hash);
+            const accessToken = params.get('access_token');
+
+            if (accessToken) {
+                localStorage.setItem('spotify_access_token', accessToken);
+                window.history.replaceState({}, document.title, window.location.pathname); // Limpa o token da URL
+            }
+        });
+
+        function buscarInformacoesDoArtista() {
+            const accessToken = localStorage.getItem('spotify_access_token');
+            const nomeArtista = document.getElementById('artistName').value;
+
+            fetch(`https://api.spotify.com/v1/search?q=${nomeArtista}&type=artist`, {
+                headers: {
+                    'Authorization': 'Bearer ' + accessToken
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const artistInfoElement = document.getElementById('artistInfo');
+                artistInfoElement.innerHTML = `
+                    <h2>${data.artists.items[0].name}</h2>
+                    <p>Gêneros: ${data.artists.items[0].genres.join(", ")}</p>
+                    <p>Seguidores: ${data.artists.items[0].followers.total}</p>
+                    <p>Popularidade: ${data.artists.items[0].popularity}</p>
+                `;
+            })
+            .catch(error => console.error("Erro ao obter informações do artista:", error));
+        }
+
+        function buscarPlaylistsDoUsuario() {
+            const accessToken = localStorage.getItem('spotify_access_token');
+            const userId = document.getElementById('spotifyUserId').value;
+
+            fetch(`https://api.spotify.com/v1/users/${userId}/playlists`, {
+                headers: {
+                    'Authorization': 'Bearer ' + accessToken
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const spotifyPlaylistsElement = document.getElementById('spotifyPlaylists');
+                spotifyPlaylistsElement.innerHTML = data.items.map(item => `
+                    <div>
+                        <h3>${item.name}</h3>
+                        <p>${item.description}</p>
+                    </div>
+                `).join("");
+            })
+            .catch(error => console.error("Erro ao obter playlists do Spotify:", error));
+        }
+
         let audioList = [];
         let playlists = {};
 
@@ -92,7 +161,7 @@
                     <div>
                         <button onclick="playAudio(${index})">></button>
                         <button onclick="removeAudio(${index})">x</button>
-                        <button onclick="moveAudioUp(${index})">↑</button>
+						 <button onclick="moveAudioUp(${index})">↑</button>
                         <button onclick="moveAudioDown(${index})">↓</button>
                     </div>
                 `;
@@ -101,36 +170,35 @@
         }
 
         function playAudio(index) {
-            const audioPlayer = document.getElementById("audioPlayer");
-            const currentSongElement = document.getElementById("currentSong");
-            audioPlayer.src = audioList[index].url;
-            audioPlayer.style.display = "block";
-            audioPlayer.play();
-            currentSongElement.innerHTML = `Tocando agora: ${audioList[index].name}`;
-            audioPlayer.onended = () => {
-                const nextIndex = index + 1;
-                if (nextIndex < audioList.length) {
-                    playAudio(nextIndex);
-                } else {
-                    currentSongElement.innerHTML = "";
-                }
-            };
+    const audioPlayer = document.getElementById("audioPlayer");
+    const currentSongElement = document.getElementById("currentSong");
+    audioPlayer.src = audioList[index].url;
+    audioPlayer.style.display = "block";
+    audioPlayer.play();
+    currentSongElement.innerHTML = `Tocando agora: ${audioList[index].name}`;
+    audioPlayer.onended = () => {
+        const nextIndex = index + 1;
+        if (nextIndex < audioList.length) {
+            playAudio(nextIndex);
+        } else {
+            currentSongElement.innerHTML = "";
         }
+    };
+}
 
-        function loadPlaylistByName(name) {
+		
+		function loadPlaylistByName(name) {
             audioList = playlists[name];
             displayAudioList();
-            if (audioList.length > 0) {
-                playAudio(0);
-            }
         }
+
 
         function removeAudio(index) {
             audioList.splice(index, 1);
             displayAudioList();
         }
-
-        function moveAudioUp(index) {
+		
+		 function moveAudioUp(index) {
             if (index > 0) {
                 [audioList[index], audioList[index - 1]] = [audioList[index - 1], audioList[index]];
                 displayAudioList();
@@ -157,9 +225,8 @@
             }
             saveStatus.innerHTML = "Salvando playlist...";
             try {
-                playlists[playlistName] = [...audioList];
-                localStorage.setItem("playlists", JSON.stringify(playlists));
-                displayPlaylistList();
+                playlists[playlistName] = audioList;
+                exportToJsonFile(playlists);
                 saveStatus.innerHTML = "Playlist salva com sucesso!";
                 setTimeout(() => { saveStatus.innerHTML = ""; }, 3000);
             } catch (e) {
@@ -169,23 +236,20 @@
             }
         }
 
-        function playAudio(index) {
-    const audioPlayer = document.getElementById("audioPlayer");
-    const currentSongElement = document.getElementById("currentSong");
-    audioPlayer.src = audioList[index].url;
-    audioPlayer.style.display = "block";
-    audioPlayer.play();
-    currentSongElement.innerHTML = `Tocando agora: ${audioList[index].name}`;
-    audioPlayer.onended = () => {
-        const nextIndex = index + 1;
-        if (nextIndex < audioList.length) {
-            playAudio(nextIndex);
-        } else {
-            currentSongElement.innerHTML = "";
+        function loadPlaylists() {
+            try {
+                const storedPlaylists = localStorage.getItem("playlists");
+                if (storedPlaylists) {
+                    playlists = JSON.parse(storedPlaylists);
+                    displayPlaylistList();
+                } else {
+                    alert("Nenhuma Playlist salva encontrada.");
+                }
+            } catch (e) {
+                console.error(e);
+                alert("Erro ao carregar playlists.");
+            }
         }
-    };
-}
-
 
         function displayPlaylistList() {
             const playlistListElement = document.getElementById("playlistList");
@@ -195,7 +259,7 @@
                 li.innerHTML = `
                     ${playlistName}
                     <div>
-                        <button onclick="loadPlaylistByName('${playlistName}')">Carregar</button>
+                        <button onclick="loadPlaylist('${playlistName}')">Carregar</button>
                         <button onclick="deletePlaylist('${playlistName}')">Excluir</button>
                     </div>
                 `;
@@ -203,32 +267,34 @@
             }
         }
 
+        function loadPlaylist(name) {
+            audioList = playlists[name];
+            displayAudioList();
+        }
+
         function deletePlaylist(name) {
             delete playlists[name];
-            localStorage.setItem("playlists", JSON.stringify(playlists));
             displayPlaylistList();
         }
 
-        function importPlaylists(event) {
-            const file = event.target.files[0];
-            const importStatus = document.getElementById("importStatus");
-            if (file) {
+        function importPlaylists() {
+            const input = document.createElement("input");
+            input.type = "file";
+            input.accept = "application/json";
+            input.onchange = function(event) {
+                const file = event.target.files[0];
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     try {
-                        const importedPlaylists = JSON.parse(e.target.result);
-                        playlists = { ...playlists, ...importedPlaylists };
+                        playlists = JSON.parse(e.target.result);
                         displayPlaylistList();
-                        importStatus.innerHTML = "Playlists importadas com sucesso!";
-                        setTimeout(() => { importStatus.innerHTML = ""; }, 3000);
                     } catch (error) {
-                        console.error("Erro ao importar playlists:", error);
-                        importStatus.innerHTML = "Erro ao importar playlists.";
-                        setTimeout(() => { importStatus.innerHTML = ""; }, 3000);
+                        alert("Erro ao importar playlists.");
                     }
                 };
                 reader.readAsText(file);
-            }
+            };
+            input.click();
         }
 
         function exportToJsonFile(jsonData) {
@@ -241,66 +307,69 @@
             a.click();
             URL.revokeObjectURL(url);
         }
-
-        function initApp() {
-            loadPlaylists();
+		
+		 function showProgressBar() {
+            const progressBar = document.getElementById("progressBar");
+            const progress = document.getElementById("progress");
+            progress.style.width = "0";
+            progressBar.style.display = "block";
+            let width = 0;
+            const interval = setInterval(() => {
+                if (width >= 100) {
+                    clearInterval(interval);
+                } else {
+                    width++;
+                    progress.style.width = width + "%";
+                }
+            }, 20);
         }
-
-        document.addEventListener("DOMContentLoaded", initApp);
     </script>
 </head>
 <body>
-    <h1>BLACKVOX Cria Playlists</h1>
-    <center>
+    <h1>BLACKVOX Criando Playlists</h1>
+
+   
+<center>
+               
         <a href="https://www.jorgematheus.mus.br/BLACKVOX_PlayPremium.html" target="_blank"  
-           style="background-color: white; padding: 10px 20px; border-radius: 5px; display: inline-block; 
-           margin-top: 20px; color: black;">BLACKVOX Áudios Playlists</a>
+		style="background-color: white; padding: 10px 20px; border-radius: 5px; display: inline-block; 
+		margin-top: 20px; color: black;">BLACKVOX Áudios & Playlists</a>
     </center><br>
+  
 
     <h2>Áudio</h2>
     <input type="file" id="audioInput" accept="audio/*">
     <button onclick="addAudio()">Adicionar Áudio</button>
+
+   
     <ul id="audioList"></ul>
 
     <h2>Playlist</h2>
     <input type="text" id="playlistName" placeholder="Nome da Playlist">
     <button onclick="savePlaylist()">Salvar Playlist</button>
     <p id="saveStatus"></p>
+
+   
     <button onclick="importPlaylists()">Importar Playlist</button>
     <ul id="playlistList"></ul>
 
     <audio id="audioPlayer" controls style="display:none;"></audio>
-    <p id="currentSong"></p>
 	
-	 <audio id="audioPlayer" controls style="display:none;"></audio>
+	<br>
+
+<hr color=#FF0000 width="100%" align="center">
+<hr color=#FFA500 width="100%" align="center">
+<hr color=#FFFF00 width="100%" align="center">
+<hr color=#008000 width="100%" align="center">
+<hr color=#0000FF width="100%" align="center"> 
+<hr color=#4B0082 width="100%" align="center"> 
+<hr color=#EE82EE width="100%" align="center">
+	<br>
+	
+	<audio id="audioPlayer" controls style="display:none;"></audio>
 <p id="currentSong"></p>
 
-    <br>
-
-    <hr color=#FF0000 width="100%" align="center">
-    <hr color=#FFA500 width="100%" align="center">
-    <hr color=#FFFF00 width="100%" align="center">
-    <hr color=#00FF00 width="100%" align="center">
-    <hr color=#00FFFF width="100%" align="center">
-    <hr color=#0000FF width="100%" align="center">
-    <hr color=#8B00FF width="100%" align="center">
-    
-    <br><br><br><br>
-    <center>
-        <a href="https://www.jorgelamatheus.mus.br/BLACKVOX_PlayPremium.html" target="_blank"
-           style="background-color: white; padding: 10px 20px; border-radius: 5px; display: inline-block; 
-           margin-top: 20px; color: black;">BLACKVOX Áudios Playlists</a>
-    </center><br><br><br>
-
-    <p>
-        <small><a href="https://postzap.bubbleapps.io/version-test?debug_mode=true" target="_blank">JORGE LUIS APARECIDO MATHEUS</a></small>
-    </p>
-   
 </body>
 </html>
 
-
-	
-</body>
-</html>
 
