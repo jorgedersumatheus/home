@@ -1,1 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Papa Leão XIV: Um Novo Pontificado</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            overflow: hidden;
+            padding: 0 20px;
+        }
+        header {
+            background: #333;
+            color: #fff;
+            padding-top: 30px;
+            min-height: 70px;
+            border-bottom: #0779e4 3px solid;
+        }
+        header a {
+            color: #fff;
+            text-decoration: none;
+            text-transform: uppercase;
+            font-size: 16px;
+        }
+        header h1 {
+            text-align: center;
+            margin: 0;
+            padding-bottom: 10px;
+        }
+        .content {
+            padding: 20px;
+            background: #fff;
+            margin-top: 20px;
+        }
+        .references {
+            margin-top: 40px;
+            font-size: 0.9em;
+            color: #555;
+        }
+        .references h3 {
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5px;
+        }
+        .references ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .references li {
+            margin-bottom: 5px;
+        }
+        img.pope-image {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Papa Leão XIV: Um Novo Pontificado</h1>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="content">
+            <img src="IMG-20250509-WA0001.jpg" alt="Papa Leão XIV" class="pope-image">
+            <p>>> <h2>A Eleição</h2>
+            <psecularizado.
+            </p>
+
+              <img src="1000001453.jpg" alt="Papa Leão XIV" 
+                  class="pope-image"><br>
+           <h2>ÍNTEGRA DO DISCURSO DO 1° DISCURSO</h2>
+            <p>
+                
+ 
+
+
+            
+                
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
 
