@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jorge Matheus - Músico, Entusiasta de Tecnologia e Fé</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a; /* Fundo escuro para um toque moderno/futurista */
+            color: #e0e0e0; /* Texto claro para contraste */
+            font-size: 16px;
+        }
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 30px auto;
+            overflow: hidden;
+            padding: 20px;
+            background: #2c2c2c; /* Container um pouco mais claro que o body */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+        }
+        header {
+            background: linear-gradient(135deg, #005f73, #0a9396); /* Gradiente futurista */
+            color: #ffffff;
+            padding: 2rem 1rem;
+            text-align: center;
+            border-bottom: 5px solid #94d2bd;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 3em;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        header .subtitle {
+            font-size: 1.2em;
+            margin-top: 10px;
+            color: #ade8f4;
+        }
+        nav {
+            background: #003459;
+            padding: 15px 0;
+            text-align: center;
+            border-radius: 0 0 8px 8px;
+        }
+        nav ul {
+            padding: 0;
+            list-style: none;
+            margin: 0;
+        }
+        nav ul li {
+            display: inline-block;
+            margin: 0 20px;
+        }
+        nav a {
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 1.1em;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        nav a:hover, nav a.active {
+            background-color: #94d2bd;
+            color: #001219;
+        }
+        .section {
+            padding: 30px 20px;
+            margin-bottom: 25px;
+            background: #333333;
+            border-radius: 5px;
+        }
+        .section h2 {
+            color: #94d2bd; /* Cor de destaque para títulos de seção */
+            font-size: 2.2em;
+            margin-top: 0;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #005f73;
+            text-align: left;
+        }
+        .profile-image-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .profile-image {
+            max-width: 200px;
+            height: auto;
+            border-radius: 50%;
+            border: 5px solid #94d2bd;
+            box-shadow: 0 0 15px rgba(148, 210, 189, 0.5);
+        }
+        .impact-message {
+            background-color: #003459; /* Cor de fundo para a mensagem de impacto */
+            color: #e0e0e0;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+            text-align: center;
+            font-style: italic;
+        }
+        .contact-form input[type="text"],
+        .contact-form input[type="email"],
+        .contact-form textarea {
+            width: calc(100% - 22px); /* Ajuste para padding e border */
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #555;
+            background-color: #444;
+            color: #e0e0e0;
+        }
+        .contact-form button {
+            background-color: #0a9396;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+        }
+        .contact-form button:hover {
+            background-color: #005f73;
+        }
+        .social-links a img {
+            width: 40px;
+            height: 40px;
+            margin: 0 10px;
+            transition: transform 0.3s ease;
+        }
+        .social-links a:hover img {
+            transform: scale(1.1);
+        }
+        footer {
+            text-align: center;
+            padding: 25px 0;
+            background: #001219;
+            color: #ade8f4;
+            margin-top: 30px;
+            border-top: 5px solid #005f73;
+        }
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2.2em;
+            }
+            nav ul li {
+                display: block;
+                margin: 10px 0;
+            }
+            .container {
+                width: 95%;
+            }
+            .section h2 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Jorge Matheus</h1>
+        <p class="subtitle">Músico | Entusiasta de Tecnologia e Inteligência Artificial | Uma Voz pela Cultura e Fé</p>
+    </header>
+
+    <div class="container">
+        <nav>
+            <ul>
+                <li><a href="#sobre" class="active">Sobre Mim</a></li>
+                <li><a href="#projetos">Projetos Musicais</a></li>
+                <li><a href="#blog">Blog & Reflexões</a></li>
+                <li><a href="#impacto">Minha Voz</a></li>
+                <li><a href="#contato">Contato</a></li>
+            </ul>
+        </nav>
+
+        <section id="sobre" class="section">
+            <h2>Sobre Mim: Uma Sinfonia de Paixões</h2>
+            <div class="profile-image-container">
+                <img src="images/jorge_matheus_carteirinha_frente.jpg" alt="Jorge Matheus" class="profile-image">
+            </div>
+            <p>Saudações! Eu sou Jorge Luis Aparecido Matheus, um artista sonoro e um explorador incansável das fronteiras tecnológicas, originário da vibrante cidade de Campinas, em São Paulo. Minha trajetória é uma melodia tecida com os fios da música, uma profunda admiração pela inteligência artificial e uma fé que serve como bússola para minha jornada. Desde muito jovem, a música se revelou não apenas uma paixão, mas uma linguagem universal através da qual busco expressar as nuances da experiência humana, conectar almas e provocar reflexões.</p>
+            <p>O universo da tecnologia, com seu ritmo frenético de inovações, sempre exerceu um fascínio magnético sobre mim. Particularmente, a inteligência artificial se apresenta como uma nova paleta de cores para a criação artística e uma ferramenta revolucionária para o entendimento do mundo. Vejo a convergência entre arte e tecnologia não como um futuro distante, mas como uma realidade pulsante, repleta de possibilidades para expandir nossa criatividade e comunicação. Minha fé, por sua vez, é o alicerce que sustenta minhas convicções e inspira minha busca por um impacto positivo, utilizando meus dons e conhecimentos para fomentar um diálogo construtivo e esperançoso.</p>
+        </section>
+
+        <section id="projetos" class="section">
+            <h2>Projetos Musicais: Harmonias que Contam Histórias</h2>
+            <p>Neste espaço, convido você a mergulhar no meu universo musical. Ao longo dos anos, tive o privilégio de participar de diversas iniciativas, desde composições autorais que buscam traduzir sentimentos em melodias, até colaborações com outros artistas que enriqueceram minha perspectiva. Cada projeto é uma nota em minha sinfonia pessoal, refletindo minhas vivências, aprendizados e a constante busca por novas sonoridades. Em breve, compartilharei aqui detalhes sobre álbuns, singles, apresentações e experimentações que combinam a tradição musical com as possibilidades inovadoras da tecnologia. Aguarde por novidades que prometem ressoar com sua sensibilidade e curiosidade.</p>
+            <!-- Mais conteúdo sobre projetos será adicionado conforme o usuário fornecer -->
+        </section>
+
+        <section id="blog" class="section">
+            <h2>Blog & Reflexões: Pensamentos em Pauta</h2>
+            <p>Bem-vindo ao meu diário de bordo digital, um espaço onde compartilho minhas reflexões sobre música, tecnologia, inteligência artificial, fé e as intersecções entre esses mundos. Aqui, você encontrará artigos, ensaios e pensamentos sobre as transformações culturais e sociais que vivenciamos, sempre sob uma ótica que valoriza a profundidade, a ética e a busca por um futuro mais harmônico. Pretendo explorar como a IA pode ser uma aliada na composição musical, como a tecnologia pode amplificar vozes e como a fé pode nos guiar em meio aos desafios contemporâneos. Este é um convite ao diálogo e à troca de ideias.</p>
+            <!-- Posts do blog serão adicionados aqui -->
+        </section>
+
+        <section id="impacto" class="section">
+            <h2>Minha Voz: Um Manifesto por um Mundo Melhor</h2>
+            <div class="impact-message">
+                <p>"Acredito que a arte, a tecnologia e a espiritualidade são ferramentas poderosas para a transformação. Minha música e minhas palavras são um convite à reflexão sobre nosso papel no mundo, um chamado à ação por justiça social, um eco das lutas culturais que nos definem e uma expressão das convicções ideológicas e políticas que moldam minha visão de um futuro onde a harmonia, o respeito e a fé iluminam nossos caminhos. Que possamos, juntos, compor uma sinfonia de mudança e esperança."
+                </p>
+            </div>
+            <p>Esta seção é dedicada a amplificar as mensagens que considero cruciais para o nosso tempo. Como artista e cidadão, sinto a responsabilidade de usar minha plataforma para abordar temas relevantes, defender causas justas e inspirar um engajamento consciente. Minha luta cultural e social se manifesta no desejo de ver uma sociedade mais equitativa e inclusiva. Minhas convicções ideológicas e políticas são pautadas pela busca incessante por dignidade e oportunidades para todos. Aqui, compartilharei conteúdos, iniciativas e reflexões que ecoam esse compromisso.</p>
+        </section>
+
+        <section id="contato" class="section">
+            <h2>Conecte-se: Vamos Dialogar</h2>
+            <p>Sua opinião, suas ideias e seu contato são muito importantes para mim. Se você deseja trocar uma ideia, propor uma colaboração, saber mais sobre meu trabalho ou simplesmente dizer olá, ficarei muito feliz em ouvi-lo. Você pode me enviar um e-mail diretamente ou me encontrar nas redes sociais. Vamos construir pontes e fortalecer nossa comunidade!</p>
+            <form action="#" method="post" class="contact-form">
+                <div>
+                    <input type="text" name="name" placeholder="Seu Nome Completo" required>
+                </div>
+                <div>
+                    <input type="email" name="email" placeholder="Seu Melhor E-mail" required>
+                </div>
+                <div>
+                    <textarea name="message" rows="5" placeholder="Sua Mensagem" required></textarea>
+                </div>
+                <div>
+                    <button type="submit">Enviar Mensagem</button>
+                </div>
+            </form>
+            <div class="social-links" style="text-align: center; margin-top: 20px;">
+                <p>Você também pode me encontrar em:</p>
+                <!-- Substituir # pelos links reais das redes sociais -->
+                <a href="#" target="_blank"><img src="https://via.placeholder.com/40x40.png?text=FB" alt="Facebook"></a>
+                <a href="#" target="_blank"><img src="https://via.placeholder.com/40x40.png?text=IG" alt="Instagram"></a>
+                <a href="#" target="_blank"><img src="https://via.placeholder.com/40x40.png?text=YT" alt="YouTube"></a>
+                <a href="#" target="_blank"><img src="https://via.placeholder.com/40x40.png?text=LI" alt="LinkedIn"></a>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p>&copy; <span id="currentYear"></span> Jorge Matheus. Todos os direitos reservados. | www.jorgematheus.mus.br</p>
+        <p>Desenvolvido com paixão e código.</p>
+    </footer>
+
+    <script>
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+        // Script para navegação suave e ativação de link no menu
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+                // Atualiza a classe 'active'
+                document.querySelectorAll('nav a').forEach(link => link.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+    <script src="js/script.js"></script> <!-- Pode ser usado para funcionalidades mais complexas no futuro -->
+</body>
+</html>
