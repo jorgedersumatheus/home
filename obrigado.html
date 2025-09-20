@@ -1,50 +1,61 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Obrigado — JOR NEWS VOV</title>
-  <link rel="canonical" href="https://jorgematheus.mus.br/obrigado.html">
-  <style>
-    :root{
-      --bg:#0f1220; --card:#151A2E; --text:#E9ECF1; --muted:#AAB3C5;
-      --accent:#FFD54A;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
-      font:16px/1.6 "Segoe UI",system-ui,-apple-system,Roboto,Arial;
-      color:var(--text); background:radial-gradient(1100px 520px at 100% 10%, #1a2142 0, #0f1220 60%);
-    }
-    .wrap{text-align:center; width:min(900px,90vw); padding:40px}
-    .tag{letter-spacing:.35em; color:var(--accent); font-weight:800; font-size:.78rem}
-    h1{font-size:2.3rem; margin:.5rem 0 1rem}
-    p{color:var(--muted); margin:.3rem 0}
-    .btn{
-      display:inline-block; margin-top:18px; text-decoration:none; font-weight:800;
-      background:linear-gradient(180deg,#ffd34a,#ffb300); color:#1b1300; padding:12px 18px; border-radius:12px;
-    }
-    footer{margin-top:24px; color:var(--muted); font-size:.9rem}
-    .vov{letter-spacing:.18em; font-weight:800}
-  </style>
 
-  <!-- Força remoção do www. se houver -->
+  <!-- Forçar remover www -->
   <script>
     (function () {
-      if (location.hostname.startsWith('www.')) {
-        location.replace(location.protocol + '//' + location.hostname.replace(/^www\./,'') + location.pathname + location.search + location.hash);
+      var h = location.hostname;
+      if (h.startsWith('www.')) {
+        location.replace(location.protocol + '//' + h.replace(/^www\./,'') + location.pathname + location.search + location.hash);
       }
     })();
   </script>
+  <noscript>
+    <meta http-equiv="refresh" content="0; url=https://jorgematheus.mus.br/obrigado.html">
+  </noscript>
+
+  <link rel="canonical" href="https://jorgematheus.mus.br/obrigado.html">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #f1f1f1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+    }
+    h1 {
+      color: #FFD700;
+    }
+    a {
+      margin-top: 20px;
+      display: inline-block;
+      background: #FFD700;
+      color: #111;
+      padding: 10px 20px;
+      border-radius: 5px;
+      text-decoration: none;
+    }
+    a:hover {
+      background: #FFA500;
+    }
+  </style>
 </head>
 <body>
-  <main class="wrap">
-    <div class="tag">JOR NEWS</div>
-    <h1>Mensagem recebida!</h1>
-    <p>Obrigado por falar com a <span class="vov">V O V</span>. Sua mensagem foi recebida com atenção, respeito e <em>Inteligência Vital</em>.</p>
-    <p>Responderemos em breve.</p>
-    <a class="btn" href="/">Voltar ao site</a>
-    <footer>_ / ◡ \\ _ • Save Simpatia • Jorge LA Matheus & AxéBit</footer>
-  </main>
+  <h1>Mensagem recebida!</h1>
+  <p>Obrigado por falar com a <strong>V O V</strong>.  
+  Sua mensagem foi recebida com atenção, respeito e <em>Inteligência Vital</em>.  
+  Responderemos em breve.</p>
+
+  <a href="https://jorgematheus.mus.br">Voltar ao site</a>
+  <p style="margin-top:15px;">Save Simpatia ✨</p>
 </body>
 </html>
