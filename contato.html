@@ -1,1 +1,106 @@
-<!DOCTYPE html><html lang="pt-BR"><head>  <meta charset="UTF-8" />  <meta name="viewport" content="width=device-width, initial-scale=1" />  <title>Contato — JOR NEWS VOV</title>  <style>    :root{      --bg:#f7f2e7;           /* papel quente */      --ink:#1b1b1b;          /* texto */      --accent:#b71c1c;       /* vermelho VOV */      --accent-2:#0a0f29;     /* azul noite */      --gold:#f0c93d;         /* dourado */    }    *{box-sizing:border-box}    body{      margin:0; padding:0; background:var(--bg); color:var(--ink);      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;      min-height:100dvh; display:flex; align-items:center; justify-content:center;    }    .card{      width:min(920px,92vw); background:#fff; border:1px solid #e3dccd;      box-shadow:0 10px 30px rgba(0,0,0,.06); border-radius:14px; padding:28px;    }    header{      border-bottom:3px solid var(--ink); padding-bottom:16px; margin-bottom:20px;    }    .kicker{letter-spacing:.25em; color:var(--accent); font-weight:800;}    h1{font-size:clamp(28px,4.6vw,44px); margin:.2em 0 .1em 0;}    .sub{color:#555; font-style:italic}    form{margin-top:18px; display:grid; gap:14px;}    label{font-weight:600}    input, textarea{      width:100%; padding:14px 16px; border:1px solid #ddd; border-radius:10px;      background:#fafafa; font-size:16px;    }    textarea{min-height:160px; resize:vertical}    .row{display:grid; grid-template-columns:1fr 1fr; gap:14px}    @media (max-width:640px){ .row{grid-template-columns:1fr} }    .btn{      appearance:none; border:0; border-radius:12px; padding:14px 22px;      background:linear-gradient(135deg, var(--accent-2), #253a63);      color:#fff; font-weight:800; letter-spacing:.02em; cursor:pointer;      transition:.25s transform, .25s filter;    }    .btn:hover{transform:translateY(-2px); filter:brightness(1.05)}    .note{font-size:13px; color:#666}    .brand{margin-top:10px; font-size:13px; color:#444}    .brand strong{color:var(--accent)}    .seal{      margin-top:12px; display:inline-block; padding:4px 10px; border:1px solid #eee;      border-radius:999px; font-size:12px; color:#777; background:#fcfcfc;    }  </style></head><body>  <main class="card">    <header>      <div class="kicker">JOR NEWS</div>      <h1>V O V</h1>      <div class="sub">Por <strong>Jorge LA Matheus</strong> &amp; <strong>AxéBit</strong> — Inteligência Vital</div>    </header>    <!-- ===== FORMULARIO ===== -->    <form action="https://formsubmit.co/jorge@jorgematheus.mus.br" method="POST">      <!-- Campos visíveis -->      <div class="row">        <div>          <label for="nome">Nome completo</label>          <input id="nome" name="nome" type="text" placeholder="Seu nome e sobrenome" required />        </div>        <div>          <label for="email">E-mail</label>          <input id="email" name="email" type="email" placeholder="voce@exemplo.com" required />        </div>      </div>      <label for="mensagem">Mensagem</label>      <textarea id="mensagem" name="mensagem" placeholder="Conte sua ideia, dúvida, convite ou pedido de oração..." required></textarea>      <!-- Honeypot anti-bot -->      <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">      <!-- Redirecionamento após envio -->      <input type="hidden" name="_next" value="https://www.jorgematheus.mus.br/obrigado.html">      <!-- Assunto do e-mail recebido -->      <input type="hidden" name="_subject" value="Nova mensagem — Site JOR NEWS VOV">      <!-- Desativa o captcha do FormSubmit (opcional) -->      <input type="hidden" name="_captcha" value="false">      <!-- Auto-resposta para quem enviou -->      <input type="hidden" name="_autoresponse"             value="Olá! Sua mensagem chegou à redação do JOR NEWS VOV. Obrigado pelo contato — respondemos em breve. Save Simpatia ✨">      <button class="btn" type="submit">Enviar mensagem</button>      <div class="note">        Ao enviar, você concorda em ser contatado por e-mail. Seus dados não são compartilhados.      </div>      <div class="brand">        <span class="seal">V O V — Ver • Ouvir • Vender • Viver</span>      </div>    </form>  </main></body></html>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contato - Jorge LA Matheus</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #003366, #005599);
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .container {
+      background: #f9f9f9;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+      max-width: 600px;
+      width: 100%;
+    }
+    h1 {
+      text-align: center;
+      color: #003366;
+      margin-bottom: 10px;
+    }
+    p {
+      text-align: center;
+      color: #555;
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      color: #003366;
+      font-weight: bold;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+    }
+    textarea {
+      resize: vertical;
+    }
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 14px;
+      background: #003366;
+      color: #fff;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #005599;
+    }
+    footer {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 13px;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📬 Fale com Jorge LA Matheus</h1>
+    <p>Cada mensagem é recebida com atenção, respeito e Inteligência Vital 🌿</p>
+
+    <form action="https://formsubmit.co/jorge@jorgematheus.mus.br" method="POST">
+      <label for="nome">Nome</label>
+      <input type="text" id="nome" name="nome" required placeholder="Seu nome completo">
+
+      <label for="email">E-mail</label>
+      <input type="email" id="email" name="email" required placeholder="Seu melhor e-mail">
+
+      <label for="mensagem">Mensagem</label>
+      <textarea id="mensagem" name="mensagem" rows="5" required placeholder="Escreva sua mensagem..."></textarea>
+
+      <!-- Configurações extras do FormSubmit -->
+      <input type="hidden" name="_subject" value="Nova mensagem recebida pelo site VOV">
+      <input type="hidden" name="_captcha" value="false">
+      <input type="hidden" name="_template" value="table">
+
+      <button type="submit">Enviar Mensagem</button>
+    </form>
+
+    <footer>
+      © 2025 Jorge LA Matheus | V O V – Ver Ouvir Vendas
+    </footer>
+  </div>
+</body>
+</html>
