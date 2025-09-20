@@ -1,111 +1,82 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Contato — JOR NEWS VOV</title>
-  <link rel="canonical" href="https://jorgematheus.mus.br/contato.html">
-  <style>
-    :root{
-      --bg:#0f1220; --card:#151A2E; --text:#E9ECF1; --muted:#AAB3C5;
-      --accent:#FFD54A; --accent-2:#FF4D4D;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
-      font:16px/1.6 "Segoe UI",system-ui,-apple-system,Roboto,Arial;
-      color:var(--text); background:radial-gradient(1200px 600px at 10% 0%, #1a2142 0, #0f1220 60%);
-    }
-    .wrap{width:min(960px,92vw); padding:32px}
-    header{margin-bottom:24px}
-    .tag{letter-spacing:.35em; color:var(--accent); font-weight:700; font-size:.78rem}
-    h1{margin:.25rem 0 0; font-size:2.2rem; line-height:1.2}
-    p.lead{margin:.5rem 0 0; color:var(--muted)}
-    .card{
-      margin-top:20px; background:var(--card); border-radius:16px; padding:22px;
-      box-shadow:0 12px 40px rgba(0,0,0,.35); border:1px solid #1f2746;
-    }
-    label{display:block; font-weight:600; margin:12px 0 6px}
-    input, textarea{
-      width:100%; background:#0e1326; color:var(--text);
-      border:1px solid #263158; border-radius:12px; padding:12px 14px;
-      outline:none; transition:border .2s, box-shadow .2s;
-    }
-    input:focus,textarea:focus{border-color:#3a4ea3; box-shadow:0 0 0 3px rgba(58,78,163,.25)}
-    textarea{min-height:160px; resize:vertical}
-    .row{display:grid; gap:14px; grid-template-columns:1fr 1fr}
-    @media (max-width:640px){ .row{grid-template-columns:1fr} }
-    .actions{display:flex; gap:12px; align-items:center; margin-top:16px}
-    .btn{
-      appearance:none; border:none; border-radius:12px; padding:12px 18px;
-      font-weight:700; cursor:pointer; transition:transform .04s ease, filter .2s;
-    }
-    .btn-primary{background:linear-gradient(180deg,#ffd34a,#ffb300); color:#1b1300}
-    .btn-primary:active{transform:translateY(1px)}
-    .note{font-size:.9rem; color:var(--muted)}
-    footer{margin-top:22px; font-size:.9rem; color:var(--muted); text-align:center}
-    .vov{font-weight:800; letter-spacing:.18em}
-  </style>
 
-  <!-- Redireciona automaticamente caso alguém acesse com www. -->
+  <!-- Forçar remover www -->
   <script>
     (function () {
-      if (location.hostname.startsWith('www.')) {
-        location.replace(location.protocol + '//' + location.hostname.replace(/^www\./,'') + location.pathname + location.search + location.hash);
+      var h = location.hostname;
+      if (h.startsWith('www.')) {
+        location.replace(location.protocol + '//' + h.replace(/^www\./,'') + location.pathname + location.search + location.hash);
       }
     })();
   </script>
+  <noscript>
+    <meta http-equiv="refresh" content="0; url=https://jorgematheus.mus.br/contato.html">
+  </noscript>
+
+  <link rel="canonical" href="https://jorgematheus.mus.br/contato.html">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #f1f1f1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    h1 {
+      color: #FFD700;
+    }
+    form {
+      background: #222;
+      padding: 20px;
+      border-radius: 10px;
+      width: 100%;
+      max-width: 400px;
+    }
+    input, textarea {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+    }
+    button {
+      background: #FFD700;
+      color: #111;
+      border: none;
+      padding: 10px;
+      width: 100%;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #FFA500;
+    }
+  </style>
 </head>
 <body>
-  <main class="wrap">
-    <header>
-      <div class="tag">JOR NEWS</div>
-      <h1>Fale com a <span class="vov">V O V</span></h1>
-      <p class="lead">Cada mensagem é recebida com atenção, respeito e <em>Inteligência Vital</em>.</p>
-    </header>
+  <h1>Contato VOV</h1>
+  <form action="https://formsubmit.co/jorge@jorgematheus.mus.br" method="POST" accept-charset="UTF-8">
+    <input type="text" name="nome" placeholder="Seu nome" required>
+    <input type="email" name="email" placeholder="Seu e-mail" required>
+    <textarea name="mensagem" rows="5" placeholder="Sua mensagem" required></textarea>
 
-    <section class="card">
-      <!-- FORMULÁRIO -->
-      <form id="vovForm" action="https://formsubmit.co/jorge@jorgematheus.mus.br" method="POST" accept-charset="UTF-8">
-        <!-- Campos visíveis -->
-        <div class="row">
-          <div>
-            <label for="nome">Nome</label>
-            <input id="nome" name="nome" type="text" autocomplete="name" placeholder="Seu nome" required>
-          </div>
-          <div>
-            <label for="email">E-mail</label>
-            <input id="email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="voce@exemplo.com" required>
-          </div>
-        </div>
+    <!-- Configuração do FormSubmit -->
+    <input type="hidden" name="_next" value="https://jorgematheus.mus.br/obrigado.html">
+    <input type="hidden" name="_subject" value="Mensagem recebida via Contato — JOR NEWS VOV">
+    <input type="hidden" name="_template" value="table">
+    <input type="hidden" name="_captcha" value="false">
+    <input type="text" name="_honey" style="display:none">
 
-        <label for="mensagem">Mensagem</label>
-        <textarea id="mensagem" name="mensagem" placeholder="Escreva sua mensagem..." required></textarea>
-
-        <!-- Campos ocultos do FormSubmit -->
-        <input type="hidden" name="_next" id="_next">
-        <input type="hidden" name="_subject" value="Mensagem recebida via Contato — JOR NEWS VOV">
-        <input type="hidden" name="_template" value="table">
-        <input type="hidden" name="_captcha" value="false">
-        <!-- honeypot -->
-        <input type="text" name="_honey" style="display:none">
-
-        <div class="actions">
-          <button class="btn btn-primary" type="submit">Enviar mensagem</button>
-          <span class="note">Resposta em breve — <strong>Jorge LA Matheus & AxéBit</strong>.</span>
-        </div>
-      </form>
-    </section>
-
-    <footer>© <span id="y"></span> JOR NEWS VOV — Jorge LA Matheus & AxéBit</footer>
-  </main>
-
-  <script>
-    // preenche _next para apontar SEMPRE ao domínio atual
-    document.getElementById('_next').value = window.location.origin + '/obrigado.html';
-    // ano no rodapé
-    document.getElementById('y').textContent = new Date().getFullYear();
-  </script>
+    <button type="submit">Enviar</button>
+  </form>
 </body>
 </html>
-      
