@@ -1,60 +1,50 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Obrigado - VOV</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Obrigado — JOR NEWS VOV</title>
+  <link rel="canonical" href="https://jorgematheus.mus.br/obrigado.html">
   <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #121212;
-      color: #f5f5f5;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      text-align: center;
+    :root{
+      --bg:#0f1220; --card:#151A2E; --text:#E9ECF1; --muted:#AAB3C5;
+      --accent:#FFD54A;
     }
-    .container {
-      max-width: 600px;
-      padding: 30px;
-      border: 2px solid #FFD700;
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.05);
+    *{box-sizing:border-box}
+    body{
+      margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+      font:16px/1.6 "Segoe UI",system-ui,-apple-system,Roboto,Arial;
+      color:var(--text); background:radial-gradient(1100px 520px at 100% 10%, #1a2142 0, #0f1220 60%);
     }
-    h1 {
-      color: #FFD700;
-      font-size: 2.5rem;
-      margin-bottom: 15px;
+    .wrap{text-align:center; width:min(900px,90vw); padding:40px}
+    .tag{letter-spacing:.35em; color:var(--accent); font-weight:800; font-size:.78rem}
+    h1{font-size:2.3rem; margin:.5rem 0 1rem}
+    p{color:var(--muted); margin:.3rem 0}
+    .btn{
+      display:inline-block; margin-top:18px; text-decoration:none; font-weight:800;
+      background:linear-gradient(180deg,#ffd34a,#ffb300); color:#1b1300; padding:12px 18px; border-radius:12px;
     }
-    p {
-      font-size: 1.2rem;
-      line-height: 1.6;
-    }
-    a {
-      display: inline-block;
-      margin-top: 20px;
-      padding: 12px 25px;
-      color: #121212;
-      background: #FFD700;
-      border-radius: 8px;
-      font-weight: bold;
-      text-decoration: none;
-      transition: 0.3s;
-    }
-    a:hover {
-      background: #FFA500;
-    }
+    footer{margin-top:24px; color:var(--muted); font-size:.9rem}
+    .vov{letter-spacing:.18em; font-weight:800}
   </style>
+
+  <!-- Força remoção do www. se houver -->
+  <script>
+    (function () {
+      if (location.hostname.startsWith('www.')) {
+        location.replace(location.protocol + '//' + location.hostname.replace(/^www\./,'') + location.pathname + location.search + location.hash);
+      }
+    })();
+  </script>
 </head>
 <body>
-  <div class="container">
-    <h1>🌟 Obrigado!</h1>
-    <p>Sua mensagem foi enviada com sucesso.<br>  
-    A equipe <strong>Ver Ouvir Vendas</strong> recebeu com atenção e em breve retornará.</p>
-    <a href="https://jorgematheus.mus.br">Voltar ao Início</a>
-  </div>
+  <main class="wrap">
+    <div class="tag">JOR NEWS</div>
+    <h1>Mensagem recebida!</h1>
+    <p>Obrigado por falar com a <span class="vov">V O V</span>. Sua mensagem foi recebida com atenção, respeito e <em>Inteligência Vital</em>.</p>
+    <p>Responderemos em breve.</p>
+    <a class="btn" href="/">Voltar ao site</a>
+    <footer>_ / ◡ \\ _ • Save Simpatia • Jorge LA Matheus & AxéBit</footer>
+  </main>
 </body>
 </html>
