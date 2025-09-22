@@ -1,82 +1,113 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Contato — JOR NEWS VOV</title>
-
-  <!-- Forçar remover www -->
-  <script>
-    (function () {
-      var h = location.hostname
-      if (h.startsWith('')) {
-        location.replace(location.protocol + '//' + h.replace(/^www\./,'') + location.pathname + location.search + location.hash);
-      }
-    })();
-  </script>
-  <noscript>
-    <meta http-equiv="refresh" content="0; url=https://jorgematheus.mus.br/contato.html">
-  </noscript>
-
-  <link rel="canonical" href="https://jorgematheus.mus.br/contato.html">
   <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #111;
-      color: #f1f1f1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
+    :root{
+      --bg:#f7f2e7;           /* papel quente */
+      --ink:#1b1b1b;          /* texto */
+      --accent:#b71c1c;       /* vermelho VOV */
+      --accent-2:#0a0f29;     /* azul noite */
+      --gold:#f0c93d;         /* dourado */
     }
-    h1 {
-      color: #FFD700;
+    *{box-sizing:border-box}
+    body{
+      margin:0; padding:0; background:var(--bg); color:var(--ink);
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      min-height:100dvh; display:flex; align-items:center; justify-content:center;
     }
-    form {
-      background: #222;
-      padding: 20px;
-      border-radius: 10px;
-      width: 100%;
-      max-width: 400px;
+    .card{
+      width:min(920px,92vw); background:#fff; border:1px solid #e3dccd;
+      box-shadow:0 10px 30px rgba(0,0,0,.06); border-radius:14px; padding:28px;
     }
-    input, textarea {
-      width: 100%;
-      margin-bottom: 10px;
-      padding: 10px;
-      border: none;
-      border-radius: 5px;
+    header{
+      border-bottom:3px solid var(--ink); padding-bottom:16px; margin-bottom:20px;
     }
-    button {
-      background: #FFD700;
-      color: #111;
-      border: none;
-      padding: 10px;
-      width: 100%;
-      border-radius: 5px;
-      cursor: pointer;
+    .kicker{letter-spacing:.25em; color:var(--accent); font-weight:800;}
+    h1{font-size:clamp(28px,4.6vw,44px); margin:.2em 0 .1em 0;}
+    .sub{color:#555; font-style:italic}
+    form{margin-top:18px; display:grid; gap:14px;}
+    label{font-weight:600}
+    input, textarea{
+      width:100%; padding:14px 16px; border:1px solid #ddd; border-radius:10px;
+      background:#fafafa; font-size:16px;
     }
-    button:hover {
-      background: #FFA500;
+    textarea{min-height:160px; resize:vertical}
+    .row{display:grid; grid-template-columns:1fr 1fr; gap:14px}
+    @media (max-width:640px){ .row{grid-template-columns:1fr} }
+    .btn{
+      appearance:none; border:0; border-radius:12px; padding:14px 22px;
+      background:linear-gradient(135deg, var(--accent-2), #253a63);
+      color:#fff; font-weight:800; letter-spacing:.02em; cursor:pointer;
+      transition:.25s transform, .25s filter;
+    }
+    .btn:hover{transform:translateY(-2px); filter:brightness(1.05)}
+    .note{font-size:13px; color:#666}
+    .brand{margin-top:10px; font-size:13px; color:#444}
+    .brand strong{color:var(--accent)}
+    .seal{
+      margin-top:12px; display:inline-block; padding:4px 10px; border:1px solid #eee;
+      border-radius:999px; font-size:12px; color:#777; background:#fcfcfc;
     }
   </style>
 </head>
 <body>
-  <h1>Contato VOV</h1>
-  <form action="https://formsubmit.co/jorge@jorgematheus.mus.br" method="POST" accept-charset="UTF-8">
-    <input type="text" name="nome" placeholder="Seu nome" required>
-    <input type="email" name="email" placeholder="Seu e-mail" required>
-    <textarea name="mensagem" rows="5" placeholder="Sua mensagem" required></textarea>
+  <main class="card">
+    <header>
+      <div class="kicker">JOR NEWS</div>
+      <h1>V O V</h1>
+      <div class="sub">Por <strong>Jorge LA Matheus</strong> &amp; <strong>AxéBit</strong> — Inteligência Vital</div>
+    </header>
 
-    <!-- Configuração do FormSubmit -->
-    <input type="hidden" name="_next" value="https://jorgematheus.mus.br/obrigado.html">
-    <input type="hidden" name="_subject" value="Mensagem recebida via Contato — JOR NEWS VOV">
-    <input type="hidden" name="_template" value="table">
-    <input type="hidden" name="_captcha" value="false">
-    <input type="text" name="_honey" style="display:none">
+    <!-- ===== FORMULARIO ===== -->
+    <form action="https://formsubmit.co/jorge@jorgematheus.mus.br" method="POST">
+      <!-- Campos visíveis -->
+      <div class="row">
+        <div>
+          <label for="nome">Nome completo</label>
+          <input id="nome" name="nome" type="text" placeholder="Seu nome e sobrenome" required />
+        </div>
+        <div>
+          <label for="email">E-mail</label>
+          <input id="email" name="email" type="email" placeholder="voce@exemplo.com" required />
+        </div>
+      </div>
 
-    <button type="submit">Enviar</button>
-  </form>
+      <label for="mensagem">Mensagem</label>
+      <textarea id="mensagem" name="mensagem" placeholder="Conte sua ideia, dúvida, convite ou pedido de oração..." required></textarea>
+
+      <!-- Honeypot anti-bot -->
+      <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
+
+      <!-- Redirecionamento após envio -->
+      <input type="hidden" name="_next" value="https://jorgematheus.mus.br/obrigado.html">
+
+      <!-- Assunto do e-mail recebido -->
+      <input type="hidden" name="_subject" value="Nova mensagem — Site JOR NEWS VOV">
+
+      <!-- Desativa o captcha do FormSubmit (opcional) -->
+      <input type="hidden" name="_captcha" value="false">
+
+      <!-- Auto-resposta para quem enviou -->
+      <input type="hidden" name="_autoresponse"
+             value="Olá! Sua mensagem chegou à redação do JOR NEWS VOV. Obrigado pelo contato — respondemos em breve. Save Simpatia ✨">
+
+      <button class="btn" type="submit">Enviar mensagem</button>
+
+      <div class="note">
+        Ao enviar, você concorda em ser contatado por e-mail. Seus dados não são compartilhados.
+      </div>
+      <div class="brand">
+        <span class="seal">V O V — Ver • Ouvir • Vender • Viver</span>
+      </div>
+    </form>
+  </main>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" 
+integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" 
+data-cf-beacon='{"version":"2024.11.0","token":"ed9791cb257e4648a570a764de2dbb2b","r":1,"server_timing":
+{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},
+"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
