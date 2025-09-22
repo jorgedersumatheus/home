@@ -9,7 +9,7 @@
   <script>
     (function () {
       var h = location.hostname;
-      if (h.startsWith('www.')) {
+      if (h.startsWith('')) {
         location.replace(location.protocol + '//' + h.replace(/^www\./,'') + location.pathname + location.search + location.hash);
       }
     })();
