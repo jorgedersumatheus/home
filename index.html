@@ -3,46 +3,128 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>V O V – Ver, Ouvir, Vender, Viver</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JOR NEWS VOV – Plataforma Oficial</title>
   <style>
-    body { font-family: Georgia, serif; margin: 40px auto; max-width: 900px; background: #fff; color: #222; line-height: 1.6; }
-    header { text-align: center; margin-bottom: 30px; }
-    header h1 { font-size: 36px; margin: 0; color: #b30000; }
-    header p { margin: 5px 0; color: #555; }
-    footer { border-top: 2px solid #eee; padding-top: 15px; text-align: center; color: #555; margin-top: 40px; }
-    nav { background: #b30000; position: fixed; top: 0; left: 0; right: 0; height: 50px; display: flex; align-items: center; z-index: 1000; }
-    nav ul { list-style: none; margin: 0; padding: 0 20px; display: flex; gap: 20px; }
-    nav a { color: #fff; text-decoration: none; font-weight: bold; font-family: Arial, sans-serif; }
-    nav a:hover { text-decoration: underline; }
-    body { margin-top: 70px; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #fdfdfd;
+      color: #222;
+    }
+    header {
+      background: #000;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 26px;
+    }
+    header p {
+      margin: 5px 0 0;
+      font-size: 14px;
+      color: #ddd;
+    }
+    nav {
+      background: #333;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      padding: 10px 0;
+    }
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+    nav a:hover {
+      color: #ffd700;
+    }
+    main {
+      padding: 30px;
+      text-align: center;
+    }
+    main h2 {
+      margin-bottom: 15px;
+      font-size: 22px;
+    }
+    .btn {
+      display: inline-block;
+      background: #000;
+      color: #fff;
+      padding: 12px 25px;
+      margin-top: 20px;
+      text-decoration: none;
+      border-radius: 6px;
+      transition: 0.3s;
+    }
+    .btn:hover {
+      background: #ffd700;
+      color: #000;
+    }
+    .placeholder {
+      margin-top: 40px;
+      padding: 20px;
+      border: 2px dashed #ccc;
+      background: #fafafa;
+      color: #666;
+      font-size: 14px;
+    }
+    footer {
+      background: #000;
+      color: #fff;
+      text-align: center;
+      padding: 15px;
+      margin-top: 40px;
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
-  <nav>
-    <ul>
-      <li><a href="/index.html">🏠 Início</a></li>
-      <li><a href="/vov/edicoes.html">📰 JOR NEWS VOV</a></li>
-      <li><a href="/vov/blackvox/index.html">🎵 BLACKVOX</a></li>
-      <li><a href="/vov/contato.html">✉️ Contato</a></li>
-    </ul>
-  </nav>
-
   <header>
-    <h1>Bem-vindo à Plataforma V O V</h1>
-    <p>Ver, Ouvir, Vender, Viver</p>
+    <h1>JOR NEWS VOV</h1>
+    <p>Por Jorge LA Matheus &amp; AxéBit – <span id="datetime"></span></p>
   </header>
 
+  <nav>
+    <a href="index.html">Início</a>
+    <a href="vov/edicao.html">JOR NEWS</a>
+    <a href="vov/blackvox/index.html">BLACKVOX</a>
+    <a href="vov/contato.html">Contato</a>
+  </nav>
+
   <main>
-    <p>Aqui você encontra a inteligência vital da V O V em ação:</p>
-    <ul>
-      <li><a href="/vov/edicoes.html">📑 Ler edições do JOR NEWS VOV</a></li>
-      <li><a href="/vov/blackvox/index.html">🎶 Acessar o BLACKVOX Playlists</a></li>
-      <li><a href="/vov/contato.html">📩 Fale conosco</a></li>
-    </ul>
+    <h2>Bem-vindo(a) à Plataforma VOV</h2>
+    <p>A VOV é notícia, poesia e inteligência vital em movimento.<br>
+    Aqui você encontra informação, música e conexão verdadeira.</p>
+
+    <a href="vov/edicao.html" class="btn">📖 Abrir última edição do JOR NEWS VOV</a>
+
+    <div class="placeholder">
+      <strong>PÁGINA EM CONSTRUÇÃO</strong><br>
+      Alguns conteúdos estarão disponíveis em breve. Aguarde!
+    </div>
   </main>
 
   <footer>
-    <p>© 2025 Jorge LA Matheus & AxéBit – V O V</p>
+    © 2025 V O V – Ver, Ouvir, Vender, Viver
   </footer>
+
+  <script>
+    // Script para exibir data e hora em tempo real
+    function updateDateTime() {
+      const now = new Date();
+      const options = { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' };
+      document.getElementById("datetime").textContent = now.toLocaleDateString("pt-BR", options);
+    }
+    updateDateTime();
+    setInterval(updateDateTime, 60000);
+  </script>
 </body>
-</html>          
+</html>
+
