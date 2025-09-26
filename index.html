@@ -7,76 +7,57 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>V O V — Ver • Ouvir • Vender • Viver</title>
-  <meta name="description" content="Palavra que canta. Presença que vende. Cultura que move. JOR NEWS VOV." />
-  <!-- Analytics leve (Plausible). Troque o domínio se precisar. -->
+  <meta name="description" content="Palavra que canta. Presença que vende. Cultura que move. JOR NEWS V O V." />
+  <!-- Analytics leve (Plausible) -->
   <script defer data-domain="jorgematheus.mus.br" src="https://plausible.io/js/script.js"></script>
   <style>
-
-Vi o print: na edição mobile, vários primeiros caracteres sumiram no CSS da .btn (gap, padding, border-radius, font-weight, etc. viraram ap, adding, order-radius…), então a regra ficou inválida e o cursor: pointer não é aplicado.
-
-Cole exatamente este bloco (substitua toda a regra atual da .btn até a chave }) e depois acrescente a regra global dos links:
-
-/* === Botões === */
-.btn{
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 14px 18px;
-  border-radius: 14px;
-  font-weight: 800;
-  border: 1px solid var(--stroke);
-  background: #0d1727;
-  color: #dbe9ff;
-  transition: transform .15s ease, box-shadow .2s ease, border-color .2s ease;
-  cursor: pointer;
-}
-
-/* mãozinha para QUALQUER link */
-a{ cursor: pointer; }
-
-
-
-
-    
-    :root{--bg:#0a0f17;--ink:#eaf2ff;--muted:#9fb1c9;--glass:#0f1624cc;--stroke:#1b2942;--brand1:#7bdcff;--brand2:#f7d86a;--chip:#101827;--radius:18px;--shadow:0 12px 40px rgba(0,0,0,.35);--blur:12px}
-    *{box-sizing:border-box} html,body{margin:0;background:var(--bg);color:var(--ink);font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial}
-    a{color:inherit;text-decoration:none} .wrap{max-width:1040px;margin:auto;padding:22px 16px}
-    body::before{content:"";position:fixed;inset:0;background:
-      radial-gradient(1200px 600px at 10% -10%, rgba(123,220,255,.12), transparent 60%),
-      radial-gradient(1000px 500px at 90% 10%, rgba(247,216,106,.10), transparent 55%),
-      radial-gradient(700px 400px at 60% 100%, rgba(123,220,255,.10), transparent 60%),
-      repeating-radial-gradient(circle at 20% 30%, rgba(255,255,255,.06), transparent 3px 8px)}
+    :root{
+      --bg:#0a0f17;--ink:#eaf2ff;--muted:#9fb1c9;
+      --stroke:#1b2942;--brand1:#7bdcff;--brand2:#f7d86a;
+      --chip:#101827;--radius:18px;--shadow:0 12px 40px rgba(0,0,0,.35);--blur:12px
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;background:var(--bg);color:var(--ink);font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial}
+    a{color:inherit;text-decoration:none;cursor:pointer}
+    .wrap{max-width:1040px;margin:auto;padding:22px 16px}
+    body::before{
+      content:"";position:fixed;inset:0;background:
+        radial-gradient(1200px 600px at 10% -10%, rgba(123,220,255,.12), transparent 60%),
+        radial-gradient(1000px 500px at 90% 10%, rgba(247,216,106,.10), transparent 55%),
+        radial-gradient(700px 400px at 60% 100%, rgba(123,220,255,.10), transparent 60%),
+        repeating-radial-gradient(circle at 20% 30%, rgba(255,255,255,.06), transparent 3px 8px)
+    }
     header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
-    .brand{display:flex;align-items:center;gap:10px;background:linear-gradient(90deg,#0d1726,#0e1b2d);border:1px solid var(--stroke);border-radius:999px;padding:10px 14px;box-shadow:var(--shadow);backdrop-filter:blur(var(--blur))}
+    .brand{display:flex;align-items:center;gap:10px;background:linear-gradient(90deg,#0d1726,#0e1b2d);
+      border:1px solid var(--stroke);border-radius:999px;padding:10px 14px;box-shadow:var(--shadow);backdrop-filter:blur(var(--blur))}
     .brand b{letter-spacing:.35em}
     nav{display:flex;gap:8px;flex-wrap:wrap}
     .navbtn{padding:10px 12px;border-radius:12px;background:transparent;border:1px solid var(--stroke);color:var(--muted)}
     .navbtn:hover{border-color:#2a3d61;color:#cfe2ff}
-    .hero{position:relative;background:linear-gradient(180deg,rgba(16,25,42,.85),rgba(12,20,35,.65));border:1px solid var(--stroke);border-radius:var(--radius);padding:34px 20px;box-shadow:var(--shadow);backdrop-filter:blur(var(--blur));overflow:hidden}
-    .hero::after{content:"";position:absolute;inset:-1px;border-radius:inherit;background:linear-gradient(120deg,rgba(123,220,255,.18),rgba(247,216,106,.18));mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);padding:1px;opacity:.45;mix-blend:screen}
-    h1{font-weight:800;line-height:1.02;margin:2px 0 10px;font-size:clamp(40px,6.6vw,76px);letter-spacing:.01em;background:linear-gradient(90deg,var(--brand1),var(--brand2));-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 2px 18px rgba(123,220,255,.15)}
+    .hero{position:relative;background:linear-gradient(180deg,rgba(16,25,42,.85),rgba(12,20,35,.65));
+      border:1px solid var(--stroke);border-radius:var(--radius);padding:34px 20px;box-shadow:var(--shadow);backdrop-filter:blur(var(--blur));overflow:hidden}
+    .hero::after{content:"";position:absolute;inset:-1px;border-radius:inherit;background:linear-gradient(120deg,rgba(123,220,255,.18),rgba(247,216,106,.18));padding:1px;opacity:.45;mix-blend:screen;pointer-events:none}
+    h1{font-weight:800;line-height:1.02;margin:2px 0 10px;font-size:clamp(40px,6.6vw,76px);
+      letter-spacing:.01em;background:linear-gradient(90deg,var(--brand1),var(--brand2));-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 2px 18px rgba(123,220,255,.15)}
     .sub{color:var(--muted);margin:0 0 16px;font-size:clamp(15px,2.6vw,18px)}
     .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
-    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 18px;border-radius:14px;font-weight:800;border:1px solid var(--stroke);background:#0d1727;color:#dbe9ff;transition:transform .15s ease,box-shadow .2s ease,border-color .2s ease}
+    /* === Botões === */
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;gap:8px;
+      padding:14px 18px;border-radius:14px;font-weight:800;border:1px solid var(--stroke);
+      background:#0d1727;color:#dbe9ff;transition:transform .15s ease,box-shadow .2s ease,border-color .2s ease;cursor:pointer
+    }
     .btn.primary{background:linear-gradient(90deg,rgba(123,220,255,.22),rgba(247,216,106,.22));border-color:#2a3d61;color:#0d1117;text-shadow:0 1px 0 rgba(255,255,255,.35);backdrop-filter:blur(6px)}
     .btn:hover{transform:translateY(-1px);box-shadow:0 10px 26px rgba(0,0,0,.25);border-color:#38527e}
     .ticker{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px;margin:14px 0 6px;border-radius:14px;background:rgba(16,25,42,.6);border:1px solid var(--stroke);color:var(--muted)}
-    .ticker strong{color:#cfe2ff} .link-mini{padding:8px 12px;border-radius:12px;background:transparent;border:1px solid var(--stroke)}
+    .ticker strong{color:#cfe2ff}
+    .link-mini{padding:8px 12px;border-radius:12px;background:transparent;border:1px solid var(--stroke)}
     .link-mini:hover{border-color:#2a3d61;color:#dbe9ff}
     footer{color:var(--muted);font-size:14px;margin:22px 2px 8px}
     .social{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
     .social a{background:var(--chip);padding:10px 12px;border-radius:10px;border:1px solid var(--stroke)}
- 
-  /* força a “mãozinha” em todos os links e botões */
-.btn,
-.navbtn,
-.link-mini,
-a[href] {
-  cursor: pointer !important;
-}
-  
-  
+    /* antibala: pointer em tudo que é link/botão */
+    .btn,.navbtn,.link-mini,a[href]{cursor:pointer !important}
   </style>
 </head>
 <body>
@@ -84,9 +65,9 @@ a[href] {
     <header>
       <div class="brand"><b>V • O • V</b></div>
       <nav>
-        <a class="navbtn" href="/contato.html">Contato</a>
-        <a class="navbtn" href="/jornews.html">JOR NEWS</a>
-        <a class="navbtn" href="/audios/">BLACKVOX</a>
+        <a class="navbtn" href="https://jorgematheus.mus.br/vov/contato.html" rel="noopener">Contato</a>
+        <a class="navbtn" href="https://jorgematheus.mus.br/vov/jornews.html" rel="noopener">JOR NEWS</a>
+        <a class="navbtn" href="https://jorgematheus.mus.br/vov/audios/" rel="noopener">BLACKVOX</a>
       </nav>
     </header>
 
@@ -95,27 +76,27 @@ a[href] {
       <p class="sub">Palavra que canta. Presença que vende. Cultura que move.</p>
 
       <div class="actions">
-        <a class="btn primary"https://jorgematheus.mus.br/vov/jornews.html">Abrir JOR NEWS V O V</a>
-        <a class="btn" href="/https://jorgematheus.mus.br/vov/contato.html">Falar com a V O V</a>
-        <a class="btn" href="/audios/">Ouvir a trilha (BLACKVOX)</a>
+        <a class="btn primary" href="https://jorgematheus.mus.br/vov/jornews.html" rel="noopener">Abrir JOR NEWS V O V</a>
+        <a class="btn" href="https://jorgematheus.mus.br/vov/contato.html" rel="noopener">Falar com a V O V</a>
+        <a class="btn" href="https://jorgematheus.mus.br/vov/audios/" rel="noopener">Ouvir a trilha (BLACKVOX)</a>
       </div>
     </section>
 
     <div class="ticker" role="region" aria-label="Hoje no JOR NEWS">
       <div>Hoje no JOR NEWS — <strong id="data-hoje">--</strong></div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <a class="link-mini" href="/vov/jornews.html#editorial">Editorial</a>
-        <a class="link-mini" href="/vov/jornews.html#agenda">Agenda</a>
-        <a class="link-mini" href="/vov/jornews.html#edicao-completa">Edição completa</a>
+        <a class="link-mini" href="https://jorgematheus.mus.br/vov/jornews.html#editorial" rel="noopener">Editorial</a>
+        <a class="link-mini" href="https://jorgematheus.mus.br/vov/jornews.html#agenda" rel="noopener">Agenda</a>
+        <a class="link-mini" href="https://jorgematheus.mus.br/vov/jornews.html#edicao-completa" rel="noopener">Edição completa</a>
       </div>
     </div>
 
     <footer>
       <div>© <span id="ano"></span> V O V — Jorge LA Matheus & AxéBit</div>
       <div class="social">
-        <a href="https://www.instagram.com/verouvirvendas" rel="me noopener" target="_blank">Instagram</a>
-        <a href="#LINK_LINKEDIN" target="_blank" rel="noopener">LinkedIn</a>
-        <a href="#LINK_X" target="_blank" rel="noopener">X (Twitter)</a>
+        <a href="https://www.instagram.com/verouvirvendas" target="_blank" rel="noopener">Instagram</a>
+        <a href="#" title="Envie a URL do seu LinkedIn que eu atualizo">LinkedIn</a>
+        <a href="#" title="Envie a URL do seu X (Twitter) que eu atualizo">X (Twitter)</a>
       </div>
     </footer>
   </div>
