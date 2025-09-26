@@ -1,7 +1,6 @@
 
 <!--Atualizado em 24/09/2025 -->
 <!--Atualizado em 26/09/2025 -->
-
 <!doctype html>
 <html lang="pt-br">
 <head>
@@ -9,127 +8,85 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>V O V — Ver • Ouvir • Vender • Viver</title>
   <meta name="description" content="Palavra que canta. Presença que vende. Cultura que move. JOR NEWS VOV." />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Playfair+Display:wght@600;800&display=swap" rel="stylesheet">
+  <!-- Analytics leve (Plausible). Troque o domínio se precisar. -->
+  <script defer data-domain="jorgematheus.mus.br" src="https://plausible.io/js/script.js"></script>
   <style>
-    :root{
-      --bg:#0e141b;           /* fundo noite */
-      --panel:#111822;
-      --text:#e8ebf1;
-      --muted:#b7c0cf;
-      --brand:#f7c64b;        /* amarelo ouro */
-      --accent:#0b1d33;       /* azul profundo */
-      --chip:#1b2430;
-      --ok:#2ecc71;
-      --err:#ff5c5c;
-      --radius:18px;
-      --shadow:0 8px 28px rgba(0,0,0,.35);
-    }
-    *{box-sizing:border-box}
-    html,body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial}
-    a{color:inherit;text-decoration:none}
-    .wrap{max-width:1040px;margin:auto;padding:28px 18px}
-    header{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
-    .brand-pill{border:2px solid #f0cc73;border-radius:999px;padding:8px 14px;font-weight:700;letter-spacing:.35em}
-    .tag{font-size:12px;color:var(--muted)}
-    .hero{background:linear-gradient(180deg,#0f1d2c 0%,#0c1624 60%,#0e141b 100%);border-radius:var(--radius);padding:32px 22px;box-shadow:var(--shadow)}
-    .hero h1{font-family:"Playfair Display",serif;font-size:42px;line-height:1.05;margin:4px 0 10px}
-    .hero p{color:var(--muted);margin:0 0 22px}
-    .actions{display:flex;flex-wrap:wrap;gap:12px}
-    .btn{display:inline-flex;align-items:center;justify-content:center;padding:14px 18px;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:#0f1824}
-    .btn.primary{background:var(--brand);color:#1d1200;font-weight:800;border:none}
-    .btn.ghost{background:transparent}
-    .btn:hover{transform:translateY(-1px)}
-    .today{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:22px 0 10px}
-    .today h2{font-family:"Playfair Display",serif;margin:0;font-size:24px}
-    .grid{display:grid;grid-template-columns:1fr;gap:14px}
-    .card{background:var(--panel);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:16px 14px}
-    .card h3{margin:0 0 6px;font-size:16px}
-    .card p{margin:0;color:var(--muted)}
-    .chips{display:flex;flex-wrap:wrap;gap:8px;margin:26px 0 0}
-    .chip{background:var(--chip);border:1px solid rgba(255,255,255,.06);padding:8px 12px;border-radius:999px;font-size:13px;color:var(--muted)}
-    footer{margin:28px 0 12px;color:var(--muted);font-size:14px}
-    .links{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
-    .links a{background:var(--chip);padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.06)}
-    @media(min-width:768px){
-      .hero{padding:40px 36px}
-      .hero h1{font-size:64px}
-      .grid{grid-template-columns:repeat(2,1fr)}
-    }
+    :root{--bg:#0a0f17;--ink:#eaf2ff;--muted:#9fb1c9;--glass:#0f1624cc;--stroke:#1b2942;--brand1:#7bdcff;--brand2:#f7d86a;--chip:#101827;--radius:18px;--shadow:0 12px 40px rgba(0,0,0,.35);--blur:12px}
+    *{box-sizing:border-box} html,body{margin:0;background:var(--bg);color:var(--ink);font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial}
+    a{color:inherit;text-decoration:none} .wrap{max-width:1040px;margin:auto;padding:22px 16px}
+    body::before{content:"";position:fixed;inset:0;background:
+      radial-gradient(1200px 600px at 10% -10%, rgba(123,220,255,.12), transparent 60%),
+      radial-gradient(1000px 500px at 90% 10%, rgba(247,216,106,.10), transparent 55%),
+      radial-gradient(700px 400px at 60% 100%, rgba(123,220,255,.10), transparent 60%),
+      repeating-radial-gradient(circle at 20% 30%, rgba(255,255,255,.06), transparent 3px 8px)}
+    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+    .brand{display:flex;align-items:center;gap:10px;background:linear-gradient(90deg,#0d1726,#0e1b2d);border:1px solid var(--stroke);border-radius:999px;padding:10px 14px;box-shadow:var(--shadow);backdrop-filter:blur(var(--blur))}
+    .brand b{letter-spacing:.35em}
+    nav{display:flex;gap:8px;flex-wrap:wrap}
+    .navbtn{padding:10px 12px;border-radius:12px;background:transparent;border:1px solid var(--stroke);color:var(--muted)}
+    .navbtn:hover{border-color:#2a3d61;color:#cfe2ff}
+    .hero{position:relative;background:linear-gradient(180deg,rgba(16,25,42,.85),rgba(12,20,35,.65));border:1px solid var(--stroke);border-radius:var(--radius);padding:34px 20px;box-shadow:var(--shadow);backdrop-filter:blur(var(--blur));overflow:hidden}
+    .hero::after{content:"";position:absolute;inset:-1px;border-radius:inherit;background:linear-gradient(120deg,rgba(123,220,255,.18),rgba(247,216,106,.18));mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);padding:1px;opacity:.45;mix-blend:screen}
+    h1{font-weight:800;line-height:1.02;margin:2px 0 10px;font-size:clamp(40px,6.6vw,76px);letter-spacing:.01em;background:linear-gradient(90deg,var(--brand1),var(--brand2));-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 2px 18px rgba(123,220,255,.15)}
+    .sub{color:var(--muted);margin:0 0 16px;font-size:clamp(15px,2.6vw,18px)}
+    .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 18px;border-radius:14px;font-weight:800;border:1px solid var(--stroke);background:#0d1727;color:#dbe9ff;transition:transform .15s ease,box-shadow .2s ease,border-color .2s ease}
+    .btn.primary{background:linear-gradient(90deg,rgba(123,220,255,.22),rgba(247,216,106,.22));border-color:#2a3d61;color:#0d1117;text-shadow:0 1px 0 rgba(255,255,255,.35);backdrop-filter:blur(6px)}
+    .btn:hover{transform:translateY(-1px);box-shadow:0 10px 26px rgba(0,0,0,.25);border-color:#38527e}
+    .ticker{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px;margin:14px 0 6px;border-radius:14px;background:rgba(16,25,42,.6);border:1px solid var(--stroke);color:var(--muted)}
+    .ticker strong{color:#cfe2ff} .link-mini{padding:8px 12px;border-radius:12px;background:transparent;border:1px solid var(--stroke)}
+    .link-mini:hover{border-color:#2a3d61;color:#dbe9ff}
+    footer{color:var(--muted);font-size:14px;margin:22px 2px 8px}
+    .social{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .social a{background:var(--chip);padding:10px 12px;border-radius:10px;border:1px solid var(--stroke)}
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
-      <div class="brand-pill">V • O • V</div>
-      <div class="tag">JOR NEWS • Inteligência Vital</div>
+      <div class="brand"><b>V • O • V</b></div>
+      <nav>
+        <a class="navbtn" href="/contato.html">Contato</a>
+        <a class="navbtn" href="/jornews.html">JOR NEWS</a>
+        <a class="navbtn" href="/audios/">BLACKVOX</a>
+      </nav>
     </header>
 
-    <section class="hero" aria-labelledby="titulo">
-      <div class="brand-pill" style="display:inline-block;border-color:#f7c64b;color:#f7c64b;margin-bottom:10px">V O V</div>
-      <h1 id="titulo">Ver • Ouvir • Vender • Viver</h1>
-      <p>Palavra que canta. Presença que vende. Cultura que move.</p>
+    <section class="hero" aria-labelledby="ttl">
+      <h1 id="ttl">Ver • Ouvir • Vender • Viver</h1>
+      <p class="sub">Palavra que canta. Presença que vende. Cultura que move.</p>
 
       <div class="actions">
-        <!-- TROQUE AS URLs MARCADAS -->
-        <a class="btn primary" href="#LINK_JORNEWS">Abrir JOR NEWS V O V</a>
-        <a class="btn" href="contato.html">Falar com a V O V</a>
-        <a class="btn ghost" href="#LINK_BLACKVOX">Ouvir a trilha (BLACKVOX)</a>
+        <a class="btn primary" href="/jornews.html">Abrir JOR NEWS V O V</a>
+        <a class="btn" href="/contato.html">Falar com a V O V</a>
+        <a class="btn" href="/audios/">Ouvir a trilha (BLACKVOX)</a>
       </div>
     </section>
 
-    <div class="today">
-      <h2>Hoje no JOR NEWS — <span id="data-hoje">--</span></h2>
-      <a class="btn" href="#LINK_EDICAO_COMPLETA">Ler edição completa</a>
-    </div>
-
-    <section class="grid" aria-label="Destaques do dia">
-      <article class="card">
-        <h3>✍️ Editorial</h3>
-        <p>Uma palavra de abertura — visão, estratégia e afeto. <a href="#LINK_EDITORIAL">Ler</a></p>
-      </article>
-
-      <article class="card">
-        <h3>🗞️ Manchetes V O V</h3>
-        <p>Atualizações da Loja-Escola, campanhas e lançamentos. <a href="#LINK_MANCHETES">Ver</a></p>
-      </article>
-
-      <article class="card">
-        <h3>🎧 BLACKVOX — faixa do dia</h3>
-        <p>Escuta para focar e criar. <a href="#LINK_BLACKVOX_FAIXA">Ouvir agora</a></p>
-      </article>
-
-      <article class="card">
-        <h3>🗓️ Agenda</h3>
-        <p>Eventos, lives, aulas e encontros. <a href="#LINK_AGENDA">Abrir</a></p>
-      </article>
-    </section>
-
-    <div class="chips">
-      <span class="chip">V O V — Ver • Ouvir • Vender • Viver</span>
-      <span class="chip">Palavra que canta</span>
-      <span class="chip">Presença que vende</span>
-      <span class="chip">Cultura que move</span>
+    <div class="ticker" role="region" aria-label="Hoje no JOR NEWS">
+      <div>Hoje no JOR NEWS — <strong id="data-hoje">--</strong></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <a class="link-mini" href="/jornews.html#editorial">Editorial</a>
+        <a class="link-mini" href="/jornews.html#agenda">Agenda</a>
+        <a class="link-mini" href="/jornews.html#edicao-completa">Edição completa</a>
+      </div>
     </div>
 
     <footer>
       <div>© <span id="ano"></span> V O V — Jorge LA Matheus & AxéBit</div>
-      <div class="links">
-        <!-- Substitua pelos seus perfis oficiais -->
-        <a href="#LINK_INSTAGRAM">Instagram</a>
-        <a href="#LINK_LINKEDIN">LinkedIn</a>
-        <a href="#LINK_X">X (Twitter)</a>
-        <a href="contato.html">Contato</a>
+      <div class="social">
+        <a href="https://www.instagram.com/verouvirvendas" rel="me noopener" target="_blank">Instagram</a>
+        <a href="#LINK_LINKEDIN" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="#LINK_X" target="_blank" rel="noopener">X (Twitter)</a>
       </div>
     </footer>
   </div>
 
   <script>
-    // Data de hoje em pt-BR
-    const br = new Intl.DateTimeFormat('pt-BR',{dateStyle:'long'});
-    document.getElementById('data-hoje').textContent = br.format(new Date());
-    document.getElementById('ano').textContent = new Date().getFullYear();
+    const br=new Intl.DateTimeFormat('pt-BR',{dateStyle:'long'});
+    document.getElementById('data-hoje').textContent=br.format(new Date());
+    document.getElementById('ano').textContent=new Date().getFullYear();
   </script>
 </body>
 </html>
+      
