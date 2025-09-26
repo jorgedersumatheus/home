@@ -27,17 +27,362 @@
     </ul>
   </nav>
 
-  <h1>BLACKVOX v3 – Playlists Áudios</h1>
-  <p>Um brinde V O V – Inteligência Vital em som</p>
 
-  <section>
-    <h2>Faixas de Exemplo</h2>
-    <ul class="playlist">
-      <li>Brian Eno – <audio controls src="audios/brian-eno.mp3"></audio></li>
-      <li>John Coltrane – <audio controls src="audios/coltrane.mp3"></audio></li>
-      <li>Hermeto Pascoal – <audio controls src="audios/hermeto.mp3"></audio></li>
-    </ul>
-  </section>
+<meta name="description" content="BLACKVOX — player simples de playlists .json. V O V — Ver, Ouvir, Vender, Viver." />
+<style>
+  :root{
+    --bg:#0d0f14;
+    --panel:#151922;
+    --ink:#e9eef7;
+    --muted:#9aa8bf;
+    --brand:#ffb300;
+    --accent:#3a8fff;
+    --danger:#f06;
+    --ok:#22c55e;
+    --line:rgba(255,255,255,.08);
+  }
+  html,body{height:100%}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font:16px/1.45 system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  }
+  header{
+    padding:24px 16px 8px;
+    text-align:center;
+  }
+  header h1{margin:0 0 4px 0; font-size:20px; letter-spacing:.4px}
+  header small{color:var(--muted)}
+  .wrap{max-width:840px; margin:0 auto; padding:16px}
+  .panel{
+    background:var(--panel); border:1px solid var(--line);
+    border-radius:14px; padding:16px; box-shadow:0 10px 24px rgba(0,0,0,.25);
+  }
+  .row{display:flex; align-items:center; gap:8px; flex-wrap:wrap}
+  button, .btn{
+    appearance:none; border:1px solid var(--line);
+    background:#1b2130; color:var(--ink);
+    padding:8px 12px; border-radius:10px; cursor:pointer;
+    font-weight:600; letter-spacing:.2px;
+  }
+  button:hover{border-color:#2b3244}
+  .btn-primary{background:var(--brand); color:#1d1200; border-color:#0000}
+  .btn-accent{background:var(--accent); color:white; border-color:#0000}
+  .btn-danger{background:#2a1520; color:#ffd7e7; border-color:#0000}
+  .btn-ghost{background:#10141c}
+  .toolbar{gap:8px; margin:10px 0 0}
+  .now{margin:4px 0 12px; color:var(--muted)}
+  .seek{width:100%}
+  .list{margin-top:12px; display:flex; flex-direction:column; gap:10px}
+  .track{
+    background:#0f1420; border:1px solid var(--line); border-radius:12px;
+    padding:10px; display:grid; grid-template-columns:1fr auto; gap:8px;
+  }
+  .t-title{font-weight:700}
+  .t-meta{color:var(--muted); font-size:12px}
+  .t-actions{display:flex; gap:6px; align-items:center}
+  .pill{display:inline-flex; align-items:center; gap:6px; padding:6px 10px;
+        background:#0d121b;border:1px solid var(--line); border-radius:999px}
+  .right{margin-left:auto}
+  .hint{margin-top:10px; color:var(--muted); font-size:12px}
+  .badge{display:inline-block; font-size:11px; padding:3px 7px; border-radius:999px; background:#10151f; border:1px solid var(--line); color:var(--muted)}
+</style>
+</head>
+<body>
+<header>
+  <div class="badge">V O V</div>
+  <h1>BLACKVOX v3 — Playlists Áudio</h1>
+  <small>Ver • Ouvir • Vender • Viver — use <code>playlist.json</code> ou carregue outras .json</small>
+</header>
+
+<div class="wrap">
+  <div class="panel">
+    <!-- Player bar -->
+    <div class="row">
+      <button id="btn-prev" title="Anterior">⏮️</button>
+      <button id="btn-play" class="btn-primary" title="Play/Pause">▶️</button>
+      <button id="btn-next" title="Próxima">⏭️</button>
+      <input id="seek" class="seek" type="range" min="0" max="1000" value="0"/>
+      <div class="pill">
+        <span id="curtime">0:00</span>/<span id="dur">0:00</span>
+      </div>
+      <div class="pill">
+        🔊 <input id="vol" type="range" min="0" max="1" step="0.01" value="0.9">
+      </div>
+    </div>
+    <div class="now">Tocando agora: <strong id="now-title">—</strong></div>
+
+    <!-- Ferramentas -->
+    <div class="row toolbar">
+      <button id="btn-new-pl">+ Nova playlist</button>
+      <button id="btn-add-to-pl">Adicionar faixa → playlist</button>
+      <button id="btn-save-pl">💾 Salvar playlist (.json)</button>
+      <button id="btn-load-pl-file">↑ Carregar .json (arquivo)</button>
+      <button id="btn-load-pl-url">↗ Carregar por URL</button>
+      <span class="right pill">Playlist: <strong id="pl-name">playlist.json</strong></span>
+    </div>
+
+    <!-- Lista -->
+    <div id="list" class="list"></div>
+
+    <div class="hint">
+      Sessão salva automaticamente no navegador (localStorage).  
+      Dica: prefira MP3 hospedados aqui em <code>/audios/</code> ou em CDN com CORS liberado.  
+      Se usar Google Drive, gere link de download direto no formato:
+      <code>https://drive.google.com/uc?export=download&id=SEU_ID</code>.
+    </div>
+  </div>
+</div>
+
+<audio id="audio" preload="metadata" crossorigin="anonymous"></audio>
+
+<script>
+/* ========= Estado e utilidades ========= */
+const $ = (s, r=document)=>r.querySelector(s);
+const $$ = (s, r=document)=>Array.from(r.querySelectorAll(s));
+
+let tracks = [];                 // [{title, file, dur?}]
+let currentIndex = 0;
+let currentPlaylistName = "playlist.json";
+
+const audio = $("#audio");
+const elList = $("#list");
+const elNow = $("#now-title");
+const elPlName = $("#pl-name");
+const elSeek = $("#seek");
+const elCur = $("#curtime");
+const elDur = $("#dur");
+const elPlay = $("#btn-play");
+const elVol = $("#vol");
+
+/* ========= Persistência ========= */
+function saveSession(){
+  localStorage.setItem("blackvox_tracks", JSON.stringify(tracks));
+  localStorage.setItem("blackvox_idx", String(currentIndex));
+  localStorage.setItem("blackvox_pl_name", currentPlaylistName);
+  localStorage.setItem("blackvox_vol", String(audio.volume));
+}
+function restoreSession(){
+  try{
+    const t = JSON.parse(localStorage.getItem("blackvox_tracks")||"[]");
+    if(Array.isArray(t)) tracks = t;
+    const i = parseInt(localStorage.getItem("blackvox_idx")||"0",10);
+    if(!isNaN(i)) currentIndex = Math.max(0, Math.min(i, tracks.length-1));
+    const n = localStorage.getItem("blackvox_pl_name"); if(n) currentPlaylistName = n;
+    const v = parseFloat(localStorage.getItem("blackvox_vol")||"0.9");
+    audio.volume = isNaN(v)?0.9:v;
+    elVol.value = audio.volume;
+  }catch{}
+}
+
+/* ========= Controles ========= */
+function fmtTime(s){
+  if(!isFinite(s)||s<0) return "–:–";
+  const m = Math.floor(s/60);
+  const ss = Math.floor(s%60);
+  return m + ":" + String(ss).padStart(2,"0");
+}
+
+async function loadDuration(track, idx){
+  // cria um <audio> temporário para pegar metadata; pode falhar por CORS
+  return new Promise(res=>{
+    const a = new Audio();
+    a.preload = "metadata";
+    a.src = track.file;
+    a.addEventListener("loadedmetadata", ()=>{
+      tracks[idx].dur = a.duration;
+      res(a.duration);
+      saveSession();
+      render();
+    }, {once:true});
+    a.addEventListener("error", ()=>res(NaN), {once:true});
+  });
+}
+
+function render(){
+  elPlName.textContent = currentPlaylistName;
+  elList.innerHTML = "";
+  tracks.forEach((t, i)=>{
+    const row = document.createElement("div");
+    row.className = "track";
+
+    const title = document.createElement("div");
+    title.innerHTML = `<div class="t-title">${t.title||("Faixa "+(i+1))}</div>
+                       <div class="t-meta">${t.file} • <span>${fmtTime(t.dur)}</span></div>`;
+    row.appendChild(title);
+
+    const actions = document.createElement("div");
+    actions.className = "t-actions";
+    actions.innerHTML = `
+      <button class="btn-ghost" title="Subir">⬆️</button>
+      <button class="btn-ghost" title="Descer">⬇️</button>
+      <button class="btn-accent" title="Tocar">Tocar</button>
+      <button class="btn-danger" title="Excluir">Excluir</button>
+    `;
+    const [bUp,bDown,bPlay,bDel] = actions.children;
+
+    bUp.onclick   = ()=>moveTrack(i,-1);
+    bDown.onclick = ()=>moveTrack(i, 1);
+    bPlay.onclick = ()=>playIndex(i);
+    bDel.onclick  = ()=>{ tracks.splice(i,1); if(currentIndex>=tracks.length) currentIndex = tracks.length-1; saveSession(); render(); };
+
+    row.appendChild(actions);
+    elList.appendChild(row);
+
+    if(typeof t.dur==="undefined") loadDuration(t, i);
+  });
+
+  // estado do player
+  const cur = tracks[currentIndex];
+  elNow.textContent = cur ? (cur.title || "—") : "—";
+  elDur.textContent = fmtTime(audio.duration);
+  elCur.textContent = fmtTime(audio.currentTime);
+  elPlay.textContent = audio.paused ? "▶️" : "⏸️";
+}
+
+function moveTrack(i, dir){
+  const j = i + dir;
+  if(j<0 || j>=tracks.length) return;
+  [tracks[i], tracks[j]] = [tracks[j], tracks[i]];
+  if(currentIndex===i) currentIndex=j;
+  else if(currentIndex===j) currentIndex=i;
+  saveSession(); render();
+}
+
+function playIndex(i){
+  if(!tracks[i]) return;
+  currentIndex = i;
+  audio.src = tracks[i].file;
+  audio.play().catch(()=>{
+    alert("Não foi possível tocar esta faixa. Prefira /audios ou CDN com CORS liberado.");
+  });
+  saveSession();
+  render();
+}
+
+function next(){ if(!tracks.length) return; currentIndex = (currentIndex+1)%tracks.length; playIndex(currentIndex); }
+function prev(){ if(!tracks.length) return; currentIndex = (currentIndex-1+tracks.length)%tracks.length; playIndex(currentIndex); }
+
+/* ========= Botões da barra ========= */
+$("#btn-prev").onclick = prev;
+$("#btn-next").onclick = next;
+$("#btn-play").onclick = ()=>{
+  if(!tracks.length){ alert("Adicione faixas ou carregue uma playlist."); return; }
+  if(audio.src==="") playIndex(currentIndex);
+  else audio.paused ? audio.play() : audio.pause();
+  render();
+};
+elVol.oninput = ()=>{ audio.volume = parseFloat(elVol.value||"0.9"); saveSession(); };
+elSeek.oninput = ()=>{
+  if(isFinite(audio.duration)) audio.currentTime = (elSeek.value/1000)*audio.duration;
+};
+
+audio.addEventListener("timeupdate", ()=>{
+  if(isFinite(audio.duration)){
+    elSeek.value = String(Math.floor(1000*audio.currentTime/audio.duration));
+    elCur.textContent = fmtTime(audio.currentTime);
+    elDur.textContent = fmtTime(audio.duration);
+  }
+});
+audio.addEventListener("ended", next);
+audio.addEventListener("play", render);
+audio.addEventListener("pause", render);
+audio.addEventListener("loadedmetadata", render);
+
+/* ========= Playlist: criar, salvar, carregar ========= */
+function downloadJSON(filename, data){
+  const blob = new Blob([JSON.stringify(data,null,2)], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+}
+
+async function fetchPlaylist(url){
+  const res = await fetch(url, {cache:"no-store"});
+  if(!res.ok) throw new Error(res.status+" "+res.statusText);
+  return res.json();
+}
+
+$("#btn-new-pl").onclick = ()=>{
+  const name = prompt("Nome da nova playlist (ex.: vov_manha.json):", "minha_playlist.json");
+  if(!name) return;
+  currentPlaylistName = name.endsWith(".json")?name:(name+".json");
+  tracks = [];
+  currentIndex = 0;
+  audio.src="";
+  saveSession(); render();
+};
+
+function getCurrentFromAudio(){
+  if(!audio.src) return null;
+  // tenta deduzir um nome amigável pelo arquivo
+  const fileName = decodeURIComponent(audio.src.split("/").pop()).replace(/\?.*$/,"");
+  return { title:fileName, file: audio.src };
+}
+$("#btn-add-to-pl").onclick = ()=>{
+  const t = getCurrentFromAudio();
+  if(!t) return alert("Nenhuma faixa em reprodução. Toque algo antes.");
+  tracks.push({title:t.title, file:t.file});
+  saveSession(); render();
+};
+
+$("#btn-save-pl").onclick = ()=>{
+  if(!tracks.length) return alert("Playlist vazia.");
+  downloadJSON(currentPlaylistName, tracks);
+};
+
+$("#btn-load-pl-file").onclick = ()=>{
+  const inp = document.createElement("input");
+  inp.type="file"; inp.accept="application/json";
+  inp.onchange = async (e)=>{
+    const f = e.target.files[0]; if(!f) return;
+    try{
+      const arr = JSON.parse(await f.text());
+      if(!Array.isArray(arr)) throw new Error("JSON inválido (esperado array).");
+      tracks = arr; currentPlaylistName = f.name; currentIndex = 0; audio.src="";
+      saveSession(); render();
+    }catch(err){ alert("Erro: "+err.message); }
+  };
+  inp.click();
+};
+
+$("#btn-load-pl-url").onclick = async ()=>{
+  const url = prompt("URL da playlist (.json):", "./playlists/classicos.json");
+  if(!url) return;
+  try{
+    const arr = await fetchPlaylist(url);
+    if(!Array.isArray(arr)) throw new Error("JSON não é uma lista.");
+    tracks = arr; currentPlaylistName = url.split("/").pop()||"playlist.json";
+    currentIndex = 0; audio.src="";
+    saveSession(); render();
+  }catch(err){
+    alert("Falhou ao carregar: "+err.message);
+  }
+};
+
+/* ========= Boot ========= */
+restoreSession();
+
+(async function boot(){
+  // se não houver nada salvo, tenta /blackvox/playlist.json
+  if(tracks.length===0){
+    try{
+      const arr = await fetchPlaylist("./playlist.json");
+      if(Array.isArray(arr)) { tracks = arr; currentPlaylistName = "playlist.json"; }
+    }catch{}
+  }
+  // se ainda não houver faixas, cria exemplos (sem tocar)
+  if(tracks.length===0){
+    tracks = [
+      {title:"Brian Eno — An Ending (Ascent)", file:"./audios/brian_eno.mp3"},
+      {title:"John Coltrane — A Love Supreme", file:"./audios/coltrane_love_supreme.mp3"},
+      {title:"Hermeto Pascoal — Bebê", file:"./audios/hermeto_bebe.mp3"}
+    ];
+  }
+  saveSession(); render();
+})();
+</script>
+
 
   <footer>
     <p>BLACKVOX – Por Jorge LA Matheus & AxéBit</p>
