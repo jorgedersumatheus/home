@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>JOR NEWS V O V — Template Diário</title>
+  <style>
+    :root{
+      --bg:#f8f8f8; --ink:#111; --muted:#666; --accent:#cc0000; --card:#fff; --rule:#e9e9e9;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+    header{background:#000;color:#fff;padding:22px 16px;text-align:center;position:sticky;top:0;z-index:5}
+    header h1{margin:0;font-size:24px;letter-spacing:1px}
+    header .meta{margin-top:6px;font-size:13px;color:#ddd}
+    nav{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;background:#333;padding:10px}
+    nav a{color:#fff;text-decoration:none;font-weight:bold}
+    nav a:hover{color:#ffd700}
+    main{max-width:860px;margin:20px auto;padding:0 16px}
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:8px 0 20px}
+    .btn{background:#000;color:#fff;border:none;padding:10px 14px;border-radius:6px;cursor:pointer;font-weight:bold}
+    .btn:hover{background:#ffd700;color:#000}
+    .card{background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:16px 18px;margin:14px 0;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+    .card h2{margin:0 0 10px;border-bottom:2px solid var(--rule);padding-bottom:6px;font-size:20px}
+    .hint{color:var(--muted);font-size:12px;margin:6px 0 0}
+    [contenteditable="true"]{outline:2px dashed transparent;transition:outline-color .15s ease}
+    [contenteditable="true"]:focus{outline-color:#a5d6ff;background:#fcfdff}
+    ul.pilares{padding-left:18px;margin:10px 0}
+    ul.pilares li{margin:6px 0}
+    .rodape{font-size:14px;color:#333;text-align:center;margin:24px 0}
+    footer{background:#000;color:#fff;text-align:center;padding:14px;margin-top:30px;font-size:14px}
+    .muted{color:var(--muted)}
+    @media print{
+      header, nav, .toolbar, footer{display:none !important}
+      body{background:#fff}
+      .card{box-shadow:none;border:none}
+      .rodape{margin-top:8px}
+    }
+  </style>
+</head>
+<body>
+  <!--
+    JOR NEWS V O V — Template Diário
+    Como usar:
+    1) Edite os blocos com contenteditable (clique e digite).
+    2) Clique em “Copiar tudo (texto)” para publicar no Telegram/WhatsApp/Facebook.
+    3) Clique em “Versão para imprimir/PDF” e use imprimir→Salvar como PDF para o arquivo do dia.
+    4) Publique também a versão HTML duplicando este arquivo como edicaoNNN.html e colando os textos.
+  -->
+  <header>
+    <h1>JOR NEWS V O V</h1>
+    <div class="meta">
+      <span id="dataAuto"></span> · <span id="horaAuto"></span> · Amaralina, Salvador
+    </div>
+  </header>
+
+  <nav>
+    <a href="/index.html">Início</a>
+    <a href="/vov/index.html">Portal V O V</a>
+    <a href="/vov/edicoes.html">Edições</a>
+    <a href="/vov/blackvox/index.html">BLACKVOX</a>
+    <a href="/vov/contato.html">Contato</a>
+  </nav>
+
+  <main>
+    <div class="toolbar">
+      <button class="btn" onclick="copiarTexto()">📋 Copiar tudo (texto)</button>
+      <button class="btn" onclick="window.print()">🖨️ Versão para imprimir/PDF</button>
+      <button class="btn" onclick="limparCampos()">🧽 Limpar campos</button>
+    </div>
+
+    <div class="card">
+      <h2>📜 Editorial / Poema</h2>
+      <div id="editorial" contenteditable="true">
+        O BLACKVOX em loop nos lembra: cada repetição pode ser criação.
+        A V O V nasce como ponte — Notícia + Poesia + Inteligência Vital — entre o mar e a pedra, esperança e ação.
+      </div>
+      <p class="hint">Dica: clique e edite. Texto livre, 5–10 linhas.</p>
+    </div>
+
+    <div class="card">
+      <h2>🌟 5 Pilares do Dia</h2>
+      <ul id="pilares" class="pilares" contenteditable="true">
+        <li>Democracia viva</li>
+        <li>Cultura em movimento</li>
+        <li>Tecnologia com alma (Inteligência Vital)</li>
+        <li>Natureza presente (mar/pedra)</li>
+        <li>Comunidade V O V</li>
+      </ul>
+      <p class="hint">Dica: mantenha 5 itens curtos e claros.</p>
+    </div>
+
+    <div class="card">
+      <h2>🔎 Análise V O V</h2>
+      <div id="analise" contenteditable="true">
+        O país vive uma encruzilhada entre a repetição vazia e a repetição criativa.
+        Escolhemos a segunda: escutar, aprender, ajustar o compasso e avançar com o povo no centro.
+      </div>
+      <p class="hint">Dica: 1–2 parágrafos, objetivo e firme.</p>
+    </div>
+
+    <div class="card">
+      <h2>🙏 Oração Final</h2>
+      <div id="oracao" contenteditable="true">
+        Maria Desatadora dos Nós, clareia nossos passos.
+        Senhor do Bonfim, abençoa o Brasil. Oxalá, dá-nos sabedoria.
+        Amém. Axé. Save Simpatia.
+      </div>
+      <p class="hint">Dica: curto, potente, com sua marca.</p>
+    </div>
+
+    <div class="rodape">
+      <div id="assinatura" contenteditable="true">
+        Por <strong>Jorge LA Matheus</strong> & <strong>AxéBit</strong> · V O V © <span id="anoAuto"></span>
+      </div>
+      <div class="muted">_ / \\ _</div>
+    </div>
+  </main>
+
+  <footer>
+    Plataforma V O V — Ver, Ouvir, Vender, Viver
+  </footer>
+
+  <script>
+    // Data/hora automáticas (editáveis visualmente)
+    const agora = new Date();
+    const optsData = { weekday:'short', day:'2-digit', month:'short', year:'numeric' };
+    const optsHora = { hour:'2-digit', minute:'2-digit' };
+    document.getElementById('dataAuto').textContent = agora.toLocaleDateString('pt-BR', optsData);
+    document.getElementById('horaAuto').textContent = agora.toLocaleTimeString('pt-BR', optsHora);
+    document.getElementById('anoAuto').textContent = agora.getFullYear();
+
+    // Monta texto final para copiar (ótimo para Telegram/WhatsApp/FB)
+    function copiarTexto(){
+      const data = document.getElementById('dataAuto').textContent;
+      const hora = document.getElementById('horaAuto').textContent;
+      const editorial = limpa(document.getElementById('editorial').innerText);
+      const pilares = Array.from(document.querySelectorAll('#pilares li')).map(li => '• ' + limpa(li.innerText)).join('\n');
+      const analise = limpa(document.getElementById('analise').innerText);
+      const oracao = limpa(document.getElementById('oracao').innerText);
+      const assinatura = limpa(document.getElementById('assinatura').innerText);
+
+      const bloco = `📰 JOR NEWS V O V — ${data} · ${hora}
+
+📜 Editorial
+${editorial}
+
+🌟 5 Pilares
+${pilares}
+
+🔎 Análise V O V
+${analise}
+
+🙏 Oração Final
+${oracao}
+
+${assinatura}`;
+
+      navigator.clipboard.writeText(bloco).then(()=>{
+        alert('Texto copiado! É só colar no Telegram/WhatsApp/Facebook.');
+      }).catch(()=>{
+        // fallback
+        const ta = document.createElement('textarea');
+        ta.value = bloco; document.body.appendChild(ta);
+        ta.select(); document.execCommand('copy'); ta.remove();
+        alert('Texto copiado! É só colar no Telegram/WhatsApp/Facebook.');
+      });
+    }
+
+    function limpa(s){
+      return (s||'').replace(/\u00A0/g,' ').trim();
+    }
+
+    function limparCampos(){
+      if(!confirm('Limpar campos editáveis?')) return;
+      document.getElementById('editorial').innerHTML = '';
+      document.getElementById('pilares').innerHTML = '<li></li><li></li><li></li><li></li><li></li>';
+      document.getElementById('analise').innerHTML = '';
+      document.getElementById('oracao').innerHTML = '';
+    }
+  </script>
+</body>
+</html>
