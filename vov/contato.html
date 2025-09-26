@@ -1,1 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Contato – V O V</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px auto; max-width: 600px; background: #fff; color: #222; line-height: 1.6; }
+    h1 { text-align: center; color: #b30000; }
+    form { display: flex; flex-direction: column; gap: 15px; }
+    label { font-weight: bold; }
+    input, textarea { padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
+    button { background: #b30000; color: white; padding: 10px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+    button:hover { background: #800000; }
+    footer { border-top: 2px solid #eee; padding-top: 15px; text-align: center; color: #555; margin-top: 40px; }
+    nav { background: #b30000; position: fixed; top: 0; left: 0; right: 0; height: 50px; display: flex; align-items: center; z-index: 1000; }
+    nav ul { list-style: none; margin: 0; padding: 0 20px; display: flex; gap: 20px; }
+    nav a { color: #fff; text-decoration: none; font-weight: bold; font-family: Arial, sans-serif; }
+    nav a:hover { text-decoration: underline; }
+    body { margin-top: 70px; }
+  </style>
+</head>
+<body>
+  <nav>
+    <ul>
+      <li><a href="/index.html">🏠 Início</a></li>
+      <li><a href="/vov/edicoes.html">📰 JOR NEWS VOV</a></li>
+      <li><a href="/vov/blackvox/index.html">🎵 BLACKVOX</a></li>
+      <li><a href="/vov/contato.html">✉️ Contato</a></li>
+    </ul>
+  </nav>
 
+  <h1>Contato</h1>
+  <p>Envie sua mensagem para a equipe da V O V:</p>
+
+  <form action="https://formsubmit.co/SEU_EMAIL_AQUI" method="POST">
+    <label for="name">Nome</label>
+    <input type="text" id="name" name="name" required>
+
+    <label for="email">E-mail</label>
+    <input type="email" id="email" name="email" required>
+
+    <label for="message">Mensagem</label>
+    <textarea id="message" name="message" rows="5" required></textarea>
+
+    <button type="submit">Enviar</button>
+  </form>
+
+  <footer>
+    <p>V O V – Por Jorge LA Matheus & AxéBit</p>
+    <p>✦ Inteligência Vital em Rede ✦</p>
+  </footer>
+</body>
+</html>
