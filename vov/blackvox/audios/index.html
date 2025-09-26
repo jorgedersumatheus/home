@@ -1,34 +1,169 @@
+
 <!doctype html>
 <html lang="pt-br">
 <head>
   <meta charset="utf-8">
   <title>BLACKVOX — Trilha do Dia</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body{background:#0a0f17;color:#eaf2ff;font-family:sans-serif;max-width:720px;margin:auto;padding:20px}
-    h1{color:#7bdcff}
-    audio{width:100%;margin:14px 0}
+    :root {
+      --bg:#0a0f17; --ink:#eaf2ff;
+      --brand1:#7bdcff; --brand2:#f7d86a;
+      --stroke:#1b2942;
+    }
+    *{box-sizing:border-box}
+    body {
+      margin:0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Segoe UI", Roboto, sans-serif;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    header, footer {
+      background: rgba(16,25,42,.75);
+      border-bottom:1px solid var(--stroke);
+      padding:14px 20px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      backdrop-filter: blur(8px);
+    }
+    header .brand {
+      font-weight:800;
+      letter-spacing:.35em;
+      background:linear-gradient(90deg,var(--brand1),var(--brand2));
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+    }
+    nav a {
+      margin-left:12px;
+      color:#9fb1c9;
+      text-decoration:none;
+      font-weight:600;
+      font-size:.95rem;
+    }
+    nav a:hover {color:#fff}
+    main {
+      flex:1;
+      padding:40px 20px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      background: radial-gradient(circle at 30% 20%, rgba(123,220,255,.08), transparent 70%),
+                  radial-gradient(circle at 70% 80%, rgba(247,216,106,.08), transparent 60%),
+                  #0a0f17;
+    }
+    h1 {
+      font-size:2.4rem;
+      font-weight:800;
+      margin-bottom:10px;
+      background: linear-gradient(90deg,var(--brand1),var(--brand2));
+      -webkit-background-clip:text;
+      -webkit-text-fill-color: transparent;
+      text-align:center;
+    }
+    p {
+      margin-top:0;
+      color:#9fb1c9;
+      text-align:center;
+    }
+    .player {
+      width:100%;
+      max-width:640px;
+      background: rgba(16,25,42,.7);
+      border: 1px solid var(--stroke);
+      border-radius:16px;
+      box-shadow:0 0 18px rgba(123,220,255,.15);
+      padding:20px;
+      margin:18px 0;
+      backdrop-filter:blur(8px);
+    }
+    .player h3 {
+      margin:0 0 8px;
+      font-size:1.1rem;
+      font-weight:600;
+      color:var(--brand1);
+      text-shadow:0 0 6px rgba(123,220,255,.4);
+    }
+    audio {
+      width:100%;
+      outline:none;
+      filter: drop-shadow(0 0 6px rgba(247,216,106,.15));
+    }
+    footer {
+      flex-shrink:0;
+      border-top:1px solid var(--stroke);
+      border-bottom:none;
+      font-size:.85rem;
+      color:#6d7b92;
+      flex-direction:column;
+      align-items:center;
+      text-align:center;
+      gap:8px;
+    }
+    footer .social {
+      display:flex;
+      gap:10px;
+      margin-top:6px;
+    }
+    footer .social a {
+      padding:8px 12px;
+      border-radius:10px;
+      background:#101827;
+      border:1px solid var(--stroke);
+      color:#9fb1c9;
+      text-decoration:none;
+      font-weight:600;
+      font-size:.85rem;
+    }
+    footer .social a:hover {color:#fff;border-color:#2a3d61}
   </style>
 </head>
 <body>
-  <h1>BLACKVOX — Trilha do Dia</h1>
-  <p>Selecione e ouça as faixas:</p>
-  <div>
-    <h3>Brian Eno</h3>
-    <audio controls>
-      <source src="brian_eno.mp3" type="audio/mpeg">
-    </audio>
-  </div>
-  <div>
-    <h3>Coltrane — Love Supreme</h3>
-    <audio controls>
-      <source src="coltrane_love_supreme.mp3" type="audio/mpeg">
-    </audio>
-  </div>
-  <div>
-    <h3>Hermeto — Bebê</h3>
-    <audio controls>
-      <source src="hermeto_bebe.mp3" type="audio/mpeg">
-    </audio>
-  </div>
+  <header>
+    <div class="brand">V • O • V</div>
+    <nav>
+      <a href="https://jorgematheus.mus.br/index.html">Início</a>
+      <a href="https://jorgematheus.mus.br/vov/jornews.html">JOR NEWS</a>
+      <a href="https://jorgematheus.mus.br/vov/contato.html">Contato</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>BLACKVOX — Trilha do Dia</h1>
+    <p>Selecione e ouça as faixas do universo VOV</p>
+
+    <div class="player">
+      <h3>Brian Eno</h3>
+      <audio controls>
+        <source src="brian_eno.mp3" type="audio/mpeg">
+      </audio>
+    </div>
+
+    <div class="player">
+      <h3>Coltrane — Love Supreme</h3>
+      <audio controls>
+        <source src="coltrane_love_supreme.mp3" type="audio/mpeg">
+      </audio>
+    </div>
+
+    <div class="player">
+      <h3>Hermeto — Bebê</h3>
+      <audio controls>
+        <source src="hermeto_bebe.mp3" type="audio/mpeg">
+      </audio>
+    </div>
+  </main>
+
+  <footer>
+    <div>© 2025 V O V — Jorge LA Matheus & AxéBit</div>
+    <div class="social">
+      <a href="https://www.instagram.com/verouvirvendas" target="_blank">Instagram</a>
+      <a href="#" target="_blank">LinkedIn</a>
+      <a href="#" target="_blank">X (Twitter)</a>
+    </div>
+  </footer>
 </body>
 </html>
