@@ -11,6 +11,24 @@
   <!-- Analytics leve (Plausible). Troque o domínio se precisar. -->
   <script defer data-domain="jorgematheus.mus.br" src="https://plausible.io/js/script.js"></script>
   <style>
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  font-weight: 800;
+  border: 1px solid var(--stroke);
+  background: #0d1727;
+  color: #dbe9ff;
+  transition: transform .15s ease, box-shadow .2s ease, border-color .2s ease;
+  cursor: pointer; /* 👈 aqui está a mudança */
+}
+
+
+    
     :root{--bg:#0a0f17;--ink:#eaf2ff;--muted:#9fb1c9;--glass:#0f1624cc;--stroke:#1b2942;--brand1:#7bdcff;--brand2:#f7d86a;--chip:#101827;--radius:18px;--shadow:0 12px 40px rgba(0,0,0,.35);--blur:12px}
     *{box-sizing:border-box} html,body{margin:0;background:var(--bg);color:var(--ink);font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial}
     a{color:inherit;text-decoration:none} .wrap{max-width:1040px;margin:auto;padding:22px 16px}
