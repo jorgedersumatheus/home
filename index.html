@@ -12,7 +12,12 @@
   <script defer data-domain="jorgematheus.mus.br" src="https://plausible.io/js/script.js"></script>
   <style>
 
-.btn {
+Vi o print: na edição mobile, vários primeiros caracteres sumiram no CSS da .btn (gap, padding, border-radius, font-weight, etc. viraram ap, adding, order-radius…), então a regra ficou inválida e o cursor: pointer não é aplicado.
+
+Cole exatamente este bloco (substitua toda a regra atual da .btn até a chave }) e depois acrescente a regra global dos links:
+
+/* === Botões === */
+.btn{
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -24,10 +29,13 @@
   background: #0d1727;
   color: #dbe9ff;
   transition: transform .15s ease, box-shadow .2s ease, border-color .2s ease;
-  cursor: pointer; /a {
   cursor: pointer;
 }
-}
+
+/* mãozinha para QUALQUER link */
+a{ cursor: pointer; }
+
+
 
 
     
