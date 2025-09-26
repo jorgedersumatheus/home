@@ -1,51 +1,90 @@
-
-<!doctype html>
-<html lang="pt-br">
+<!DOCTYPE html>
+<html lang="pt-BR">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Obrigado — V O V</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contato – V O V</title>
   <style>
-    :root{--bg:#0a0f17;--ink:#eaf2ff;--muted:#9fb1c9;--stroke:#1b2942;--brand1:#7bdcff;--brand2:#f7d86a}
-    *{box-sizing:border-box}
-    body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",Roboto,sans-serif;display:flex;flex-direction:column;min-height:100vh}
-    main{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;background:
-      radial-gradient(600px 300px at 15% 10%, rgba(123,220,255,.10), transparent 60%),
-      radial-gradient(600px 300px at 85% 90%, rgba(247,216,106,.10), transparent 60%),
-      var(--bg)}
-    .box{background:rgba(16,25,42,.9);padding:40px 30px;border-radius:16px;border:1px solid var(--stroke);box-shadow:0 0 25px rgba(123,220,255,.15);max-width:520px;width:100%}
-    h1{margin:0 0 16px;font-size:1.9rem;background:linear-gradient(90deg,var(--brand1),var(--brand2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-    p{color:#cfe2ff;margin:0 0 20px}
-    .actions{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
-    .btn{display:inline-block;padding:12px 18px;border-radius:12px;border:1px solid var(--stroke);background:#101827;color:var(--ink);font-weight:700;text-decoration:none}
-    .btn:hover{border-color:#2a3d61;color:#dbe9ff}
-    footer{border-top:1px solid var(--stroke);color:var(--muted);font-size:.9rem;text-align:center;padding:14px 10px}
-    footer .social{display:flex;gap:8px;justify-content:center;margin-top:8px;flex-wrap:wrap}
-    footer .social a{background:#101827;border:1px solid var(--stroke);padding:8px 12px;border-radius:10px;color:#9fb1c9;text-decoration:none}
-    footer .social a:hover{color:#fff;border-color:#2a3d61}
+    body {
+      font-family: Arial, sans-serif;
+      background: #0a0f17;
+      color: #dbe9ff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .form-container {
+      background: #111827;
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+      max-width: 400px;
+      width: 100%;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: #4fc3f7;
+    }
+    label {
+      font-weight: bold;
+      margin-top: 1rem;
+      display: block;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      margin-top: 6px;
+      border-radius: 8px;
+      border: 1px solid #4fc3f7;
+      background: #0d1727;
+      color: #dbe9ff;
+      font-size: 1rem;
+    }
+    button {
+      margin-top: 1.5rem;
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      background: #4fc3f7;
+      color: #0a0f17;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    button:hover {
+      background: #29b6f6;
+    }
   </style>
 </head>
 <body>
-  <main>
-    <div class="box">
-      <h1>Mensagem enviada!</h1>
-      <p>Obrigado por entrar em contato com a <b>V O V</b>.<br>Responderemos em breve.</p>
-      <div class="actions">
-        <a class="btn" href="https://jorgematheus.mus.br/vov/index.html">← Voltar à Home</a>
-        <a class="btn" href="https://jorgematheus.mus.br/vov/jornews.html">Abrir JOR NEWS</a>
-        <a class="btn" href="https://jorgematheus.mus.br/vov/blackvox/audios/">Ouvir BLACKVOX</a>
-      </div>
-    </div>
-  </main>
+  <div class="form-container">
+    <h1>Entre em contato</h1>
+    <form action="https://formsubmit.co/d0c2c1701efd1ad27ac1f94f0572b8d0" method="POST">
+      <!-- Configurações ocultas -->
+      <input type="hidden" name="_next" value="https://jorgematheus.mus.br/vov/obrigado.html">
+      <input type="hidden" name="_captcha" value="false">
+      <input type="hidden" name="_cc" value="jorge@jorgematheus.mus.br">
+      <input type="hidden" name="_subject" value="VOV • Novo contato pelo site">
+      <input type="hidden" name="_autoresponse" value="Olá! Recebemos sua mensagem na V O V. Obrigado pelo contato — retornaremos em breve.">
+      <input type="text" name="_honey" style="display:none">
 
-  <!-- Mini-rodapé VOV -->
-  <footer>
-    © <script>document.write(new Date().getFullYear())</script> V O V — Jorge LA Matheus & AxéBit
-    <div class="social">
-      <a href="https://www.instagram.com/verouvirvendas" target="_blank" rel="noopener">Instagram</a>
-      <a href="#" target="_blank" rel="noopener">LinkedIn</a>
-      <a href="#" target="_blank" rel="noopener">X (Twitter)</a>
-    </div>
-  </footer>
+      <!-- Campos visíveis -->
+      <label for="name">Seu nome</label>
+      <input type="text" id="name" name="name" required>
+
+      <label for="email">Seu e-mail</label>
+      <input type="email" id="email" name="email" required>
+
+      <label for="message">Mensagem</label>
+      <textarea id="message" name="message" rows="5" required></textarea>
+
+      <button type="submit">Enviar</button>
+    </form>
+  </div>
 </body>
 </html>
