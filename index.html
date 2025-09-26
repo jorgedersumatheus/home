@@ -1,6 +1,3 @@
-
-<!--Atualizado em 24/09/2025 -->
-<!--Atualizado em 26/09/2025 -->
 <!doctype html>
 <html lang="pt-br">
 <head>
@@ -41,7 +38,6 @@
       letter-spacing:.01em;background:linear-gradient(90deg,var(--brand1),var(--brand2));-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 2px 18px rgba(123,220,255,.15)}
     .sub{color:var(--muted);margin:0 0 16px;font-size:clamp(15px,2.6vw,18px)}
     .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
-    /* === Botões === */
     .btn{
       display:inline-flex;align-items:center;justify-content:center;gap:8px;
       padding:14px 18px;border-radius:14px;font-weight:800;border:1px solid var(--stroke);
@@ -53,11 +49,55 @@
     .ticker strong{color:#cfe2ff}
     .link-mini{padding:8px 12px;border-radius:12px;background:transparent;border:1px solid var(--stroke)}
     .link-mini:hover{border-color:#2a3d61;color:#dbe9ff}
-    footer{color:var(--muted);font-size:14px;margin:22px 2px 8px}
-    .social{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    footer{color:var(--muted);font-size:14px;margin:22px 2px 8px;text-align:center}
+    .social{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px}
     .social a{background:var(--chip);padding:10px 12px;border-radius:10px;border:1px solid var(--stroke)}
-    /* antibala: pointer em tudo que é link/botão */
     .btn,.navbtn,.link-mini,a[href]{cursor:pointer !important}
+
+    /* formulário compacto no rodapé */
+    .vov-form-compact {
+      background:rgba(16,25,42,.85);
+      padding:20px;
+      border-radius:14px;
+      border:1px solid var(--stroke);
+      box-shadow:0 0 12px rgba(123,220,255,.12);
+      max-width:340px;
+      margin:20px auto 0;
+      font-family:"Segoe UI", Roboto, sans-serif;
+      color:#eaf2ff;
+    }
+    .vov-form-compact h2 {
+      font-size:1.2rem;
+      margin:0 0 14px;
+      text-align:center;
+      background:linear-gradient(90deg,#7bdcff,#f7d86a);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+    }
+    .vov-form-compact input,
+    .vov-form-compact textarea {
+      width:100%;
+      margin:6px 0;
+      padding:10px;
+      border-radius:10px;
+      border:1px solid #1b2942;
+      background:#101827;
+      color:#eaf2ff;
+      font-size:.9rem;
+    }
+    .vov-form-compact textarea {resize:none;height:80px}
+    .vov-form-compact button {
+      margin-top:10px;
+      width:100%;
+      padding:12px;
+      border-radius:10px;
+      border:none;
+      font-weight:700;
+      background:linear-gradient(90deg,#7bdcff,#f7d86a);
+      color:#0d1117;
+      cursor:pointer;
+    }
+    .vov-form-compact button:hover {opacity:.9}
   </style>
 </head>
 <body>
@@ -95,8 +135,25 @@
       <div>© <span id="ano"></span> V O V — Jorge LA Matheus & AxéBit</div>
       <div class="social">
         <a href="https://www.instagram.com/verouvirvendas" target="_blank" rel="noopener">Instagram</a>
-        <a href="#" title="Envie a URL do seu LinkedIn que eu atualizo">LinkedIn</a>
-        <a href="#" title="Envie a URL do seu X (Twitter) que eu atualizo">X (Twitter)</a>
+        <a href="#" target="_blank">LinkedIn</a>
+        <a href="#" target="_blank">X (Twitter)</a>
+      </div>
+
+      <!-- Formulário Compacto -->
+      <div class="vov-form-compact">
+        <h2>Entre em contato</h2>
+        <form action="https://formsubmit.co/verouvirvendas@jorgematheus.mus.br" method="POST">
+          <input type="text" name="nome" placeholder="Seu nome" required>
+          <input type="email" name="email" placeholder="Seu e-mail" required>
+          <textarea name="mensagem" placeholder="Mensagem..." required></textarea>
+
+          <!-- Configuração padrão VOV -->
+          <input type="hidden" name="_next" value="https://jorgematheus.mus.br/vov/obrigado.html">
+          <input type="hidden" name="_captcha" value="false">
+          <input type="hidden" name="_cc" value="jorge@jorgematheus.mus.br">
+
+          <button type="submit">Enviar</button>
+        </form>
       </div>
     </footer>
   </div>
