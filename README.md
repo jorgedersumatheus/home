@@ -1,7 +1,53 @@
-# 🌐 Plataforma V O V – Ver, Ouvir, Vender, Viver
+# 🌍 Plataforma V O V – Ver, Ouvir, Vender, Viver  
 
-Este repositório abriga a **Plataforma V O V**, integrando jornalismo independente, poesia e música.  
-Construída por **Jorge LA Matheus & AxéBit**, é uma obra viva de comunicação, arte e tecnologia.
+A **V O V** é um espaço vivo de notícia, poesia e inteligência vital.  
+Aqui o Brasil encontra sua voz no **JOR NEWS VOV** e sua música no **BLACKVOX Playlists**.  
+
+---
+
+## 📌 Estrutura da Plataforma  
+
+### Página inicial  
+- `index.html`  
+  Página principal com cabeçalho, menu fixo e links para as seções.  
+  Mostra também um aviso **“PÁGINA EM CONSTRUÇÃO”** para conteúdos em desenvolvimento.  
+
+### Jornal digital – JOR NEWS VOV  
+- `vov/edicao.html`  
+  Última edição do jornal, com **editorial, pilares, análise e oração final**.  
+
+### Player de Áudio – BLACKVOX  
+- `vov/blackvox/index.html`  
+  Player de playlists **BLACKVOX v3**, tocando arquivos `.mp3` e integrando com `.json`.  
+
+### Contato  
+- `vov/contato.html`  
+  Formulário de contato via **FormSubmit**, integrado para envio por e-mail.  
+
+- `vov/obrigado.html`  
+  Página de agradecimento, exibida após envio de mensagem.  
+
+---
+
+## 🚧 Páginas em construção  
+Algumas áreas ainda estão em fase de implementação e podem exibir a mensagem:  
+**“PÁGINA EM CONSTRUÇÃO – Aguarde novidades.”**  
+
+---
+
+## 🛠️ Tecnologias utilizadas  
+- HTML5  
+- CSS3  
+- JavaScript  
+- Integrações externas (FormSubmit, Google Drive links, GitHub Pages)  
+
+---
+
+## ✒️ Autoria  
+**JOR NEWS VOV & BLACKVOX**  
+Por Jorge LA Matheus & AxéBit – Inteligência Vital  
+
+© 2025 V O V – Ver, Ouvir, Vender, Viver
 
 ---
 
