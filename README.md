@@ -1,3 +1,15 @@
+# 🌐 Plataforma V O V – Ver, Ouvir, Vender, Viver
+
+Este repositório abriga a **Plataforma V O V**, integrando jornalismo independente, poesia e música.  
+Construída por **Jorge LA Matheus & AxéBit**, é uma obra viva de comunicação, arte e tecnologia.
+
+---
+
+## 📂 Estrutura do Projeto
+
+
+
+
 # [Start Bootstrap - Stylish Portfolio](https://startbootstrap.com/template-overviews/stylish-portfolio/)
 
 [Stylish Portfolio](http://startbootstrap.com/template-overviews/stylish-portfolio/) is a responsive, one page portfolio theme for [Bootstrap](http://getbootstrap.com/) created by [Start Bootstrap](http://startbootstrap.com/). The theme features multiple content sections with an off canvas navigation menu.
