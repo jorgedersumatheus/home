@@ -1,130 +1,239 @@
 <!--Atualizado em 26/09/2025 -->
-<!DOCTYPE html>
+<!--Atualizado em 24/09/2025 -->
+<!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JOR NEWS VOV – Plataforma Oficial</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: #fdfdfd;
-      color: #222;
-    }
-    header {
-      background: #000;
-      color: #fff;
-      padding: 20px;
-      text-align: center;
-      position: sticky;
-      top: 0;
-    }
-    header h1 {
-      margin: 0;
-      font-size: 26px;
-    }
-    header p {
-      margin: 5px 0 0;
-      font-size: 14px;
-      color: #ddd;
-    }
-    nav {
-      background: #333;
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      padding: 10px 0;
-    }
-    nav a {
-      color: #fff;
-      text-decoration: none;
-      font-weight: bold;
-      transition: 0.3s;
-    }
-    nav a:hover {
-      color: #ffd700;
-    }
-    main {
-      padding: 30px;
-      text-align: center;
-    }
-    main h2 {
-      margin-bottom: 15px;
-      font-size: 22px;
-    }
-    .btn {
-      display: inline-block;
-      background: #000;
-      color: #fff;
-      padding: 12px 25px;
-      margin-top: 20px;
-      text-decoration: none;
-      border-radius: 6px;
-      transition: 0.3s;
-    }
-    .btn:hover {
-      background: #ffd700;
-      color: #000;
-    }
-    .placeholder {
-      margin-top: 40px;
-      padding: 20px;
-      border: 2px dashed #ccc;
-      background: #fafafa;
-      color: #666;
-      font-size: 14px;
-    }
-    footer {
-      background: #000;
-      color: #fff;
-      text-align: center;
-      padding: 15px;
-      margin-top: 40px;
-      font-size: 14px;
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>V O V — Ver • Ouvir • Vender • Viver | JOR NEWS</title>
+<meta name="description" content="V O V — Ver, Ouvir, Vender, Viver. JOR NEWS diário, cultura viva, comércio limpo e presença que vende.">
+
+<!-- Open Graph / Social -->
+<meta property="og:title" content="V O V — Ver • Ouvir • Vender • Viver | JOR NEWS">
+<meta property="og:description" content="Boletim diário, cultura viva e presença que vende.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://jorgematheus.mus.br/">
+<meta property="og:image" content="https://jorgematheus.mus.br/img/vov_og.jpg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0c1016; --card:#111826; --card-2:#0f1522;
+  --text:#e7eef7; --muted:#9fb2c7; --line:#22324a;
+  --gold:#f6c25b; --gold-2:#d6a645;
+  --red:#e24d4d; --green:#2fb36f; --amber:#f59e0b;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg); color:var(--text); font-family:Inter,system-ui,Segoe UI,Arial,sans-serif; -webkit-font-smoothing:antialiased; line-height:1.55}
+a{color:inherit}
+.container{max-width:1080px;margin:0 auto;padding:0 20px}
+
+/* HERO */
+.hero{padding:72px 0 48px;background:
+  radial-gradient(1200px 600px at 20% -10%, #172133, transparent),
+  linear-gradient(180deg, #0b111d 0%, #0c1016 50%)}
+.hero .badge{display:inline-block; letter-spacing:.35em; border:1px solid var(--gold); color:var(--gold);
+  padding:6px 10px; border-radius:999px; font-weight:700; font-size:.85rem; margin-bottom:14px}
+.hero h1{font-family:"DM Serif Display", Georgia, serif; font-size:2.6rem; margin:8px 0 10px}
+.hero p.sub{color:var(--muted); font-size:1.12rem; margin:0 0 22px}
+.cta{display:flex; gap:12px; flex-wrap:wrap}
+.btn{border-radius:12px; padding:12px 18px; text-decoration:none; font-weight:700; display:inline-flex; align-items:center; justify-content:center}
+.btn-primary{background:var(--gold); color:#1a1a1a}
+.btn-primary:hover{background:var(--gold-2)}
+.btn-ghost{border:1px solid var(--line); color:var(--text)}
+.btn-ghost:hover{background:#0f1624}
+
+/* SECTIONS */
+.section{padding:36px 0}
+.card{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:20px}
+.head{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px}
+.head h2{font-family:"DM Serif Display", Georgia, serif; font-size:1.6rem; margin:0}
+.small{color:var(--muted); font-size:.95rem}
+
+/* GRID */
+.grid{display:grid; gap:16px}
+@media(min-width:800px){ .grid-2{grid-template-columns:1fr 1fr} .grid-3{grid-template-columns:repeat(3,1fr)} }
+
+/* LISTAS */
+.item{background:var(--card-2); border:1px solid var(--line); border-radius:12px; padding:14px}
+.item h3{margin:0 0 6px; font-size:1.05rem}
+.meta{color:var(--muted); font-size:.88rem}
+
+/* VITRINE */
+.product{display:grid; gap:16px}
+@media(min-width:900px){ .product{grid-template-columns:340px 1fr} }
+.cover{background:#222a3c; border:1px solid var(--line); border-radius:16px; aspect-ratio:3/4; display:flex; align-items:center; justify-content:center; color:var(--muted); font-style:italic}
+.price{font-weight:700; color:var(--gold); font-size:1.05rem}
+
+/* BLACKVOX teaser */
+.teaser{display:flex; align-items:center; gap:14px; padding:14px; border-radius:12px; background:rgba(38,51,78,.45); border:1px dashed var(--line)}
+.dot{width:10px; height:10px; border-radius:50%; background:var(--green)}
+
+/* FOOTER */
+footer{padding:28px 0 42px; color:var(--muted); border-top:1px solid var(--line); margin-top:24px}
+.links{display:flex; gap:14px; flex-wrap:wrap}
+.badge-footer{display:inline-block; letter-spacing:.35em; border:1px solid var(--gold); color:var(--gold);
+  padding:4px 10px; border-radius:999px; font-weight:700; font-size:.8rem}
+hr.soft{border:none; border-top:1px solid var(--line); margin:16px 0}
+
+/* Accessibility helpers */
+.sr-only{position:absolute; left:-9999px}
+</style>
 </head>
 <body>
-  <header>
-    <h1>JOR NEWS VOV</h1>
-    <p>Por Jorge LA Matheus &amp; AxéBit – <span id="datetime"></span></p>
-  </header>
 
-  <nav>
-    <a href="index.html">Início</a>
-    <a href="vov/edicao.html">JOR NEWS</a>
-    <a href="vov/blackvox/index.html">BLACKVOX</a>
-    <a href="vov/contato.html">Contato</a>
-  </nav>
-
-  <main>
-    <h2>Bem-vindo(a) à Plataforma VOV</h2>
-    <p>A VOV é notícia, poesia e inteligência vital em movimento.<br>
-    Aqui você encontra informação, música e conexão verdadeira.</p>
-
-    <a href="vov/edicao.html" class="btn">📖 Abrir última edição do JOR NEWS VOV</a>
-
-    <div class="placeholder">
-      <strong>PÁGINA EM CONSTRUÇÃO</strong><br>
-      Alguns conteúdos estarão disponíveis em breve. Aguarde!
+<!-- HERO -->
+<header class="hero">
+  <div class="container">
+    <div class="badge">V O V</div>
+    <h1>Ver • Ouvir • Vender • Viver</h1>
+    <p class="sub">Palavra que canta. Presença que vende. Cultura que move.</p>
+    <div class="cta">
+      <a class="btn btn-primary" href="/vov/">Abrir JOR NEWS V O V</a>
+      <a class="btn btn-ghost" href="/contato.html">Falar com a V O V</a>
+      <a class="btn btn-ghost" href="/BLACKVOXv4.html" aria-label="Ouvir a trilha do JOR NEWS no BLACKVOX">Ouvir a trilha (BLACKVOX)</a>
     </div>
-  </main>
+  </div>
+</header>
 
-  <footer>
-    © 2025 V O V – Ver, Ouvir, Vender, Viver
-  </footer>
+<main>
+  <!-- HOJE NO JOR NEWS -->
+  <section class="section">
+    <div class="container">
+      <div class="head">
+        <h2>Hoje no JOR NEWS <span id="today"></span></h2>
+        <a class="btn btn-ghost" href="/vov/">Ler edição completa</a>
+      </div>
 
-  <script>
-    // Script para exibir data e hora em tempo real
-    function updateDateTime() {
-      const now = new Date();
-      const options = { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' };
-      document.getElementById("datetime").textContent = now.toLocaleDateString("pt-BR", options);
-    }
-    updateDateTime();
-    setInterval(updateDateTime, 60000);
-  </script>
+      <div class="grid grid-2">
+        <div class="card">
+          <h3 style="margin-top:0">🖋️ Editorial</h3>
+          <p class="small" id="ed-meta">Salvador, <span id="ed-date"></span></p>
+          <p>Um assoprão de vida. Em meio à pressa e às marés, reafirmamos:
+            cada pequeno passo é presença e futuro. Notícia não é só dado —
+            é ritmo, é respiro, é presença.</p>
+        </div>
+
+        <div class="card">
+          <h3 style="margin-top:0">📌 Pilares do Dia</h3>
+          <ol class="small" style="margin:6px 0 0 16px">
+            <li><b>NEGÓCIO</b> — Loja VOV em ajuste fino.</li>
+            <li><b>CRIAÇÃO</b> — JOR NEWS firme como boletim vivo.</li>
+            <li><b>REDE</b> — Telegram como casa oficial.</li>
+            <li><b>APRENDIZADO</b> — Infraestrutura (Cloudflare & afins).</li>
+            <li><b>RUA</b> — Cultura & democracia, presença e cuidado.</li>
+          </ol>
+        </div>
+
+        <div class="card">
+          <h3 style="margin-top:0">🔎 Análise V O V</h3>
+          <p class="small">Notas para a leitura do dia:</p>
+          <ul class="small" style="margin:6px 0 0 16px">
+            <li>Economia do cuidado e comércio limpo.</li>
+            <li>Política como prática de presença — sem anistia ao erro.</li>
+            <li>Trilha do dia no BLACKVOX como respiro e foco.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3 style="margin-top:0">🙏 Oração Final</h3>
+          <p>Que a palavra seja ponte, o ouvido seja casa e o gesto seja
+            pão. Vida longa, justiça mansa e coragem firme. Amém, Axé. ✨</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VITRINE / LOJA -->
+  <section class="section">
+    <div class="container">
+      <div class="head">
+        <h2>Coleção & Loja</h2>
+        <a class="btn btn-ghost" href="#comprar">Ver todos</a>
+      </div>
+
+      <div class="card product" id="comprar">
+        <div class="cover" aria-label="Capa do livro A Pedra do Pó Branco">
+          Capa • A Pedra do Pó Branco
+        </div>
+        <div>
+          <h3 style="margin:0 0 6px">A Pedra do Pó Branco</h3>
+          <p class="small">Lendas, meditações e cenas reais na Amaralina.
+            Livro-manifesto que inaugura a Fundação Cultural Pedra do Pó Branco.</p>
+          <p class="price">R$ 39,00 • entrega digital imediata</p>
+          <div class="cta" style="margin-top:10px">
+            <a class="btn btn-primary" href="/loja/pedra-do-po-branco.html">Comprar</a>
+            <a class="btn btn-ghost" href="/sinopses/pedra-do-po-branco.html">Ler sinopse</a>
+          </div>
+          <hr class="soft">
+          <div class="teaser" role="complementary" aria-label="Teaser BLACKVOX">
+            <span class="dot" aria-hidden="true"></span>
+            <div class="small">Ouça a trilha do JOR NEWS no <b>BLACKVOX</b> — playlists
+              vivas para foco e criação.</div>
+            <a class="btn btn-ghost" href="/BLACKVOXv4.html" style="margin-left:auto">Abrir BLACKVOX</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NA RUA / NA REDE -->
+  <section class="section">
+    <div class="container">
+      <div class="head">
+        <h2>Na rua • Na rede</h2>
+        <span class="small">Siga e compartilhe</span>
+      </div>
+
+      <div class="grid grid-3">
+        <div class="item">
+          <h3>Telegram</h3>
+          <p class="small">Canal oficial do JOR NEWS V O V.</p>
+          <a class="btn btn-ghost" href="https://t.me/seucanal" target="_blank" rel="noopener">Entrar no canal</a>
+        </div>
+        <div class="item">
+          <h3>Instagram</h3>
+          <p class="small">Cartazes, vídeos, bastidores.</p>
+          <a class="btn btn-ghost" href="https://instagram.com/seuperfil" target="_blank" rel="noopener">Seguir</a>
+        </div>
+        <div class="item">
+          <h3>WhatsApp</h3>
+          <p class="small">Lista de transmissão (avisos diários).</p>
+          <a class="btn btn-ghost" href="https://wa.me/5599999999999?text=Quero%20receber%20o%20JOR%20NEWS%20VOV" target="_blank" rel="noopener">Quero receber</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="badge-footer">V O V</div>
+    <p class="small" style="margin:10px 0 6px">Ver • Ouvir • Vender • Viver — JOR NEWS diário.</p>
+    <div class="links small">
+      <a href="/vov/">JOR NEWS</a> ·
+      <a href="/BLACKVOXv4.html">BLACKVOX</a> ·
+      <a href="/contato.html">Contato</a> ·
+      <a href="/obrigado.html">Obrigado</a>
+    </div>
+    <p class="small" style="margin-top:10px;color:#7f92a8">© <span id="yr"></span> V O V — cultura viva e comércio limpo. Amaralina, Salvador.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  const d = new Date();
+  const months = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+  const today = `${String(d.getDate()).padStart(2,'0')} ${months[d.getMonth()]} ${d.getFullYear()}`;
+  document.getElementById('today').textContent = `— ${today}`;
+  document.getElementById('ed-date').textContent = today;
+  document.getElementById('yr').textContent = d.getFullYear();
+})();
+</script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"version":"2024.11.0","token":"ed9791cb257e4648a570a764de2dbb2b","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
 
