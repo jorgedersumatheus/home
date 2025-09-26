@@ -1,137 +1,51 @@
 <!doctype html>
 <html lang="pt-br">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Contato — JOR NEWS V O V</title>
-  <meta name="description" content="Fale com a V O V — envie sua ideia, dúvida, convite ou pedido de oração." />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Contato — V O V</title>
   <style>
-    :root{
-      --bg:#fbf8ef;           /* claro, inspirado no print */
-      --ink:#1a1f27;
-      --muted:#5a6474;
-      --stroke:#e7e2d6;
-      --accent:#0f1d2c;
-      --brand:#11233a;
-      --cta:#0d2037;
-      --ctaText:#ffffff;
-      --radius:16px;
-      --shadow:0 8px 30px rgba(0,0,0,.08);
-    }
-    *{box-sizing:border-box}
-    body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial}
-    .wrap{max-width:880px;margin:auto;padding:28px 18px}
-    .card{background:#fff;border:1px solid var(--stroke);border-radius:20px;padding:22px;box-shadow:var(--shadow)}
-    h1,h2{font-family:"Playfair Display",serif;margin:.2rem 0 1rem}
-    .over{letter-spacing:.45em;color:#b94e4e;font-weight:800}
-    label{display:block;font-weight:700;margin:16px 0 8px}
-    input,textarea{width:100%;padding:16px 14px;border:1.2px solid #d7d7cf;border-radius:14px;font:inherit;background:#fff}
-    input:focus,textarea:focus{outline:none;border-color:#9bb4ff;box-shadow:0 0 0 3px rgba(80,120,255,.12)}
-    textarea{min-height:160px;resize:vertical}
-    .hint{margin-top:12px;color:var(--muted);font-size:14px}
-    .actions{margin-top:18px}
-    button{width:100%;padding:16px;border:none;border-radius:14px;background:linear-gradient(180deg,#132845,#0c1b31);color:var(--ctaText);font-weight:800;font-size:16px;cursor:pointer}
-    button:hover{transform:translateY(-1px)}
-    .footer{margin-top:20px;color:var(--muted);font-size:14px}
-    .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
-    .chip{background:#f1efe8;border:1px solid var(--stroke);padding:8px 12px;border-radius:999px;color:#6b7280}
-    .note{margin:18px 0 0;font-size:13px;color:#6b6b6b}
-    .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;background:#0f7b35;color:#fff;padding:12px 16px;border-radius:12px;display:none}
-    .toast.err{background:#b3261e}
-    @media(min-width:760px){ button{width:auto;padding:14px 22px}}
-    a{color:#0c3b8d}
+    body{margin:0;background:#0a0f17;color:#eaf2ff;font-family:"Segoe UI",Roboto,sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh}
+    .box{background:rgba(16,25,42,.9);padding:30px;border-radius:16px;border:1px solid #1b2942;box-shadow:0 0 20px rgba(123,220,255,.15);width:100%;max-width:480px}
+    h1{text-align:center;margin-bottom:20px;background:linear-gradient(90deg,#7bdcff,#f7d86a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:1.6rem}
+    label{display:block;margin:12px 0 6px}
+    input,textarea{width:100%;padding:12px;border-radius:10px;border:1px solid #1b2942;background:#101827;color:#eaf2ff;font-size:1rem}
+    textarea{resize:none;height:120px}
+    button{margin-top:16px;width:100%;padding:14px;border-radius:12px;border:none;font-weight:700;background:linear-gradient(90deg,#7bdcff,#f7d86a);color:#0d1117;cursor:pointer}
+    button:hover{opacity:.92}
+    .note{margin-top:12px;text-align:center;font-size:.85rem;color:#9fb1c9}
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="card">
-      <div class="over">J O R  N E W S</div>
-      <h1>V O V</h1>
-      <p><em>Por <strong>Jorge LA Matheus</strong> &amp; <strong>AxéBit</strong> — Inteligência Vital</em></p>
-      <hr style="border:none;border-top:1px solid var(--stroke);margin:18px 0 10px"/>
+  <div class="box">
+    <h1>Fale com a V O V</h1>
 
-      <!-- 
-        INTEGRAÇÃO:
-        1) Coloque sua URL do webhook n8n em data-webhook (ex.: https://seu-dominio/webhook/abcd-1234)
-        2) Se data-webhook ficar vazio, o fallback abre um mailto para verouvirvendas@jorgematheus.mus.br
-      -->
-      <form id="form-vov" aria-label="Formulário de contato VOV" data-webhook="">
-        <label for="nome">Nome completo</label>
-        <input id="nome" name="nome" type="text" placeholder="Seu nome e sobrenome" autocomplete="name" required />
+    <!-- FormSubmit com dupla entrega + extras -->
+    <form action="https://formsubmit.co/verouvirvendas@jorgematheus.mus.br" method="POST">
+      <label for="nome">Nome completo</label>
+      <input type="text" id="nome" name="nome" required>
 
-        <label for="email">E-mail</label>
-        <input id="email" name="email" type="email" placeholder="voce@exemplo.com" autocomplete="email" required />
+      <label for="email">E-mail</label>
+      <input type="email" id="email" name="email" required>
 
-        <label for="mensagem">Mensagem</label>
-        <textarea id="mensagem" name="mensagem" placeholder="Conte sua ideia, dúvida, convite ou pedido de oração..." required></textarea>
+      <label for="mensagem">Mensagem</label>
+      <textarea id="mensagem" name="mensagem" placeholder="Escreva sua mensagem..." required></textarea>
 
-        <div class="actions">
-          <button type="submit" id="enviar">Enviar mensagem</button>
-        </div>
+      <!-- Configuração padrão VOV -->
+      <input type="hidden" name="_next" value="https://jorgematheus.mus.br/vov/obrigado.html">
+      <input type="hidden" name="_captcha" value="false">
+      <input type="hidden" name="_cc" value="jorge@jorgematheus.mus.br">
+      <input type="hidden" name="_subject" value="VOV • Novo contato pelo site">
+      <!-- Auto-resposta ao remetente (FormSubmit) -->
+      <input type="hidden" name="_autoresponse" value="Olá! Recebemos sua mensagem na V O V. Obrigado pelo contato — retornaremos em breve.">
+      <!-- Honeypot anti-spam (campo invisível; deixe em branco) -->
+      <input type="text" name="_honey" style="display:none">
 
-        <p class="hint">Ao enviar, você concorda em ser contatado por e-mail. Seus dados não são compartilhados.</p>
-      </form>
+      <button type="submit">Enviar mensagem</button>
+    </form>
 
-      <div class="chips">
-        <span class="chip">V O V — Ver • Ouvir • Vender • Viver</span>
-        <span class="chip">Inteligência Vital</span>
-      </div>
-
-      <p class="note">Suporte: <a href="mailto:verouvirvendas@jorgematheus.mus.br">verouvirvendas@jorgematheus.mus.br</a></p>
-    </div>
+    <p class="note">Ao enviar, você concorda em ser contatado por e-mail. Seus dados não serão compartilhados.</p>
   </div>
-
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
-
-  <script>
-    const form = document.getElementById('form-vov');
-    const toast = document.getElementById('toast');
-
-    function notify(msg, err=false){
-      toast.textContent = msg;
-      toast.classList.toggle('err', !!err);
-      toast.style.display = 'block';
-      setTimeout(()=> toast.style.display='none', 3800);
-    }
-
-    form.addEventListener('submit', async (e)=>{
-      e.preventDefault();
-      const data = {
-        nome: form.nome.value.trim(),
-        email: form.email.value.trim(),
-        mensagem: form.mensagem.value.trim(),
-        origem: 'contato.html VOV',
-        timestamp: new Date().toISOString()
-      };
-
-      // 1) Tenta enviar para webhook n8n, se existir
-      const hook = form.dataset.webhook?.trim();
-      if (hook){
-        try{
-          const res = await fetch(hook, {
-            method: 'POST',
-            headers: {'Content-Type':'application/json'},
-            body: JSON.stringify(data)
-          });
-          if(!res.ok) throw new Error('Falha no envio');
-          form.reset();
-          notify('Mensagem enviada com sucesso. Axé!');
-          return;
-        }catch(err){
-          notify('Não consegui falar com o webhook. Vou abrir seu e-mail…', true);
-        }
-      }
-
-      // 2) Fallback: abre mailto preenchido
-      const assunto = encodeURIComponent('Contato — JOR NEWS V O V');
-      const corpo = encodeURIComponent(
-        `Nome: ${data.nome}\nE-mail: ${data.email}\n\nMensagem:\n${data.mensagem}\n\nEnviado em: ${new Date().toLocaleString('pt-BR')}`
-      );
-      window.location.href = `mailto:verouvirvendas@jorgematheus.mus.br?subject=${assunto}&body=${corpo}`;
-    });
-  </script>
 </body>
 </html>
+
