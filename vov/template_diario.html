@@ -5,262 +5,187 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>JOR NEWS V O V — Template Diário</title>
-<meta name="description" content="Template diário do JOR NEWS V O V com autosave e exportação rápida." />
 <style>
   :root{
-    --bg:#0f1115; --panel:#171a21; --soft:#212633; --text:#e7eaf0; --muted:#9aa3b2;
-    --brand:#ffd166; --brand-2:#00d1b2; --accent:#8ab4f8; --danger:#ff6b6b;
+    --bg:#0f1115; --panel:#141820; --ink:#e9ecf1; --muted:#9aa3b2; --brand:#ffd700;
   }
-  *{box-sizing:border-box}
-  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial}
-  a{color:var(--accent);text-decoration:none}
-  a:hover{text-decoration:underline}
-  header{background:linear-gradient(180deg,#0d1016,#0b0d12 60%,transparent);border-bottom:1px solid #1e2533}
-  .wrap{max-width:980px;margin:0 auto;padding:16px}
-  .brand{font-weight:800;letter-spacing:.12em}
-  .sub{color:var(--muted);font-size:.92rem}
-  nav{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px}
-  nav a{padding:8px 12px;border:1px solid #2a3142;border-radius:8px;background:var(--panel)}
-  nav a:hover{background:#1f2431}
-  main{padding:24px 0}
-  .card{background:var(--panel);border:1px solid #252c3b;border-radius:14px;padding:16px 16px 10px;margin:16px 0}
-  .card h3{margin:0 0 8px;font-size:1.05rem}
-  .muted{color:var(--muted)}
-  .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 4px}
-  .btn{background:#222836;border:1px solid #2b3346;color:var(--text);padding:8px 12px;border-radius:10px;cursor:pointer}
-  .btn:hover{background:#262e40}
-  .btn.danger{border-color:#4b2b2f;background:#2a181a}
-  .info{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:4px;color:var(--muted);font-size:.9rem}
-  .editable{min-height:88px;padding:12px;border-radius:10px;background:#0f141d;border:1px dashed #2d364a;outline:none}
-  .editable:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(138,180,248,.12)}
-  ul.editable{list-style:disc;padding-left:24px}
-  ul.editable li{min-height:26px}
-  footer{border-top:1px solid #1e2533;margin-top:24px;padding:16px 0;color:var(--muted);font-size:.92rem}
-  .links-rodape{display:flex;gap:14px;flex-wrap:wrap}
-  .badge{display:inline-block;padding:.2rem .5rem;border:1px solid #2a3142;border-radius:999px;background:#171b24;color:var(--muted);font-size:.78rem}
+  /* Base (tela) */
+  html,body{height:100%}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font: 16px/1.35 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+  }
+  header.site{
+    position:sticky; top:0; z-index:3; background:linear-gradient(180deg,#0f1115 60%,transparent);
+    padding:10px 14px 6px; border-bottom:1px solid #1c2230;
+  }
+  header.site .title{font-weight:700; letter-spacing:.06em}
+  nav.menu a{color:var(--ink); text-decoration:none; margin-right:14px}
+  nav.menu a:hover{color:var(--brand)}
+  .container{max-width:900px; margin:14px auto 64px; padding:0 14px}
+  .toolbar.no-print{
+    display:flex; flex-wrap:wrap; gap:8px; margin:10px 0 16px;
+  }
+  .btn{
+    background:#1b2330; color:var(--ink); border:1px solid #273246; border-radius:8px;
+    padding:8px 12px; cursor:pointer; font-weight:600
+  }
+  .btn:hover{background:#222d40}
+  .panel{
+    background:var(--panel); border:1px solid #223047; border-radius:12px; padding:14px 14px;
+    margin:12px 0;
+  }
+  .panel h3{margin:.15rem 0 .5rem; font-size:18px; letter-spacing:.02em}
+  .hint{color:var(--muted); font-size:12px; margin:.25rem 0 .4rem}
+  /* Áreas editáveis */
+  .editable{
+    min-height:2.5rem; outline: none; padding:8px 10px; border-radius:8px;
+    border:1px dashed #2a3850; background:#121721;
+  }
+  .editable:focus{border-color:#38578a; box-shadow:0 0 0 2px rgba(56,87,138,.3)}
+  .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+  ul.clean{margin:.25rem 0 .25rem 1.1rem; padding:0}
+  ul.clean li{margin:0 0 .25rem}
+  footer.site{opacity:.9; text-align:center; color:var(--muted); margin:24px 0}
+  footer.site a{color:var(--ink); text-decoration:none}
+  footer.site a:hover{color:var(--brand)}
+
+  /* PRINT — A4 retrato em 1 página */
+  @page{ size:A4 portrait; margin:12mm }
+  @media print{
+    :root{ --ink:#111; }
+    body{ background:#fff; color:#111; }
+    header.site, nav.menu, .toolbar.no-print, .no-print{ display:none !important; }
+    .container{ max-width:none; margin:0; padding:0 }
+    .panel{ background:#fff; border:0; padding:0; margin:.2rem 0 }
+    .panel h3{ font-size:14px; margin:.1rem 0 .2rem; font-weight:700 }
+    .hint{ display:none }
+    .editable{ border:0; background:#fff; padding:0; min-height:0 }
+    ul.clean{ margin:.15rem 0 .15rem 1.05rem }
+    ul.clean li{ margin:0 0 .12rem }
+    /* Tipografia mais compacta na impressão */
+    body{ font: 12px/1.25 "Helvetica Neue", Arial, Helvetica, sans-serif; }
+    h1,h2{ font-size:16px; margin:.1rem 0 .25rem }
+    .print-head{ display:block; text-align:center; margin:0 0 .3rem; }
+    .print-head small{ color:#444 }
+    footer.site{ display:none }
+  }
 </style>
 </head>
 <body>
-<header>
-  <div class="wrap">
-    <div style="display:flex;justify-content:space-between;align-items:end;gap:12px;">
-      <div>
-        <div class="brand">JOR NEWS V O V</div>
-        <div class="sub">
-          <span id="dataAuto">—</span> · <span id="horaAuto">—</span> · Amaralina, Salvador
-        </div>
-      </div>
-      <span class="badge">V • O • V — Ver • Ouvir • Vender • Viver</span>
-    </div>
-    <nav class="wrap" style="padding:0;margin-left:-16px;margin-right:-16px;">
-      <a href="/index.html">Início</a>
-      <a href="/vov/index.html">Portal V O V</a>
-      <a href="/vov/edicoes/index.html">Edições</a>
-      <a href="/vov/blackvox/index.html">BLACKVOX</a>
+
+<header class="site no-print">
+  <div class="container">
+    <div class="title">JOR NEWS V O V</div>
+    <nav class="menu">
+      <a href="/vov/index.html">Início</a>
+      <a href="/vov/jornews.html">Portal V O V</a>
+      <a href="/vov/edicoes.html">Edições</a>
+      <a href="/vov/blackvox/">BLACKVOX</a>
       <a href="/vov/contato.html">Contato</a>
     </nav>
   </div>
 </header>
 
-<main class="wrap">
-
-  <div class="toolbar">
-    <button class="btn" onclick="copiarTexto()">📋 Copiar tudo (texto)</button>
+<main class="container sheet">
+  <!-- Barra de ações -->
+  <div class="toolbar no-print">
+    <button class="btn" onclick="copiarTudo()">📋 Copiar tudo (texto)</button>
     <button class="btn" onclick="window.print()">🖨️ Versão para imprimir/PDF</button>
-    <button class="btn danger" onclick="limparCampos()">🧽 Limpar campos</button>
-    <span id="saveStatus" class="muted" style="align-self:center;margin-left:6px;">—</span>
+    <button class="btn" onclick="limparCampos()">🧹 Limpar campos</button>
   </div>
 
-  <!-- EDITORIAL / POEMA -->
-  <section class="card">
-    <h3>📜 Editorial / Poema</h3>
-    <div id="editorial" class="editable" contenteditable="true" spellcheck="true">
-      O BLACKVOX em loop nos lembra: cada repetição pode ser criação. A V O V nasce como ponte — Notícia + Poesia + Inteligência Vital — entre o mar e a pedra, esperança e ação.
-    </div>
-    <div class="info"><span class="muted">Dica: 5–10 linhas.</span></div>
-  </section>
-
-  <!-- PILARES -->
-  <section class="card">
-    <h3>🌟 5 Pilares do Dia</h3>
-    <ul id="pilares" class="editable" contenteditable="true" spellcheck="false">
-      <li>Democracia viva</li>
-      <li>Cultura em movimento</li>
-      <li>Tecnologia com alma (Inteligência Vital)</li>
-      <li>Natureza presente (mar/pedra)</li>
-      <li>Comunidade V O V</li>
-    </ul>
-    <div class="info"><span class="muted">Dica: 5 bullets curtos, ativos.</span></div>
-  </section>
-
-  <!-- ANÁLISE -->
-  <section class="card">
-    <h3>🔎 Análise V O V</h3>
-    <div id="analise" class="editable" contenteditable="true" spellcheck="true">
-      Criativo do dia: 1 vencedor + 2 variações. Vídeo 7–12s: Hook — Prova — CTA. Teste de canais: Telegram como canal oficial; Instagram para alcance; Facebook para texto longo e memória.
-    </div>
-  </section>
-
-  <!-- ORAÇÃO FINAL -->
-  <section class="card">
-    <h3>🙏 Oração Final</h3>
-    <div id="oracao" class="editable" contenteditable="true" spellcheck="true">
-      Que nossas palavras não pesem, mas guiem. Que cada criação sirva, cure e ensine. Que o Axé do Brasil seja mais forte que o ódio.
-    </div>
-  </section>
-
-  <!-- ASSINATURA -->
-  <section class="card">
-    <h3>✍️ Assinatura</h3>
-    <div id="assinatura" class="editable" contenteditable="true" spellcheck="false">
-      Por Jorge LA Matheus &amp; AxêBit — Save Simpatia ✨
-    </div>
-  </section>
-
-  <div class="toolbar">
-    <button class="btn" onclick="copiarTexto()">📋 Copiar tudo (texto)</button>
-    <button class="btn" onclick="window.print()">🖨️ Versão para imprimir/PDF</button>
-    <button class="btn danger" onclick="limparCampos()">🧽 Limpar campos</button>
-    <span id="saveStatus" class="muted" style="align-self:center;margin-left:6px;">—</span>
+  <!-- Cabeçalho da edição (aparece só no PDF) -->
+  <div class="print-head">
+    <strong>JOR NEWS V O V</strong><br/>
+    <small contenteditable="true" class="editable" id="linhaData">
+      sex., 27 de set. de 2025 — Amaralina, Salvador
+    </small>
   </div>
 
+  <!-- Editorial / Poema -->
+  <section class="panel">
+    <h3>Editorial / Poema</h3>
+    <div class="hint">Dica: 5–10 linhas. Seja direto e vivo.</div>
+    <div class="editable" id="editorial" contenteditable="true">
+O BLACKVOX em loop nos lembra: cada repetição pode ser criação. A V O V nasce como ponte — Notícia + Poesia + Inteligência Vital — entre o mar e a pedra, esperança e ação.
+    </div>
+  </section>
+
+  <!-- 5 Pilares -->
+  <section class="panel">
+    <h3>5 Pilares do Dia</h3>
+    <div class="grid-2">
+      <ul class="clean editable" id="pilares1" contenteditable="true">
+        <li>Democracia viva</li>
+        <li>Cultura em movimento</li>
+        <li>Tecnologia com alma (Inteligência Vital)</li>
+      </ul>
+      <ul class="clean editable" id="pilares2" contenteditable="true">
+        <li>Natureza presente (mar/pedra)</li>
+        <li>Comunidade V O V</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Análise VOV -->
+  <section class="panel">
+    <h3>Análise VOV</h3>
+    <div class="editable" id="analise" contenteditable="true">
+O Brasil vive uma encruzilhada. O sistema político tenta manobrar, mas a rua pulsa. É nas esquinas de Amaralina, nas praças, nos terreiro e nas redes que se constrói a narrativa popular. A V O V, como jornal escola, é instrumento: traduz o grito coletivo em notícia, poesia e inteligência vital.
+    </div>
+  </section>
+
+  <!-- Oração final -->
+  <section class="panel">
+    <h3>Oração Final</h3>
+    <div class="editable" id="oracao" contenteditable="true">
+Que nossas palavras não pesem, mas guiem. Que cada criação sirva, cure e ensine. Que o Axé do Brasil seja mais forte que o ódio.
+    </div>
+    <div class="hint">Assinatura</div>
+    <div class="editable" id="assinatura" contenteditable="true">
+— Jorge LA Matheus & AxêBit — Save Simpatia ✨
+    </div>
+  </section>
+
+  <footer class="site no-print">
+    © 2025 V O V — Ver, Ouvir, Vender, Viver •
+    <a href="/vov/index.html">Início</a> •
+    <a href="/vov/contato.html">Contato</a> •
+    <a href="/vov/blackvox/">BLACKVOX</a> •
+    <a href="/vov/edicoes.html">JOR NEWS VOV</a>
+  </footer>
 </main>
 
-<footer>
-  <div class="wrap">
-    <div>© <span id="anoAuto">2025</span> V O V — Ver, Ouvir, Vender, Viver</div>
-    <div class="links-rodape" style="margin-top:8px">
-      <a href="/index.html">Início</a> |
-      <a href="/vov/contato.html">Contato</a> |
-      <a href="/vov/blackvox/index.html">🎧 BLACKVOX</a> |
-      <a href="/vov/edicoes/index.html">📚 JOR NEWS VOV</a>
-    </div>
-  </div>
-</footer>
-
 <script>
-  // ====== DATA/HORA ======
-  const agora = new Date();
-  const optsData = { weekday:'short', day:'2-digit', month:'short', year:'numeric' };
-  const optsHora = { hour:'2-digit', minute:'2-digit' };
-  document.getElementById('dataAuto').textContent = agora.toLocaleDateString('pt-BR', optsData);
-  document.getElementById('horaAuto').textContent = agora.toLocaleTimeString('pt-BR', optsHora);
-  document.getElementById('anoAuto').textContent  = agora.getFullYear();
+  // Copia todo o conteúdo (modo texto) — útil para colar no Telegram/WhatsApp
+  function copiarTudo(){
+    const partes = [
+      document.getElementById('linhaData')?.innerText?.trim() || '',
+      '— Editorial / Poema —',
+      document.getElementById('editorial')?.innerText?.trim() || '',
+      '— 5 Pilares do Dia —',
+      (document.getElementById('pilares1')?.innerText || '') + '\n' + (document.getElementById('pilares2')?.innerText || ''),
+      '— Análise VOV —',
+      document.getElementById('analise')?.innerText?.trim() || '',
+      '— Oração Final —',
+      document.getElementById('oracao')?.innerText?.trim() || '',
+      document.getElementById('assinatura')?.innerText?.trim() || ''
+    ].join('\n\n');
 
-  // ====== ELEMENTOS ======
-  const $editorial  = document.getElementById('editorial');
-  const $pilares    = document.getElementById('pilares');
-  const $analise    = document.getElementById('analise');
-  const $oracao     = document.getElementById('oracao');
-  const $assinatura = document.getElementById('assinatura');
-  const $status     = document.getElementById('saveStatus');
-
-  const STORAGE_KEY = 'vov_template_diario_v1';
-
-  function limpa(s){ return (s||'').replace(/\u00A0/g,' ').trim(); }
-  function setStatus(msg){ $status.textContent = msg; }
-
-  // ====== MONTAR BLOCO DE TEXTO ======
-  function copiarTexto(){
-    const data = document.getElementById('dataAuto').textContent;
-    const hora = document.getElementById('horaAuto').textContent;
-
-    const editorial = limpa($editorial.innerText);
-    const pilares = Array.from($pilares.querySelectorAll('li'))
-                    .map(li => '• ' + limpa(li.innerText)).join('\n');
-    const analise = limpa($analise.innerText);
-    const oracao  = limpa($oracao.innerText);
-    const assinatura = limpa($assinatura.innerText);
-
-    const bloco = `📰 JOR NEWS V O V — ${data} · ${hora}
-
-📜 Editorial
-${editorial}
-
-🌟 5 Pilares
-${pilares}
-
-🔎 Análise V O V
-${analise}
-
-🙏 Oração Final
-${oracao}
-
-${assinatura}`;
-
-    navigator.clipboard.writeText(bloco).then(()=>{
-      alert('Texto copiado! Cole no Telegram/WhatsApp/Facebook.');
-    }).catch(()=>{
-      const ta = document.createElement('textarea');
-      ta.value = bloco; document.body.appendChild(ta);
-      ta.select(); document.execCommand('copy'); ta.remove();
-      alert('Texto copiado! Cole no Telegram/WhatsApp/Facebook.');
+    navigator.clipboard.writeText(partes).then(()=>{
+      alert('Conteúdo copiado! Agora é só colar onde quiser.');
+    }, ()=>{
+      alert('Não consegui copiar automaticamente. Selecione e copie manualmente.');
     });
   }
 
-  // ====== AUTOSAVE ======
-  function getState(){
-    return {
-      editorial:  $editorial.innerHTML,
-      pilares:    $pilares.innerHTML,
-      analise:    $analise.innerHTML,
-      oracao:     $oracao.innerHTML,
-      assinatura: $assinatura.innerHTML,
-      dataTxt:    document.getElementById('dataAuto').textContent,
-      horaTxt:    document.getElementById('horaAuto').textContent
-    };
-  }
-  function setState(state){
-    if(!state) return;
-    if(state.editorial  != null) $editorial.innerHTML  = state.editorial;
-    if(state.pilares    != null) $pilares.innerHTML    = state.pilares;
-    if(state.analise    != null) $analise.innerHTML    = state.analise;
-    if(state.oracao     != null) $oracao.innerHTML     = state.oracao;
-    if(state.assinatura != null) $assinatura.innerHTML = state.assinatura;
-    if(state.dataTxt) document.getElementById('dataAuto').textContent = state.dataTxt;
-    if(state.horaTxt) document.getElementById('horaAuto').textContent = state.horaTxt;
-  }
-  function salvarAgora(){
-    try{
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(getState()));
-      setStatus('✔ salvo');
-    }catch(e){
-      setStatus('⚠ não foi possível salvar');
-    }
-  }
-  let t;
-  function onDirty(){
-    setStatus('… salvando');
-    clearTimeout(t);
-    t = setTimeout(salvarAgora, 600);
-  }
-  (function restore(){
-    try{
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if(raw){
-        setState(JSON.parse(raw));
-        setStatus('✔ restaurado');
-      }else{
-        setStatus('—');
-      }
-    }catch(e){
-      setStatus('⚠ sem restauração');
-    }
-  })();
-  [$editorial,$pilares,$analise,$oracao,$assinatura].forEach(el=>{
-    el.addEventListener('input', onDirty);
-  });
-
-  // ====== LIMPAR ======
+  // Limpa as áreas editáveis
   function limparCampos(){
-    if(!confirm('Limpar campos e apagar rascunho salvo?')) return;
-    $editorial.innerHTML = '';
-    $pilares.innerHTML   = '<li></li><li></li><li></li><li></li><li></li>';
-    $analise.innerHTML   = '';
-    $oracao.innerHTML    = '';
-    $assinatura.innerHTML= '';
-    try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
-    setStatus('✔ limpo');
+    if(!confirm('Limpar todos os campos desta edição?')) return;
+    document.querySelectorAll('.editable').forEach(el=>{
+      el.innerText = '';
+    });
   }
 </script>
 </body>
