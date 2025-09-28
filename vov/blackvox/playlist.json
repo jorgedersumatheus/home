@@ -11,5 +11,12 @@
   {
     "title": "Hermeto Pascoal — Bebê",
     "file": "audios/hermeto_bebe.mp3"
+  },
+  
+  { "title": "Miles Davis — So What", 
+    "file": "audios/So_What.mp3" 
   }
+
+  
+  { "title": "Duke Ellington — In a Sentimental Mood", "file": "../audios/ellington_sentimental.mp3" }
 ]
