@@ -163,6 +163,32 @@
     document.getElementById('data-hoje').textContent=br.format(new Date());
     document.getElementById('ano').textContent=new Date().getFullYear();
   </script>
+
+
+
+  <script>
+(function(){
+  const links = Array.from(document.querySelectorAll('a[href]'))
+    // testa só links do seu site (evita teste em redes sociais)
+    .filter(a => a.href.startsWith(location.origin + '/vov/'));
+
+  console.log('Testando', links.length, 'links internos…');
+
+  Promise.allSettled(links.map(a =>
+    fetch(a.href, { method:'HEAD', cache:'no-store' })
+      .then(res => ({ ok: res.ok, url: a.href }))
+      .catch(err => ({ ok: false, url: a.href, err }))
+  )).then(results => {
+    const bad = results.filter(r => r.value && !r.value.ok);
+    if (bad.length === 0) {
+      console.log('%cTudo verde! Sem links quebrados.', 'color: #0f0');
+    } else {
+      console.warn('Links com problema:');
+      bad.forEach(b => console.warn('❌', b.value.url));
+    }
+  });
+})();
+</script>
 </body>
 </html>
       
