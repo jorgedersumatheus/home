@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>BLACKVOX • V O V — Playlists</title>
+<style>
+  :root{
+    --bg:#000; --panel:#111316; --ink:#e9eaee; --muted:#9aa0a6;
+    --ring:#2a2d33; --gold:#ffd34d; --danger:#ff5a63;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; color:var(--ink); background:var(--bg) url("infinito.jpg") center/cover fixed no-repeat;
+    font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial;
+  }
+  .wrap{max-width:980px; margin:0 auto; padding:20px 16px}
+  header{position:sticky; top:0; background:rgba(0,0,0,.55); backdrop-filter:blur(6px); border-bottom:1px solid var(--ring)}
+  h1{margin:.2rem 0 0; font-size:1.6rem}
+  .sub{color:var(--muted); font-size:.9rem}
+
+  .rainbow{height:8px; margin:18px 0; border-radius:6px;
+    background:linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
+  }
+
+  .grid{display:grid; gap:14px}
+  @media (min-width:880px){ .grid{grid-template-columns:2fr 1fr} }
+
+  .card{background:var(--panel); border:1px solid var(--ring); border-radius:14px; padding:14px}
+  h2{margin:.2rem 0 1rem; font-size:1.1rem}
+  .row{display:flex; flex-wrap:wrap; gap:8px}
+  input[type="text"]{
+    width:100%; padding:10px 12px; border-radius:12px; border:1px solid var(--ring);
+    background:#0b0d10; color:var(--ink)
+  }
+  input[type="file"]{display:none}
+  label.file{padding:10px 12px; border:1px dashed var(--ring); border-radius:12px; cursor:pointer}
+
+  button{
+    appearance:none; border:1px solid var(--ring); border-radius:12px;
+    padding:10px 12px; background:#121418; color:var(--ink); font-weight:700; cursor:pointer
+  }
+  button:hover{border-color:#3a3d45}
+  .gold{background:linear-gradient(180deg,#ffe27c,#ffd34d); color:#111; border-color:#3a2f10}
+  .danger{background:#2a1719; color:#ffd6d8; border-color:#3a1e22}
+
+  /* lista */
+  .tracks{display:flex; flex-direction:column; gap:10px; max-height:60vh; overflow:auto}
+  .item{
+    display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:10px;
+    background:#0f1115; border:1px solid var(--ring); border-radius:12px; padding:10px 12px
+  }
+  .drag{opacity:.8; cursor:grab}
+  .title{font-weight:700}
+  .meta{color:var(--muted); font-size:.86rem}
+  .controls{display:flex; gap:6px}
+  .playing .title{color:var(--gold)}
+
+  /* player */
+  .progress{height:6px; background:#0b0d10; border:1px solid var(--ring); border-radius:999px; overflow:hidden}
+  .bar{height:100%; width:0; background:linear-gradient(90deg,#80bfff,#b3d1ff)}
+  .time{display:flex; justify-content:space-between; color:var(--muted); font-size:.86rem}
+  .pill{padding:6px 9px; border-radius:999px; border:1px solid var(--ring); background:#0f1115}
+  .right{margin-left:auto}
+  footer{color:var(--muted); font-size:.9rem; padding:18px 0 36px}
+  a{color:var(--gold)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <h1>BLACKVOX • V O V — Playlists</h1>
+    <div class="sub">Ver • Ouvir • Vender • Viver — gerencie e toque playlists direto do navegador</div>
+  </div>
+</header>
+
+<div class="rainbow"></div>
+
+<main class="wrap grid">
+  <!-- PLAYER + LISTA -->
+  <section class="card">
+    <h2>🎧 Player</h2>
+
+    <div class="row" style="gap:8px 10px; margin-bottom:10px">
+      <button id="prev">⏮︎</button>
+      <button id="play" class="gold">▶︎</button>
+      <button id="next">⏭︎</button>
+      <span class="pill" id="now">—</span>
+      <span class="pill right" id="mode">Sequência</span>
+    </div>
+
+    <div class="progress" id="progress"><div class="bar" id="bar"></div></div>
+    <div class="time"><span id="cur">0:00</span><span id="dur">0:00</span></div>
+
+    <audio id="audio" preload="metadata"></audio>
+
+    <div class="row" style="margin-top:10px">
+      <button id="toggleLoop">↻ Loop: Off</button>
+      <button id="toggleShuffle">🔀 Shuffle: Off</button>
+      <button id="clear">Limpar lista</button>
+      <input type="text" id="search" placeholder="Buscar na lista…" />
+    </div>
+
+    <div class="rainbow" style="opacity:.35"></div>
+
+    <div class="row" style="gap:10px 12px">
+      <label class="file">📁 Escolher MP3
+        <input type="file" id="fileInput" accept="audio/*" multiple />
+      </label>
+      <button id="addUrl">➕ Adicionar por URL</button>
+    </div>
+
+    <div class="tracks" id="tracks"></div>
+  </section>
+
+  <!-- PLAYLISTS -->
+  <aside class="card">
+    <h2>📚 Playlists</h2>
+    <div class="row">
+      <input type="text" id="plistName" placeholder="Nome da playlist…" />
+      <button id="savePl" class="gold">Salvar</button>
+    </div>
+    <div class="row">
+      <button id="loadPl">Carregar salvas</button>
+      <button id="exportPl">Exportar .json</button>
+      <button id="importPl">Importar .json</button>
+    </div>
+    <div class="row">
+      <button id="loadOfficial">Carregar playlist.json VOV</button>
+      <small class="sub">/vov/blackvox/playlist.json</small>
+    </div>
+
+    <div class="rainbow" style="opacity:.35"></div>
+
+    <p class="sub">
+      Tudo fica salvo no seu navegador (<em>localStorage</em>).  
+      Exporte para compartilhar e importe em outro dispositivo.
+    </p>
+
+    <h2>Links</h2>
+    <p><a href="/vov/">Portal V O V</a> • <a href="/vov/blackvox/">Player Clássico</a></p>
+  </aside>
+</main>
+
+<footer class="wrap">
+  © 2025 V O V — Jorge LA Matheus & AxéBit
+</footer>
+
+<script>
+(() => {
+  const state = { list:[], idx:-1, loop:false, shuffle:false, key:'vov_blackvox_playlists' };
+
+  const $ = s => document.querySelector(s);
+  const el = {
+    audio:$('#audio'), play:$('#play'), prev:$('#prev'), next:$('#next'),
+    now:$('#now'), mode:$('#mode'), cur:$('#cur'), dur:$('#dur'),
+    bar:$('#bar'), progress:$('#progress'),
+    file:$('#fileInput'), tracks:$('#tracks'), search:$('#search'),
+    loop:$('#toggleLoop'), shuffle:$('#toggleShuffle'), clear:$('#clear'),
+    plistName:$('#plistName'), savePl:$('#savePl'), loadPl:$('#loadPl'),
+    exportPl:$('#exportPl'), importPl:$('#importPl'), loadOfficial:$('#loadOfficial'),
+    addUrl:$('#addUrl')
+  };
+
+  const fmt = s => {
+    if(!isFinite(s)) return '0:00';
+    const m = Math.floor(s/60), c = Math.floor(s%60).toString().padStart(2,'0'); return `${m}:${c}`;
+  };
+
+  function render(){
+    const q = el.search.value.trim().toLowerCase();
+    el.tracks.innerHTML = '';
+    state.list.map((t,i)=>({t,i}))
+      .filter(x => !q || x.t.name.toLowerCase().includes(q))
+      .forEach(({t,i})=>{
+        const div = document.createElement('div');
+        div.className = 'item' + (i===state.idx ? ' playing':'' );
+        div.innerHTML = `
+          <span class="drag">☰</span>
+          <div>
+            <div class="title">${t.name||'Sem título'}</div>
+            <div class="meta">${t.duration?fmt(t.duration):'--:--'}</div>
+          </div>
+          <div class="controls">
+            <button data-play="${i}">▶︎</button>
+            <button data-up="${i}">↑</button>
+            <button data-down="${i}">↓</button>
+            <button data-del="${i}" class="danger">✕</button>
+          </div>`;
+        el.tracks.appendChild(div);
+      });
+    el.now.textContent = state.idx>=0 ? (state.list[state.idx]?.name ?? '—') : '—';
+    el.mode.textContent = state.shuffle ? 'Shuffle' : 'Sequência';
+    el.loop.textContent = '↻ Loop: ' + (state.loop ? 'On':'Off');
+    el.shuffle.textContent = '🔀 Shuffle: ' + (state.shuffle ? 'On':'Off');
+  }
+
+  function move(i,dir){
+    const j=i+dir; if(j<0 || j>=state.list.length) return;
+    [state.list[i], state.list[j]] = [state.list[j], state.list[i]];
+    if(state.idx===i) state.idx=j; else if(state.idx===j) state.idx=i;
+    render();
+  }
+  function removeAt(i){
+    state.list.splice(i,1);
+    if(state.idx===i){ state.idx=-1; el.audio.pause(); }
+    else if(i<state.idx) state.idx--;
+    render();
+  }
+
+  function playIndex(i){
+    if(i<0 || i>=state.list.length) return;
+    state.idx=i;
+    el.audio.src = state.list[i].url;
+    el.audio.play().catch(()=>{});
+    el.play.textContent='⏸︎';
+    render();
+  }
+
+  function next(){
+    if(!state.list.length) return;
+    if(state.shuffle){
+      let n; do{ n=Math.floor(Math.random()*state.list.length); } while(n===state.idx && state.list.length>1);
+      playIndex(n); return;
+    }
+    const n = state.idx+1;
+    if(n<state.list.length) playIndex(n);
+    else if(state.loop) playIndex(0);
+  }
+  function prev(){
+    if(!state.list.length) return;
+    const n = state.idx-1;
+    if(n>=0) playIndex(n);
+    else if(state.loop) playIndex(state.list.length-1);
+  }
+
+  // events
+  el.play.addEventListener('click', ()=>{
+    if(!state.list.length) return;
+    if(el.audio.paused){ el.audio.play(); el.play.textContent='⏸︎'; }
+    else { el.audio.pause(); el.play.textContent='▶︎'; }
+  });
+  el.next.addEventListener('click', next);
+  el.prev.addEventListener('click', prev);
+  el.loop.addEventListener('click', ()=>{ state.loop=!state.loop; render(); });
+  el.shuffle.addEventListener('click', ()=>{ state.shuffle=!state.shuffle; render(); });
+  el.clear.addEventListener('click', ()=>{ state.list=[]; state.idx=-1; el.audio.pause(); render(); });
+  el.search.addEventListener('input', render);
+
+  el.tracks.addEventListener('click', e=>{
+    const t=e.target;
+    if(t.dataset.play) return playIndex(+t.dataset.play);
+    if(t.dataset.up)   return move(+t.dataset.up,-1);
+    if(t.dataset.down) return move(+t.dataset.down,1);
+    if(t.dataset.del)  return removeAt(+t.dataset.del);
+  });
+
+  // progress
+  el.audio.addEventListener('timeupdate', ()=>{
+    el.cur.textContent = fmt(el.audio.currentTime);
+    el.dur.textContent = fmt(el.audio.duration);
+    const p = Math.min(100, (el.audio.currentTime/(el.audio.duration||1))*100);
+    el.bar.style.width = p + '%';
+  });
+  el.audio.addEventListener('ended', next);
+  el.progress.addEventListener('click', ev=>{
+    const r = el.progress.getBoundingClientRect();
+    const x = (ev.clientX - r.left)/r.width;
+    el.audio.currentTime = x*(el.audio.duration||0);
+  });
+
+  // add files
+  $('#fileInput').addEventListener('change', async e=>{
+    const files=[...e.target.files];
+    for(const f of files){
+      const url=URL.createObjectURL(f);
+      const meta = await probe(url);
+      state.list.push({name:f.name, url, duration:meta?.duration});
+    }
+    render();
+  });
+
+  // add url
+  el.addUrl.addEventListener('click', async ()=>{
+    const url = prompt('Cole a URL do MP3:');
+    if(!url) return;
+    const name = url.split('/').pop() || 'faixa.mp3';
+    const meta = await probe(url);
+    state.list.push({name, url, duration:meta?.duration});
+    render();
+  });
+
+  // probe duration
+  function probe(src){
+    return new Promise(res=>{
+      const a=new Audio(); a.preload='metadata'; a.src=src;
+      a.addEventListener('loadedmetadata',()=>res({duration:a.duration}),{once:true});
+      a.addEventListener('error',()=>res(null),{once:true});
+    });
+  }
+
+  // playlists
+  el.savePl.addEventListener('click', ()=>{
+    const name=(el.plistName.value||'Minha Playlist').trim();
+    const all=JSON.parse(localStorage.getItem(state.key)||'{}');
+    all[name]=state.list; localStorage.setItem(state.key, JSON.stringify(all));
+    alert('Playlist salva!');
+  });
+
+  el.loadPl.addEventListener('click', ()=>{
+    const all=JSON.parse(localStorage.getItem(state.key)||'{}');
+    const names=Object.keys(all);
+    if(!names.length) return alert('Nenhuma playlist salva.');
+    const pick=prompt('Qual carregar?\n\n'+names.join('\n'));
+    if(!pick || !all[pick]) return;
+    state.list=all[pick]; state.idx=-1; render();
+  });
+
+  el.exportPl.addEventListener('click', ()=>{
+    const name=(el.plistName.value||'playlist_vov').replace(/[^\w-]+/g,'_');
+    const blob=new Blob([JSON.stringify(state.list,null,2)],{type:'application/json'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name+'.json'; a.click();
+  });
+
+  el.importPl.addEventListener('click', ()=>{
+    const inp=document.createElement('input'); inp.type='file'; inp.accept='application/json';
+    inp.onchange=async e=>{
+      const f=e.target.files[0]; if(!f) return;
+      try{
+        const arr=JSON.parse(await f.text());
+        if(!Array.isArray(arr)) throw 0;
+        state.list=arr; state.idx=-1; render();
+      }catch{ alert('JSON inválido.'); }
+    };
+    inp.click();
+  });
+
+  el.loadOfficial.addEventListener('click', async ()=>{
+    try{
+      const r = await fetch('/vov/blackvox/playlist.json', {cache:'no-store'});
+      const arr = await r.json();
+      if(!Array.isArray(arr)) throw 0;
+      state.list = arr; state.idx=-1; render();
+      alert('Playlist oficial carregada!');
+    }catch{ alert('Falha ao buscar /vov/blackvox/playlist.json'); }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
