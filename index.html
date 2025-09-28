@@ -1,194 +1,168 @@
-<!doctype html>
-<html lang="pt-br">
+<!DOCTYPE html>
+<html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>V O V — Ver • Ouvir • Vender • Viver</title>
-  <meta name="description" content="Palavra que canta. Presença que vende. Cultura que move. JOR NEWS V O V." />
-  <!-- Analytics leve (Plausible) -->
-  <script defer data-domain="jorgematheus.mus.br" src="https://plausible.io/js/script.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plataforma VOV</title>
   <style>
-    :root{
-      --bg:#0a0f17;--ink:#eaf2ff;--muted:#9fb1c9;
-      --stroke:#1b2942;--brand1:#7bdcff;--brand2:#f7d86a;
-      --chip:#101827;--radius:18px;--shadow:0 12px 40px rgba(0,0,0,.35);--blur:12px
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background-color: #0d1117;
+      color: #eaeaea;
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
     }
-    *{box-sizing:border-box}
-    html,body{margin:0;background:var(--bg);color:var(--ink);font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial}
-    a{color:inherit;text-decoration:none;cursor:pointer}
-    .wrap{max-width:1040px;margin:auto;padding:22px 16px}
-    body::before{
-      content:"";position:fixed;inset:0;background:
-        radial-gradient(1200px 600px at 10% -10%, rgba(123,220,255,.12), transparent 60%),
-        radial-gradient(1000px 500px at 90% 10%, rgba(247,216,106,.10), transparent 55%),
-        radial-gradient(700px 400px at 60% 100%, rgba(123,220,255,.10), transparent 60%),
-        repeating-radial-gradient(circle at 20% 30%, rgba(255,255,255,.06), transparent 3px 8px)
+    header {
+      background: #111827;
+      padding: 16px;
+      text-align: center;
+      border-bottom: 2px solid #ffd700;
     }
-    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
-    .brand{display:flex;align-items:center;gap:10px;background:linear-gradient(90deg,#0d1726,#0e1b2d);
-      border:1px solid var(--stroke);border-radius:999px;padding:10px 14px;box-shadow:var(--shadow);backdrop-filter:blur(var(--blur))}
-    .brand b{letter-spacing:.35em}
-    nav{display:flex;gap:8px;flex-wrap:wrap}
-    .navbtn{padding:10px 12px;border-radius:12px;background:transparent;border:1px solid var(--stroke);color:var(--muted)}
-    .navbtn:hover{border-color:#2a3d61;color:#cfe2ff}
-    .hero{position:relative;background:linear-gradient(180deg,rgba(16,25,42,.85),rgba(12,20,35,.65));
-      border:1px solid var(--stroke);border-radius:var(--radius);padding:34px 20px;box-shadow:var(--shadow);backdrop-filter:blur(var(--blur));overflow:hidden}
-    .hero::after{content:"";position:absolute;inset:-1px;border-radius:inherit;background:linear-gradient(120deg,rgba(123,220,255,.18),rgba(247,216,106,.18));padding:1px;opacity:.45;mix-blend:screen;pointer-events:none}
-    h1{font-weight:800;line-height:1.02;margin:2px 0 10px;font-size:clamp(40px,6.6vw,76px);
-      letter-spacing:.01em;background:linear-gradient(90deg,var(--brand1),var(--brand2));-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 2px 18px rgba(123,220,255,.15)}
-    .sub{color:var(--muted);margin:0 0 16px;font-size:clamp(15px,2.6vw,18px)}
-    .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
-    .btn{
-      display:inline-flex;align-items:center;justify-content:center;gap:8px;
-      padding:14px 18px;border-radius:14px;font-weight:800;border:1px solid var(--stroke);
-      background:#0d1727;color:#dbe9ff;transition:transform .15s ease,box-shadow .2s ease,border-color .2s ease;cursor:pointer
+    header h1 {
+      margin: 0;
+      font-size: 1.8rem;
+      color: #ffd700;
     }
-    .btn.primary{background:linear-gradient(90deg,rgba(123,220,255,.22),rgba(247,216,106,.22));border-color:#2a3d61;color:#0d1117;text-shadow:0 1px 0 rgba(255,255,255,.35);backdrop-filter:blur(6px)}
-    .btn:hover{transform:translateY(-1px);box-shadow:0 10px 26px rgba(0,0,0,.25);border-color:#38527e}
-    .ticker{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px;margin:14px 0 6px;border-radius:14px;background:rgba(16,25,42,.6);border:1px solid var(--stroke);color:var(--muted)}
-    .ticker strong{color:#cfe2ff}
-    .link-mini{padding:8px 12px;border-radius:12px;background:transparent;border:1px solid var(--stroke)}
-    .link-mini:hover{border-color:#2a3d61;color:#dbe9ff}
-    footer{color:var(--muted);font-size:14px;margin:22px 2px 8px;text-align:center}
-    .social{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px}
-    .social a{background:var(--chip);padding:10px 12px;border-radius:10px;border:1px solid var(--stroke)}
-    .btn,.navbtn,.link-mini,a[href]{cursor:pointer !important}
-
-    /* formulário compacto no rodapé */
-    .vov-form-compact {
-      background:rgba(16,25,42,.85);
-      padding:20px;
-      border-radius:14px;
-      border:1px solid var(--stroke);
-      box-shadow:0 0 12px rgba(123,220,255,.12);
-      max-width:340px;
-      margin:20px auto 0;
-      font-family:"Segoe UI", Roboto, sans-serif;
-      color:#eaf2ff;
+    nav {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 12px 0;
     }
-    .vov-form-compact h2 {
-      font-size:1.2rem;
-      margin:0 0 14px;
-      text-align:center;
-      background:linear-gradient(90deg,#7bdcff,#f7d86a);
-      -webkit-background-clip:text;
-      -webkit-text-fill-color:transparent;
+    nav a {
+      color: #eaeaea;
+      text-decoration: none;
+      font-weight: 600;
     }
-    .vov-form-compact input,
-    .vov-form-compact textarea {
-      width:100%;
-      margin:6px 0;
-      padding:10px;
-      border-radius:10px;
-      border:1px solid #1b2942;
-      background:#101827;
-      color:#eaf2ff;
-      font-size:.9rem;
+    nav a:hover { color: #ffd700; }
+    main {
+      max-width: 900px;
+      margin: auto;
+      padding: 20px;
     }
-    .vov-form-compact textarea {resize:none;height:80px}
-    .vov-form-compact button {
-      margin-top:10px;
-      width:100%;
-      padding:12px;
-      border-radius:10px;
-      border:none;
-      font-weight:700;
-      background:linear-gradient(90deg,#7bdcff,#f7d86a);
-      color:#0d1117;
-      cursor:pointer;
+    .acoes, .hoje, .redes, .cta {
+      margin: 20px 0;
+      text-align: center;
     }
-    .vov-form-compact button:hover {opacity:.9}
+    .acoes .btn, .cta .btn {
+      display: inline-block;
+      margin: 6px;
+      padding: 12px 18px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: bold;
+      background: #1f2937;
+      color: #fff;
+      border: 1px solid #374151;
+    }
+    .acoes .btn:hover, .cta .btn:hover { background: #24324a; }
+    .btn-primaria {
+      background: #ffd700;
+      color: #111;
+      border-color: #d6b400;
+    }
+    .hoje h3 {
+      margin-bottom: 10px;
+      color: #ffd700;
+    }
+    .hoje ul {
+      list-style: none;
+      padding: 0;
+    }
+    .hoje li {
+      margin: 6px 0;
+    }
+    .hoje a { color: #eaeaea; text-decoration: none; }
+    .hoje a:hover { color: #ffd700; }
+    .redes a {
+      margin: 0 6px;
+      color: #eaeaea;
+      text-decoration: none;
+    }
+    .redes a:hover { color: #ffd700; }
+    footer {
+      text-align: center;
+      padding: 16px;
+      border-top: 1px solid #333;
+      font-size: 0.9rem;
+      color: #aaa;
+    }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <div class="brand"><b>V • O • V</b></div>
-      <nav>
-        <a class="navbtn" href="https://jorgematheus.mus.br/vov/contato.html" rel="noopener">Contato</a>
-        <a class="navbtn" href="https://jorgematheus.mus.br/vov/jornews.html" rel="noopener">JOR NEWS</a>
-        <a class="navbtn" href="https://jorgematheus.mus.br/vov/blackvox/audios/" rel="noopener">BLACKVOX</a>
-      </nav>
-    </header>
+  <header>
+    <h1>Plataforma V O V</h1>
+    <nav>
+      <a href="/vov/contato.html">Contato</a>
+      <a href="/vov/jornews.html">JOR NEWS</a>
+      <a href="/vov/blackvox/">BLACKVOX</a>
+    </nav>
+  </header>
 
-    <section class="hero" aria-labelledby="ttl">
-      <h1 id="ttl">Ver • Ouvir • Vender • Viver</h1>
-      <p class="sub">Palavra que canta. Presença que vende. Cultura que move.</p>
-
-      <div class="actions">
-        <a class="btn primary" href="https://jorgematheus.mus.br/vov/jornews.html" rel="noopener">Abrir JOR NEWS V O V</a>
-        <a class="btn" href="https://jorgematheus.mus.br/vov/contato.html" rel="noopener">Falar com a V O V</a>
-        <a class="btn" href="https://jorgematheus.mus.br/vov/blackvox/audios/" rel="noopener">Ouvir a trilha (BLACKVOX)</a>
-      </div>
+  <main>
+    <!-- AÇÕES PRINCIPAIS -->
+    <section class="acoes">
+      <a class="btn" href="/vov/edicao.html">Abrir JOR NEWS VOV</a>
+      <a class="btn" href="/vov/contato.html">Falar com a VOV</a>
+      <a class="btn" href="/vov/blackvox/">Ouvir a Trilha (BLACKVOX)</a>
     </section>
 
-    <div class="ticker" role="region" aria-label="Hoje no JOR NEWS">
-      <div>Hoje no JOR NEWS — <strong id="data-hoje">--</strong></div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <a class="link-mini" href="https://jorgematheus.mus.br/vov/jornews.html#editorial" rel="noopener">Editorial</a>
-        <a class="link-mini" href="https://jorgematheus.mus.br/vov/jornews.html#agenda" rel="noopener">Agenda</a>
-        <a class="link-mini" href="https://jorgematheus.mus.br/vov/jornews.html#edicao-completa" rel="noopener">Edição completa</a>
-      </div>
-    </div>
+    <!-- HOJE NO JOR NEWS -->
+    <section class="hoje">
+      <h3>Hoje no JOR NEWS</h3>
+      <ul>
+        <li><a href="/vov/edicao.html#editorial">Editorial</a></li>
+        <li><a href="/vov/edicao.html#agenda">Agenda</a></li>
+        <li><a href="/vov/edicoes.html">Edição completa (arquivo)</a></li>
+      </ul>
+    </section>
 
-    <footer>
-      <div>© <span id="ano"></span> V O V — Jorge LA Matheus & AxéBit</div>
-      <div class="social">
-        <a href="https://www.instagram.com/verouvirvendas" target="_blank" rel="noopener">Instagram</a>
-        <a href="#" target="_blank">LinkedIn</a>
-        <a href="#" target="_blank">X (Twitter)</a>
-      </div>
+    <!-- REDES -->
+    <section class="redes">
+      <p>Siga a VOV nas redes:</p>
+      <a href="https://instagram.com/SEU_USUARIO" target="_blank" rel="noopener">Instagram</a> ·
+      <a href="https://www.linkedin.com/in/SEU_PERFIL/" target="_blank" rel="noopener">LinkedIn</a> ·
+      <a href="https://x.com/SEU_USUARIO" target="_blank" rel="noopener">X</a> ·
+      <a href="https://facebook.com/SEU_USUARIO" target="_blank" rel="noopener">Facebook</a> ·
+      <a href="https://www.tiktok.com/@SEU_USUARIO" target="_blank" rel="noopener">TikTok</a>
+    </section>
 
-      <!-- Formulário Compacto -->
-      <div class="vov-form-compact">
-        <h2>Entre em contato</h2>
-        <form action="https://formsubmit.co/verouvirvendas@jorgematheus.mus.br" method="POST">
-          <input type="text" name="nome" placeholder="Seu nome" required>
-          <input type="email" name="email" placeholder="Seu e-mail" required>
-          <textarea name="mensagem" placeholder="Mensagem..." required></textarea>
+    <!-- CTA FINAL -->
+    <section class="cta">
+      <a class="btn btn-primaria" href="/vov/contato.html">Entre em contato</a>
+    </section>
+  </main>
 
-          <!-- Configuração padrão VOV -->
-          <input type="hidden" name="_next" value="https://jorgematheus.mus.br/vov/obrigado.html">
-          <input type="hidden" name="_captcha" value="false">
-          <input type="hidden" name="_cc" value="jorge@jorgematheus.mus.br">
+  <footer>
+    <p>© 2025 V O V — Ver, Ouvir, Vender, Viver<br>
+    Por Jorge LA Matheus & AxéBit</p>
+  </footer>
 
-          <button type="submit">Enviar</button>
-        </form>
-      </div>
-    </footer>
-  </div>
-
+  <!-- TESTADOR DE LINKS (opcional: ative se quiser checar) -->
+  <!--
   <script>
-    const br=new Intl.DateTimeFormat('pt-BR',{dateStyle:'long'});
-    document.getElementById('data-hoje').textContent=br.format(new Date());
-    document.getElementById('ano').textContent=new Date().getFullYear();
+  (function(){
+    const links = Array.from(document.querySelectorAll('a[href]'))
+      .filter(a => a.href.startsWith(location.origin + '/vov/'));
+    console.log('Testando', links.length, 'links internos…');
+    Promise.allSettled(links.map(a =>
+      fetch(a.href, { method:'HEAD', cache:'no-store' })
+        .then(res => ({ ok: res.ok, url: a.href }))
+        .catch(err => ({ ok: false, url: a.href }))
+    )).then(results => {
+      const bad = results.filter(r => r.value && !r.value.ok);
+      if (bad.length === 0) {
+        console.log('%cTudo verde! Sem links quebrados.', 'color: #0f0');
+      } else {
+        console.warn('Links com problema:');
+        bad.forEach(b => console.warn('❌', b.value.url));
+      }
+    });
+  })();
   </script>
-
-
-
-  <script>
-(function(){
-  const links = Array.from(document.querySelectorAll('a[href]'))
-    // testa só links do seu site (evita teste em redes sociais)
-    .filter(a => a.href.startsWith(location.origin + '/vov/'));
-
-  console.log('Testando', links.length, 'links internos…');
-
-  Promise.allSettled(links.map(a =>
-    fetch(a.href, { method:'HEAD', cache:'no-store' })
-      .then(res => ({ ok: res.ok, url: a.href }))
-      .catch(err => ({ ok: false, url: a.href, err }))
-  )).then(results => {
-    const bad = results.filter(r => r.value && !r.value.ok);
-    if (bad.length === 0) {
-      console.log('%cTudo verde! Sem links quebrados.', 'color: #0f0');
-    } else {
-      console.warn('Links com problema:');
-      bad.forEach(b => console.warn('❌', b.value.url));
-    }
-  });
-})();
-</script>
+  -->
 </body>
 </html>
       
