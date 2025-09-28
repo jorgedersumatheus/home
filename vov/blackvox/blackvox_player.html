@@ -1,90 +1,144 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>BLACKVOX Player – VOV</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #111;
-      color: #f4f4f4;
-      margin: 0;
-      padding: 0;
-      text-align: center;
+    :root { --bg:#111; --card:#1c1c1c; --accent:#ffcc00; --text:#f4f4f4; }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:Arial, Helvetica, sans-serif;
+      background:var(--bg); color:var(--text); text-align:center;
     }
-    header, footer {
-      background: #222;
-      padding: 15px;
-      color: #ffcc00;
+    header, footer{ background:#222; color:var(--accent); padding:14px 12px }
+    header a, footer a{ color:var(--accent); text-decoration:none }
+    main{ padding:20px }
+    h1{ margin:10px 0 18px }
+    .player{ max-width:720px; margin:0 auto; text-align:left }
+    .track{
+      background:var(--card); border-radius:14px; padding:18px; margin:18px 0;
+      box-shadow:0 0 15px rgba(0,0,0,.45);
     }
-    h1 {
-      margin: 20px 0;
+    .t-title{ font-size:20px; margin:0 0 8px }
+    audio{ width:100% }
+    .controls{ display:flex; gap:10px; margin:16px 0 6px }
+    button{
+      background:#333; border:1px solid #444; color:#eee; padding:8px 10px;
+      border-radius:8px; cursor:pointer
     }
-    .player {
-      max-width: 600px;
-      margin: 30px auto;
-      padding: 20px;
-      background: #1c1c1c;
-      border-radius: 10px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.6);
-    }
-    audio {
-      width: 100%;
-      margin: 15px 0;
-    }
-    .track {
-      margin-bottom: 20px;
-    }
+    button:hover{ background:#3b3b3b }
+    .now{ color:var(--accent); font-weight:bold }
   </style>
 </head>
 <body>
   <header>
-    <h2>🎧 BLACKVOX – Player Experimental</h2>
-    <nav>
-      <a href="../index.html" style="color:#ffcc00; text-decoration:none;">⬅ Voltar</a>
-    </nav>
+    <strong>🎧 BLACKVOX — Player Experimental</strong> ·
+    <a href="../index.html">⬅ Voltar</a>
   </header>
 
   <main>
     <h1>Playlist Teste</h1>
-    <div class="player">
+    <div class="player" id="playlist">
+
       <div class="track">
-        <p>Brian Eno — An Ending (Ascent)</p>
+        <p class="t-title">Brian Eno — An Ending (Ascent)</p>
         <audio controls preload="auto">
-          <source src="../audios/brian_eno.mp3" type="audio/mpeg">
-          Seu navegador não suporta o player.
+          <source src="./audios/brian_eno.mp3" type="audio/mpeg" />
         </audio>
       </div>
+
       <div class="track">
-        <p>John Coltrane — A Love Supreme</p>
+        <p class="t-title">John Coltrane — A Love Supreme</p>
         <audio controls preload="auto">
-          <source src="../audios/coltrane_love_supreme.mp3" type="audio/mpeg">
+          <source src="./audios/coltrane_love_supreme.mp3" type="audio/mpeg" />
         </audio>
       </div>
+
       <div class="track">
-        <p>Hermeto Pascoal — Bebê</p>
+        <p class="t-title">Hermeto Pascoal — Bebê</p>
         <audio controls preload="auto">
-          <source src="../audios/hermeto_bebe.mp3" type="audio/mpeg">
+          <source src="./audios/hermeto_bebe.mp3" type="audio/mpeg" />
         </audio>
       </div>
+
       <div class="track">
-        <p>Miles Davis — So What</p>
+        <p class="t-title">Miles Davis — So What</p>
         <audio controls preload="auto">
-          <source src="../audios/so_what.mp3" type="audio/mpeg">
+          <source src="./audios/so_what.mp3" type="audio/mpeg" />
         </audio>
       </div>
+
       <div class="track">
-        <p>Duke Ellington — Sentimental</p>
+        <p class="t-title">Duke Ellington — Sentimental</p>
         <audio controls preload="auto">
-          <source src="../audios/sentimental.mp3" type="audio/mpeg">
+          <source src="./audios/sentimental.mp3" type="audio/mpeg" />
         </audio>
       </div>
+
+      <div class="controls">
+        <button id="btnPlay">▶ Play sequência</button>
+        <button id="btnPause">⏸ Pausar</button>
+        <button id="btnStop">⏹ Parar</button>
+      </div>
+      <div id="nowPlaying">Pronto para tocar.</div>
     </div>
   </main>
 
   <footer>
-    <p>V O V – Ver, Ouvir, Vender, Viver ✨</p>
+    <p>V O V — Ver, Ouvir, Vender, Viver ✨ · <a href="../blackvox/">BLACKVOX clássico</a></p>
   </footer>
+
+  <script>
+    // coleta trilhas
+    const tracks = Array.from(document.querySelectorAll("audio"));
+    const titles = Array.from(document.querySelectorAll(".t-title"));
+    const nowEl = document.getElementById("nowPlaying");
+    let idx = 0;
+
+    // ao terminar, avança
+    tracks.forEach((a, i) => {
+      a.addEventListener("ended", () => {
+        if (i < tracks.length - 1) {
+          idx = i + 1;
+          playIndex(idx);
+        } else {
+          nowEl.textContent = "Fim da playlist.";
+        }
+      });
+      // se o usuário apertar play em uma faixa manualmente,
+      // pausamos as demais e atualizamos "tocando agora"
+      a.addEventListener("play", () => {
+        tracks.forEach((b, j) => { if (j !== i) b.pause(); });
+        idx = i;
+        highlightNow();
+      });
+    });
+
+    function highlightNow(){
+      titles.forEach((el, j) => {
+        el.classList.toggle("now", j === idx);
+      });
+      nowEl.textContent = "Tocando agora: " + titles[idx].textContent;
+    }
+
+    function playIndex(i){
+      tracks.forEach((a, j) => { if (j !== i) { a.pause(); a.currentTime = 0; }});
+      tracks[i].play().catch(()=>{}); // ignora bloqueio de autoplay
+      highlightNow();
+    }
+
+    document.getElementById("btnPlay").onclick = () => {
+      // alguns navegadores exigem interação do usuário; este clique já satisfaz
+      playIndex(idx);
+    };
+    document.getElementById("btnPause").onclick = () => tracks[idx].pause();
+    document.getElementById("btnStop").onclick = () => {
+      tracks[idx].pause();
+      tracks[idx].currentTime = 0;
+      nowEl.textContent = "Parado.";
+      titles.forEach(el => el.classList.remove("now"));
+    };
+  </script>
 </body>
 </html>
