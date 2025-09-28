@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BLACKVOX Player – VOV</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #111;
+      color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+    header, footer {
+      background: #222;
+      padding: 15px;
+      color: #ffcc00;
+    }
+    h1 {
+      margin: 20px 0;
+    }
+    .player {
+      max-width: 600px;
+      margin: 30px auto;
+      padding: 20px;
+      background: #1c1c1c;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.6);
+    }
+    audio {
+      width: 100%;
+      margin: 15px 0;
+    }
+    .track {
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h2>🎧 BLACKVOX – Player Experimental</h2>
+    <nav>
+      <a href="../index.html" style="color:#ffcc00; text-decoration:none;">⬅ Voltar</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Playlist Teste</h1>
+    <div class="player">
+      <div class="track">
+        <p>Brian Eno — An Ending (Ascent)</p>
+        <audio controls preload="auto">
+          <source src="../audios/brian_eno.mp3" type="audio/mpeg">
+          Seu navegador não suporta o player.
+        </audio>
+      </div>
+      <div class="track">
+        <p>John Coltrane — A Love Supreme</p>
+        <audio controls preload="auto">
+          <source src="../audios/coltrane_love_supreme.mp3" type="audio/mpeg">
+        </audio>
+      </div>
+      <div class="track">
+        <p>Hermeto Pascoal — Bebê</p>
+        <audio controls preload="auto">
+          <source src="../audios/hermeto_bebe.mp3" type="audio/mpeg">
+        </audio>
+      </div>
+      <div class="track">
+        <p>Miles Davis — So What</p>
+        <audio controls preload="auto">
+          <source src="../audios/so_what.mp3" type="audio/mpeg">
+        </audio>
+      </div>
+      <div class="track">
+        <p>Duke Ellington — Sentimental</p>
+        <audio controls preload="auto">
+          <source src="../audios/sentimental.mp3" type="audio/mpeg">
+        </audio>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>V O V – Ver, Ouvir, Vender, Viver ✨</p>
+  </footer>
+</body>
+</html>
