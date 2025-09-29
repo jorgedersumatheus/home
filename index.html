@@ -1,148 +1,155 @@
-
-      
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Plataforma V O V — Ver • Ouvir • Vender • Viver</title>
-  <meta name="description" content="JOR NEWS VOV, BLACKVOX e contato. Notícia, poesia e inteligência vital.">
-  <style>
-    :root{
-      --bg:#0b0f18;      /* azul/negro profundo */
-      --panel:#0f1522;   /* painel */
-      --ink:#eaf2ff;     /* texto */
-      --muted:#a8b3c7;   /* texto secundário */
-      --accent:#00aaff;  /* azul neon (impressão digital) */
-      --gold:#ffd54f;    /* acento dourado */
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0; background:var(--bg); color:var(--ink);
-      font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-    }
-    header{
-      position:sticky; top:0; z-index:50;
-      background:linear-gradient(180deg,#070a11, #0b1020);
-      border-bottom:2px solid var(--accent);
-    }
-    .wrap{max-width:1100px; margin:0 auto; padding:0 18px}
-    .topbar{display:flex; align-items:center; justify-content:space-between; padding:14px 0}
-    .brand{display:flex; align-items:center; gap:10px; text-decoration:none; color:var(--ink)}
-    .brand .dot{width:10px; height:10px; border-radius:50%; background:var(--accent); box-shadow:0 0 12px var(--accent)}
-    .brand b{letter-spacing:.5px}
-    nav{display:flex; gap:12px; flex-wrap:wrap}
-    nav a{
-      color:var(--ink); text-decoration:none; padding:.45rem .7rem; border-radius:.6rem;
-      background:#0e1524; border:1px solid #182033;
-    }
-    nav a:hover{background:#14213a}
-    .hero{
-      background:#000;
-      border-bottom:2px solid var(--accent);
-    }
-    .hero .box{
-      text-align:center; padding:64px 16px 56px;
-    }
-    .hero h1{
-      margin:0 0 12px;
-      font-size:2.4rem; font-weight:800;
-      background:linear-gradient(90deg, var(--accent), #66ccff);
-      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-    }
-    .hero p{color:#d8e4ff; margin:0 auto 26px; max-width:820px; font-size:1.15rem}
-    .cta{display:flex; gap:10px; justify-content:center; flex-wrap:wrap}
-    .btn{
-      display:inline-block; text-decoration:none; font-weight:700;
-      padding:.85rem 1.2rem; border-radius:999px; border:1px solid #163457;
-      background:#0c1a2d; color:#eaf6ff;
-    }
-    .btn:hover{background:#10243f}
-    .btn.gold{background:var(--gold); color:#111; border-color:#e6c13f}
-    .btn.white{background:#fff; color:#111; border-color:#e5e5e5}
-    main{padding:28px 0 56px}
-    .grid{
-      display:grid; gap:16px;
-      grid-template-columns: repeat( auto-fit, minmax(240px,1fr) );
-    }
-    .card{
-      background:var(--panel); border:1px solid #1b2640; border-radius:16px; padding:16px;
-    }
-    .card h3{margin:0 0 6px; font-size:1.15rem}
-    .card p{margin:0 0 10px; color:var(--muted)}
-    .card a{color:var(--accent); text-decoration:none; font-weight:700}
-    .card a:hover{text-decoration:underline}
-    footer{
-      border-top:1px solid #14213a; color:var(--muted); text-align:center; padding:18px 0 28px;
-    }
-    .small{font-size:.92rem}
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>V O V — Plataforma • JOR NEWS + BLACKVOX</title>
+<meta name="theme-color" content="#0b0b0f"/>
+<style>
+  :root{
+    --bg:#0b0b0f;--panel:#121218;--muted:#9898a3;--txt:#f4f6f8;--brand:#ffd54a;--accent:#77e6a3;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:var(--bg);color:var(--txt);font:400 16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial}
+  a{color:var(--brand);text-decoration:none}
+  a:hover{text-decoration:underline}
+  header{position:sticky;top:0;background:linear-gradient(180deg,#0b0b0f 0%,#0b0b0fb0 100%);backdrop-filter:blur(6px);border-bottom:1px solid #1e1e26}
+  .wrap{max-width:980px;margin:auto;padding:16px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .brand .name{font-weight:800;letter-spacing:.06em}
+  nav{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}
+  nav a{padding:8px 12px;background:#1a1a22;border:1px solid #2a2a35;border-radius:10px}
+  main{padding:24px 0}
+  .hero{display:grid;gap:10px;margin-bottom:20px}
+  h1{font-size:clamp(28px,4.2vw,44px);margin:8px 0 2px}
+  .muted{color:var(--muted)}
+  .grid{display:grid;gap:16px}
+  @media(min-width:800px){.grid{grid-template-columns:1.1fr .9fr}}
+  .card{background:var(--panel);border:1px solid #1f1f29;border-radius:16px;padding:18px}
+  .btn{display:inline-flex;align-items:center;gap:8px;border-radius:12px;padding:10px 14px;border:1px solid #2a2a35;background:#1a1a22;color:var(--txt)}
+  .btn.primary{background:var(--brand);color:#14120b;border-color:#e9c341;font-weight:700}
+  .btn.ghost{background:transparent}
+  .row{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0}
+  hr{border:0;border-top:1px solid #242433;margin:18px 0}
+  footer{border-top:1px solid #1e1e26;margin-top:30px}
+  /* MINI PLAYER */
+  .player{display:grid;gap:10px}
+  .track{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px;border-radius:12px;background:#0f0f15;border:1px solid #232334}
+  .track strong{font-size:15px}
+  .controls{display:flex;gap:8px}
+  .pill{font:600 12px/1 system-ui;padding:6px 10px;border-radius:999px;background:#1b1b25;border:1px solid #2a2a35;color:var(--muted)}
+</style>
 </head>
 <body>
-
-  <header>
-    <div class="wrap topbar">
-      <a class="brand" href="/vov/">
-        <span class="dot"></span><b>V O V</b>
-      </a>
-      <nav>
-        <a href="/vov/edicao.html">Última edição</a>
-        <a href="/vov/edicoes.html">Arquivo</a>
-        <a href="/vov/blackvox/">BLACKVOX (Clássico)</a>
-        <a href="/vov/blackvox/blackvox_player.html">BLACKVOX (Especial)</a>
-        <a href="/vov/contato.html">Contato</a>
-      </nav>
+<header>
+  <div class="wrap">
+    <div class="brand">
+      <span style="font-size:26px">🗞️</span>
+      <div class="name">JOR NEWS V O V</div>
     </div>
-  </header>
+    <nav>
+      <a href="./edicoes.html">Arquivo de Edições</a>
+      <a href="./blackvox/index.html">BLACKVOX</a>
+      <a href="./contato.html">Contato</a>
+    </nav>
+  </div>
+</header>
 
-  <!-- HERO negro & azul -->
+<main class="wrap">
   <section class="hero">
-    <div class="wrap box">
-      <h1>JOR NEWS V O V</h1>
-      <p>
-        Entre o mar e a pedra, a esperança e a ação.  
-        <strong>Notícia + Poesia + Inteligência Vital</strong> — da rua para a rede, da rede para o mundo.
-      </p>
-      <div class="cta">
-        <a class="btn gold"  href="/vov/edicao.html">📰 Ler JOR NEWS VOV</a>
-        <a class="btn white" href="/vov/blackvox/">🎧 Ouvir BLACKVOX (Clássico)</a>
-        <a class="btn"       href="/vov/blackvox/blackvox_player.html">🎚️ Player Especial</a>
-        <a class="btn"       href="/vov/contato.html">✉️ Falar com a VOV</a>
-      </div>
+    <h1>V O V — Ver • Ouvir • Vender • Viver</h1>
+    <div class="muted">Notícia + Poesia + Inteligência Vital • Jornal diário e rádio-música na mesma plataforma.</div>
+    <div class="row">
+      <a class="btn primary" href="https://clique.ink/tk15qz" target="_blank" rel="noopener">
+        📖 Ler edição de hoje (PDF)
+      </a>
+      <a class="btn" href="https://drive.google.com/drive/folders/1tXkZISpnnFyWa9EhkmN40bdXTz9YHfjE" target="_blank" rel="noopener">
+        📚 Acervo completo (Drive)
+      </a>
+      <a class="btn ghost" href="./blackvox/index.html">🎧 Abrir BLACKVOX</a>
     </div>
   </section>
 
-  <main class="wrap">
-    <div class="grid">
-      <div class="card">
-        <h3>Hoje no JOR NEWS</h3>
-        <p>Editorial, agenda, análise e oração final — tudo em uma leitura viva.</p>
-        <a href="/vov/edicao.html#editorial">Ir ao Editorial</a>
+  <div class="grid">
+    <section class="card">
+      <h2 style="margin:0 0 6px">JOR NEWS — Destaques</h2>
+      <div class="muted">Publicação diária com editorial/poema, 5 pilares, análise VOV e oração final.</div>
+      <hr/>
+      <ul class="muted" style="margin:0 0 10px 18px">
+        <li>PDF hospedado no Acervo (Google Drive) com link curto para divulgação.</li>
+        <li>Arquivo de edições sempre acessível em <a href="./edicoes.html">/edicoes.html</a>.</li>
+      </ul>
+      <div class="row">
+        <!-- TODO: se trocar o link curto diário, atualize também aqui se quiser -->
+        <a class="btn primary" href="https://clique.ink/tk15qz" target="_blank" rel="noopener">Abrir PDF de 29/09/2025</a>
+        <a class="btn" href="./edicoes.html">Ver arquivo</a>
       </div>
-      <div class="card">
-        <h3>Arquivo de Edições</h3>
-        <p>Acompanhe a evolução diária. As edições mais recentes vêm primeiro.</p>
-        <a href="/vov/edicoes.html">Abrir Edições</a>
-      </div>
-      <div class="card">
-        <h3>BLACKVOX — Trilha</h3>
-        <p>Eno, Coltrane, Hermeto e muito mais. Ritmo que não para.</p>
-        <a href="/vov/blackvox/">Abrir BLACKVOX (Clássico)</a> ·
-        <a href="/vov/blackvox/blackvox_player.html">Player Especial</a>
-      </div>
-      <div class="card">
-        <h3>Entre em contato</h3>
-        <p>Sugestões, parcerias e pautas comunitárias. Fale conosco.</p>
-        <a href="/vov/contato.html">Abrir Contato</a>
-      </div>
-    </div>
-  </main>
+    </section>
 
-  <footer>
-    <div class="wrap small">
-      © 2025 V O V — Ver • Ouvir • Vender • Viver · Por Jorge LA Matheus & AxéBit
+    <aside class="card">
+      <h2 style="margin:0 0 6px">BLACKVOX • Mini-player</h2>
+      <div class="muted">Toca direto do navegador. Lista vem de <code>/vov/blackvox/playlist.json</code>.</div>
+      <div id="miniPlayer" class="player" aria-live="polite">
+        <div class="pill">Carregando playlist…</div>
+      </div>
+      <audio id="mp" preload="none"></audio>
+    </aside>
+  </div>
+
+  <footer class="wrap">
+    <div class="row">
+      <a class="btn" href="https://drive.google.com/drive/folders/1tXkZISpnnFyWa9EhkmN40bdXTz9YHfjE" target="_blank" rel="noopener">📚 Acervo (Drive)</a>
+      <a class="btn" href="./edicoes.html">🗞️ Edições</a>
+      <a class="btn" href="./blackvox/index.html">🎶 BLACKVOX</a>
+      <a class="btn" href="./contato.html">✉️ Contato</a>
     </div>
+    <p class="muted" style="margin-top:8px">© V O V — Ver • Ouvir • Vender • Viver</p>
   </footer>
+</main>
 
+<script>
+(async function(){
+  const listEl = document.getElementById('miniPlayer');
+  const audio = document.getElementById('mp');
+  let tracks=[], current=-1;
+
+  function render(){
+    if(!tracks.length){ listEl.innerHTML='<div class="pill">Nenhuma faixa</div>'; return;}
+    listEl.innerHTML='';
+    tracks.forEach((t,i)=>{
+      const row=document.createElement('div');
+      row.className='track';
+      row.innerHTML = `
+        <strong>${t.title}</strong>
+        <div class="controls">
+          <button class="btn" data-i="${i}" aria-label="Tocar ${t.title}">▶️</button>
+        </div>`;
+      listEl.appendChild(row);
+    });
+  }
+
+  function play(i){
+    current=i; audio.src=tracks[i].file; audio.play();
+    [...listEl.querySelectorAll('.track')].forEach((el,idx)=>{
+      el.style.outline = idx===i ? '2px solid var(--accent)' : 'none';
+    });
+  }
+
+  audio.addEventListener('ended', ()=>{ if(current+1<tracks.length) play(current+1); });
+
+  try{
+    const res = await fetch('./vov/blackvox/playlist.json',{cache:'no-store'});
+    tracks = await res.json();
+    render();
+    listEl.addEventListener('click', (e)=>{
+      const b = e.target.closest('button[data-i]');
+      if(b) play(+b.dataset.i);
+    });
+  }catch(err){
+    listEl.innerHTML = `<div class="pill">Falha ao carregar playlist.json</div>`;
+  }
+})();
+</script>
 </body>
 </html>
