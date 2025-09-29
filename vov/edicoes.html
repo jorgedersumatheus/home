@@ -1,94 +1,91 @@
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Arquivo de Edições – JOR NEWS V O V</title>
-  <style>
-    body {
-      font-family: Georgia, "Times New Roman", serif;
-      background: #f9f9f9;
-      color: #222;
-      margin: 0;
-      padding: 0;
-    }
-    header {
-      background: #3a0d0d;
-      color: #fff;
-      padding: 20px;
-      text-align: center;
-    }
-    header h1 {
-      margin: 0;
-      font-size: 1.8em;
-    }
-    header p {
-      margin: 5px 0 0;
-      font-style: italic;
-    }
-    main {
-      max-width: 800px;
-      margin: 30px auto;
-      padding: 0 20px;
-    }
-    h2 {
-      color: #3a0d0d;
-      border-bottom: 2px solid #3a0d0d;
-      padding-bottom: 5px;
-    }
-    ul {
-      list-style: none;
-      padding: 0;
-    }
-    li {
-      margin: 15px 0;
-      padding: 10px;
-      background: #fff;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-    }
-    li strong {
-      display: block;
-      margin-bottom: 5px;
-      color: #000;
-    }
-    a {
-      color: #b30000;
-      text-decoration: none;
-      margin-right: 10px;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
-    footer {
-      text-align: center;
-      margin: 40px 0 20px;
-      font-size: 0.9em;
-      color: #555;
-    }
-  </style>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>JOR NEWS V O V — Edições Publicadas</title>
+<meta name="theme-color" content="#0b0b0f"/>
+<style>
+  :root{--bg:#0b0b0f;--panel:#121218;--txt:#f4f6f8;--muted:#9aa0ab;--brand:#ffd54a}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);font:400 16px/1.5 system-ui,-apple-system,Segoe UI,Roboto}
+  .wrap{max-width:900px;margin:auto;padding:20px}
+  h1{margin:10px 0 6px;font-size:clamp(26px,4.5vw,40px)}
+  .muted{color:var(--muted)}
+  .card{background:var(--panel);border:1px solid #1f1f29;border-radius:16px;padding:18px;margin:14px 0}
+  a{color:var(--brand);text-decoration:none}
+  a:hover{text-decoration:underline}
+  ul{margin:0;padding-left:18px}
+  .row{display:flex;flex-wrap:wrap;gap:10px}
+  /* mini-player rápido */
+  .track{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px;border-radius:12px;background:#0f0f15;border:1px solid #232334;margin-top:6px}
+  .btn{padding:8px 12px;border:1px solid #2a2a35;border-radius:10px;background:#1a1a22;color:var(--txt)}
+</style>
 </head>
 <body>
-  <header>
-    <h1>Arquivo de Edições</h1>
-    <p>JOR NEWS V O V – Notícia ✦ Poesia ✦ Inteligência Vital</p>
-  </header>
+<div class="wrap">
+  <h1>JOR NEWS V O V — Edições Publicadas</h1>
+  <p class="muted">Arquivo vivo das edições. O PDF de cada dia está no Acervo (Google Drive).</p>
 
-  <main>
-    <h2>Edições Publicadas</h2>
+  <div class="card">
+    <h2 style="margin-top:0">Acesso rápido</h2>
+    <div class="row">
+      <!-- TODO: atualize este link curto diariamente -->
+      <a class="btn" href="https://clique.ink/tk15qz" target="_blank" rel="noopener">📖 Edição de 29/09/2025 (PDF)</a>
+      <a class="btn" href="https://drive.google.com/drive/folders/1tXkZISpnnFyWa9EhkmN40bdXTz9YHfjE" target="_blank" rel="noopener">📚 Acervo completo (Drive)</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin:0 0 8px">Últimas notas</h3>
     <ul>
-      <li>
-        <strong>Edição 27/09/2025</strong>
-        <a href="edicoes/edicao_2025-09-27.html" target="_blank">Versão HTML</a> | 
-        <a href="edicoes/JNV_27sab25.pdf" target="_blank">Versão PDF</a>
-      </li>
-
+      <li>🗓️ 29/09/2025 — edição publicada (link curto acima).</li>
+      <li>🗂️ Edições anteriores: acesse o <strong>Acervo completo</strong> e abra pelo nome do arquivo <code>AAAA-MM-DD.pdf</code>.</li>
     </ul>
-  </main>
+  </div>
 
-  <footer>
-    JOR NEWS V O V — Por Jorge LA Matheus & AxéBit<br>
-    ✦ Selo V O V — Ver, Ouvir, Vender, Viver ✦
-  </footer>
+  <div class="card">
+    <h3 style="margin:0 0 8px">BLACKVOX — Mini-player</h3>
+    <div id="mpList">
+      <div class="track"><strong>Carregando playlist…</strong><span class="muted">aguarde</span></div>
+    </div>
+    <audio id="mp" preload="none"></audio>
+    <p class="muted" style="margin-top:10px">Player carrega de <code>/vov/blackvox/playlist.json</code>. Para abrir a página completa do BLACKVOX, <a href="./blackvox/index.html">clique aqui</a>.</p>
+  </div>
+
+  <p class="muted">© V O V — Ver • Ouvir • Vender • Viver</p>
+</div>
+
+<script>
+(async function(){
+  const list = document.getElementById('mpList');
+  const audio = document.getElementById('mp');
+  let tracks=[], current=-1;
+
+  function render(){
+    list.innerHTML='';
+    tracks.forEach((t,i)=>{
+      const row=document.createElement('div');
+      row.className='track';
+      row.innerHTML=`<strong>${t.title}</strong> <button class="btn" data-i="${i}">▶️ Tocar</button>`;
+      list.appendChild(row);
+    });
+  }
+  function play(i){
+    current=i; audio.src=tracks[i].file; audio.play();
+    [...list.children].forEach((el,idx)=>el.style.outline = idx===i ? '2px solid #77e6a3' : 'none');
+  }
+  audio.addEventListener('ended',()=>{ if(current+1<tracks.length) play(current+1); });
+
+  try{
+    const res=await fetch('./vov/blackvox/playlist.json',{cache:'no-store'});
+    tracks=await res.json(); render();
+    list.addEventListener('click',e=>{const b=e.target.closest('button[data-i]'); if(b) play(+b.dataset.i);});
+  }catch(e){
+    list.innerHTML='<div class="track"><strong>Não foi possível carregar a playlist.</strong></div>';
+  }
+})();
+</script>
 </body>
 </html>
