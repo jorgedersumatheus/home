@@ -1,67 +1,90 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>JOR NEWS V O V — Edições Publicadas</title>
+  <meta charset="UTF-8">
+  <title>Arquivo de Edições — JOR NEWS V O V</title>
   <style>
-    :root { --bg:#0b0e12; --card:#141923; --text:#e8eef7; --muted:#9fb0c3; --brand:#ffd84a; }
-    * { box-sizing:border-box }
-    body { margin:0; font-family:system-ui, -apple-system, Segoe UI, Roboto, Arial; color:var(--text); background:var(--bg); }
-    .wrap { max-width:900px; margin:0 auto; padding:24px 16px 48px }
-    header { display:flex; align-items:center; gap:12px; margin-bottom:16px }
-    header a { color:var(--muted); text-decoration:none; font-size:14px }
-    h1{ font-size:28px; margin:8px 0 4px }
-    p.lead{ color:var(--muted); margin:0 0 18px }
-    .row{ display:grid; gap:16px; grid-template-columns:1fr }
-    @media(min-width:720px){ .row{ grid-template-columns:1fr 1fr } }
-    .card{ background:var(--card); border:1px solid #1f2633; border-radius:14px; padding:16px }
-    .btn{ display:inline-block; background:var(--brand); color:#181818; font-weight:700; padding:10px 14px; border-radius:10px; text-decoration:none }
-    .list{ margin:0; padding:0; list-style:none }
-    .list li{ padding:10px 0; border-bottom:1px solid #1f2633; display:flex; justify-content:space-between; gap:12px }
-    .list a{ color:#a9c7ff; text-decoration:none }
-    .hint{ color:var(--muted); font-size:13px }
-    footer{ margin-top:28px; color:var(--muted); font-size:13px; text-align:center }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #0a0a0a;
+      color: #e0e0e0;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: linear-gradient(90deg, #000000, #001f3f);
+      color: #fff;
+      text-align: center;
+      padding: 20px;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2rem;
+      letter-spacing: 2px;
+    }
+    main {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #111;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+    }
+    h2 {
+      color: #00aaff;
+      border-bottom: 2px solid #00aaff;
+      padding-bottom: 8px;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    ul li {
+      margin: 15px 0;
+    }
+    ul li a {
+      text-decoration: none;
+      color: #00ccff;
+      font-weight: bold;
+      padding: 10px 15px;
+      display: inline-block;
+      border: 1px solid #00ccff;
+      border-radius: 6px;
+      transition: 0.3s;
+    }
+    ul li a:hover {
+      background: #00ccff;
+      color: #000;
+    }
+    footer {
+      text-align: center;
+      padding: 20px;
+      background: #001f3f;
+      color: #aaa;
+      margin-top: 40px;
+      font-size: 0.9rem;
+    }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <a href="/vov/index.html">← Voltar ao início</a>
-    </header>
-
+  <header>
     <h1>JOR NEWS V O V — Edições Publicadas</h1>
-    <p class="lead">Arquivo vivo das edições em PDF (hospedadas aqui no site).</p>
+  </header>
+  <main>
+    <h2>Últimas Edições</h2>
+    <p>Arquivo vivo do <strong>JOR NEWS V O V</strong>. Cada edição em PDF está disponível para consulta e download.</p>
 
-    <div class="row">
-      <div class="card">
-        <h3 style="margin-top:0">Acesso rápido</h3>
-        <!-- Atualize sempre o primeiro link com a edição do dia -->
-        <p><a class="btn" href="/vov/edicoes/2025-09-29.pdf" target="_blank">📖 Abrir PDF de 29/09/2025</a></p>
-        <p class="hint">Dica: nomeie sempre como <code>AAAA-MM-DD.pdf</code>.</p>
-      </div>
+    <ul>
+      <li><a href="/vov/edicoes/2025-09-29.pdf" target="_blank">📖 Edição de 29/09/2025 (PDF)</a></li>
+      <li><a href="/vov/edicoes/2025-09-28.pdf" target="_blank">📖 Edição de 28/09/2025 (PDF)</a></li>
+      <li><a href="/vov/edicoes/2025-09-27.pdf" target="_blank">📖 Edição de 27/09/2025 (PDF)</a></li>
+    </ul>
 
-      <div class="card">
-        <h3 style="margin-top:0">BLACKVOX</h3>
-        <p class="hint">Música para acompanhar a leitura:</p>
-        <p style="display:flex; gap:8px; flex-wrap:wrap">
-          <a class="btn" href="/vov/blackvox/tocador_vov.html">🎧 Player VOV</a>
-          <a class="btn" href="/vov/blackvox/">🎼 Portal BLACKVOX</a>
-        </p>
-      </div>
-    </div>
-
-    <div class="card" style="margin-top:16px">
-      <h3 style="margin-top:0">Todas as edições</h3>
-      <ul class="list">
-        <!-- Adicione sempre a mais recente no topo -->
-        <li><a href="/vov/edicoes/2025-09-29.pdf" target="_blank">29/09/2025</a><span class="hint">PDF</span></li>
-        <li><a href="/vov/edicoes/2025-09-28.pdf" target="_blank">28/09/2025</a><span class="hint">PDF</span></li>
-        <li><a href="/vov/edicoes/2025-09-27.pdf" target="_blank">27/09/2025</a><span class="hint">PDF</span></li>
-      </ul>
-    </div>
-
-    <footer>© V O V — Ver • Ouvir • Vender • Viver</footer>
-  </div>
+    <p>🔎 Novas edições serão adicionadas diariamente.</p>
+  </main>
+  <footer>
+    © 2025 V O V — Ver • Ouvir • Vender • Viver
+  </footer>
 </body>
 </html>
