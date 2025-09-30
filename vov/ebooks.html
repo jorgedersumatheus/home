@@ -107,11 +107,17 @@
     @media (prefers-reduced-motion: reduce){ .buy{transition:none} }
   </style>
   
-  
+  <main class="wrap" id="app">
+  <span class="pill" id="countPill">Coleção</span>
+  <div class="grid" id="grid"></div>
+</main>
   
  
 </head>
 <body>
+
+
+	
   <header>
     <h1>Biblioteca V O V — E-books</h1>
     <p>Pílulas de leitura com capa, mini-resumo e acesso direto ao PDF. <span class="selo">V • O • V</span></p>
@@ -395,6 +401,109 @@ tempo.</p>
     © 2025 V O V — Ver • Ouvir • Vender • Viver · <a href="/vov/index.html">Portal</a> · <a href="/vov/edicoes.html">Edições</a> · <a href="/vov/blackvox/tocador_vov.html">BLACKVOX</a> · <a href="/vov/contato.html">Contato</a>
   </footer>
 
- 
+ <script>
+const BOOKS = [
+  {
+    title: "A Pedra do Pó Branco",
+    cover: "/vov/img/pedra_do_po_branco.jpg",
+    buy_url: "https://hotm.art/pm25",
+    synopsis: "Lendas e memórias da Amaralina..."
+  },
+  {
+    title: "Anúncios Meta – Guia Livre",
+    cover: "/vov/img/anummeta.png",
+    buy_url: "https://hotm.art/am25",
+    synopsis: "Guia prático para navegar na Meta sem restrições."
+  },
+  {
+    title: "Anúncios que Vendem",
+    cover: "/vov/img/anunvend.png",
+    buy_url: "https://hotm.art/ar25",
+    synopsis: "Um guia com inteligência vital para anúncios eficazes."
+  },
+  {
+    title: "Sua Imagem Vale Muito",
+    cover: "/vov/img/a_img3_suaimavale.png",
+    buy_url: "https://pay.kiwify.com.br/lus2aIc",
+    synopsis: "Reflexão poderosa sobre presença e valor pessoal."
+  },
+  {
+    title: "Os Segredos de um Nômade",
+    cover: "/vov/img/a_img5_nomade.png",
+    buy_url: "https://pay.kiwify.com.br/MDJnY74",
+    synopsis: "Estratégias para viver e prosperar como nômade digital."
+  },
+  {
+    title: "Macrobiotica Zen",
+    cover: "/vov/img/a_img6_macro.png",
+    buy_url: "https://pay.kiwify.com.br/ajIuPbm",
+    synopsis: "Sabedoria zen aplicada à alimentação."
+  },
+  {
+    title: "Milton Santos — Reflexões e Conexões",
+    cover: "/vov/img/miltonhot2.jpg",
+    buy_url: "#",
+    synopsis: "Ensaios inspirados em Milton Santos."
+  },
+  {
+    title: "Língua nos Dentes",
+    cover: "/vov/img/linguahot2.jpg",
+    buy_url: "#",
+    synopsis: "A palavra como arma, poesia e resistência."
+  },
+  {
+    title: "BLACKVOX — Playlists",
+    cover: "/vov/img/a_img9_blackvox.jpg",
+    buy_url: "https://pay.kiwify.com.br/7mLrclo",
+    synopsis: "Coleção sonora única, pulsante e criativa."
+  },
+  {
+    title: "JDVV — Jorge Dersu Voz & Violão",
+    cover: "/vov/img/a_img10_jdvv.jpg",
+    buy_url: "https://pay.kiwify.com.br",
+    synopsis: "O artista em sua essência, voz e violão."
+  },
+  {
+    title: "Nota — Ações",
+    cover: "/vov/img/a_img12_nota.jpg",
+    buy_url: "#",
+    synopsis: "Notas e reflexões sobre práticas e caminhos."
+  },
+  {
+    title: "Lista — Consumo",
+    cover: "/vov/img/a_img13_lista.jpg",
+    buy_url: "#",
+    synopsis: "Uma lista provocadora sobre consumo e escolhas."
+  }
+];
+
+const grid = document.getElementById('grid');
+const countPill = document.getElementById('countPill');
+countPill.textContent = `Coleção completa · ${BOOKS.length} títulos`;
+
+BOOKS.forEach((b, i) => {
+  const card = document.createElement('article');
+  card.className = 'card';
+  card.innerHTML = `
+    <img class="cover" src="${b.cover}" alt="Capa: ${b.title}">
+    <div class="body"><div class="title">${b.title}</div></div>
+    <div class="actions">
+      <a class="btn buy" href="${b.buy_url}" target="_blank">Comprar</a>
+      <button class="btn ghost" data-syn="${i}">Ler sinopse</button>
+    </div>
+    <div class="sinopse" id="syn-${i}">${b.synopsis}</div>
+  `;
+  grid.appendChild(card);
+});
+
+grid.addEventListener('click', (e)=>{
+  const btn = e.target.closest('button[data-syn]');
+  if(!btn) return;
+  const id = btn.getAttribute('data-syn');
+  const box = document.getElementById(`syn-${id}`);
+  box.style.display = (box.style.display === 'block') ? 'none' : 'block';
+  btn.textContent = box.style.display === 'block' ? 'Ocultar sinopse' : 'Ler sinopse';
+});
+</script>
 </body>
 </html>
