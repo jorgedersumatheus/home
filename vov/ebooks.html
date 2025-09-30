@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -6,47 +5,111 @@
   <title>E-books — JOR NEWS V O V</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="color-scheme" content="dark" />
+  
+  
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #111;
+      color: #eee;
+      text-align: center;
+    }
+    header {
+      padding: 2rem 1rem;
+      background: #000;
+    }
+    header h1 { margin: 0; color: #fff; }
+    header p { margin: 0.5rem 0 0; color: #aaa; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      padding: 2rem;
+    }
+    .card {
+      background: #222;
+      border-radius: 10px;
+      padding: 1rem;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    .card img {
+      max-width: 100%;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+    }
+    .card h3 { margin: 0.5rem 0; }
+    .btn {
+      display: inline-block;
+      margin-top: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: #f9b233;
+      color: #000;
+      border-radius: 5px;
+      font-weight: bold;
+      text-decoration: none;
+    }
+    footer {
+      margin-top: 2rem;
+      padding: 1rem;
+      background: #000;
+      color: #aaa;
+    }
+  </style>
+  
   <style>
     :root{
-      --bg:#0a0a0a; --panel:#111; --ink:#e6eef2; --blue:#00aaff; --blue2:#00ccff; --muted:#9aa3a7;
-      --ring:0 0 0 2px rgba(0,170,255,.25);
-      --border:#1f2a36;
+      --bg:#0b0e14; --panel:#121826; --muted:#9aa4b2; --text:#e6e9ef;
+      --accent:#f6b200; --accentText:#1a1a1a; --stroke:#232a36; --focus:#58a6ff;
     }
     *{box-sizing:border-box}
-    body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial}
-    a{color:var(--blue2)}
-    header{background:linear-gradient(90deg,#000,#001f3f);padding:22px 16px;text-align:center;border-bottom:1px solid #0f2238}
-    header h1{margin:0;font-size:1.9rem;letter-spacing:0.5px}
-    header p{margin:6px 0 0;color:var(--muted)}
-    nav{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px}
-    nav a{color:#fff;text-decoration:none;border:1px solid #1b3b5e;padding:8px 12px;border-radius:10px}
-    nav a:hover{background:#1b3b5e}
-    main{max-width:1200px;margin:32px auto;padding:0 16px}
-    .bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;gap:12px;flex-wrap:wrap}
-    .bar h2{margin:0;color:var(--blue);border-bottom:2px solid var(--blue);padding-bottom:6px}
-    .search{display:flex;gap:8px;align-items:center}
-    .search input{background:#0f0f0f;border:1px solid #222;color:var(--ink);padding:10px 12px;border-radius:10px;min-width:260px;outline:none}
-    .search input:focus{box-shadow:var(--ring);border-color:#0e5f84}
-    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
-    .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
-    .cover{aspect-ratio:4/5;background:#0e0e0e;display:flex;align-items:center;justify-content:center}
-    .cover img{width:100%;height:100%;object-fit:cover;display:block}
-    .content{padding:14px 14px 8px}
-    .title{font-weight:700;margin:0 0 6px;font-size:1.02rem}
-    .meta{color:var(--muted);font-size:.9rem;margin:0 0 10px}
-    .desc{color:#cbd5da;font-size:.95rem;margin:0 0 12px;line-height:1.35}
-    .btns{display:flex;gap:8px;flex-wrap:wrap;padding:0 14px 14px}
-    .btn{flex:1 0 auto;text-align:center;text-decoration:none;color:#000;background:var(--blue2);padding:9px 10px;border-radius:10px;font-weight:700}
-    .btn.outline{background:transparent;color:var(--blue2);border:1px solid var(--blue2)}
-    .empty{opacity:.8;border:1px dashed #2a2a2a;border-radius:14px;padding:20px;text-align:center}
-    footer{text-align:center;padding:20px;background:#001f3f;color:#aab; margin-top:28px;font-size:.9rem;border-top:1px solid #0f2238}
-    .tag{display:inline-block;background:#082333;color:#8fd9ff;border:1px solid #134861;border-radius:999px;padding:4px 8px;font-size:.8rem;margin-left:6px}
-    .note{background:#0f0f0f;border:1px solid #2a2a2a;color:#cbd5da;padding:12px;border-radius:12px;margin:16px 0}
-    .warn{border-color:#4c2b2b;background:#120c0c;color:#ffb3b3}
-    .ok{border-color:#1f3f2b;background:#0c120e;color:#b7ffcf}
-    .tiny{font-size:.85rem;color:#a5b2bb}
-    .selo{font-weight:700;letter-spacing:.5px}
+    html,body{margin:0;padding:0}
+    body{
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
+      background:var(--bg); color:var(--text); line-height:1.6;
+    }
+    header{
+      max-width:1100px; margin:48px auto 24px; padding:0 16px; text-align:center;
+    }
+    header h1{margin:0 0 8px; font-size:clamp(28px,4vw,40px); letter-spacing:.3px}
+    header p{margin:0; color:var(--muted)}
+    .grid{
+      max-width:1100px; margin:24px auto 56px; padding:0 16px;
+      display:grid; gap:16px;
+      grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    }
+    .card{
+      background:var(--panel); border:1px solid var(--stroke);
+      border-radius:16px; padding:18px; display:flex; flex-direction:column; gap:12px;
+      box-shadow:0 0 0 1px rgba(0,0,0,.04), 0 6px 16px rgba(0,0,0,.28);
+    }
+    .card h3{margin:0 0 6px; font-size:18px; letter-spacing:.2px}
+    .actions{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+    .buy{
+      background:var(--accent); color:var(--accentText); border:0; border-radius:10px;
+      padding:10px 14px; font-weight:700; text-decoration:none; transition:transform .06s ease;
+    }
+    .buy:hover{transform:translateY(-1px)}
+    .buy:focus{outline:2px solid var(--focus); outline-offset:3px; border-radius:12px}
+    details{border:1px solid var(--stroke); border-radius:10px; overflow:hidden}
+    summary{
+      list-style:none; cursor:pointer; user-select:none; padding:10px 12px;
+      background:#0f1521; color:#d9dee6; font-weight:600; display:flex; align-items:center; gap:8px;
+    }
+    summary::-webkit-details-marker{display:none}
+    summary:focus{outline:2px solid var(--focus); outline-offset:3px; border-radius:8px}
+    details[open] summary{background:#121a2b}
+    .desc{padding:12px; color:#d2d7de; border-top:1px solid var(--stroke); background:#0c101a}
+    .muted{color:var(--muted); font-size:14px}
+    footer{max-width:1100px; margin:0 auto 48px; padding:0 16px; color:var(--muted); text-align:center}
+    @media (prefers-reduced-motion: reduce){ .buy{transition:none} }
   </style>
+  
+  
+  
+ 
 </head>
 <body>
   <header>
@@ -62,147 +125,276 @@
   </header>
 
   <main>
-    <div class="bar">
-      <h2>Coleção completa <span class="tag" id="count">—</span></h2>
-      <div class="search">
-        <input id="q" type="search" placeholder="Buscar por título ou autor…" />
+    <div class="grid">
+      <div class="card">
+        <img src="capa_pedra_do_po_branco_2.png" width="250" height="300" alt="A Pedra do Pó Branco">
+        <h3>A Pedra do Pó Branco</h3>
+        <a href="https://pay.hotmart.com/W101416461B" class="btn">Comprar</a>
+      </div>     
+
+      <div class="card">
+        <img src="anunmeta.png" width="250" height="300"  alt="Anúncios Meta Guia Livre">
+        <h3>Anúncios Meta — Guia Livre</h3>
+        <a href="https://pay.hotmart.com/X101305140E" class="btn">Comprar</a>
+      </div>
+
+      <div class="card">
+        <img src="anunvend.png" width="250" height="300"  alt="Anúncios que Vendem">
+        <h3>Anúncios que Vendem</h3>
+        <a href="https://pay.hotmart.com/B101271865X" class="btn">Comprar</a>
+      </div>
+
+      <div class="card">
+        <img src="a-img3_suaimavale.png" width="250" height="300"  alt="Sua Imagem Vale Muito">
+        <h3>Sua Imagem Vale Muito</h3>
+        <a href="https://pay.kiwify.com.br/lus2aIc" class="btn">Comprar</a>
+      </div>
+	  
+	  <div class="card">
+        <img src="linguadente.jpg" width="250" height="300" alt="Ela Deu Com A Língua Nos Dentes">
+        <h3>Ela Deu Com A Língua Nos Dentes</h3>
+        <a href="https://pay.hotmart.com/U101477472W" class="btn">Comprar</a>
+      </div>
+
+      <div class="card">
+        <img src="a_img5_nomade.png" width="250" height="300"  alt="Os Segredos de um Nômade">
+        <h3>Os Segredos de um Nômade</h3>
+        <a href="https://pay.kiwify.com.br/MDJnY74" class="btn">Comprar</a>
+      </div>
+
+      
+
+      <div class="card">
+        <img src="miltonsantos.jpg" width="250" height="300"  alt="Milton Santos — Reflexões e Conexões">
+        <h3>Milton Santos — Reflexões e Conexões</h3>
+        <a href="https://pay.hotmart.com/U101472286J" class="btn">Comprar</a>
+      </div>
+
+      <div class="card">
+        <img src="linguadente.jpg" width="250" height="300"  alt="Língua nos Dentes">
+        <h3>Língua nos Dentes</h3>
+        <a href="https://pay.hotmart.com/P101479077J" class="btn">Comprar</a>
+      </div>
+
+      <div class="card">
+        <img src="a_img9_blackvox.jpg" width="250" height="300"  alt="BLACKVOX Audio Playlists">
+        <h3>BLACKVOX — Playlists</h3>
+        <a href="https://pay.kiwify.com.br/7mLrclo" class="btn">Comprar</a>
+      </div>
+
+      <div class="card">
+        <img src="a_img10_jdvv.jpg" width="250" height="300"  alt="JDVV Jorge Dersu Voz & Violão">
+        <h3>JDVV — Jorge Dersu Voz & Violão</h3>
+        <a href="https://pay.kiwify.com.br/5S4G2Sv" class="btn">Comprar</a>
+      </div>
+
+      <div class="card">
+        <img src="meuviolao3.jpg" width="250" height="300"  alt="Meu Violão">
+        <h3>Meu Violão</h3>
+        <a href="https://pay.hotmart.com/J46529773R" class="btn">Comprar</a>
+      </div>
+
+      <div class="card">
+        <img src="a_img12_nota.jpg" width="250" height="300"  alt="Nota — Ações">
+        <h3>Nota — Ações</h3>
+        <a href="https://pay.kiwify.com.br/SkvbryY" class="btn">Comprar</a>
       </div>
     </div>
-
-    <!-- Avisos -->
-    <div id="status" class="note tiny">Carregando a coleção do Google Drive…</div>
-
-    <div id="grid" class="grid" aria-live="polite"></div>
-    <div id="empty" class="empty" style="display:none">
-      Nenhum e-book encontrado para sua busca. Tente outro termo.
-    </div>
-
-    <!-- Fallback: cole JSON aqui se o fetch ao Drive não puder ser usado -->
-    <script id="fallback-data" type="application/json">
-      []
-    </script>
-
-    <section class="note ok tiny" id="howto" style="display:none">
-      <b>Dica:</b> se o carregamento automático do Drive falhar (permissões/CORS), publique o arquivo do Drive como JSON acessível ao público
-      ou cole os dados JSON diretamente no bloco <code>#fallback-data</code> acima e recarregue a página.
-    </section>
   </main>
+  
+  
+  <main class="grid" aria-label="Lista de obras VOV">
+    <!-- 1 -->
+    <article class="card">
+      <h3>A Pedra do Pó Branco</h3>
+      <div class="actions">
+        <a class="buy" href="https://pay.hotmart.com/W101416461B" target="_blank" rel="noopener">Comprar</a>
+        <details>
+          <summary aria-label="Ver síntese de A Pedra do Pó Branco">Ler Sinopse</summary>
+          <div class="desc">
+            <p>Um passeio sensível e investigativo pela pequena ilha de Amaralina: lendas, meditações e cenas reais vistas da janela. Livro-manifesto que inaugura a Fundação Cultural Pedra do Pó Branco e convida a ler com os pés na areia e o coração aberto. Para quem busca raiz, território e poesia aplicada.</p>
+            <p class="muted"><em>Gostou? Clique em <b>Comprar</b> e receba agora.</em></p>
+          </div>
+        </details>
+      </div>
+    </article>
+
+    <!-- 2 -->
+    <article class="card">
+      <h3>Anúncios Meta — Guia Livre</h3>
+      <div class="actions">
+        <a class="buy" href="https://pay.hotmart.com/X101305140E" target="_blank" rel="noopener">Comprar</a>
+        <details>
+          <summary aria-label="Ver síntese de Anúncios Meta — Guia Livre">Ler Sinopse</summary>
+          <div class="desc">
+            <p>Manual direto, de campo, para anunciar no ecossistema Meta sem mitos: estrutura de campanhas, criativos que convertem, públicos e orçamento. É um guia prático para lançar hoje, aprender amanhã e escalar com inteligência vital.</p>
+            <p class="muted"><em>Gostou? Clique em <b>Comprar</b> e receba agora.</em></p>
+          </div>
+        </details>
+      </div>
+    </article>
+
+    <!-- 3 -->
+    <article class="card">
+      <h3>Anúncios que Vendem — Um Guia com Inteligência Vital</h3>
+      <div class="actions">
+        <a class="buy" href="https://pay.hotmart.com/B101271865X" target="_blank" rel="noopener">Comprar</a>
+        <details>
+          <summary aria-label="Ver síntese de Anúncios que Vendem">Ler Sinopse</summary>
+          <div class="desc">
+            <p>Da proposta única ao CTA, você aprende a transformar ideia em caixa: promessa clara, prova concreta, ritmo de oferta e checklist curto para não travar. Menos ruído, mais verdade; venda com ética e método.</p>
+            <p class="muted"><em>Gostou? Clique em <b>Comprar</b> e receba agora.</em></p>
+          </div>
+        </details>
+      </div>
+    </article>
+
+    <!-- 4 -->
+    <article class="card">
+      <h3>Sua Imagem Vale Muito</h3>
+      <div class="actions">
+        <a class="buy" href="https://pay.kiwify.com.br/lus2aIc" target="_blank" rel="noopener">Comprar</a>
+        <details>
+          <summary aria-label="Ver síntese de Sua Imagem Vale Muito">Ler Sinopse</summary>
+          <div class="desc">
+            <p>Como construir imagem que trabalha por você: posicionamento, símbolos, foto “boa o suficiente”, bio que conta e feed coerente. Branding enxuto, mão na massa, sem frescura — para artistas, autônomos e microempresas.</p>
+            <p class="muted"><em>Gostou? Clique em <b>Comprar</b> e receba agora.</em></p>
+          </div>
+        </details>
+      </div>
+    </article>
+	
+	 <!-- 6 -->
+    <article class="card">
+      <h3>ELA DEU COM A LÍNGUA NOS DENTES</h3> 
+      <div class="actions">
+        <a class="buy" href="https://pay.hotmart.com/U101477472W" target="_blank" rel="noopener">Comprar</a>
+        <details>
+          <summary aria-label="Ver síntese de Macrobiótica Zen">Ler Sinopse</summary>
+          <div class="desc">
+            <p> É um livro-forja: nasce de um atrito amoroso,
+cresce à beira de uma pedra real em Amaralina e se faz obra com fé, silêncio, cuidado e
+tempo.</p>
+            <p class="muted"><em>Gostou? Clique em <b>Comprar</b> e receba agora.</em></p>
+          </div>
+        </details>
+      </div>
+    </article>
+
+
+    <!-- 5 -->
+    <article class="card">
+      <h3>Os Segredos de um Nômade Digital</h3>
+      <div class="actions">
+        <a class="buy" href="https://pay.kiwify.com.br/MDJnY74" target="_blank" rel="noopener">Comprar</a>
+        <details>
+          <summary aria-label="Ver síntese de Os Segredos de um Nômade Digital">Ler Sinopse</summary>
+          <div class="desc">
+            <p>Rotina, renda e disciplina na estrada sem romantização. Ferramentas, contratos, higiene financeira e cuidado com o corpo/mente para viver leve sem virar refém do improviso.</p>
+            <p class="muted"><em>Gostou? Clique em <b>Comprar</b> e receba agora.</em></p>
+          </div>
+        </details>
+      </div>
+    </article>
+
+   
+    <!-- 7 -->
+    <article class="card">
+      <h3>Milton Santos — Reflexões e Conexões</h3>
+      <div class="actions">
+        <a class="buy" href="https://pay.hotmart.com/U101472286J" target="_blank" rel="noopener">Comprar</a>
+        <details>
+          <summary aria-label="Ver síntese de Milton Santos — Reflexões e Conexões">Ler Sinopse</summary>
+          <div class="desc">
+            <p>Leitura guiada do mestre: território, técnica e cidadania aplicados ao digital. Para empreender sem perder o chão — estratégia com consciência de lugar e de gente.</p>
+            <p class="muted"><em>Gostou? Clique em <b>Comprar</b> e receba agora.</em></p>
+          </div>
+        </details>
+      </div>
+    </article>
+
+    <!-- 8 -->
+    <article class="card">
+      <h3>Língua nos Dentes…</h3>
+      <div class="actions">
+        <a class="buy" href="https://pay.hotmart.com/P101479077J" target="_blank" rel="noopener">Comprar</a>
+        <details>
+          <summary aria-label="Ver síntese de Língua nos Dentes">Ler Sinopse</summary>
+          <div class="desc">
+            <p>Crônica-livro nascida do atrito e transformada em arte: quando a palavra morde, cura e ilumina. Leitura curta e pulsante para reler muitas vezes — literatura como lapidação de vida.</p>
+            <p class="muted"><em>Gostou? Clique em <b>Comprar</b> e receba agora.</em></p>
+          </div>
+        </details>
+      </div>
+    </article>
+
+    <!-- 9 -->
+    <article class="card">
+      <h3>BLACKVOX — Áudios Playlists</h3>
+      <div class="actions">
+        <a class="buy" href="https://pay.kiwify.com.br/7mLrclo" target="_blank" rel="noopener">Comprar</a>
+        <details>
+          <summary aria-label="Ver síntese de BLACKVOX — Áudios Playlists">Ler Sinopse</summary>
+          <div class="desc">
+            <p>Trilhas para foco, escrita e estudo. Curadoria VOV com objetivos claros (concentrar, criar, revisar). Aperte o play, respire e vá: música como ferramenta de trabalho.</p>
+            <p class="muted"><em>Gostou? Clique em <b>Comprar</b> e receba agora.</em></p>
+          </div>
+        </details>
+      </div>
+    </article>
+
+    <!-- 10 -->
+    <article class="card">
+      <h3>Jorge Dersu — Voz & Violão</h3>
+      <div class="actions">
+        <a class="buy" href="https://pay.kiwify.com.br/5S4G2Sv" target="_blank" rel="noopener">Comprar</a>
+        <details>
+          <summary aria-label="Ver síntese de Jorge Dersu — Voz & Violão">Ler Sinopse</summary>
+          <div class="desc">
+            <p>Registro íntimo: canções autorais em voz e violão, sem maquiagem, como no quarto ou na sala. Música de presença — para ouvir perto, repetir e levar para o dia.</p>
+            <p class="muted"><em>Gostou? Clique em <b>Comprar</b> e receba agora.</em></p>
+          </div>
+        </details>
+      </div>
+    </article>
+
+    <!-- 11 -->
+    <article class="card">
+      <h3>Re-Curso do Violão 100%</h3>
+      <div class="actions">
+        <a class="buy" href="https://pay.hotmart.com/J46529773R" target="_blank" rel="noopener">Comprar</a>
+        <details>
+          <summary aria-label="Ver síntese de Re-Curso do Violão 100%">Ler Sinopse</summary>
+          <div class="desc">
+            <p>Um “voltar ao básico” que resolve: postura, batidas, harmonias úteis e repertório prático. Aulas curtas e exercícios aplicáveis para tocar de verdade — do quarto ao palco.</p>
+            <p class="muted"><em>Gostou? Clique em <b>Comprar</b> e receba agora.</em></p>
+          </div>
+        </details>
+      </div>
+    </article>
+
+    <!-- 12 -->
+    <article class="card">
+      <h3>Nota Ações (Lista de Consumo)</h3>
+      <div class="actions">
+        <a class="buy" href="https://pay.kiwify.com.br/SkvbryY" target="_blank" rel="noopener">Comprar</a>
+        <details>
+          <summary aria-label="Ver síntese de Nota Ações (Lista de Consumo)">Ler Sinopse</summary>
+          <div class="desc">
+            <p>Ferramenta tática para decidir e agir: o que comprar, quando, por quê e como pagar. Prioriza o essencial, corta desperdício e dá fôlego ao caixa. Use semanalmente.</p>
+            <p class="muted"><em>Gostou? Clique em <b>Comprar</b> e receba agora.</em></p>
+          </div>
+        </details>
+      </div>
+    </article>
+  </main>
+
+  
 
   <footer>
     © 2025 V O V — Ver • Ouvir • Vender • Viver · <a href="/vov/index.html">Portal</a> · <a href="/vov/edicoes.html">Edições</a> · <a href="/vov/blackvox/tocador_vov.html">BLACKVOX</a> · <a href="/vov/contato.html">Contato</a>
   </footer>
 
-  <script>
-    // ========= CONFIG =========
-    const FILE_ID = "1YimoiOzBgxRn13hclZReQkkq10jsSznD"; // seu arquivo no Drive
-    const DRIVE_URL = `https://drive.google.com/uc?id=${FILE_ID}&export=download`;
-
-    const grid = document.getElementById('grid');
-    const empty = document.getElementById('empty');
-    const count = document.getElementById('count');
-    const q = document.getElementById('q');
-    const status = document.getElementById('status');
-    const howto = document.getElementById('howto');
-
-    let ebooks = [];
-
-    function card(e){
-      const capa = e.capa || 'https://via.placeholder.com/600x750?text=Capa';
-      const pdf  = e.pdf  || '#';
-      const titulo = e.titulo || 'Sem título';
-      const autor = e.autor || '—';
-      const ano   = e.ano   || '';
-      const desc  = e.descricao || '';
-
-      const art = document.createElement('article');
-      art.className = 'card';
-      art.dataset.title = titulo.toLowerCase();
-      art.dataset.author = autor.toLowerCase();
-
-      art.innerHTML = `
-        <div class="cover">
-          <img src="${capa}" alt="Capa — ${titulo}" onerror="this.src='https://via.placeholder.com/600x750?text=Capa+indispon%C3%ADvel'">
-        </div>
-        <div class="content">
-          <h3 class="title">${titulo}</h3>
-          <p class="meta">Autor: ${autor}${ano ? ' • ' + ano : ''}</p>
-          <p class="desc">${desc}</p>
-        </div>
-        <div class="btns">
-          <a class="btn" href="${pdf}" target="_blank" rel="noopener">Ler PDF</a>
-          ${capa ? `<a class="btn outline" href="${capa}" target="_blank" rel="noopener">Ver capa</a>` : ''}
-        </div>`;
-      return art;
-    }
-
-    function render(list){
-      grid.innerHTML = '';
-      list.forEach(e => grid.appendChild(card(e)));
-      updateCount(list.length);
-      empty.style.display = list.length ? 'none' : 'block';
-    }
-
-    function updateCount(n){
-      count.textContent = n === 1 ? '1 título' : `${n} títulos`;
-    }
-
-    function filter(){
-      const term = (q.value || '').toLowerCase().trim();
-      const filtered = ebooks.filter(e => {
-        const hay = (e.titulo || '') + ' ' + (e.autor || '');
-        return hay.toLowerCase().includes(term);
-      });
-      render(filtered);
-    }
-
-    q.addEventListener('input', filter);
-
-    async function loadFromDrive(){
-      try{
-        const res = await fetch(DRIVE_URL, { mode: 'cors' });
-        if(!res.ok) throw new Error('HTTP ' + res.status);
-        const text = await res.text();
-
-        // Tentar JSON direto
-        let data;
-        try{
-          data = JSON.parse(text);
-        }catch(_){
-          // Pode ser arquivo com "code fence" ou algum blob — tentar limpar
-          const cleaned = text.replace(/^[\s\S]*?\[/, '[').replace(/\][\s\S]*$/, ']');
-          data = JSON.parse(cleaned);
-        }
-
-        if(!Array.isArray(data)) throw new Error('Formato inesperado (esperado: array JSON)');
-        ebooks = data;
-        status.className = 'note ok tiny';
-        status.textContent = 'Coleção carregada do Google Drive.';
-        render(ebooks);
-      }catch(err){
-        console.warn('Falha no carregamento do Drive:', err);
-        status.className = 'note warn tiny';
-        status.innerHTML = 'Não foi possível carregar automaticamente do Google Drive. Você pode <b>publicar o arquivo como JSON público</b> no Drive ou <b>colar os dados JSON</b> no bloco interno desta página.';
-        howto.style.display = 'block';
-
-        // fallback local
-        try{
-          const fallback = document.getElementById('fallback-data').textContent.trim();
-          const data = JSON.parse(fallback || '[]');
-          ebooks = data;
-          if(ebooks.length){
-            render(ebooks);
-            status.className = 'note ok tiny';
-            status.innerHTML += '<br>Usando dados locais (fallback).';
-          }else{
-            render([]);
-          }
-        }catch(e2){
-          render([]);
-        }
-      }
-    }
-
-    loadFromDrive();
-  </script>
+ 
 </body>
 </html>
