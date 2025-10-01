@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>JOR NEWS V O V — Cartaz do Dia</title>
+<style>
+  :root{
+    /* ---- personalize aqui ---- */
+    --data: "01/10/2025";
+    --manchete: "JOR NEWS VOV: Inteligência Vital no coração do digital.";
+    --tema-bg: #0e1116;
+    --tema-card: #151922;
+    --tema-contraste: #ffd54a;     /* amarelo destaque */
+    --tema-contraste-2: #ffe082;   /* amarelo claro */
+    --tema-texto: #e8eef6;
+    --tema-sub: #b8c2d1;
+    --raio: 18px;
+  }
+
+  /* Reset cuidadoso */
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    background: radial-gradient(1200px 800px at 20% 0%, #111723 10%, #0b0f16 50%, #070a0f 100%);
+    color:var(--tema-texto);
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji", "Segoe UI Symbol";
+    line-height:1.35;
+    display:flex; align-items:center; justify-content:center;
+    padding:32px;
+  }
+
+  /* Lona 1080x1350 (IG retrato) — ajusta em telas menores */
+  .lona{
+    width: min(1080px, 100%);
+    aspect-ratio: 1080/1350;
+    background: linear-gradient(180deg, rgba(255,213,74,.08), transparent 120px) , var(--tema-bg);
+    border-radius: 28px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.04);
+    padding: clamp(20px, 3vw, 40px);
+    display:flex; flex-direction:column; gap: clamp(18px, 2.4vw, 26px);
+    overflow:hidden;
+  }
+
+  /* Cabeçalho */
+  .topo{
+    display:flex; flex-direction:column; gap:8px;
+  }
+  .selo{
+    display:flex; gap:10px; align-items:center; font-weight:700; letter-spacing:.06em;
+    text-transform:uppercase; color:#e9f2ff;
+  }
+  .selo .emoji{font-size:28px; filter: drop-shadow(0 2px 2px rgba(0,0,0,.25));}
+  .titulo{
+    font-size: clamp(28px, 4.6vw, 56px);
+    font-weight: 800;
+    line-height: 1.05;
+  }
+  .sub{
+    color:var(--tema-sub);
+    font-size: clamp(16px, 2.3vw, 20px);
+  }
+  .sub .data{
+    background: linear-gradient(90deg, var(--tema-contraste), var(--tema-contraste-2));
+    -webkit-background-clip:text; background-clip:text; color:transparent; font-weight:800;
+  }
+
+  .divisor{
+    height: 6px; border-radius: 6px;
+    background: linear-gradient(90deg,#ff8a00,#ffd54a,#9cffac,#70c0ff,#caa2ff);
+    opacity:.9;
+  }
+
+  /* Grade de blocos */
+  .grade{
+    display:grid;
+    gap: clamp(14px, 2.2vw, 20px);
+    grid-template-columns: 1fr 1fr;
+  }
+  @media (max-width: 820px){
+    .grade{ grid-template-columns: 1fr; }
+  }
+  .bloco{
+    background: linear-gradient(180deg, rgba(255,213,74,.06), rgba(255,213,74,0) 40%), var(--tema-card);
+    border-radius: var(--raio);
+    padding: clamp(14px, 2.1vw, 22px);
+    border: 1px solid rgba(255,255,255,.06);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.04), 0 8px 24px rgba(0,0,0,.35);
+    position:relative;
+    overflow:hidden;
+  }
+  .bloco::before{
+    content:"";
+    position:absolute; inset:0;
+    border-radius: inherit;
+    padding-left: 10px;
+    background:
+      linear-gradient(180deg, var(--tema-contraste), transparent 120px) left top / 6px 100% no-repeat;
+    mask-composite: exclude;
+    pointer-events:none;
+  }
+  .chapeu{
+    font-size: clamp(14px, 1.9vw, 18px);
+    font-weight:800; letter-spacing:.02em;
+    margin-bottom: 6px;
+  }
+  .texto{
+    font-size: clamp(16px, 2.2vw, 22px);
+    color: var(--tema-texto);
+  }
+
+  /* Rodapé com oração e créditos */
+  .rodape{
+    margin-top:auto;
+    display:flex; flex-direction:column; gap:8px;
+  }
+  .fe{
+    background: rgba(255,213,74,.08);
+    border: 1px solid rgba(255,213,74,.25);
+    color:#fff;
+    border-radius: 14px;
+    padding: 12px 14px;
+    font-size: clamp(14px, 1.9vw, 18px);
+  }
+  .creditos{
+    display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap;
+    font-size: clamp(13px, 1.8vw, 16px);
+    color: var(--tema-sub);
+  }
+  .marca{
+    font-weight:800; color:#fff;
+  }
+  .link{
+    color:#fff; text-decoration:none; padding:4px 10px; border-radius:999px;
+    background: linear-gradient(90deg, #ffd54a, #ffb300); color:#111;
+    font-weight:800; box-shadow: 0 4px 12px rgba(0,0,0,.35);
+  }
+
+  /* Ajuda visual (só em tela) */
+  @media print {.link{display:none}}
+</style>
+</head>
+<body>
+  <main class="lona" role="document" aria-label="JOR NEWS V O V — cartaz do dia">
+    <header class="topo">
+      <div class="selo"><span class="emoji">✨</span> Manchete do Dia — <span class="data" style="margin-left:6px">var(--data)</span></div>
+      <h1 class="titulo">“<span id="manchete"></span>”</h1>
+      <div class="sub">Presente contínuo • direto da mina • JOR NEWS V O V</div>
+    </header>
+
+    <div class="divisor" aria-hidden="true"></div>
+
+    <section class="grade" aria-label="Blocos do dia">
+      <!-- Cultura -->
+      <article class="bloco">
+        <div class="chapeu">Cultura</div>
+        <div class="texto">
+          Palavra Canta segue ressoando entre Bahia e São Paulo, celebrando a arte como ponte e resistência.
+        </div>
+      </article>
+
+      <!-- Economia -->
+      <article class="bloco">
+        <div class="chapeu">Economia</div>
+        <div class="texto">
+          Infoprodutos VOV em aceleração: ROI mensurável e horizonte milionário até dezembro de 2025.
+        </div>
+      </article>
+
+      <!-- Criação -->
+      <article class="bloco">
+        <div class="chapeu">Criação</div>
+        <div class="texto">
+          E-book <em>Anúncios que Vendem</em> em revisão final — lançamento iminente na Loja VOV.
+        </div>
+      </article>
+
+      <!-- Tecnologia -->
+      <article class="bloco">
+        <div class="chapeu">Tecnologia</div>
+        <div class="texto">
+          DNS & Cloudflare ajustados: estabilidade da plataforma cada vez mais próxima do ideal.
+        </div>
+      </article>
+    </section>
+
+    <footer class="rodape">
+      <div class="fe">“Jesus, eu confio em Vós. Deus é fiel e bom.”</div>
+      <div class="creditos">
+        <div class="marca">JOR NEWS V O V</div>
+        <!-- troque pelo seu curto quando quiser -->
+        <a class="link" href="https://clique.ink/tk15qz" target="_blank" rel="noopener">Ler / Acessar</a>
+      </div>
+    </footer>
+  </main>
+
+<script>
+  // Preenche a data e a manchete a partir das variáveis no :root
+  const css = getComputedStyle(document.documentElement);
+  const manchete = css.getPropertyValue('--manchete').replace(/^"|"$|^'|'$/g,'').trim();
+  const data = css.getPropertyValue('--data').replace(/^"|"$|^'|'$/g,'').trim();
+
+  document.querySelector('.selo .data').textContent = data;
+  document.querySelector('#manchete').textContent = manchete;
+</script>
+</body>
+</html>
