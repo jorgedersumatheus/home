@@ -1,219 +1,170 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>V O V • Ver, Ouvir, Vender, Viver</title>
-  <meta name="description" content="JOR NEWS V O V — notícia, poesia e inteligência vital. BLACKVOX — ouvir & criar playlists.">
-  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>V O V — Inteligência Vital</title>
+  <link rel="stylesheet" href="style.css">
   <style>
-
-.cards {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 20px;
-  padding: 40px 20px;
-}
-
-.card {
-  background: #111;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.6);
-  overflow: hidden;
-  width: 300px;
-  text-align: center;
-  transition: transform 0.2s ease;
-}
-
-.card:hover {
-  transform: translateY(-5px);
-}
-
-.card img {
-  width: 100%;
-  height: 180px;
-  object-fit: cover;
-}
-
-.card h3 {
-  margin: 15px 0 10px;
-  color: #ffcc00;
-}
-
-.card p {
-  padding: 0 15px 20px;
-  color: #ccc;
-  font-size: 0.95em;
-}
-
-
-
-    
-    :root{
-      --bg:#070b12; --ink:#eaf0ff; --muted:#9fb0c9;
-      --panel:#0d1420; --line:#1a2740; --accent:#2ea8ff; --accent-2:#ffd02a;
-      --ok:#7ef9c6; --bad:#ff7a7a; --radius:18px;
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0a0a0f;
+      color: #f0f0f0;
     }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{margin:0; font-family:Inter,system-ui,Arial; color:var(--ink); background:radial-gradient(1200px 800px at 10% -10%, #0b1d3a 0%, var(--bg) 48%, #06080e 100%);}
-    a{color:#9ecbff; text-decoration:none}
-    a:hover{text-decoration:underline}
-
-    /* topo */
-    .topbar{
-      position:sticky; top:0; z-index:30;
-      backdrop-filter:saturate(140%) blur(8px);
-      background:rgba(6,10,18,.6);
-      border-bottom:1px solid var(--line);
+    header {
+      background: #0f0f17;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
-    .top-wrap{max-width:1150px; margin:0 auto; padding:12px 16px; display:flex; align-items:center; justify-content:space-between}
-    .brand{display:flex; align-items:center; gap:10px; font-weight:800; letter-spacing:.5px}
-    .brand img{height:28px; width:auto}
-    .nav{display:flex; gap:14px; flex-wrap:wrap}
-    .btn-link{padding:8px 12px; border:1px solid var(--line); border-radius:999px; color:var(--ink)}
-    .btn-link:hover{border-color:#2b406d}
-
-    /* hero */
-    .hero{
-      position:relative; overflow:hidden;
-      border-bottom:1px solid var(--line);
+    header nav a {
+      color: #f0f0f0;
+      margin-left: 20px;
+      text-decoration: none;
     }
-    .hero::before{
-      content:""; position:absolute; inset:0;
-      background:
-        radial-gradient(800px 400px at 90% -10%, rgba(46,168,255,.25), transparent 60%),
-        radial-gradient(600px 300px at 10% 110%, rgba(255,208,42,.15), transparent 60%);
-      pointer-events:none;
+    .hero {
+      padding: 60px 30px;
+      text-align: center;
+      background: linear-gradient(135deg, #0f0f17, #111122);
     }
-    .hero-wrap{
-      max-width:1150px; margin:0 auto; padding:56px 16px 40px;
-      display:grid; grid-template-columns:1.2fr .8fr; gap:28px;
+    .hero h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+      color: #fff;
     }
-    @media (max-width:1000px){ .hero-wrap{grid-template-columns:1fr; padding:42px 16px 28px} }
-    .h-title{font-size:44px; line-height:1.05; margin:0 0 10px; letter-spacing:.2px}
-    .h-sub{color:var(--muted); font-size:16px; margin:0 0 22px}
-    .cta{display:flex; gap:12px; flex-wrap:wrap}
-    .btn{
-      display:inline-flex; align-items:center; gap:8px;
-      padding:12px 16px; border-radius:12px; border:1px solid var(--line);
-      background:#111a2a; color:var(--ink); font-weight:700; cursor:pointer;
-      box-shadow:0 0 0 0 rgba(46,168,255,0);
-      transition:transform .05s ease, box-shadow .2s ease, border-color .2s ease;
+    .hero p {
+      font-size: 1.2em;
+      color: #ccc;
     }
-    .btn:hover{border-color:#385487; box-shadow:0 10px 30px -15px rgba(46,168,255,.35)}
-    .btn.primary{background:linear-gradient(180deg, #2ea8ff, #1f87d4); color:#071521; border:none}
-    .btn.alt{background:linear-gradient(180deg, #ffd02a, #caa320); color:#231c07; border:none}
-    .micro{font-size:12px; color:var(--muted)}
-    .hero-art{
-      min-height:260px; border:1px solid var(--line); border-radius:var(--radius);
-      background:
-        url("/vov/bg-fingerprint.jpg") center/cover no-repeat,
-        radial-gradient(500px 400px at 50% 0%, #0d1d36 0%, #0a111d 60%);
-      position:relative; overflow:hidden;
+    .hero-buttons {
+      margin-top: 20px;
     }
-    .hero-art::after{
-      content:"V O V"; position:absolute; bottom:12px; right:14px; font-weight:800; letter-spacing:6px;
-      color:rgba(255,255,255,.08); font-size:38px
+    .btn {
+      display: inline-block;
+      padding: 12px 18px;
+      margin: 5px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: bold;
     }
-
-    /* seção de destaques */
-    .wrap{max-width:1150px; margin:0 auto; padding:26px 16px 48px}
-    .cards{display:grid; grid-template-columns:repeat(3,1fr); gap:16px}
-    @media (max-width:900px){ .cards{grid-template-columns:1fr} }
-    .card{
-      background:rgba(12,18,28,.6); border:1px solid var(--line); border-radius:14px; padding:16px;
+    .btn-primary { background: #007bff; color: #fff; }
+    .btn-secondary { background: #ffc107; color: #000; }
+    .btn-tertiary { background: #28a745; color: #fff; }
+    .micro {
+      margin-top: 15px;
+      font-size: 0.9em;
+      color: #aaa;
     }
-    .card h3{margin:0 0 6px; font-size:18px}
-    .card p{margin:0; color:var(--muted); font-size:14px}
-    .go{margin-top:10px; display:inline-flex; gap:8px; align-items:center}
-
-    /* rodapé */
-    footer{
-      border-top:1px solid var(--line); padding:16px; color:var(--muted);
-      background:rgba(6,10,18,.55)
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+      padding: 40px;
     }
-    .foot{max-width:1150px; margin:0 auto; display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap}
-    .tiny{font-size:12px}
+    .card {
+      background: #1a1a22;
+      border-radius: 12px;
+      padding: 15px;
+      text-align: center;
+      box-shadow: 0 0 10px rgba(0,0,0,0.4);
+    }
+    .card img {
+      max-width: 100%;
+      border-radius: 10px;
+    }
+    .card h3 {
+      margin-top: 15px;
+      color: #ffcc00;
+    }
+    .card p {
+      font-size: 0.95em;
+      color: #ccc;
+    }
+    .card-link, .go {
+      display: inline-block;
+      margin-top: 10px;
+      color: #00aced;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    footer {
+      background: #0f0f17;
+      text-align: center;
+      padding: 20px;
+      font-size: 0.9em;
+      color: #777;
+    }
   </style>
 </head>
 <body>
 
+  <!-- Cabeçalho -->
+  <header>
+    <div class="logo"><strong>JOR NEWS V O V</strong></div>
+    <nav>
+      <a href="/vov/edicoes.html">Arquivo de Edições</a>
+      <a href="/vov/vov_players.html">BLACKVOX Players</a>
+      <a href="/vov/ebooks.html">E-books</a>
+      <a href="/vov/contato.html">Contato</a>
+    </nav>
+  </header>
 
-
-  
-      <nav class="nav" aria-label="Atalhos">
-        <a class="btn-link" href="/vov/edicoes.html">Arquivo de Edições</a>
-        <a class="btn-link" href="/vov/vov_players.html">BLACKVOX Players</a>
-        <a class="btn-link" href="/vov/ebooks.html">E-books</a>
-        <a class="btn-link" href="/vov/contato.html">Contato</a>
-      </nav>
-    </div>
-  </div>
-
-  <!-- hero -->
+  <!-- Hero -->
   <section class="hero">
-    <div class="hero-wrap">
-      <div>
-        <h1 class="h-title">Notícia + Poesia + Inteligência Vital</h1>
-        <p class="h-sub">A mina diária de pílulas do Brasil real. V O V — Ver, Ouvir, Vender, Viver.</p>
-        <div class="cta">
-          <a class="btn primary" href="/vov/edicoes.html">📰 Abrir JOR NEWS V O V</a>
-          <a class="btn alt" href="/vov/vov_players.html">🎶 BLACKVOX — Ouvir & Criar Playlists</a>
-          <a class="btn" href="/vov/ebooks.html">📚 E-books</a>
-        </div>
-
-
-
-<div class="card">
-  <img src="/capa_pedra_do_po_branco_2.png" alt="E-books VOV" class="card-img">
-  <div class="card-content">
-    <h3>E-books</h3>
-    <p>Coleção completa de títulos digitais VOV — leitura, poesia e inteligência vital.</p>
-    <a href="ebooks.html" class="card-link">Ver coleção →</a>
-  </div>
-
-
-
-        
-        <div class="micro">Salvador • Amaralina • Brasil</div>
-      </div>
-      <div class="hero-art" role="img" aria-label="Textura digital negra e azul com identidade VOV"></div>
+    <h1>Inteligência Vital</h1>
+    <p>A mina diária de pílulas do Brasil real. V O V — Ver, Ouvir, Vender, Viver.</p>
+    <div class="hero-buttons">
+      <a href="/vov/edicoes.html" class="btn btn-primary">Abrir JOR NEWS V O V</a>
+      <a href="/vov/vov_players.html" class="btn btn-secondary">BLACKVOX — Ouvir & Criar Playlists</a>
+      <a href="/vov/ebooks.html" class="btn btn-tertiary">📖 E-books</a>
     </div>
+    <div class="micro">Salvador • Amaralina • Brasil</div>
   </section>
 
+  <!-- Cards principais -->
+  <section class="cards">
 
-<!-- Cards de Destaque -->
-<section class="cards">
-  <div class="card">
-    <img src="/vov/jornews_mock.jpg" alt="JOR NEWS VOV impresso">
-    <h3>JOR NEWS</h3>
-    <p>Destaques diários de poesia, notícia e análise.</p>
-  </div>
+    <!-- Card JOR NEWS -->
+    <div class="card">
+      <img src="/vov/jornews_mock.jpg" alt="JOR NEWS VOV impresso">
+      <h3>JOR NEWS</h3>
+      <p>Destaques diários de poesia, notícia e análise.</p>
+      <a href="/vov/edicoes.html" class="card-link">Ver edições →</a>
+    </div>
 
-  <div class="card">
-    <img src="/vov/equalizer_bg.jpg" alt="Equalizer BLACKVOX">
-    <h3>BLACKVOX</h3>
-    <p>Som, playlists e inteligência sonora universal.</p>
-  </div>
+    <!-- Card BLACKVOX -->
+    <div class="card">
+      <img src="/vov/equalizer_bg.jpg" alt="Equalizer BLACKVOX">
+      <h3>BLACKVOX</h3>
+      <p>Som, playlists e inteligência sonora universal.</p>
+      <a href="/vov/vov_players.html" class="card-link">Ouvir agora →</a>
+    </div>
 
-  <div class="card">
-    <img src="/vov/Identity_digital.jpg" alt="Identidade Digital VOV">
-    <h3>Identidade</h3>
-    <p>Inteligência Vital aplicada ao digital, com marca única.</p>
-  </div>
-</section>
-  
+    <!-- Card Identidade -->
+    <div class="card">
+      <img src="/vov/Identity_digital.jpg" alt="Identidade Digital VOV">
+      <h3>Identidade</h3>
+      <p>Inteligência Vital aplicada ao digital, com marca única.</p>
+    </div>
 
-  <!-- destaques rápidos -->
+    <!-- Card E-books -->
+    <div class="card">
+      <img src="/capa_pedra_do_po_branco_2.png" alt="E-books VOV">
+      <h3>E-books</h3>
+      <p>Coleção completa de títulos digitais VOV — leitura, poesia e inteligência vital.</p>
+      <a href="/vov/ebooks.html" class="card-link">Ver coleção →</a>
+    </div>
+
+  </section>
+
+  <!-- Destaques rápidos -->
   <div class="wrap">
     <div class="cards">
       <article class="card">
         <h3>JOR NEWS do Dia</h3>
-        <p>Pí­lulas essenciais e editorial — disponível em PDF no acervo.</p>
+        <p>Pílulas essenciais e editorial — disponível em PDF no acervo.</p>
         <a class="go" href="/vov/edicoes.html">Abrir arquivo →</a>
       </article>
       <article class="card">
@@ -229,23 +180,10 @@
     </div>
   </div>
 
-  <!-- rodapé -->
+  <!-- Rodapé -->
   <footer>
-    <div class="foot">
-      <div class="tiny">© V O V — Ver, Ouvir, Vender, Viver • Jorge LA Matheus & AxéBit</div>
-      <div class="tiny">
-        <a href="/vov/edicoes.html">JOR NEWS</a> •
-        <a href="/vov/vov_players.html">BLACKVOX</a> •
-        <a href="/vov/ebooks.html">E-books</a> •
-        <a href="/vov/contato.html">Contato</a>
-      </div>
-    </div>
+    © 2025 V O V — Ver · Ouvir · Vender · Viver
   </footer>
 
-  <noscript>
-    <div style="text-align:center;color:#fff;background:#111;padding:10px">
-      Para a melhor experiência, ative o JavaScript.
-    </div>
-  </noscript>
 </body>
 </html>
