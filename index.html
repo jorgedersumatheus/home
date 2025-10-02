@@ -1,150 +1,175 @@
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>V O V — JOR NEWS & BLACKVOX</title>
-  <meta name="description" content="Plataforma VOV — Ver • Ouvir • Vender • Viver. JOR NEWS VOV e BLACKVOX." />
-  <link rel="icon" href="/vov/favicon.svg" type="image/svg+xml" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>V O V • Ver, Ouvir, Vender, Viver</title>
+  <meta name="description" content="JOR NEWS V O V — notícia, poesia e inteligência vital. BLACKVOX — ouvir & criar playlists.">
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
     :root{
-      --bg:#0b0f14;        /* fundo preto-azulado */
-      --panel:#121824;     /* cartões */
-      --panel-2:#0f1520;   /* cartões secundários */
-      --text:#e8eef7;      /* texto principal */
-      --muted:#9ab0cc;     /* texto secundário */
-      --brand:#ffd54a;     /* amarelo VOV */
-      --brand-2:#6bc1ff;   /* azul detalhe */
-      --stroke:#1f2a3d;    /* linhas/bordas */
-      --glow: 0 0 24px rgba(107,193,255,.25);
-      --radius:14px;
+      --bg:#070b12; --ink:#eaf0ff; --muted:#9fb0c9;
+      --panel:#0d1420; --line:#1a2740; --accent:#2ea8ff; --accent-2:#ffd02a;
+      --ok:#7ef9c6; --bad:#ff7a7a; --radius:18px;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
-    body{
-      margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial;
-      background: radial-gradient(1200px 600px at 20% -10%, #132033 0%, rgba(19,32,51,0) 60%),
-                  radial-gradient(1000px 500px at 110% 10%, #0f1c2b 0%, rgba(15,28,43,0) 55%),
-                  var(--bg);
-      color:var(--text);
-    }
-    header{
-      position:sticky; top:0; z-index:10;
+    body{margin:0; font-family:Inter,system-ui,Arial; color:var(--ink); background:radial-gradient(1200px 800px at 10% -10%, #0b1d3a 0%, var(--bg) 48%, #06080e 100%);}
+    a{color:#9ecbff; text-decoration:none}
+    a:hover{text-decoration:underline}
+
+    /* topo */
+    .topbar{
+      position:sticky; top:0; z-index:30;
       backdrop-filter:saturate(140%) blur(8px);
-      background:linear-gradient(180deg, rgba(10,14,20,.85), rgba(10,14,20,.55));
-      border-bottom:1px solid var(--stroke);
+      background:rgba(6,10,18,.6);
+      border-bottom:1px solid var(--line);
     }
-    .wrap{max-width:1100px; margin:auto; padding:18px 20px;}
-    .row{display:flex; align-items:center; gap:14px; justify-content:space-between;}
-    .brand{display:flex; align-items:center; gap:10px; font-weight:800; letter-spacing:.06em}
-    .brand .badge{
-      width:28px; height:28px; border-radius:6px; display:grid; place-items:center;
-      background:linear-gradient(145deg, #1a2436, #0e1420); border:1px solid var(--stroke);
-      box-shadow:var(--glow);
-      font-size:16px
+    .top-wrap{max-width:1150px; margin:0 auto; padding:12px 16px; display:flex; align-items:center; justify-content:space-between}
+    .brand{display:flex; align-items:center; gap:10px; font-weight:800; letter-spacing:.5px}
+    .brand img{height:28px; width:auto}
+    .nav{display:flex; gap:14px; flex-wrap:wrap}
+    .btn-link{padding:8px 12px; border:1px solid var(--line); border-radius:999px; color:var(--ink)}
+    .btn-link:hover{border-color:#2b406d}
+
+    /* hero */
+    .hero{
+      position:relative; overflow:hidden;
+      border-bottom:1px solid var(--line);
     }
-    nav{display:flex; gap:8px; flex-wrap:wrap}
+    .hero::before{
+      content:""; position:absolute; inset:0;
+      background:
+        radial-gradient(800px 400px at 90% -10%, rgba(46,168,255,.25), transparent 60%),
+        radial-gradient(600px 300px at 10% 110%, rgba(255,208,42,.15), transparent 60%);
+      pointer-events:none;
+    }
+    .hero-wrap{
+      max-width:1150px; margin:0 auto; padding:56px 16px 40px;
+      display:grid; grid-template-columns:1.2fr .8fr; gap:28px;
+    }
+    @media (max-width:1000px){ .hero-wrap{grid-template-columns:1fr; padding:42px 16px 28px} }
+    .h-title{font-size:44px; line-height:1.05; margin:0 0 10px; letter-spacing:.2px}
+    .h-sub{color:var(--muted); font-size:16px; margin:0 0 22px}
+    .cta{display:flex; gap:12px; flex-wrap:wrap}
     .btn{
-      --bgc:var(--panel); --bdr:var(--stroke); --fg:var(--text);
-      padding:10px 14px; border-radius:10px; text-decoration:none; color:var(--fg);
-      border:1px solid var(--bdr); background:var(--bgc); font-weight:600;
-      transition:.2s transform, .2s background;
+      display:inline-flex; align-items:center; gap:8px;
+      padding:12px 16px; border-radius:12px; border:1px solid var(--line);
+      background:#111a2a; color:var(--ink); font-weight:700; cursor:pointer;
+      box-shadow:0 0 0 0 rgba(46,168,255,0);
+      transition:transform .05s ease, box-shadow .2s ease, border-color .2s ease;
     }
-    .btn:hover{transform:translateY(-1px); background:#172238}
-    .btn.brand{--bgc:linear-gradient(180deg,#ffe07a,#ffc400); --bdr:#e6b800; --fg:#111; box-shadow:0 6px 30px rgba(255,212,74,.25)}
-    .btn.ghost{--bgc:transparent}
-    main{padding:32px 20px}
-    .grid{
-      display:grid; gap:18px;
-      grid-template-columns: repeat(12, 1fr);
+    .btn:hover{border-color:#385487; box-shadow:0 10px 30px -15px rgba(46,168,255,.35)}
+    .btn.primary{background:linear-gradient(180deg, #2ea8ff, #1f87d4); color:#071521; border:none}
+    .btn.alt{background:linear-gradient(180deg, #ffd02a, #caa320); color:#231c07; border:none}
+    .micro{font-size:12px; color:var(--muted)}
+    .hero-art{
+      min-height:260px; border:1px solid var(--line); border-radius:var(--radius);
+      background:
+        url("/vov/bg-fingerprint.jpg") center/cover no-repeat,
+        radial-gradient(500px 400px at 50% 0%, #0d1d36 0%, #0a111d 60%);
+      position:relative; overflow:hidden;
     }
+    .hero-art::after{
+      content:"V O V"; position:absolute; bottom:12px; right:14px; font-weight:800; letter-spacing:6px;
+      color:rgba(255,255,255,.08); font-size:38px
+    }
+
+    /* seção de destaques */
+    .wrap{max-width:1150px; margin:0 auto; padding:26px 16px 48px}
+    .cards{display:grid; grid-template-columns:repeat(3,1fr); gap:16px}
+    @media (max-width:900px){ .cards{grid-template-columns:1fr} }
     .card{
-      background:linear-gradient(180deg, var(--panel), var(--panel-2));
-      border:1px solid var(--stroke); border-radius:var(--radius);
-      padding:20px; box-shadow:var(--glow);
+      background:rgba(12,18,28,.6); border:1px solid var(--line); border-radius:14px; padding:16px;
     }
-    .span-7{grid-column:span 7}
-    .span-5{grid-column:span 5}
-    @media (max-width:900px){ .span-7,.span-5{grid-column:1 / -1} }
-    h1{margin:0 0 8px; font-size:clamp(22px, 2.6vw, 30px)}
-    h2{margin:0 0 12px; font-size:clamp(18px, 2.2vw, 22px)}
-    p{margin:0 0 12px; color:var(--muted); line-height:1.55}
-    .pill{display:inline-flex; gap:8px; align-items:center; padding:6px 10px; border-radius:999px;
-      border:1px solid var(--stroke); background:#0f1624; color:var(--muted); font-size:13px}
-    .actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:12px}
-    .list{display:grid; gap:10px}
-    .bullet{display:flex; gap:10px; align-items:flex-start}
-    .dot{width:10px; height:10px; border-radius:3px; background:var(--brand-2); margin-top:7px; box-shadow:var(--glow)}
-    footer{padding:28px 20px; border-top:1px solid var(--stroke); color:var(--muted); text-align:center}
-    .tiny{font-size:13px}
+    .card h3{margin:0 0 6px; font-size:18px}
+    .card p{margin:0; color:var(--muted); font-size:14px}
+    .go{margin-top:10px; display:inline-flex; gap:8px; align-items:center}
+
+    /* rodapé */
+    footer{
+      border-top:1px solid var(--line); padding:16px; color:var(--muted);
+      background:rgba(6,10,18,.55)
+    }
+    .foot{max-width:1150px; margin:0 auto; display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap}
+    .tiny{font-size:12px}
   </style>
 </head>
 <body>
-  <header>
-    <div class="wrap row">
+
+  <!-- topo -->
+  <div class="topbar">
+    <div class="top-wrap">
       <div class="brand">
-        <div class="badge">🗞️</div>
-        <div>JOR NEWS V O V</div>
+        <img src="/vov/logo-vov.svg" alt="VOV" onerror="this.style.display='none'">
+        <span>JOR NEWS V O V</span>
       </div>
-      <nav>
-      <a class="btn ghost" href="//jorgematheus.mus.br/vov/edicoes.html">
-Arquivo de Edições</a>
-      <a class="btn ghost" href="//jorgematheus.mus.br/vov/blackvox/tocador_vov.html">BLACKVOX</a>
-        <a class="btn ghost" href="/vov/contato.html">Contato</a>
+      <nav class="nav" aria-label="Atalhos">
+        <a class="btn-link" href="/vov/edicoes.html">Arquivo de Edições</a>
+        <a class="btn-link" href="/vov/vov_players.html">BLACKVOX Players</a>
+        <a class="btn-link" href="/vov/ebooks.html">E-books</a>
+        <a class="btn-link" href="/vov/contato.html">Contato</a>
       </nav>
     </div>
-  </header>
+  </div>
 
-  <main class="wrap">
-    <div class="grid">
-      <!-- Card JOR NEWS -->
-      <section class="card span-7">
-        <h1>JOR NEWS — Destaques</h1>
-        <p>Publicação diária com <strong>editorial/poema</strong>, <strong>5 pilares</strong>, <strong>análise VOV</strong> e <strong>oração final</strong>.</p>
-        <div class="list" style="margin-top:8px">
-          <div class="bullet"><div class="dot"></div><p>PDF hospedado no <strong>Acervo (Google Drive)</strong> com <em>link curto</em> para divulgação.</p></div>
-          <div class="bullet"><div class="dot"></div><p>Arquivo histórico de edições sempre acessível.</p></div>
+  <!-- hero -->
+  <section class="hero">
+    <div class="hero-wrap">
+      <div>
+        <h1 class="h-title">Notícia + Poesia + Inteligência Vital</h1>
+        <p class="h-sub">A mina diária de pílulas do Brasil real. V O V — Ver, Ouvir, Vender, Viver.</p>
+        <div class="cta">
+          <a class="btn primary" href="/vov/edicoes.html">📰 Abrir JOR NEWS V O V</a>
+          <a class="btn alt" href="/vov/vov_players.html">🎶 BLACKVOX — Ouvir & Criar Playlists</a>
+          <a class="btn" href="/vov/ebooks.html">📚 E-books</a>
         </div>
-        <div class="actions">
-          <!-- ATUALIZE os href abaixo -->
-          <a class="btn brand" href="http://jorgematheus.mus.br/vov/edicoes.html"target="_blank" rel="noopener">Ler JOR NEWS VOV</a>
-          <a class="btn brand" href="http://jorgematheus.mus.br/vov/edicoeslivros.html"target="_blank" rel="noopener">COMPRE E LEIA OS LIVROS DA VOV</a>
-          
-
-        </div>
-        <p class="tiny" style="margin-top:10px">🗓️ Atualizado em: <span id="stamp">—</span></p>
-      </section>
-
-      <!-- Card BLACKVOX (somente link) -->
-      <aside class="card span-5">
-        <h2>BLACKVOX — Player Oficial</h2>
-        <p>Gerencie e toque playlists direto do navegador.</p>
-        <div class="actions">
-          <a class="btn brand" href="/vov/blackvox/tocador_vov.html">Abrir o Player</a>
-          <a class="btn" href="/vov/blackvox/index.html">Blackvox Clássico</a>
-        </div>
-        <div class="list" style="margin-top:10px">
-          <div class="bullet"><div class="dot"></div><p>Tudo salvo localmente (localStorage). Exporte/importa <code>.json</code> quando quiser.</p></div>
-          <div class="bullet"><div class="dot"></div><p>Compatível com MP3 hospedado em <code>/vov/blackvox/audios/</code> ou links externos (CORS liberado).</p></div>
-        </div>
-      </aside>
+        <div class="micro">Salvador • Amaralina • Brasil</div>
+      </div>
+      <div class="hero-art" role="img" aria-label="Textura digital negra e azul com identidade VOV"></div>
     </div>
-  </main>
+  </section>
 
+  <!-- destaques rápidos -->
+  <div class="wrap">
+    <div class="cards">
+      <article class="card">
+        <h3>JOR NEWS do Dia</h3>
+        <p>Pí­lulas essenciais e editorial — disponível em PDF no acervo.</p>
+        <a class="go" href="/vov/edicoes.html">Abrir arquivo →</a>
+      </article>
+      <article class="card">
+        <h3>BLACKVOX</h3>
+        <p>Player Clássico (rádio) + Campeão (criador de playlists). Importar/Exportar JSON.</p>
+        <a class="go" href="/vov/vov_players.html">Ouvir agora →</a>
+      </article>
+      <article class="card">
+        <h3>Fale com a VOV</h3>
+        <p>Diga olá, envie pauta, parceria, anúncio.</p>
+        <a class="go" href="/vov/contato.html">Abrir contato →</a>
+      </article>
+    </div>
+  </div>
+
+  <!-- rodapé -->
   <footer>
-    <div class="tiny">© V O V — <strong>Ver • Ouvir • Vender • Viver</strong></div>
+    <div class="foot">
+      <div class="tiny">© V O V — Ver, Ouvir, Vender, Viver • Jorge LA Matheus & AxéBit</div>
+      <div class="tiny">
+        <a href="/vov/edicoes.html">JOR NEWS</a> •
+        <a href="/vov/vov_players.html">BLACKVOX</a> •
+        <a href="/vov/ebooks.html">E-books</a> •
+        <a href="/vov/contato.html">Contato</a>
+      </div>
+    </div>
   </footer>
 
-  <script>
-    // carimba a data atual no rodapé de "Atualizado em:"
-    const el = document.getElementById('stamp');
-    try{
-      const fmt = new Intl.DateTimeFormat('pt-BR', {
-        dateStyle:'medium', timeStyle:'short'
-      });
-      el.textContent = fmt.format(new Date());
-    }catch(_){ el.textContent = new Date().toLocaleString(); }
-  </script>
+  <noscript>
+    <div style="text-align:center;color:#fff;background:#111;padding:10px">
+      Para a melhor experiência, ative o JavaScript.
+    </div>
+  </noscript>
 </body>
 </html>
