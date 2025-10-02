@@ -9,6 +9,49 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
+
+.cards {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 40px 20px;
+}
+
+.card {
+  background: #111;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+  overflow: hidden;
+  width: 300px;
+  text-align: center;
+  transition: transform 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.card h3 {
+  margin: 15px 0 10px;
+  color: #ffcc00;
+}
+
+.card p {
+  padding: 0 15px 20px;
+  color: #ccc;
+  font-size: 0.95em;
+}
+
+
+
+    
     :root{
       --bg:#070b12; --ink:#eaf0ff; --muted:#9fb0c9;
       --panel:#0d1420; --line:#1a2740; --accent:#2ea8ff; --accent-2:#ffd02a;
@@ -131,6 +174,29 @@
       <div class="hero-art" role="img" aria-label="Textura digital negra e azul com identidade VOV"></div>
     </div>
   </section>
+
+
+<!-- Cards de Destaque -->
+<section class="cards">
+  <div class="card">
+    <img src="/vov/img/jornews_mock.jpg" alt="JOR NEWS VOV impresso">
+    <h3>JOR NEWS</h3>
+    <p>Destaques diários de poesia, notícia e análise.</p>
+  </div>
+
+  <div class="card">
+    <img src="/vov/img/equalizer_bg.jpg" alt="Equalizer BLACKVOX">
+    <h3>BLACKVOX</h3>
+    <p>Som, playlists e inteligência sonora universal.</p>
+  </div>
+
+  <div class="card">
+    <img src="/vov/img/identity_digital.jpg" alt="Identidade Digital VOV">
+    <h3>Identidade</h3>
+    <p>Inteligência Vital aplicada ao digital, com marca única.</p>
+  </div>
+</section>
+  
 
   <!-- destaques rápidos -->
   <div class="wrap">
