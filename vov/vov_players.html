@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>VOV • BLACKVOX Clássico + Campeão</title>
+<style>
+  :root{
+    --bg:#0b0f14; --ink:#e9edf3; --muted:#b7c0cc; --panel:#111823; --line:#1e2a3a;
+    --accent:#ffd02a; --ok:#7ef9c6; --bad:#ff7a7a; --radius:14px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; font-family:system-ui, Inter, Arial; background:#0b0f14; color:var(--ink)}
+  header{padding:18px 16px; border-bottom:1px solid var(--line); background:#0e1520; position:sticky; top:0; z-index:10}
+  header h1{margin:0; font-size:20px}
+  header small{color:var(--muted)}
+  .wrap{max-width:1100px; margin:0 auto; padding:18px 16px 42px}
+  .grid{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+  @media(max-width:1000px){ .grid{grid-template-columns:1fr} }
+  .card{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:14px}
+  h2{margin:8px 0 12px; font-size:18px}
+  .sub{color:var(--muted); font-size:13px; margin-top:-6px; margin-bottom:10px}
+  .row{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+  input[type="text"], input[type="url"], input[type="file"], select{
+    background:#0f1722; color:var(--ink); border:1px solid var(--line); border-radius:10px; padding:8px 10px;
+  }
+  button{
+    background:#162234; color:var(--ink); border:1px solid var(--line); border-radius:10px; padding:8px 12px; cursor:pointer
+  }
+  button.primary{background:var(--accent); color:#14130a; border:none; font-weight:800}
+  button.good{background:var(--ok); color:#102018; border:none; font-weight:800}
+  button.bad{background:#2a1620; color:#ffd5d5; border:1px solid #582534}
+  .list{margin:10px 0; padding:0; list-style:none; border-top:1px solid var(--line)}
+  .item{display:flex; gap:8px; align-items:center; justify-content:space-between; padding:10px 6px; border-bottom:1px solid var(--line)}
+  .item span.title{flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .item .now{color:var(--ok); font-weight:700}
+  .mini{font-size:12px; color:var(--muted)}
+  .hr{height:1px; background:var(--line); margin:10px 0}
+  .pill{font-size:12px; border:1px solid var(--line); border-radius:999px; padding:2px 8px; color:var(--muted)}
+  .hint{font-size:12px; color:var(--muted); margin-top:6px}
+  .footer{margin-top:14px; display:flex; gap:10px; align-items:center; justify-content:space-between}
+  a{color:#9ecbff; text-decoration:none}
+  a:hover{text-decoration:underline}
+  .mono{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace}
+</style>
+</head>
+<body>
+<header>
+  <h1>BLACKVOX • Players VOV <small class="pill">Clássico + Campeão</small></h1>
+  <div class="sub">Rádio da casa + App de playlists • Importa/Exporta JSON • Salva rascunho • Auto-play contínuo</div>
+</header>
+
+<div class="wrap">
+  <div class="grid">
+
+    <!-- ===================== PLAYER CLÁSSICO ===================== -->
+    <section class="card" id="classic">
+      <h2>🎙️ Player Clássico (rádio da casa)</h2>
+      <div class="sub">Faixas pré-configuradas + Importar playlist (.json por URL ou arquivo)</div>
+
+      <div class="row">
+        <button id="c-prev">⏮️ Anterior</button>
+        <button id="c-play">▶️ Tocar</button>
+        <button id="c-pause">⏸️ Pausar</button>
+        <button id="c-next">⏭️ Próxima</button>
+        <span class="pill mono" id="c-status">parado</span>
+      </div>
+
+      <div class="row" style="margin-top:8px">
+        <input type="url" id="c-json-url" placeholder="URL de playlist JSON (Drive/servidor)" style="min-width:300px">
+        <button id="c-load-url">📥 Carregar por URL</button>
+        <input type="file" id="c-json-file" accept="application/json">
+        <button id="c-load-file">📂 Carregar por arquivo</button>
+      </div>
+      <div class="hint">Formato aceito: <code class="mono">{ name, tracks:[{ title, url }] }</code> ou <code class="mono">[{ title, url }]</code></div>
+
+      <ul class="list" id="c-list"></ul>
+      <div class="footer">
+        <audio id="c-audio" preload="auto" controls style="width:100%"></audio>
+      </div>
+      <div class="hint">Dica: você pode colocar seus MP3 em <code class="mono">/vov/audios/</code> e apontar as URLs nos JSONs.</div>
+    </section>
+
+    <!-- ===================== PLAYER CAMPEÃO ===================== -->
+    <section class="card" id="pro">
+      <h2>🏆 BLACKVOX Campeão (editor de playlists)</h2>
+      <div class="sub">Adiciona MP3, organiza, salva no navegador, importa/exporta JSON</div>
+
+      <div class="row">
+        <input type="file" id="p-files" accept="audio/*" multiple>
+        <button id="p-add" class="good">➕ Adicionar MP3</button>
+        <button id="p-play">▶️ Tocar</button>
+        <button id="p-pause">⏸️ Pausar</button>
+        <button id="p-next">⏭️ Próxima</button>
+        <span class="pill mono" id="p-status">rascunho</span>
+      </div>
+
+      <div class="row" style="margin-top:8px">
+        <input type="text" id="p-name" placeholder="Nome da playlist (ex.: VOV — Jazz Bahia)">
+        <button id="p-save" class="primary">💾 Salvar</button>
+        <button id="p-export">⬇️ Exportar JSON</button>
+        <input type="file" id="p-import-file" accept="application/json">
+        <button id="p-import">📂 Importar JSON</button>
+      </div>
+      <div class="hint">Playlists ficam no seu navegador (localStorage). Exportar baixa um <code>.json</code> compatível com o Clássico.</div>
+
+      <ul class="list" id="p-list"></ul>
+
+      <div class="row" style="margin-top:8px">
+        <label>Minhas playlists salvas:</label>
+        <select id="p-saved"></select>
+        <button id="p-load-saved">📥 Carregar</button>
+        <button id="p-delete-saved" class="bad">🗑️ Excluir</button>
+      </div>
+
+      <div class="footer">
+        <audio id="p-audio" preload="auto" controls style="width:100%"></audio>
+      </div>
+      <div class="hint">Rascunho automático salvo como <code class="mono">bvx_draft</code>. Se fechar a página, ao voltar estará lá.</div>
+    </section>
+
+  </div>
+
+  <div class="hr"></div>
+  <footer class="row" style="justify-content:space-between">
+    <div>© V O V — Ver, Ouvir, Vender, Viver • Jorge LA Matheus & AxéBit</div>
+    <div><a href="/vov/edicoes.html">Arquivo de Edições</a> • <a href="/vov/blackvox/">BLACKVOX</a></div>
+  </footer>
+</div>
+
+<script>
+/* ===========================
+   UTIL: normalizar playlists
+   Aceita:
+   1) { name, tracks:[{title,url}] }
+   2) [{title,url}]
+   3) { tracks:[{name,url}] }  // tolera 'name' como 'title'
+=========================== */
+function normalizePlaylist(json){
+  let name = 'Playlist';
+  let tracks = [];
+
+  if (Array.isArray(json)) {
+    tracks = json;
+  } else if (json && typeof json === 'object') {
+    if (json.name) name = String(json.name);
+    if (Array.isArray(json.tracks)) tracks = json.tracks;
+  }
+
+  tracks = (tracks || []).map((t,i)=>({
+    title: t.title || t.name || `Faixa ${i+1}`,
+    url:   t.url   || t.href || t.src || ''
+  })).filter(t => t.url);
+
+  return { name, tracks };
+}
+
+/* ===========================
+   PLAYER CLÁSSICO
+=========================== */
+const cAudio = document.getElementById('c-audio');
+const cList  = document.getElementById('c-list');
+const cStatus= document.getElementById('c-status');
+let cPlaylist = {
+  name: 'VOV Rádio da Casa',
+  tracks: [
+    // 👇 EXEMPLOS — troque para seus arquivos públicos
+    { title:'Brian Eno — Ambient 1 (demo)', url:'/vov/audios/brian_eno.mp3' },
+    { title:'John Coltrane — Naima (demo)',  url:'/vov/audios/coltrane_naima.mp3' },
+    { title:'Hermeto Pascoal — Sons da Rua (demo)', url:'/vov/audios/hermeto_rua.mp3' }
+  ]
+};
+let cIndex = 0;
+
+function cRender(){
+  cList.innerHTML = '';
+  cPlaylist.tracks.forEach((t, i)=>{
+    const li = document.createElement('li');
+    li.className = 'item';
+    const left = document.createElement('span');
+    left.className = 'title ' + (i===cIndex? 'now':'');
+    left.textContent = t.title;
+    left.title = t.url;
+
+    const btns = document.createElement('div');
+    const play = document.createElement('button'); play.textContent = '▶️';
+    play.onclick = ()=>{ cPlay(i); };
+
+    const dl = document.createElement('a'); dl.textContent = '⬇️'; dl.href = t.url; dl.download = '';
+    dl.style.marginLeft = '6px';
+
+    btns.appendChild(play);
+    btns.appendChild(dl);
+
+    li.appendChild(left);
+    li.appendChild(btns);
+    cList.appendChild(li);
+  });
+  cStatus.textContent = `${cPlaylist.name} — ${cPlaylist.tracks.length} faixas`;
+}
+
+function cPlay(i){
+  if (typeof i === 'number') cIndex = i;
+  const track = cPlaylist.tracks[cIndex];
+  if (!track) return;
+  cAudio.src = track.url;
+  cAudio.play().catch(()=>{});
+  cRender();
+}
+function cNext(){
+  cIndex = (cIndex + 1) % cPlaylist.tracks.length;
+  cPlay();
+}
+function cPrev(){
+  cIndex = (cIndex - 1 + cPlaylist.tracks.length) % cPlaylist.tracks.length;
+  cPlay();
+}
+cAudio.addEventListener('ended', cNext);
+document.getElementById('c-play').onclick = ()=>cPlay(cIndex);
+document.getElementById('c-pause').onclick = ()=>cAudio.pause();
+document.getElementById('c-next').onclick  = cNext;
+document.getElementById('c-prev').onclick  = cPrev;
+
+/* Carregar JSON por URL */
+document.getElementById('c-load-url').onclick = async ()=>{
+  const url = document.getElementById('c-json-url').value.trim();
+  if(!url){ alert('Informe a URL do JSON.'); return; }
+  try{
+    const res = await fetch(url);
+    const data = await res.json();
+    const pl = normalizePlaylist(data);
+    if (!pl.tracks.length) throw new Error('JSON sem faixas válidas');
+    cPlaylist = pl; cIndex = 0; cRender();
+    cPlay(0);
+  }catch(err){
+    alert('Falha ao carregar JSON: ' + err.message);
+  }
+};
+
+/* Carregar JSON por arquivo */
+document.getElementById('c-load-file').onclick = ()=>{
+  const fi = document.getElementById('c-json-file');
+  if(!fi.files.length){ alert('Selecione um arquivo .json'); return; }
+  const f = fi.files[0];
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    try{
+      const data = JSON.parse(reader.result);
+      const pl = normalizePlaylist(data);
+      if (!pl.tracks.length) throw new Error('JSON sem faixas válidas');
+      cPlaylist = pl; cIndex = 0; cRender(); cPlay(0);
+    }catch(err){ alert('JSON inválido: ' + err.message); }
+  };
+  reader.readAsText(f);
+};
+
+cRender();
+
+/* ===========================
+   PLAYER CAMPEÃO (BLACKVOX)
+=========================== */
+const pAudio = document.getElementById('p-audio');
+const pList  = document.getElementById('p-list');
+const pStatus= document.getElementById('p-status');
+const pName  = document.getElementById('p-name');
+const pSaved = document.getElementById('p-saved');
+
+let pTracks = [];       // {title, url}
+let pIndex  = 0;
+const KEY_DRAFT = 'bvx_draft';
+const KEY_LIB   = 'bvx_saved_playlists'; // objeto { name: tracks[] }
+
+function loadDraft(){
+  try{
+    const raw = localStorage.getItem(KEY_DRAFT);
+    if(!raw) return;
+    const data = JSON.parse(raw);
+    const pl = normalizePlaylist(data);
+    if(pl.tracks.length){ pTracks = pl.tracks; pName.value = pl.name || 'Rascunho'; }
+  }catch{} finally{ pRender(); }
+}
+function saveDraft(){
+  const data = { name: pName.value || 'Rascunho', tracks: pTracks };
+  localStorage.setItem(KEY_DRAFT, JSON.stringify(data));
+}
+function getLibrary(){
+  try{
+    const raw = localStorage.getItem(KEY_LIB);
+    return raw? JSON.parse(raw) : {};
+  }catch{ return {}; }
+}
+function setLibrary(obj){
+  localStorage.setItem(KEY_LIB, JSON.stringify(obj));
+  refreshSaved();
+}
+function refreshSaved(){
+  const lib = getLibrary();
+  pSaved.innerHTML = '';
+  Object.keys(lib).forEach(name=>{
+    const opt = document.createElement('option');
+    opt.value = name; opt.textContent = name;
+    pSaved.appendChild(opt);
+  });
+}
+function pRender(){
+  pList.innerHTML = '';
+  pTracks.forEach((t,i)=>{
+    const li = document.createElement('li');
+    li.className = 'item';
+    const left = document.createElement('span');
+    left.className = 'title ' + (i===pIndex? 'now':'');
+    left.textContent = t.title;
+    left.title = t.url;
+
+    const btns = document.createElement('div');
+
+    const up = document.createElement('button'); up.textContent='↑';
+    up.onclick = ()=>{ if(i>0){ [pTracks[i-1], pTracks[i]] = [pTracks[i], pTracks[i-1]]; pIndex = i-1; pRender(); saveDraft(); } };
+
+    const down = document.createElement('button'); down.textContent='↓';
+    down.onclick = ()=>{ if(i<pTracks.length-1){ [pTracks[i+1], pTracks[i]] = [pTracks[i], pTracks[i+1]]; pIndex = i+1; pRender(); saveDraft(); } };
+
+    const play = document.createElement('button'); play.textContent='▶️';
+    play.onclick = ()=>{ pPlay(i); };
+
+    const del = document.createElement('button'); del.textContent='🗑️';
+    del.className='bad'; del.onclick = ()=>{ pTracks.splice(i,1); if(pIndex>=pTracks.length) pIndex=0; pRender(); saveDraft(); };
+
+    btns.appendChild(up); btns.appendChild(down); btns.appendChild(play); btns.appendChild(del);
+    li.appendChild(left); li.appendChild(btns);
+    pList.appendChild(li);
+  });
+  pStatus.textContent = `${pTracks.length} faixas — ${pName.value||'Rascunho'}`;
+}
+
+/* Adicionar MP3 do dispositivo */
+document.getElementById('p-add').onclick = ()=>{
+  const inp = document.getElementById('p-files');
+  if(!inp.files.length){ alert('Selecione um ou mais arquivos de áudio.'); return; }
+  [...inp.files].forEach(f=>{
+    const url = URL.createObjectURL(f);
+    pTracks.push({ title:f.name.replace(/\.[^/.]+$/,''), url });
+  });
+  pIndex = 0; pRender(); saveDraft();
+  // começa a tocar a primeira recém adicionada
+  if (pTracks.length) pPlay(pTracks.length - inp.files.length);
+};
+
+function pPlay(i){
+  if(typeof i==='number') pIndex = i;
+  const t = pTracks[pIndex];
+  if(!t) return;
+  pAudio.src = t.url;
+  pAudio.play().catch(()=>{});
+  pRender();
+}
+function pNext(){
+  if(!pTracks.length) return;
+  pIndex = (pIndex + 1) % pTracks.length;
+  pPlay();
+}
+pAudio.addEventListener('ended', pNext);
+document.getElementById('p-play').onclick=()=>pPlay(pIndex);
+document.getElementById('p-pause').onclick=()=>pAudio.pause();
+document.getElementById('p-next').onclick = pNext;
+
+/* Salvar playlist nomeada */
+document.getElementById('p-save').onclick = ()=>{
+  const name = (pName.value||'Minha Playlist').trim();
+  if(!name){ alert('Dê um nome à playlist.'); return; }
+  const lib = getLibrary();
+  lib[name] = [...pTracks];
+  setLibrary(lib);
+  alert('Playlist salva!');
+};
+
+/* Exportar JSON compatível */
+document.getElementById('p-export').onclick = ()=>{
+  const name = (pName.value||'Minha Playlist').trim();
+  const data = { name, tracks: pTracks };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = (name || 'playlist') + '.json';
+  a.click();
+};
+
+/* Importar JSON (arquivo) — compatível com seu Drive */
+document.getElementById('p-import').onclick = ()=>{
+  const fi = document.getElementById('p-import-file');
+  if(!fi.files.length){ alert('Selecione um arquivo .json'); return; }
+  const f = fi.files[0], r = new FileReader();
+  r.onload = ()=>{
+    try{
+      const data = JSON.parse(r.result);
+      const pl = normalizePlaylist(data);
+      if(!pl.tracks.length) throw new Error('JSON sem faixas válidas');
+      pTracks = pl.tracks;
+      if(pl.name) pName.value = pl.name;
+      pIndex = 0; pRender(); saveDraft(); pPlay(0);
+    }catch(err){ alert('JSON inválido: '+err.message); }
+  };
+  r.readAsText(f);
+};
+
+/* Carregar/Excluir playlists salvas */
+document.getElementById('p-load-saved').onclick = ()=>{
+  const name = pSaved.value;
+  const lib = getLibrary();
+  const tracks = lib[name];
+  if(!tracks){ alert('Nada salvo com esse nome.'); return; }
+  pName.value = name;
+  pTracks = tracks.slice();
+  pIndex = 0; pRender(); saveDraft(); pPlay(0);
+};
+document.getElementById('p-delete-saved').onclick = ()=>{
+  const name = pSaved.value;
+  if(!name) return;
+  const lib = getLibrary();
+  if(lib[name]){
+    if(confirm('Excluir a playlist "'+name+'"?')){
+      delete lib[name]; setLibrary(lib); alert('Excluída.');
+    }
+  }
+};
+
+refreshSaved();
+loadDraft();
+</script>
+</body>
+</html>
