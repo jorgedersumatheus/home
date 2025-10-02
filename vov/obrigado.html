@@ -1,189 +1,36 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>V O V — Inteligência Vital</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Obrigado – V O V</title>
   <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0a0a0f;
-      color: #f0f0f0;
-    }
-    header {
-      background: #0f0f17;
-      padding: 15px 30px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    header nav a {
-      color: #f0f0f0;
-      margin-left: 20px;
-      text-decoration: none;
-    }
-    .hero {
-      padding: 60px 30px;
-      text-align: center;
-      background: linear-gradient(135deg, #0f0f17, #111122);
-    }
-    .hero h1 {
-      font-size: 2.5em;
-      margin-bottom: 10px;
-      color: #fff;
-    }
-    .hero p {
-      font-size: 1.2em;
-      color: #ccc;
-    }
-    .hero-buttons {
-      margin-top: 20px;
-    }
-    .btn {
-      display: inline-block;
-      padding: 12px 18px;
-      margin: 5px;
-      border-radius: 6px;
-      text-decoration: none;
-      font-weight: bold;
-    }
-    .btn-primary { background: #007bff; color: #fff; }
-    .btn-secondary { background: #ffc107; color: #000; }
-    .btn-tertiary { background: #28a745; color: #fff; }
-    .micro {
-      margin-top: 15px;
-      font-size: 0.9em;
-      color: #aaa;
-    }
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 20px;
-      padding: 40px;
-    }
-    .card {
-      background: #1a1a22;
-      border-radius: 12px;
-      padding: 15px;
-      text-align: center;
-      box-shadow: 0 0 10px rgba(0,0,0,0.4);
-    }
-    .card img {
-      max-width: 100%;
-      border-radius: 10px;
-    }
-    .card h3 {
-      margin-top: 15px;
-      color: #ffcc00;
-    }
-    .card p {
-      font-size: 0.95em;
-      color: #ccc;
-    }
-    .card-link, .go {
-      display: inline-block;
-      margin-top: 10px;
-      color: #00aced;
-      text-decoration: none;
-      font-weight: bold;
-    }
-    footer {
-      background: #0f0f17;
-      text-align: center;
-      padding: 20px;
-      font-size: 0.9em;
-      color: #777;
-    }
+    body { font-family: Arial, sans-serif; margin: 40px auto; max-width: 600px; background: #fff; color: #222; line-height: 1.6; text-align: center; }
+    h1 { color: #b30000; }
+    a { display: inline-block; margin: 10px; padding: 10px 20px; background: #b30000; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; }
+    a:hover { background: #800000; }
+    nav { background: #b30000; position: fixed; top: 0; left: 0; right: 0; height: 50px; display: flex; align-items: center; z-index: 1000; }
+    nav ul { list-style: none; margin: 0; padding: 0 20px; display: flex; gap: 20px; }
+    nav a { color: #fff; text-decoration: none; font-weight: bold; font-family: Arial, sans-serif; }
+    nav a:hover { text-decoration: underline; }
+    body { margin-top: 70px; }
   </style>
 </head>
 <body>
+  <nav>
+    <ul>
+      <li><a href="/index.html">🏠 Início</a></li>
+      <li><a href="/vov/edicoes.html">📰 JOR NEWS VOV</a></li>
+      <li><a href="/vov/blackvox/index.html">🎵 BLACKVOX</a></li>
+      <li><a href="/vov/contato.html">✉️ Contato</a></li>
+    </ul>
+  </nav>
 
-  <!-- Cabeçalho -->
-  <header>
-    <div class="logo"><strong>JOR NEWS V O V</strong></div>
-    <nav>
-      <a href="/vov/edicoes.html">Arquivo de Edições</a>
-      <a href="/vov/vov_players.html">BLACKVOX Players</a>
-      <a href="/vov/ebooks.html">E-books</a>
-      <a href="/vov/contato.html">Contato</a>
-    </nav>
-  </header>
-
-  <!-- Hero -->
-  <section class="hero">
-    <h1>Inteligência Vital</h1>
-    <p>A mina diária de pílulas do Brasil real. V O V — Ver, Ouvir, Vender, Viver.</p>
-    <div class="hero-buttons">
-      <a href="/vov/edicoes.html" class="btn btn-primary">Abrir JOR NEWS V O V</a>
-      <a href="/vov/vov_players.html" class="btn btn-secondary">BLACKVOX — Ouvir & Criar Playlists</a>
-      <a href="/vov/ebooks.html" class="btn btn-tertiary">📖 E-books</a>
-    </div>
-    <div class="micro">Salvador • Amaralina • Brasil</div>
-  </section>
-
-  <!-- Cards principais -->
-  <section class="cards">
-
-    <!-- Card JOR NEWS -->
-    <div class="card">
-      <img src="/vov/jornews_mock.jpg" alt="JOR NEWS VOV impresso">
-      <h3>JOR NEWS</h3>
-      <p>Destaques diários de poesia, notícia e análise.</p>
-      <a href="/vov/edicoes.html" class="card-link">Ver edições →</a>
-    </div>
-
-    <!-- Card BLACKVOX -->
-    <div class="card">
-      <img src="/vov/equalizer_bg.jpg" alt="Equalizer BLACKVOX">
-      <h3>BLACKVOX</h3>
-      <p>Som, playlists e inteligência sonora universal.</p>
-      <a href="/vov/vov_players.html" class="card-link">Ouvir agora →</a>
-    </div>
-
-    <!-- Card Identidade -->
-    <div class="card">
-      <img src="/vov/Identity_digital.jpg" alt="Identidade Digital VOV">
-      <h3>Identidade</h3>
-      <p>Inteligência Vital aplicada ao digital, com marca única.</p>
-    </div>
-
-    <!-- Card E-books -->
-    <div class="card">
-      <img src="/capa_pedra_do_po_branco_2.png" alt="E-books VOV">
-      <h3>E-books</h3>
-      <p>Coleção completa de títulos digitais VOV — leitura, poesia e inteligência vital.</p>
-      <a href="/vov/ebooks.html" class="card-link">Ver coleção →</a>
-    </div>
-
-  </section>
-
-  <!-- Destaques rápidos -->
-  <div class="wrap">
-    <div class="cards">
-      <article class="card">
-        <h3>JOR NEWS do Dia</h3>
-        <p>Pílulas essenciais e editorial — disponível em PDF no acervo.</p>
-        <a class="go" href="/vov/edicoes.html">Abrir arquivo →</a>
-      </article>
-      <article class="card">
-        <h3>BLACKVOX</h3>
-        <p>Player Clássico (rádio) + Campeão (criador de playlists). Importar/Exportar JSON.</p>
-        <a class="go" href="/vov/vov_players.html">Ouvir agora →</a>
-      </article>
-      <article class="card">
-        <h3>Fale com a VOV</h3>
-        <p>Diga olá, envie pauta, parceria, anúncio.</p>
-        <a class="go" href="/vov/contato.html">Abrir contato →</a>
-      </article>
-    </div>
-  </div>
-
-  <!-- Rodapé -->
-  <footer>
-    © 2025 V O V — Ver · Ouvir · Vender · Viver
-  </footer>
-
+  <h1>Obrigado!</h1>
+  <p>Sua mensagem foi enviada com sucesso.</p>
+  <p>Em breve entraremos em contato. Enquanto isso, explore mais da Plataforma V O V:</p>
+  <a href="/index.html">Voltar ao Início</a>
+  <a href="/vov/edicoes.html">JOR NEWS VOV</a>
+  <a href="/vov/blackvox/index.html">BLACKVOX</a>
 </body>
 </html>
