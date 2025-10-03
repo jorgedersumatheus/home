@@ -1,431 +1,413 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>VOV • BLACKVOX Clássico + Campeão</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>VOV • Players BLACKVOX</title>
+<meta name="description" content="Players de áudio BLACKVOX: Clássico, Campeão e Mini — V O V • Ver, Ouvir, Vender, Viver." />
+<link rel="icon" href="/vov/favicon.ico">
 <style>
   :root{
-    --bg:#0b0f14; --ink:#e9edf3; --muted:#b7c0cc; --panel:#111823; --line:#1e2a3a;
-    --accent:#ffd02a; --ok:#7ef9c6; --bad:#ff7a7a; --radius:14px;
+    --bg:#0b0e12; --panel:#12161d; --muted:#99a3b3; --text:#e9eef7; --brand:#00d4ff; --brand2:#7c5cff; --accent:#17ff88; --danger:#ff3b3b;
+    --card:#0f1319; --stroke:#1e2430;
   }
   *{box-sizing:border-box}
-  body{margin:0; font-family:system-ui, Inter, Arial; background:#0b0f14; color:var(--ink)}
-  header{padding:18px 16px; border-bottom:1px solid var(--line); background:#0e1520; position:sticky; top:0; z-index:10}
-  header h1{margin:0; font-size:20px}
-  header small{color:var(--muted)}
-  .wrap{max-width:1100px; margin:0 auto; padding:18px 16px 42px}
-  .grid{display:grid; grid-template-columns:1fr 1fr; gap:16px}
-  @media(max-width:1000px){ .grid{grid-template-columns:1fr} }
-  .card{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:14px}
-  h2{margin:8px 0 12px; font-size:18px}
-  .sub{color:var(--muted); font-size:13px; margin-top:-6px; margin-bottom:10px}
-  .row{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
-  input[type="text"], input[type="url"], input[type="file"], select{
-    background:#0f1722; color:var(--ink); border:1px solid var(--line); border-radius:10px; padding:8px 10px;
+  html,body{height:100%}
+  body{
+    margin:0; color:var(--text); background:
+      radial-gradient(1200px 600px at 10% -10%, rgba(124,92,255,.08), transparent 60%),
+      radial-gradient(1000px 500px at 110% 10%, rgba(0,212,255,.08), transparent 60%),
+      var(--bg);
+    font: 15px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
   }
-  button{
-    background:#162234; color:var(--ink); border:1px solid var(--line); border-radius:10px; padding:8px 12px; cursor:pointer
-  }
-  button.primary{background:var(--accent); color:#14130a; border:none; font-weight:800}
-  button.good{background:var(--ok); color:#102018; border:none; font-weight:800}
-  button.bad{background:#2a1620; color:#ffd5d5; border:1px solid #582534}
-  .list{margin:10px 0; padding:0; list-style:none; border-top:1px solid var(--line)}
-  .item{display:flex; gap:8px; align-items:center; justify-content:space-between; padding:10px 6px; border-bottom:1px solid var(--line)}
-  .item span.title{flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
-  .item .now{color:var(--ok); font-weight:700}
-  .mini{font-size:12px; color:var(--muted)}
-  .hr{height:1px; background:var(--line); margin:10px 0}
-  .pill{font-size:12px; border:1px solid var(--line); border-radius:999px; padding:2px 8px; color:var(--muted)}
-  .hint{font-size:12px; color:var(--muted); margin-top:6px}
-  .footer{margin-top:14px; display:flex; gap:10px; align-items:center; justify-content:space-between}
-  a{color:#9ecbff; text-decoration:none}
+  a{color:var(--brand); text-decoration:none}
   a:hover{text-decoration:underline}
-  .mono{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace}
+
+  /* header */
+  .topbar{
+    position:sticky; top:0; z-index:50;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg, rgba(11,14,18,.85), rgba(11,14,18,.6));
+    border-bottom:1px solid var(--stroke);
+  }
+  .topwrap{max-width:1100px; margin:0 auto; padding:14px 16px; display:flex; gap:14px; align-items:center; justify-content:space-between}
+  .brand{display:flex; align-items:center; gap:12px}
+  .pill{
+    background:linear-gradient(135deg, var(--brand), var(--brand2));
+    color:#001018; font-weight:900; letter-spacing:.5px;
+    padding:6px 10px; border-radius:10px; font-size:12px;
+  }
+  .title h1{margin:0; font-weight:800; font-size:16px}
+  .title small{display:block; color:var(--muted); font-size:12px; margin-top:2px}
+
+  .navlinks{display:flex; gap:8px; flex-wrap:wrap}
+  .btn{
+    display:inline-flex; align-items:center; gap:8px;
+    border:1px solid var(--stroke); border-radius:10px; padding:8px 12px;
+    background:linear-gradient(180deg, #0f1319, #0b0e12); color:var(--text);
+    transition:.2s transform, .2s border-color;
+  }
+  .btn:hover{transform:translateY(-1px); border-color:#2a3345; text-decoration:none}
+  .btn.brand{border-color:transparent; background:linear-gradient(135deg, #00d4ff33, #7c5cff33)}
+  .btn.ghost{background:transparent}
+  .btn .dot{width:8px; height:8px; border-radius:50%}
+  .dot.c1{background:var(--brand)}
+  .dot.c2{background:var(--accent)}
+  .dot.c3{background:#ffd166}
+
+  /* layout */
+  .wrap{max-width:1100px; margin:22px auto 64px; padding:0 16px}
+  .grid{display:grid; grid-template-columns: 1.35fr .65fr; gap:22px}
+  @media (max-width:980px){ .grid{grid-template-columns:1fr} }
+
+  /* card */
+  .card{
+    background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.00));
+    border:1px solid var(--stroke); border-radius:16px; overflow:hidden;
+    box-shadow:0 10px 30px rgba(0,0,0,.25);
+  }
+  .card > .head{
+    padding:16px; border-bottom:1px solid var(--stroke); display:flex; align-items:center; justify-content:space-between
+  }
+  .card > .head h2{margin:0; font-size:16px; font-weight:800; letter-spacing:.3px}
+  .badge{font-size:11px; color:#0b0e12; background:linear-gradient(135deg, var(--brand), var(--accent)); padding:6px 8px; border-radius:999px; font-weight:800}
+
+  /* player */
+  .player{padding:16px}
+  .row{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px}
+  .row input[type="url"], .row input[type="text"]{
+    flex:1 1 260px; min-width:220px; padding:10px 12px; border-radius:10px; border:1px solid var(--stroke);
+    background:#0b0f14; color:var(--text); outline:none;
+  }
+  .row input::placeholder{color:#647089}
+  .row .btn-sm{
+    padding:8px 10px; border-radius:10px; border:1px solid var(--stroke);
+    background:#0d1117; color:var(--text); font-size:13px;
+  }
+  .row .btn-sm.brand{border-color:transparent; background:linear-gradient(135deg, #00d4ff33, #7c5cff33)}
+  .hint{color:var(--muted); font-size:12px; margin-top:-6px; margin-bottom:12px}
+
+  .controls{
+    display:flex; gap:8px; flex-wrap:wrap; margin:12px 0 6px;
+  }
+  .controls .btn-ctrl{
+    border:1px solid var(--stroke); background:#0e131a; color:var(--text);
+    border-radius:10px; padding:8px 12px; font-size:13px;
+  }
+  .controls .btn-ctrl.active{border-color:var(--brand); box-shadow:0 0 0 2px rgba(0,212,255,.2) inset}
+
+  .now{margin:8px 0 12px; font-size:13px; color:var(--muted)}
+  .now b{color:var(--text)}
+
+  .progress{
+    height:8px; background:#121720; border:1px solid var(--stroke); border-radius:999px; overflow:hidden; margin:8px 0 14px;
+  }
+  .bar{height:100%; width:0%; background:linear-gradient(90deg, var(--brand), var(--accent)); transition:width .2s}
+
+  ul.play{list-style:none; margin:0; padding:0}
+  ul.play li{
+    display:grid; grid-template-columns: 1fr auto; gap:8px; align-items:center;
+    padding:10px 12px; border:1px solid var(--stroke); border-radius:12px; margin-bottom:8px; background:#0b0f14;
+  }
+  ul.play li.active{outline:2px solid rgba(0,212,255,.25)}
+  .track-title{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .rowbtns{display:flex; gap:6px}
+  .rowbtns button{
+    border:1px solid var(--stroke); background:#0f1319; color:var(--text); padding:6px 8px; border-radius:8px; font-size:12px;
+  }
+  .rowbtns button.rm{border-color:#2e1b1b; background:#170f10; color:#ff9b9b}
+
+  /* aside links */
+  .side{display:grid; gap:16px; align-content:start}
+  .side .panel{background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0)); border:1px solid var(--stroke); border-radius:16px; padding:16px}
+  .panel h3{margin:0 0 8px; font-size:14px; letter-spacing:.2px}
+  .panel p{margin:0 0 10px; color:var(--muted); font-size:13px}
+  .list a{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 12px; border:1px solid var(--stroke); border-radius:12px; background:#0b0f14; text-decoration:none}
+  .list a:hover{border-color:#2a3345}
+  .tag{font-size:11px; color:#001018; background:linear-gradient(135deg, var(--brand), var(--brand2)); padding:5px 8px; border-radius:999px; font-weight:800}
+
+  /* footer */
+  footer{margin:40px 0 80px; color:var(--muted); font-size:12px; text-align:center}
+  footer a{color:var(--muted)}
 </style>
 </head>
 <body>
-<header>
-  <h1>BLACKVOX • Players VOV <small class="pill">Clássico + Campeão</small></h1>
-  <div class="sub">Rádio da casa + App de playlists • Importa/Exporta JSON • Salva rascunho • Auto-play contínuo</div>
+
+<header class="topbar">
+  <div class="topwrap">
+    <div class="brand">
+      <div class="pill">V O V</div>
+      <div class="title">
+        <h1>Players BLACKVOX</h1>
+        <small>Clássico (nesta página) • <b>Campeão</b> e <b>Mini</b> por link</small>
+      </div>
+    </div>
+    <nav class="navlinks">
+      <a class="btn" href="/vov/index.html"><span class="dot c1"></span> Início</a>
+      <a class="btn" href="/vov/edicoes.html"><span class="dot c2"></span> Arquivo de Edições</a>
+      <a class="btn brand" href="/vov/vov_campeao.html">🎛️ Campeão</a>
+      <a class="btn ghost" href="/vov/vov_mini.html">▸ Mini</a>
+    </nav>
+  </div>
 </header>
 
 <div class="wrap">
   <div class="grid">
-
-    <!-- ===================== PLAYER CLÁSSICO ===================== -->
-    <section class="card" id="classic">
-      <h2>🎙️ Player Clássico (rádio da casa)</h2>
-      <div class="sub">Faixas pré-configuradas + Importar playlist (.json por URL ou arquivo)</div>
-
-      <div class="row">
-        <button id="c-prev">⏮️ Anterior</button>
-        <button id="c-play">▶️ Tocar</button>
-        <button id="c-pause">⏸️ Pausar</button>
-        <button id="c-next">⏭️ Próxima</button>
-        <span class="pill mono" id="c-status">parado</span>
+    <!-- PLAYER CLÁSSICO -->
+    <section class="card">
+      <div class="head">
+        <h2>BLACKVOX • Player Clássico</h2>
+        <span class="badge">AO VIVO</span>
       </div>
 
-      <div class="row" style="margin-top:8px">
-        <input type="url" id="c-json-url" placeholder="URL de playlist JSON (Drive/servidor)" style="min-width:300px">
-        <button id="c-load-url">📥 Carregar por URL</button>
-        <input type="file" id="c-json-file" accept="application/json">
-        <button id="c-load-file">📂 Carregar por arquivo</button>
-      </div>
-      <div class="hint">Formato aceito: <code class="mono">{ name, tracks:[{ title, url }] }</code> ou <code class="mono">[{ title, url }]</code></div>
+      <div class="player">
+        <!-- loader de playlist por URL JSON -->
+        <div class="row">
+          <input id="jsonUrl" type="url" placeholder="URL de playlist JSON pública (ex.: https://.../playlist.json)" />
+          <button class="btn-sm brand" id="btnLoad">Carregar</button>
+          <button class="btn-sm" id="btnClear">Limpar lista</button>
+        </div>
+        <div class="hint">Formato do JSON esperado: 
+          <code>[{"name":"Faixa ...","url":"https://.../arquivo.mp3"}, ...]</code>
+        </div>
 
-      <ul class="list" id="c-list"></ul>
-      <div class="footer">
-        <audio id="c-audio" preload="auto" controls style="width:100%"></audio>
+        <!-- adicionar faixa manualmente -->
+        <div class="row">
+          <input id="trackName" type="text" placeholder="Nome da faixa" />
+          <input id="trackUrl" type="url" placeholder="URL da faixa (mp3/ogg)" />
+          <button class="btn-sm" id="btnAdd">Adicionar</button>
+        </div>
+
+        <!-- controles -->
+        <div class="controls">
+          <button class="btn-ctrl" id="btnPrev">◂ Anterior</button>
+          <button class="btn-ctrl" id="btnPlayPause">▶︎ Reproduzir</button>
+          <button class="btn-ctrl" id="btnNext">Próxima ▸</button>
+          <button class="btn-ctrl" id="btnShuffle">Shuffle</button>
+          <button class="btn-ctrl" id="btnLoop">Loop</button>
+        </div>
+
+        <div class="now">Tocando agora: <b id="nowTitle">—</b></div>
+        <div class="progress"><div class="bar" id="bar"></div></div>
+
+        <ul class="play" id="playList"></ul>
+
+        <!-- audio oculto -->
+        <audio id="player" preload="metadata" crossorigin="anonymous"></audio>
       </div>
-      <div class="hint">Dica: você pode colocar seus MP3 em <code class="mono">/vov/audios/</code> e apontar as URLs nos JSONs.</div>
     </section>
 
-    <!-- ===================== PLAYER CAMPEÃO ===================== -->
-    <section class="card" id="pro">
-      <h2>🏆 BLACKVOX Campeão (editor de playlists)</h2>
-      <div class="sub">Adiciona MP3, organiza, salva no navegador, importa/exporta JSON</div>
-
-      <div class="row">
-        <input type="file" id="p-files" accept="audio/*" multiple>
-        <button id="p-add" class="good">➕ Adicionar MP3</button>
-        <button id="p-play">▶️ Tocar</button>
-        <button id="p-pause">⏸️ Pausar</button>
-        <button id="p-next">⏭️ Próxima</button>
-        <span class="pill mono" id="p-status">rascunho</span>
+    <!-- LINKS LATERAIS -->
+    <aside class="side">
+      <div class="panel">
+        <h3>Outros players</h3>
+        <div class="list">
+          <a href="/vov/vov_campeao.html">Campeão <span class="tag">Pro</span></a>
+        </div>
+        <div class="list" style="margin-top:8px">
+          <a href="/vov/vov_mini.html">Mini <span class="tag">Leve</span></a>
+        </div>
       </div>
 
-      <div class="row" style="margin-top:8px">
-        <input type="text" id="p-name" placeholder="Nome da playlist (ex.: VOV — Jazz Bahia)">
-        <button id="p-save" class="primary">💾 Salvar</button>
-        <button id="p-export">⬇️ Exportar JSON</button>
-        <input type="file" id="p-import-file" accept="application/json">
-        <button id="p-import">📂 Importar JSON</button>
-      </div>
-      <div class="hint">Playlists ficam no seu navegador (localStorage). Exportar baixa um <code>.json</code> compatível com o Clássico.</div>
-
-      <ul class="list" id="p-list"></ul>
-
-      <div class="row" style="margin-top:8px">
-        <label>Minhas playlists salvas:</label>
-        <select id="p-saved"></select>
-        <button id="p-load-saved">📥 Carregar</button>
-        <button id="p-delete-saved" class="bad">🗑️ Excluir</button>
+      <div class="panel">
+        <h3>Dica VOV</h3>
+        <p>Hospede seus MP3/OGG em links públicos estáveis (Drive com link direto, CDN, ou seu servidor). No celular, prefira Wi-Fi para streams longos.</p>
       </div>
 
-      <div class="footer">
-        <audio id="p-audio" preload="auto" controls style="width:100%"></audio>
+      <div class="panel">
+        <h3>Atalhos rápidos</h3>
+        <div class="list"><a href="/vov/edicoes.html">Arquivo do JOR NEWS VOV <span class="tag">PDF</span></a></div>
+        <div class="list" style="margin-top:8px"><a href="/vov/contato.html">Fale com a VOV <span class="tag">Contato</span></a></div>
       </div>
-      <div class="hint">Rascunho automático salvo como <code class="mono">bvx_draft</code>. Se fechar a página, ao voltar estará lá.</div>
-    </section>
-
+    </aside>
   </div>
-
-  <div class="hr"></div>
-  <footer class="row" style="justify-content:space-between">
-    <div>© V O V — Ver, Ouvir, Vender, Viver • Jorge LA Matheus & AxéBit</div>
-    <div><a href="/vov/edicoes.html">Arquivo de Edições</a> • <a href="/vov/blackvox/">BLACKVOX</a></div>
-  </footer>
 </div>
 
+<footer>
+  V O V — Ver, Ouvir, Vender, Viver • Salvador • Amaralina • Brasil<br/>
+  Coautoria: Jorge LA Matheus & AxéBit • <a href="/vov/index.html">Início</a>
+</footer>
+
 <script>
-/* ===========================
-   UTIL: normalizar playlists
-   Aceita:
-   1) { name, tracks:[{title,url}] }
-   2) [{title,url}]
-   3) { tracks:[{name,url}] }  // tolera 'name' como 'title'
-=========================== */
-function normalizePlaylist(json){
-  let name = 'Playlist';
-  let tracks = [];
+(function(){
+  const player = document.getElementById('player');
+  const listEl = document.getElementById('playList');
+  const nowEl  = document.getElementById('nowTitle');
+  const barEl  = document.getElementById('bar');
 
-  if (Array.isArray(json)) {
-    tracks = json;
-  } else if (json && typeof json === 'object') {
-    if (json.name) name = String(json.name);
-    if (Array.isArray(json.tracks)) tracks = json.tracks;
+  const btnLoad = document.getElementById('btnLoad');
+  const btnClear= document.getElementById('btnClear');
+  const btnAdd  = document.getElementById('btnAdd');
+  const btnPrev = document.getElementById('btnPrev');
+  const btnNext = document.getElementById('btnNext');
+  const btnPlay = document.getElementById('btnPlayPause');
+  const btnLoop = document.getElementById('btnLoop');
+  const btnShuf = document.getElementById('btnShuffle');
+
+  const urlInput   = document.getElementById('jsonUrl');
+  const trackNameI = document.getElementById('trackName');
+  const trackUrlI  = document.getElementById('trackUrl');
+
+  let tracks = [];     // [{name,url}]
+  let index  = -1;
+  let loopOn = false;
+  let shuffleOn = false;
+
+  function render(){
+    listEl.innerHTML = '';
+    tracks.forEach((t, i)=>{
+      const li = document.createElement('li');
+      if(i===index) li.classList.add('active');
+      const title = document.createElement('div');
+      title.className='track-title';
+      title.textContent = t.name || t.url;
+
+      const btns = document.createElement('div');
+      btns.className='rowbtns';
+
+      const bPlay = document.createElement('button');
+      bPlay.textContent = '▶︎';
+      bPlay.title='Tocar';
+      bPlay.onclick = ()=> playAt(i);
+
+      const bUp = document.createElement('button');
+      bUp.textContent = '↑';
+      bUp.title='Subir';
+      bUp.onclick = ()=> move(i, -1);
+
+      const bDown = document.createElement('button');
+      bDown.textContent = '↓';
+      bDown.title='Descer';
+      bDown.onclick = ()=> move(i, +1);
+
+      const bRm = document.createElement('button');
+      bRm.textContent = '×';
+      bRm.title='Remover';
+      bRm.className='rm';
+      bRm.onclick = ()=> removeAt(i);
+
+      btns.append(bPlay, bUp, bDown, bRm);
+      li.append(title, btns);
+      listEl.append(li);
+    });
+    nowEl.textContent = (tracks[index]?.name) || '—';
   }
 
-  tracks = (tracks || []).map((t,i)=>({
-    title: t.title || t.name || `Faixa ${i+1}`,
-    url:   t.url   || t.href || t.src || ''
-  })).filter(t => t.url);
-
-  return { name, tracks };
-}
-
-/* ===========================
-   PLAYER CLÁSSICO
-=========================== */
-const cAudio = document.getElementById('c-audio');
-const cList  = document.getElementById('c-list');
-const cStatus= document.getElementById('c-status');
-let cPlaylist = {
-  name: 'VOV Rádio da Casa',
-  tracks: [
-    // 👇 EXEMPLOS — troque para seus arquivos públicos
-    { title:'Brian Eno — Ambient 1 (demo)', url:'/vov/audios/brian_eno.mp3' },
-    { title:'John Coltrane — Naima (demo)',  url:'/vov/audios/coltrane_naima.mp3' },
-    { title:'Hermeto Pascoal — Sons da Rua (demo)', url:'/vov/audios/hermeto_rua.mp3' }
-  ]
-};
-let cIndex = 0;
-
-function cRender(){
-  cList.innerHTML = '';
-  cPlaylist.tracks.forEach((t, i)=>{
-    const li = document.createElement('li');
-    li.className = 'item';
-    const left = document.createElement('span');
-    left.className = 'title ' + (i===cIndex? 'now':'');
-    left.textContent = t.title;
-    left.title = t.url;
-
-    const btns = document.createElement('div');
-    const play = document.createElement('button'); play.textContent = '▶️';
-    play.onclick = ()=>{ cPlay(i); };
-
-    const dl = document.createElement('a'); dl.textContent = '⬇️'; dl.href = t.url; dl.download = '';
-    dl.style.marginLeft = '6px';
-
-    btns.appendChild(play);
-    btns.appendChild(dl);
-
-    li.appendChild(left);
-    li.appendChild(btns);
-    cList.appendChild(li);
-  });
-  cStatus.textContent = `${cPlaylist.name} — ${cPlaylist.tracks.length} faixas`;
-}
-
-function cPlay(i){
-  if (typeof i === 'number') cIndex = i;
-  const track = cPlaylist.tracks[cIndex];
-  if (!track) return;
-  cAudio.src = track.url;
-  cAudio.play().catch(()=>{});
-  cRender();
-}
-function cNext(){
-  cIndex = (cIndex + 1) % cPlaylist.tracks.length;
-  cPlay();
-}
-function cPrev(){
-  cIndex = (cIndex - 1 + cPlaylist.tracks.length) % cPlaylist.tracks.length;
-  cPlay();
-}
-cAudio.addEventListener('ended', cNext);
-document.getElementById('c-play').onclick = ()=>cPlay(cIndex);
-document.getElementById('c-pause').onclick = ()=>cAudio.pause();
-document.getElementById('c-next').onclick  = cNext;
-document.getElementById('c-prev').onclick  = cPrev;
-
-/* Carregar JSON por URL */
-document.getElementById('c-load-url').onclick = async ()=>{
-  const url = document.getElementById('c-json-url').value.trim();
-  if(!url){ alert('Informe a URL do JSON.'); return; }
-  try{
-    const res = await fetch(url);
-    const data = await res.json();
-    const pl = normalizePlaylist(data);
-    if (!pl.tracks.length) throw new Error('JSON sem faixas válidas');
-    cPlaylist = pl; cIndex = 0; cRender();
-    cPlay(0);
-  }catch(err){
-    alert('Falha ao carregar JSON: ' + err.message);
+  function playAt(i){
+    if(!tracks[i]) return;
+    index = i;
+    player.src = tracks[i].url;
+    player.play().catch(()=>{ /* ignore autoplay block */ });
+    render();
   }
-};
 
-/* Carregar JSON por arquivo */
-document.getElementById('c-load-file').onclick = ()=>{
-  const fi = document.getElementById('c-json-file');
-  if(!fi.files.length){ alert('Selecione um arquivo .json'); return; }
-  const f = fi.files[0];
-  const reader = new FileReader();
-  reader.onload = ()=>{
-    try{
-      const data = JSON.parse(reader.result);
-      const pl = normalizePlaylist(data);
-      if (!pl.tracks.length) throw new Error('JSON sem faixas válidas');
-      cPlaylist = pl; cIndex = 0; cRender(); cPlay(0);
-    }catch(err){ alert('JSON inválido: ' + err.message); }
-  };
-  reader.readAsText(f);
-};
-
-cRender();
-
-/* ===========================
-   PLAYER CAMPEÃO (BLACKVOX)
-=========================== */
-const pAudio = document.getElementById('p-audio');
-const pList  = document.getElementById('p-list');
-const pStatus= document.getElementById('p-status');
-const pName  = document.getElementById('p-name');
-const pSaved = document.getElementById('p-saved');
-
-let pTracks = [];       // {title, url}
-let pIndex  = 0;
-const KEY_DRAFT = 'bvx_draft';
-const KEY_LIB   = 'bvx_saved_playlists'; // objeto { name: tracks[] }
-
-function loadDraft(){
-  try{
-    const raw = localStorage.getItem(KEY_DRAFT);
-    if(!raw) return;
-    const data = JSON.parse(raw);
-    const pl = normalizePlaylist(data);
-    if(pl.tracks.length){ pTracks = pl.tracks; pName.value = pl.name || 'Rascunho'; }
-  }catch{} finally{ pRender(); }
-}
-function saveDraft(){
-  const data = { name: pName.value || 'Rascunho', tracks: pTracks };
-  localStorage.setItem(KEY_DRAFT, JSON.stringify(data));
-}
-function getLibrary(){
-  try{
-    const raw = localStorage.getItem(KEY_LIB);
-    return raw? JSON.parse(raw) : {};
-  }catch{ return {}; }
-}
-function setLibrary(obj){
-  localStorage.setItem(KEY_LIB, JSON.stringify(obj));
-  refreshSaved();
-}
-function refreshSaved(){
-  const lib = getLibrary();
-  pSaved.innerHTML = '';
-  Object.keys(lib).forEach(name=>{
-    const opt = document.createElement('option');
-    opt.value = name; opt.textContent = name;
-    pSaved.appendChild(opt);
-  });
-}
-function pRender(){
-  pList.innerHTML = '';
-  pTracks.forEach((t,i)=>{
-    const li = document.createElement('li');
-    li.className = 'item';
-    const left = document.createElement('span');
-    left.className = 'title ' + (i===pIndex? 'now':'');
-    left.textContent = t.title;
-    left.title = t.url;
-
-    const btns = document.createElement('div');
-
-    const up = document.createElement('button'); up.textContent='↑';
-    up.onclick = ()=>{ if(i>0){ [pTracks[i-1], pTracks[i]] = [pTracks[i], pTracks[i-1]]; pIndex = i-1; pRender(); saveDraft(); } };
-
-    const down = document.createElement('button'); down.textContent='↓';
-    down.onclick = ()=>{ if(i<pTracks.length-1){ [pTracks[i+1], pTracks[i]] = [pTracks[i], pTracks[i+1]]; pIndex = i+1; pRender(); saveDraft(); } };
-
-    const play = document.createElement('button'); play.textContent='▶️';
-    play.onclick = ()=>{ pPlay(i); };
-
-    const del = document.createElement('button'); del.textContent='🗑️';
-    del.className='bad'; del.onclick = ()=>{ pTracks.splice(i,1); if(pIndex>=pTracks.length) pIndex=0; pRender(); saveDraft(); };
-
-    btns.appendChild(up); btns.appendChild(down); btns.appendChild(play); btns.appendChild(del);
-    li.appendChild(left); li.appendChild(btns);
-    pList.appendChild(li);
-  });
-  pStatus.textContent = `${pTracks.length} faixas — ${pName.value||'Rascunho'}`;
-}
-
-/* Adicionar MP3 do dispositivo */
-document.getElementById('p-add').onclick = ()=>{
-  const inp = document.getElementById('p-files');
-  if(!inp.files.length){ alert('Selecione um ou mais arquivos de áudio.'); return; }
-  [...inp.files].forEach(f=>{
-    const url = URL.createObjectURL(f);
-    pTracks.push({ title:f.name.replace(/\.[^/.]+$/,''), url });
-  });
-  pIndex = 0; pRender(); saveDraft();
-  // começa a tocar a primeira recém adicionada
-  if (pTracks.length) pPlay(pTracks.length - inp.files.length);
-};
-
-function pPlay(i){
-  if(typeof i==='number') pIndex = i;
-  const t = pTracks[pIndex];
-  if(!t) return;
-  pAudio.src = t.url;
-  pAudio.play().catch(()=>{});
-  pRender();
-}
-function pNext(){
-  if(!pTracks.length) return;
-  pIndex = (pIndex + 1) % pTracks.length;
-  pPlay();
-}
-pAudio.addEventListener('ended', pNext);
-document.getElementById('p-play').onclick=()=>pPlay(pIndex);
-document.getElementById('p-pause').onclick=()=>pAudio.pause();
-document.getElementById('p-next').onclick = pNext;
-
-/* Salvar playlist nomeada */
-document.getElementById('p-save').onclick = ()=>{
-  const name = (pName.value||'Minha Playlist').trim();
-  if(!name){ alert('Dê um nome à playlist.'); return; }
-  const lib = getLibrary();
-  lib[name] = [...pTracks];
-  setLibrary(lib);
-  alert('Playlist salva!');
-};
-
-/* Exportar JSON compatível */
-document.getElementById('p-export').onclick = ()=>{
-  const name = (pName.value||'Minha Playlist').trim();
-  const data = { name, tracks: pTracks };
-  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = (name || 'playlist') + '.json';
-  a.click();
-};
-
-/* Importar JSON (arquivo) — compatível com seu Drive */
-document.getElementById('p-import').onclick = ()=>{
-  const fi = document.getElementById('p-import-file');
-  if(!fi.files.length){ alert('Selecione um arquivo .json'); return; }
-  const f = fi.files[0], r = new FileReader();
-  r.onload = ()=>{
-    try{
-      const data = JSON.parse(r.result);
-      const pl = normalizePlaylist(data);
-      if(!pl.tracks.length) throw new Error('JSON sem faixas válidas');
-      pTracks = pl.tracks;
-      if(pl.name) pName.value = pl.name;
-      pIndex = 0; pRender(); saveDraft(); pPlay(0);
-    }catch(err){ alert('JSON inválido: '+err.message); }
-  };
-  r.readAsText(f);
-};
-
-/* Carregar/Excluir playlists salvas */
-document.getElementById('p-load-saved').onclick = ()=>{
-  const name = pSaved.value;
-  const lib = getLibrary();
-  const tracks = lib[name];
-  if(!tracks){ alert('Nada salvo com esse nome.'); return; }
-  pName.value = name;
-  pTracks = tracks.slice();
-  pIndex = 0; pRender(); saveDraft(); pPlay(0);
-};
-document.getElementById('p-delete-saved').onclick = ()=>{
-  const name = pSaved.value;
-  if(!name) return;
-  const lib = getLibrary();
-  if(lib[name]){
-    if(confirm('Excluir a playlist "'+name+'"?')){
-      delete lib[name]; setLibrary(lib); alert('Excluída.');
+  function next(){
+    if(shuffleOn && tracks.length>1){
+      let j = index;
+      while(j===index) j = Math.floor(Math.random()*tracks.length);
+      return playAt(j);
     }
+    const j = (index + 1) % tracks.length;
+    playAt(j);
   }
-};
 
-refreshSaved();
-loadDraft();
+  function prev(){
+    const j = (index - 1 + tracks.length) % tracks.length;
+    playAt(j);
+  }
+
+  function move(i, dir){
+    const j = i + dir;
+    if(j<0 || j>=tracks.length) return;
+    const tmp = tracks[i]; tracks[i]=tracks[j]; tracks[j]=tmp;
+    if(index===i) index=j; else if(index===j) index=i;
+    render();
+  }
+
+  function removeAt(i){
+    tracks.splice(i,1);
+    if(index>=tracks.length) index = tracks.length-1;
+    render();
+  }
+
+  function addTrack(name, url){
+    if(!url) return;
+    tracks.push({name:name || url, url});
+    if(index===-1) index=0;
+    render();
+  }
+
+  // progress
+  player.addEventListener('timeupdate', ()=>{
+    if(!player.duration || isNaN(player.duration)) return;
+    const pct = (player.currentTime / player.duration) * 100;
+    barEl.style.width = (pct||0) + '%';
+  });
+
+  player.addEventListener('ended', ()=>{
+    if(loopOn){
+      player.currentTime = 0;
+      player.play();
+    }else if(tracks.length){
+      next();
+    }
+  });
+
+  // controls
+  btnPrev.onclick = prev;
+  btnNext.onclick = next;
+  btnPlay.onclick = ()=>{
+    if(player.paused){ player.play(); btnPlay.textContent='⏸ Pausar'; }
+    else { player.pause(); btnPlay.textContent='▶︎ Reproduzir'; }
+  };
+  btnLoop.onclick = ()=>{
+    loopOn = !loopOn;
+    btnLoop.classList.toggle('active', loopOn);
+  };
+  btnShuf.onclick = ()=>{
+    shuffleOn = !shuffleOn;
+    btnShuf.classList.toggle('active', shuffleOn);
+  };
+
+  // add manual
+  btnAdd.onclick = ()=>{
+    const n = trackNameI.value.trim();
+    const u = trackUrlI.value.trim();
+    if(!u){ alert('Informe a URL da faixa (mp3/ogg).'); return; }
+    addTrack(n, u);
+    trackNameI.value=''; trackUrlI.value='';
+  };
+
+  // load JSON
+  btnLoad.onclick = async ()=>{
+    const u = urlInput.value.trim();
+    if(!u){ alert('Informe a URL do JSON público.'); return; }
+    try{
+      const res = await fetch(u, {cache:'no-store'});
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      const data = await res.json();
+      if(!Array.isArray(data)) throw new Error('JSON inválido (não é array).');
+      // valida itens
+      const ok = data.every(it=>it && typeof it.url==='string');
+      if(!ok) throw new Error('JSON inválido (itens sem url).');
+      tracks = data.map(it=>({name: it.name || it.title || it.url, url: it.url}));
+      index = tracks.length ? 0 : -1;
+      render();
+    }catch(err){
+      alert('Falha ao carregar JSON: '+err.message);
+    }
+  };
+
+  btnClear.onclick = ()=>{
+    tracks = [];
+    index = -1;
+    render();
+  };
+
+  // estado inicial (vazio)
+  render();
+})();
 </script>
 </body>
 </html>
