@@ -2,495 +2,488 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>BLACKVOX • Campeão (VOV)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>BLACKVOX • Campeão (V O V)</title>
+<meta name="description" content="BLACKVOX Campeão — criar, importar, exportar e tocar playlists com a pegada V O V." />
+<link rel="icon" href="/vov/favicon.ico">
 <style>
   :root{
-    --bg:#05060a;
-    --panel:#0a0c12;
-    --ink:#eaf6ff;
-    --muted:#9bb4c7;
-    --brand:#4cc9f0;      /* azul neon */
-    --brand-2:#4361ee;    /* azul profundo */
-    --accent:#f72585;     /* detalhe */
-    --ok:#52ffa8;
-    --warn:#ffd166;
-    --danger:#ff6b6b;
-    --border:#121826;
-    --chip:#0f1420;
+    --bg:#0b0e12; --panel:#12161d; --muted:#9aa4b5; --text:#e9eef7; --brand:#00d4ff; --brand2:#7c5cff; --accent:#17ff88; --danger:#ff4d4d;
+    --card:#0f1319; --stroke:#1e2430; --ink:#0c1117;
   }
   *{box-sizing:border-box}
   html,body{height:100%}
   body{
-    margin:0; background:
-      radial-gradient(1200px 600px at 80% -10%, #0b1530 0%, transparent 60%),
-      radial-gradient(900px 500px at -10% 110%, #0b1a26 0%, transparent 60%),
-      linear-gradient(180deg, #06070c 0%, #070a11 100%);
-    color:var(--ink); font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
-    letter-spacing:.2px;
+    margin:0; color:var(--text); background:
+      radial-gradient(1200px 650px at 10% -10%, rgba(124,92,255,.08), transparent 60%),
+      radial-gradient(1000px 500px at 110% 10%, rgba(0,212,255,.08), transparent 60%),
+      var(--bg);
+    font: 15px/1.55 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans";
+    -webkit-tap-highlight-color: transparent;
   }
   a{color:var(--brand); text-decoration:none}
-  a:hover{color:#8be1ff; text-decoration:underline}
+  a:hover{text-decoration:underline}
 
-  /* Header */
+  /* header */
   .topbar{
-    position:sticky; top:0; z-index:10;
-    backdrop-filter: blur(10px);
-    background:rgba(7,10,17,.6);
-    border-bottom:1px solid var(--border);
+    position:sticky; top:0; z-index:50;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg, rgba(11,14,18,.9), rgba(11,14,18,.6));
+    border-bottom:1px solid var(--stroke);
   }
-  .topbar .wrap{
-    display:flex; align-items:center; justify-content:space-between;
-    gap:16px; padding:14px 18px; max-width:1100px; margin:0 auto;
-  }
-  .brand{
-    display:flex; align-items:center; gap:12px; font-weight:700; letter-spacing:.6px;
-  }
-  .brand .logo{
-    width:34px; height:34px; border-radius:10px;
-    background:
-      conic-gradient(from 210deg at 50% 50%, var(--brand) 0 35%, transparent 35% 100%),
-      radial-gradient(100% 100% at 30% 20%, #0ef 0 45%, transparent 46% 100%);
-    box-shadow: 0 0 24px rgba(76,201,240,.35), inset 0 0 18px rgba(67,97,238,.25);
-  }
-  .brand .title{font-size:15px; color:#cfe8ff}
-  .brand .title b{color:#fff}
-
-  .nav{
-    display:flex; gap:10px; flex-wrap:wrap;
-  }
-  .nav a{
-    padding:8px 12px; border:1px solid var(--border);
-    background: #0b0f18; border-radius:10px; color:#cfe8ff; font-size:13px;
-  }
-  .nav a:hover{border-color:#18304a; background:#0e1422}
-
-  /* Layout */
-  .container{max-width:1100px; margin:26px auto; padding:0 18px}
-
-  .grid{
-    display:grid; grid-template-columns: 360px 1fr; gap:18px;
-  }
-  @media (max-width: 860px){ .grid{grid-template-columns:1fr} }
-
-  /* Panel left (playlist) */
-  .panel{
-    border:1px solid var(--border); background:var(--panel);
-    border-radius:16px; padding:14px; box-shadow: 0 10px 30px rgba(0,0,0,.25);
-  }
-  .panel h2{margin:4px 0 10px; font-size:16px; color:#e6f2ff; font-weight:700}
-  .muted{color:var(--muted); font-size:13px}
-
-  .drop{
-    margin:12px 0; padding:12px; border:1px dashed #20324a; border-radius:12px; text-align:center;
-    background: linear-gradient(180deg, #0c111b, #0a0e17);
-  }
-  .drop.drag{border-color:var(--brand); background:#0b1422}
-  .drop input{display:none}
-
-  .controls{
-    display:flex; flex-wrap:wrap; gap:8px; margin:12px 0 6px;
-  }
-  .btn{
-    appearance:none; border:none; cursor:pointer; font-weight:600;
-    padding:9px 12px; font-size:13px; border-radius:10px; color:#001019;
-    background:linear-gradient(180deg, #9fe7ff, #5fd0ff);
-    box-shadow: 0 4px 14px rgba(79,199,240,.25);
-  }
-  .btn:hover{filter:brightness(1.08)}
-  .btn.ghost{
-    background:#0c1320; color:#bfe6ff; border:1px solid #18304a; box-shadow:none;
-  }
-  .btn.warn{ background:linear-gradient(180deg, #ffe08a, #ffd166); color:#3a2100 }
-  .btn.danger{ background:linear-gradient(180deg, #ff9aa4, #ff6b6b); color:#2b0006 }
-
-  .list{
-    margin-top:8px; max-height:55vh; overflow:auto; padding-right:4px;
-  }
-  .row{
-    display:grid; grid-template-columns: 1fr auto; gap:8px;
-    align-items:center; padding:10px; border-radius:10px;
-    background:#0c111a; border:1px solid #121a28; margin-bottom:8px;
-  }
-  .row.active{ border-color:#254a77; box-shadow: inset 0 0 0 1px #254a77; background:#0b1422 }
-  .row .meta{display:flex; align-items:center; gap:10px; min-width:0}
-  .row .dot{
-    width:8px; height:8px; border-radius:50%;
-    background:linear-gradient(180deg, var(--brand), var(--brand-2));
-    box-shadow:0 0 12px rgba(76,201,240,.45);
-  }
-  .row .name{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
-  .row .ops{display:flex; gap:6px}
-  .chip{
-    padding:6px 8px; border-radius:8px; background:var(--chip);
-    border:1px solid #1b2638; color:#d9edff; font-size:12px; cursor:pointer;
-  }
-  .chip:hover{border-color:#2a3d5e}
-
-  /* Player panel */
-  .player{
-    border:1px solid var(--border); background:#0a0f18; border-radius:16px; padding:16px;
-    min-height:220px; display:flex; flex-direction:column; gap:14px;
-  }
-  .now{
-    display:flex; align-items:center; gap:12px; min-height:40px;
-  }
+  .topwrap{max-width:1100px; margin:0 auto; padding:14px 16px; display:flex; gap:14px; align-items:center; justify-content:space-between}
+  .brand{display:flex; align-items:center; gap:12px}
   .pill{
-    padding:6px 10px; font-size:12px; border-radius:999px;
-    background:linear-gradient(180deg, #aaf3cf, #52ffa8); color:#02140b; font-weight:800;
-    letter-spacing:.4px;
+    background:linear-gradient(135deg, var(--brand), var(--brand2));
+    color:#001018; font-weight:900; letter-spacing:.5px;
+    padding:6px 10px; border-radius:10px; font-size:12px;
   }
-  .now .title{font-weight:700; font-size:15px}
-  .now .mini{font-size:12px; color:var(--muted)}
+  .title h1{margin:0; font-weight:800; font-size:16px}
+  .title small{display:block; color:var(--muted); font-size:12px; margin-top:2px}
 
-  .bar{
-    --h:10px; height:var(--h); width:100%; border-radius:999px;
-    background:#0c1320; border:1px solid #142035; position:relative; cursor:pointer;
+  .navlinks{display:flex; gap:8px; flex-wrap:wrap}
+  .btn{
+    display:inline-flex; align-items:center; gap:8px; cursor:pointer;
+    border:1px solid var(--stroke); border-radius:10px; padding:8px 12px;
+    background:linear-gradient(180deg, #0f1319, #0b0e12); color:var(--text);
+    transition:.15s transform, .15s border-color, .15s background;
+    user-select:none;
   }
-  .bar > .fill{
-    position:absolute; inset:0 auto 0 0; width:0%; border-radius:999px;
-    background:linear-gradient(90deg, var(--brand), var(--brand-2));
-    box-shadow:0 0 14px rgba(76,201,240,.35);
-  }
-  .time{
-    display:flex; justify-content:space-between; font-size:12px; color:#a7c2d6
-  }
+  .btn:hover{transform:translateY(-1px); border-color:#2a3345; text-decoration:none}
+  .btn.brand{border-color:transparent; background:linear-gradient(135deg, #00d4ff33, #7c5cff33)}
+  .btn.danger{border-color:#3a1a1a; background:#1a0f0f; color:#ffb4b4}
+  .btn.ghost{background:transparent}
+  .btn.small{padding:6px 10px; font-size:13px; border-radius:8px}
+  .btn .dot{width:8px; height:8px; border-radius:50%}
+  .dot.c1{background:var(--brand)}
+  .dot.c2{background:var(--accent)}
+  .dot.c3{background:#ffd166}
 
-  .transport{
-    display:flex; flex-wrap:wrap; gap:8px
-  }
-  .tbtn{
-    appearance:none; border:1px solid #1a2740; background:#0c1320; color:#d4ecff;
-    padding:10px 12px; border-radius:12px; font-weight:700; letter-spacing:.4px; cursor:pointer;
-  }
-  .tbtn.primary{
-    background:linear-gradient(180deg, #9fe7ff, #5fd0ff); color:#031018; border:none;
-    box-shadow:0 6px 18px rgba(79,199,240,.3);
-  }
-  .tbtn:hover{filter:brightness(1.06)}
-  .tog.on{outline:2px solid #234876}
+  /* layout */
+  .wrap{max-width:1100px; margin:22px auto 64px; padding:0 16px}
+  .grid{display:grid; grid-template-columns: 1.35fr .65fr; gap:22px}
+  @media (max-width:980px){ .grid{grid-template-columns:1fr} }
 
-  .helper{
-    display:flex; gap:14px; flex-wrap:wrap; align-items:center; font-size:12px; color:var(--muted)
+  /* cards */
+  .card{
+    background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.00));
+    border:1px solid var(--stroke); border-radius:16px; overflow:hidden;
+    box-shadow:0 10px 30px rgba(0,0,0,.25);
   }
-  .helper kbd{
-    padding:4px 7px; border-radius:6px; border:1px solid #1b2a45; background:#0d1422; color:#c6e4ff;
-    box-shadow: inset 0 -2px 0 #0a101a; font-weight:700
+  .card > .head{
+    padding:16px; border-bottom:1px solid var(--stroke); display:flex; align-items:center; justify-content:space-between
   }
+  .card > .head h2{margin:0; font-size:16px; font-weight:800; letter-spacing:.3px}
+  .badge{font-size:11px; color:#0b0e12; background:linear-gradient(135deg, var(--brand), var(--accent)); padding:6px 8px; border-radius:999px; font-weight:800}
 
-  footer{
-    margin:28px auto; max-width:1100px; padding:0 18px; color:#9bb4c7; font-size:12px
+  /* forms / rows */
+  .section{padding:16px; display:grid; gap:12px}
+  .row{display:flex; gap:8px; flex-wrap:wrap}
+  .row input[type="url"], .row input[type="text"]{
+    flex:1 1 240px; min-width:220px; padding:10px 12px; border-radius:10px; border:1px solid var(--stroke);
+    background:#0b0f14; color:var(--text); outline:none;
   }
+  .row input::placeholder{color:#667089}
+  .row .btn{white-space:nowrap}
+
+  .hint{color:var(--muted); font-size:12px; margin-top:-4px}
+
+  /* controls */
+  .controls{display:flex; gap:8px; flex-wrap:wrap}
+  .btn-ctrl{
+    border:1px solid var(--stroke); background:#0e131a; color:var(--text);
+    border-radius:10px; padding:8px 12px; font-size:13px; cursor:pointer;
+  }
+  .btn-ctrl.active{border-color:var(--brand); box-shadow:0 0 0 2px rgba(0,212,255,.2) inset}
+
+  .now{margin:6px 0 6px; font-size:13px; color:var(--muted)}
+  .now b{color:var(--text)}
+  .progress{height:8px; background:#121720; border:1px solid var(--stroke); border-radius:999px; overflow:hidden; margin:4px 0 12px}
+  .bar{height:100%; width:0%; background:linear-gradient(90deg, var(--brand), var(--accent)); transition:width .15s}
+
+  /* playlist list */
+  ul.play{list-style:none; margin:0; padding:0}
+  ul.play li{
+    display:grid; grid-template-columns: 1fr auto; gap:8px; align-items:center;
+    padding:10px 12px; border:1px solid var(--stroke); border-radius:12px; margin-bottom:8px; background:#0b0f14;
+  }
+  ul.play li.active{outline:2px solid rgba(0,212,255,.25)}
+  .track-title{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .rowbtns{display:flex; gap:6px}
+  .rowbtns button{
+    border:1px solid var(--stroke); background:#0f1319; color:var(--text); padding:6px 8px; border-radius:8px; font-size:12px; cursor:pointer;
+  }
+  .rowbtns button.rm{border-color:#2e1b1b; background:#170f10; color:#ff9b9b}
+
+  /* sidebar */
+  .side{display:grid; gap:16px; align-content:start}
+  .panel{background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0)); border:1px solid var(--stroke); border-radius:16px; padding:16px}
+  .panel h3{margin:0 0 8px; font-size:14px; letter-spacing:.2px}
+  .panel p{margin:0 10px 10px 0; color:var(--muted); font-size:13px}
+  .list a{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 12px; border:1px solid var(--stroke); border-radius:12px; background:#0b0f14; text-decoration:none}
+  .list a:hover{border-color:#2a3345}
+  .tag{font-size:11px; color:#001018; background:linear-gradient(135deg, var(--brand), var(--brand2)); padding:5px 8px; border-radius:999px; font-weight:800}
+
+  footer{margin:40px 0 80px; color:var(--muted); font-size:12px; text-align:center}
+  footer a{color:var(--muted)}
+
+  /* impedir sobreposição de elementos */
+  .no-overlap{position:relative; z-index:2}
+  input, button, label{z-index:2; position:relative}
 </style>
 </head>
 <body>
 
 <header class="topbar">
-  <div class="wrap">
+  <div class="topwrap">
     <div class="brand">
-      <div class="logo" aria-hidden="true"></div>
-      <div class="title">VOV • <b>BLACKVOX Campeão</b></div>
+      <div class="pill">V O V</div>
+      <div class="title">
+        <h1>BLACKVOX • Campeão</h1>
+        <small>Criar • Importar • Exportar • Salvar & Carregar</small>
+      </div>
     </div>
-    <nav class="nav">
-      <a href="/vov/index.html">Início</a>
-      <a href="/vov/vov_players.html">Clássico</a>
-      <a href="/vov/vov_mini.html" target="_blank" rel="noopener">Mini</a>
+    <nav class="navlinks">
+      <a class="btn" href="/vov/index.html"><span class="dot c1"></span> Início</a>
+      <a class="btn" href="/vov/edicoes.html"><span class="dot c2"></span> Arquivo</a>
+      <a class="btn ghost" href="/vov/vov_players.html"><span class="dot c3"></span> Clássico</a>
+      <a class="btn ghost" href="/vov/vov_mini.html">Mini</a>
     </nav>
   </div>
 </header>
 
-<main class="container">
+<div class="wrap">
   <div class="grid">
-    <!-- Painel de playlist -->
-    <section class="panel">
-      <h2>Sua lista</h2>
-      <p class="muted">Adicione áudios do seu dispositivo (arraste/solte ou selecione). Reordene, remova e toque.</p>
-
-      <label class="drop" id="drop">
-        <input id="fileInput" type="file" accept="audio/*" multiple />
-        <strong>Arraste arquivos aqui</strong><br>
-        <span class="muted">ou clique para selecionar</span>
-      </label>
-
-      <div class="controls">
-        <button class="btn" id="btnAdd">Adicionar</button>
-        <button class="btn ghost" id="btnClear">Limpar Lista</button>
-        <button class="btn warn" id="btnSave">Salvar Playlist</button>
-        <button class="btn ghost" id="btnLoad">Carregar Salva</button>
+    <section class="card">
+      <div class="head">
+        <h2>Editor de Playlists</h2>
+        <span class="badge">V O V</span>
       </div>
 
-      <div id="list" class="list" aria-live="polite"></div>
-    </section>
-
-    <!-- Player -->
-    <section class="player" aria-label="Reprodutor">
-      <div class="now">
-        <span class="pill" id="badge">PRONTO</span>
-        <div>
-          <div class="title" id="nowTitle">Sem faixa selecionada</div>
-          <div class="mini" id="nowHint">Adicione arquivos para começar</div>
+      <div class="section no-overlap">
+        <!-- Nome da playlist -->
+        <div class="row">
+          <input id="playlistName" type="text" placeholder="Nome da playlist (ex.: VOV Jazz Solar)" />
+          <button class="btn small brand" id="btnNew">Nova</button>
+          <button class="btn small" id="btnSaveLocal">Salvar (navegador)</button>
+          <button class="btn small" id="btnLoadLocal">Carregar salvas</button>
         </div>
-      </div>
 
-      <div class="bar" id="seek">
-        <div class="fill" id="fill"></div>
-      </div>
-      <div class="time"><span id="tNow">0:00</span><span id="tDur">0:00</span></div>
+        <!-- Importar / Exportar -->
+        <div class="row">
+          <input id="jsonUrl" type="url" placeholder="Carregar por URL de JSON público" />
+          <button class="btn small" id="btnLoadUrl">Carregar URL</button>
 
-      <div class="transport">
-        <button class="tbtn" id="prev">⟨⟨</button>
-        <button class="tbtn primary" id="play">► / ❚❚</button>
-        <button class="tbtn" id="next">⟩⟩</button>
-        <button class="tbtn tog" id="repeat">Loop</button>
-        <button class="tbtn tog" id="shuffle">Shuffle</button>
-      </div>
+          <input id="jsonFile" type="file" accept="application/json" style="display:none">
+          <button class="btn small" id="btnLoadFile">Importar JSON</button>
 
-      <div class="helper">
-        Atalhos: <kbd>Space</kbd> play/pause • <kbd>←/→</kbd> -/+10s • <kbd>↑/↓</kbd> faixa ±
-      </div>
+          <button class="btn small" id="btnExport">Exportar JSON</button>
+        </div>
+        <div class="hint">Formato esperado: <code>[{"name":"Faixa ...","url":"https://.../arquivo.mp3"}, ...]</code></div>
 
-      <audio id="audio" preload="metadata"></audio>
+        <!-- Adicionar faixa -->
+        <div class="row">
+          <input id="trackName" type="text" placeholder="Nome da faixa" />
+          <input id="trackUrl" type="url" placeholder="URL da faixa (mp3/ogg)" />
+          <button class="btn small" id="btnAdd">Adicionar</button>
+
+          <input id="trackFile" type="file" accept="audio/*" style="display:none" />
+          <button class="btn small" id="btnAddFile">+ Arquivo</button>
+        </div>
+
+        <!-- Controles -->
+        <div class="controls">
+          <button class="btn-ctrl" id="btnPrev">◂ Anterior</button>
+          <button class="btn-ctrl" id="btnPlayPause">▶︎ Reproduzir</button>
+          <button class="btn-ctrl" id="btnNext">Próxima ▸</button>
+          <button class="btn-ctrl" id="btnShuffle">Shuffle</button>
+          <button class="btn-ctrl" id="btnLoop">Loop</button>
+          <button class="btn-ctrl danger" id="btnClear">Limpar lista</button>
+        </div>
+
+        <div class="now">Tocando agora: <b id="nowTitle">—</b></div>
+        <div class="progress"><div class="bar" id="bar"></div></div>
+
+        <ul class="play" id="playList"></ul>
+
+        <audio id="player" preload="metadata" crossorigin="anonymous"></audio>
+      </div>
     </section>
+
+    <aside class="side">
+      <div class="panel">
+        <h3>Outros players</h3>
+        <div class="list"><a href="/vov/vov_players.html">Clássico <span class="tag">Rádio</span></a></div>
+        <div class="list" style="margin-top:8px"><a href="/vov/vov_mini.html">Mini <span class="tag">Leve</span></a></div>
+      </div>
+
+      <div class="panel">
+        <h3>Dicas VOV</h3>
+        <p>Para links públicos, prefira hospedar MP3/OGG em Drive com link direto, CDN ou no seu servidor. Em celular, Wi-Fi ajuda em streams longos.</p>
+        <p>Arquivos locais viram <em>data URL</em> (funciona, mas não compartilha). Para compartilhar, exporte JSON e troque as URLs para links públicos.</p>
+      </div>
+
+      <div class="panel">
+        <h3>Atalhos</h3>
+        <div class="list"><a href="/vov/edicoes.html">Arquivo do JOR NEWS VOV <span class="tag">PDF</span></a></div>
+        <div class="list" style="margin-top:8px"><a href="/vov/contato.html">Fale com a VOV <span class="tag">Contato</span></a></div>
+      </div>
+    </aside>
   </div>
-</main>
+</div>
 
 <footer>
-  V O V — Ver • Ouvir • Vender • Viver • Salvador • Amaralina • Brasil
+  V O V — Ver, Ouvir, Vender, Viver • Salvador • Amaralina • Brasil<br/>
+  Coautoria: Jorge LA Matheus & AxéBit • <a href="/vov/index.html">Início</a>
 </footer>
 
 <script>
-(() => {
-  const fileInput = document.getElementById('fileInput');
-  const btnAdd = document.getElementById('btnAdd');
-  const btnClear = document.getElementById('btnClear');
-  const btnSave = document.getElementById('btnSave');
-  const btnLoad = document.getElementById('btnLoad');
+(function(){
+  // ===== Estado =====
+  const player = document.getElementById('player');
+  const listEl = document.getElementById('playList');
+  const nowEl  = document.getElementById('nowTitle');
+  const barEl  = document.getElementById('bar');
 
-  const list = document.getElementById('list');
-  const audio = document.getElementById('audio');
-  const badge = document.getElementById('badge');
-  const nowTitle = document.getElementById('nowTitle');
-  const nowHint = document.getElementById('nowHint');
+  const nameI   = document.getElementById('playlistName');
 
-  const seek = document.getElementById('seek');
-  const fill = document.getElementById('fill');
-  const tNow = document.getElementById('tNow');
-  const tDur = document.getElementById('tDur');
+  const btnNew  = document.getElementById('btnNew');
+  const btnSave = document.getElementById('btnSaveLocal');
+  const btnLoad = document.getElementById('btnLoadLocal');
 
-  const prev = document.getElementById('prev');
-  const play = document.getElementById('play');
-  const next = document.getElementById('next');
-  const repeat = document.getElementById('repeat');
-  const shuffle = document.getElementById('shuffle');
+  const urlI    = document.getElementById('jsonUrl');
+  const btnUrl  = document.getElementById('btnLoadUrl');
 
-  const drop = document.getElementById('drop');
+  const fileJson= document.getElementById('jsonFile');
+  const btnImp  = document.getElementById('btnLoadFile');
+  const btnExp  = document.getElementById('btnExport');
 
-  /** Estado **/
-  let tracks = []; // {name, src, file?}
-  let current = -1;
+  const trkName = document.getElementById('trackName');
+  const trkUrl  = document.getElementById('trackUrl');
+  const btnAdd  = document.getElementById('btnAdd');
+  const fileAud = document.getElementById('trackFile');
+  const btnAddF = document.getElementById('btnAddFile');
+
+  const btnPrev = document.getElementById('btnPrev');
+  const btnPlay = document.getElementById('btnPlayPause');
+  const btnNext = document.getElementById('btnNext');
+  const btnLoop = document.getElementById('btnLoop');
+  const btnShuf = document.getElementById('btnShuffle');
+  const btnClear= document.getElementById('btnClear');
+
+  let tracks = [];     // [{name,url}]
+  let index  = -1;
   let loopOn = false;
   let shuffleOn = false;
 
-  /** Helpers **/
-  const fmt = s => {
-    s = Math.max(0, Math.floor(s||0));
-    const m = Math.floor(s/60), r = (s%60).toString().padStart(2,'0');
-    return `${m}:${r}`;
-  };
+  // ===== UI helpers =====
+  function render(){
+    listEl.innerHTML = '';
+    tracks.forEach((t, i)=>{
+      const li = document.createElement('li');
+      if(i===index) li.classList.add('active');
 
-  const refreshList = () => {
-    list.innerHTML = '';
-    tracks.forEach((t, i) => {
-      const row = document.createElement('div');
-      row.className = 'row' + (i===current? ' active':'');
-      row.innerHTML = `
-        <div class="meta">
-          <span class="dot"></span>
-          <div class="name" title="${t.name}">${t.name}</div>
-        </div>
-        <div class="ops">
-          <button class="chip" data-op="up" data-i="${i}">↑</button>
-          <button class="chip" data-op="down" data-i="${i}">↓</button>
-          <button class="chip" data-op="play" data-i="${i}">▶</button>
-          <button class="chip" data-op="del" data-i="${i}">×</button>
-        </div>
-      `;
-      list.appendChild(row);
+      const title = document.createElement('div');
+      title.className='track-title';
+      title.textContent = t.name || t.url;
+
+      const btns = document.createElement('div');
+      btns.className='rowbtns';
+
+      const bPlay = document.createElement('button');
+      bPlay.textContent = '▶︎'; bPlay.title='Tocar';
+      bPlay.addEventListener('click', ()=> playAt(i), {passive:true});
+
+      const bUp = document.createElement('button');
+      bUp.textContent = '↑'; bUp.title='Subir';
+      bUp.addEventListener('click', ()=> move(i, -1), {passive:true});
+
+      const bDown = document.createElement('button');
+      bDown.textContent = '↓'; bDown.title='Descer';
+      bDown.addEventListener('click', ()=> move(i, +1), {passive:true});
+
+      const bRm = document.createElement('button');
+      bRm.textContent = '×'; bRm.title='Remover'; bRm.className='rm';
+      bRm.addEventListener('click', ()=> removeAt(i), {passive:true});
+
+      btns.append(bPlay, bUp, bDown, bRm);
+      li.append(title, btns);
+      listEl.append(li);
     });
-  };
+    nowEl.textContent = (tracks[index]?.name) || '—';
+  }
 
-  const setBadge = (txt, tone='ok') => {
-    const map = { ok:'linear-gradient(180deg, #aaf3cf, #52ffa8)',
-                  warn:'linear-gradient(180deg, #ffe08a, #ffd166)',
-                  danger:'linear-gradient(180deg, #ff9aa4, #ff6b6b)' };
-    badge.textContent = txt.toUpperCase();
-    badge.style.background = map[tone]||map.ok;
-  };
-
-  const loadAndPlay = (index) => {
-    if (index<0 || index>=tracks.length) return;
-    current = index;
-    const t = tracks[current];
-    audio.src = t.src;
-    nowTitle.textContent = t.name;
-    nowHint.textContent = `${current+1} / ${tracks.length}`;
-    setBadge('tocando');
-    refreshList();
-    audio.play().catch(()=>{ /* ignore */ });
-  };
-
-  const nextIndex = () => {
-    if (shuffleOn) {
-      let r = Math.floor(Math.random()*tracks.length);
-      if (tracks.length>1){
-        while (r===current) r = Math.floor(Math.random()*tracks.length);
-      }
-      return r;
+  function playAt(i){
+    if(!tracks[i]) return;
+    index = i;
+    player.src = tracks[i].url;
+    player.play().catch(()=>{ /* bloqueio de autoplay no mobile */ });
+    btnPlay.textContent='⏸ Pausar';
+    render();
+  }
+  function next(){
+    if(!tracks.length) return;
+    if(shuffleOn && tracks.length>1){
+      let j=index; while(j===index) j=Math.floor(Math.random()*tracks.length);
+      playAt(j); return;
     }
-    return (current+1) % tracks.length;
-  };
+    const j=(index+1)%tracks.length;
+    playAt(j);
+  }
+  function prev(){
+    if(!tracks.length) return;
+    const j=(index-1+tracks.length)%tracks.length;
+    playAt(j);
+  }
+  function move(i, dir){
+    const j=i+dir; if(j<0||j>=tracks.length) return;
+    const t=tracks[i]; tracks[i]=tracks[j]; tracks[j]=t;
+    if(index===i) index=j; else if(index===j) index=i;
+    render();
+  }
+  function removeAt(i){
+    tracks.splice(i,1);
+    if(index>=tracks.length) index = tracks.length-1;
+    render();
+  }
+  function addTrack(name,url){
+    if(!url) return;
+    tracks.push({name:name||url, url});
+    if(index===-1) index=0;
+    render();
+  }
 
-  /** Eventos UI **/
-  btnAdd.onclick = () => fileInput.click();
-  fileInput.onchange = (e) => {
-    const files = [...(e.target.files||[])].filter(f => f.type.startsWith('audio/'));
-    files.forEach(f => {
-      tracks.push({ name:f.name, src:URL.createObjectURL(f), file:f });
-    });
-    setBadge('adicionado');
-    nowHint.textContent = `${tracks.length} arquivo(s) na lista`;
-    if (current===-1 && tracks.length>0) loadAndPlay(0);
-    refreshList();
-  };
+  // ===== Progresso =====
+  player.addEventListener('timeupdate', ()=>{
+    if(!player.duration || isNaN(player.duration)) return;
+    const pct = (player.currentTime / player.duration) * 100;
+    barEl.style.width = (pct||0) + '%';
+  }, {passive:true});
+  player.addEventListener('ended', ()=>{
+    if(loopOn){ player.currentTime=0; player.play(); }
+    else next();
+  });
 
-  btnClear.onclick = () => {
-    audio.pause(); audio.removeAttribute('src'); audio.load();
-    tracks = []; current = -1; refreshList();
-    nowTitle.textContent = 'Sem faixa selecionada';
-    nowHint.textContent = 'Adicione arquivos para começar';
-    setBadge('pronto','warn');
-    fill.style.width = '0%'; tNow.textContent='0:00'; tDur.textContent='0:00';
-  };
-
-  btnSave.onclick = () => {
-    if (!tracks.length) { setBadge('lista vazia','warn'); return; }
-    const name = prompt('Nome para salvar esta playlist:','Minha Playlist VOV');
-    if (!name) return;
-    const payload = tracks.map(t => ({name:t.name}));
-    // Salvamos apenas os nomes (sem blobs) para evitar confusão técnica.
-    // O objetivo é o usuário lembrar a ordem e reconstruir quando quiser.
-    localStorage.setItem('VOV_PLAYLIST_'+name, JSON.stringify(payload));
-    setBadge('salvo');
-    alert('Playlist salva (nomes/ordem). Para tocar novamente, adicione os mesmos arquivos e use esta referência.');
-  };
-
-  btnLoad.onclick = () => {
-    const keys = Object.keys(localStorage).filter(k => k.startsWith('VOV_PLAYLIST_'));
-    if (!keys.length){ alert('Nenhuma playlist salva.'); return; }
-    const names = keys.map(k => k.replace('VOV_PLAYLIST_',''));
-    const pick = prompt('Digite o nome exatamente como salvo:\n\n' + names.join('\n'));
-    if (!pick) return;
-    const raw = localStorage.getItem('VOV_PLAYLIST_'+pick);
-    if (!raw){ alert('Não encontrado.'); return; }
-    const arr = JSON.parse(raw);
-    // Apenas mostra a ordem como guia
-    alert('Ordem salva:\n\n' + arr.map((x,i)=> `${i+1}. ${x.name}`).join('\n') + '\n\nDica: adicione os arquivos nesta ordem.');
-  };
-
-  list.addEventListener('click', (e) => {
-    const btn = e.target.closest('.chip'); if(!btn) return;
-    const i = +btn.dataset.i; const op = btn.dataset.op;
-    if (op==='play') loadAndPlay(i);
-    else if (op==='del'){
-      if (i===current){ audio.pause(); }
-      tracks.splice(i,1);
-      if (tracks.length===0){ current=-1; btnClear.onclick(); return; }
-      if (i<current) current--;
-      refreshList();
-    }
-    else if (op==='up' && i>0){
-      [tracks[i-1], tracks[i]] = [tracks[i], tracks[i-1]];
-      if (current===i) current=i-1; else if (current===i-1) current=i;
-      refreshList();
-    }
-    else if (op==='down' && i<tracks.length-1){
-      [tracks[i], tracks[i+1]] = [tracks[i+1], tracks[i]];
-      if (current===i) current=i+1; else if (current===i+1) current=i;
-      refreshList();
+  // ===== Controles =====
+  btnPrev.addEventListener('click', prev, {passive:true});
+  btnNext.addEventListener('click', next, {passive:true});
+  btnPlay.addEventListener('click', ()=>{
+    if(player.paused){ player.play(); btnPlay.textContent='⏸ Pausar'; }
+    else { player.pause(); btnPlay.textContent='▶︎ Reproduzir'; }
+  });
+  btnLoop.addEventListener('click', ()=>{
+    loopOn=!loopOn; btnLoop.classList.toggle('active', loopOn);
+  });
+  btnShuf.addEventListener('click', ()=>{
+    shuffleOn=!shuffleOn; btnShuf.classList.toggle('active', shuffleOn);
+  });
+  btnClear.addEventListener('click', ()=>{
+    if(!tracks.length) return;
+    if(confirm('Limpar todas as faixas?')){
+      tracks=[]; index=-1; render();
     }
   });
 
-  // Drag & drop
-  ;['dragenter','dragover'].forEach(ev => drop.addEventListener(ev, e=>{
-    e.preventDefault(); e.stopPropagation(); drop.classList.add('drag');
-  }));
-  ;['dragleave','drop'].forEach(ev => drop.addEventListener(ev, e=>{
-    e.preventDefault(); e.stopPropagation(); drop.classList.remove('drag');
-  }));
-  drop.addEventListener('drop', e=>{
-    const files = [...(e.dataTransfer.files||[])].filter(f=>f.type.startsWith('audio/'));
-    files.forEach(f => tracks.push({name:f.name, src:URL.createObjectURL(f), file:f}));
-    setBadge('adicionado');
-    nowHint.textContent = `${tracks.length} arquivo(s) na lista`;
-    if (current===-1 && tracks.length>0) loadAndPlay(0);
-    refreshList();
+  // ===== Nova / Salvar / Carregar (LocalStorage) =====
+  const KEY_NS = 'BLACKVOX_VOV_PLAYLISTS';
+  function getStore(){
+    try{ return JSON.parse(localStorage.getItem(KEY_NS)||'{}'); }
+    catch{ return {}; }
+  }
+  function setStore(obj){
+    localStorage.setItem(KEY_NS, JSON.stringify(obj));
+  }
+  btnNew.addEventListener('click', ()=>{
+    tracks=[]; index=-1; render();
+    if(!nameI.value.trim()) nameI.value='Minha Playlist';
+  });
+  btnSave.addEventListener('click', ()=>{
+    const nm = nameI.value.trim() || 'Minha Playlist';
+    const store = getStore();
+    store[nm] = tracks;
+    setStore(store);
+    alert('Playlist salva no navegador: ' + nm);
+  });
+  btnLoad.addEventListener('click', ()=>{
+    const store = getStore();
+    const names = Object.keys(store);
+    if(!names.length){ alert('Nenhuma playlist salva encontrada.'); return; }
+    const nm = prompt('Qual playlist carregar?\n\n' + names.join('\n'));
+    if(!nm || !store[nm]) return;
+    nameI.value = nm;
+    tracks = store[nm];
+    index = tracks.length?0:-1;
+    render();
   });
 
-  // Transport
-  prev.onclick = () => {
-    if (!tracks.length) return;
-    const idx = current<=0 ? tracks.length-1 : current-1;
-    loadAndPlay(idx);
-  };
-  next.onclick = () => {
-    if (!tracks.length) return;
-    const idx = nextIndex();
-    loadAndPlay(idx);
-  };
-  play.onclick = () => {
-    if (!tracks.length) return;
-    if (current===-1) loadAndPlay(0);
-    else if (audio.paused) audio.play();
-    else audio.pause();
-  };
-  repeat.onclick = () => { loopOn = !loopOn; repeat.classList.toggle('on', loopOn); };
-  shuffle.onclick = () => { shuffleOn = !shuffleOn; shuffle.classList.toggle('on', shuffleOn); };
-
-  // Seek bar
-  const seekTo = (clientX) => {
-    const rect = seek.getBoundingClientRect();
-    const p = Math.min(1, Math.max(0, (clientX - rect.left)/rect.width));
-    audio.currentTime = (audio.duration||0)*p;
-  };
-  seek.addEventListener('click', e=> seekTo(e.clientX));
-
-  // Audio events
-  audio.addEventListener('timeupdate', ()=>{
-    if (!isFinite(audio.duration)) return;
-    fill.style.width = (audio.currentTime/audio.duration*100)+'%';
-    tNow.textContent = fmt(audio.currentTime);
-    tDur.textContent = isFinite(audio.duration) ? fmt(audio.duration) : '0:00';
-  });
-  audio.addEventListener('play', ()=> setBadge('tocando'));
-  audio.addEventListener('pause', ()=> setBadge('pausado','warn'));
-  audio.addEventListener('ended', ()=>{
-    if (loopOn){ audio.currentTime=0; audio.play(); return; }
-    if (!tracks.length) return;
-    loadAndPlay(nextIndex());
-  });
-  audio.addEventListener('loadedmetadata', ()=>{
-    tDur.textContent = isFinite(audio.duration) ? fmt(audio.duration) : '0:00';
+  // ===== Importar / Exportar =====
+  btnImp.addEventListener('click', ()=> fileJson.click());
+  fileJson.addEventListener('change', async (ev)=>{
+    const f = ev.target.files[0]; if(!f) return;
+    try{
+      const txt = await f.text();
+      const data = JSON.parse(txt);
+      if(!Array.isArray(data)) throw new Error('JSON não é array.');
+      const ok = data.every(it=>it && typeof it.url==='string');
+      if(!ok) throw new Error('Itens sem "url".');
+      tracks = data.map(it=>({name: it.name || it.title || it.url, url: it.url}));
+      index = tracks.length?0:-1;
+      render();
+    }catch(err){
+      alert('Falha ao importar JSON: '+err.message);
+    }finally{
+      ev.target.value='';
+    }
   });
 
-  // Keys
-  window.addEventListener('keydown', (e)=>{
-    if (['INPUT','TEXTAREA'].includes((e.target.tagName||''))) return;
-    if (e.code==='Space'){ e.preventDefault(); play.onclick(); }
-    else if (e.key==='ArrowRight'){ audio.currentTime+=10; }
-    else if (e.key==='ArrowLeft'){ audio.currentTime-=10; }
-    else if (e.key==='ArrowUp'){ prev.onclick(); }
-    else if (e.key==='ArrowDown'){ next.onclick(); }
+  btnUrl.addEventListener('click', async ()=>{
+    const u = urlI.value.trim(); if(!u){ alert('Informe a URL do JSON.'); return; }
+    try{
+      const res = await fetch(u, {cache:'no-store'});
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      const data = await res.json();
+      if(!Array.isArray(data)) throw new Error('JSON não é array.');
+      const ok = data.every(it=>it && typeof it.url==='string');
+      if(!ok) throw new Error('Itens sem "url".');
+      tracks = data.map(it=>({name: it.name || it.title || it.url, url: it.url}));
+      index = tracks.length?0:-1;
+      render();
+    }catch(err){
+      alert('Falha ao carregar URL: '+err.message);
+    }
   });
+
+  btnExp.addEventListener('click', ()=>{
+    const nm = (nameI.value.trim() || 'playlist').replace(/[^\w\-]+/g,'_');
+    const blob = new Blob([JSON.stringify(tracks, null, 2)], {type:'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = nm + '.json';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 0);
+  });
+
+  // ===== Adicionar faixa por URL / Arquivo =====
+  btnAdd.addEventListener('click', ()=>{
+    const n = trkName.value.trim();
+    const u = trkUrl.value.trim();
+    if(!u){ alert('Informe a URL da faixa (mp3/ogg).'); return; }
+    addTrack(n, u);
+    trkName.value=''; trkUrl.value='';
+  });
+
+  btnAddF.addEventListener('click', ()=> fileAud.click());
+  fileAud.addEventListener('change', async (ev)=>{
+    const f = ev.target.files[0]; if(!f) return;
+    // para não ficar pesado, usar ObjectURL em vez de dataURL
+    const url = URL.createObjectURL(f);
+    addTrack(f.name, url);
+    ev.target.value='';
+  });
+
+  // ===== Estado inicial =====
+  render();
 })();
 </script>
 </body>
