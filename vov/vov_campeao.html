@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>BLACKVOX — Campeão (visual V O V)</title>
+<meta name="description" content="Player Campeão compatível com seus JSONs antigos, rejuvenescido na pegada V O V.">
+
+<!-- Tipografia -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg:#0a0f14;
+    --panel:#0f1623;
+    --panel-2:#0c1320;
+    --stroke:#243146;
+    --text:#e6edf3;
+    --muted:#9fb3c8;
+    --brand:#00d0ff;
+    --accent:#ffd24d;
+    --accent-2:#ff8800;
+    --ok:#19c37d;
+    --danger:#ff5f57;
+    --radius:14px;
+    --shadow:0 10px 30px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; background:radial-gradient(1200px 600px at 80% -10%, #0e1827 0%, #0a0f14 45%, #070b10 100%);
+    color:var(--text); font-family:'Rajdhani', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  }
+
+  /* Header */
+  .vov-header{
+    position:sticky; top:0; z-index:20;
+    background:linear-gradient(180deg, rgba(10,15,20,.92) 0%, rgba(10,15,20,.75) 100%);
+    backdrop-filter: blur(6px);
+    border-bottom:1px solid var(--stroke);
+  }
+  .wrap{max-width:1040px; margin:0 auto; padding:14px 18px;}
+  .row{display:flex; align-items:center; gap:14px; flex-wrap:wrap}
+  .brand{display:flex; gap:12px; align-items:center; font-weight:700; letter-spacing:1px}
+  .badge{
+    width:28px; height:28px; border-radius:6px;
+    background:conic-gradient(from 180deg, #ff5f57, #ffd24d, #19c37d, #00d0ff, #7b61ff, #ff5f57);
+    box-shadow:0 0 18px rgba(0,208,255,.35);
+  }
+  .brand strong{font-size:18px}
+  .nav{margin-left:auto; display:flex; gap:10px}
+  .nav a{
+    color:var(--text); text-decoration:none; padding:8px 12px; border:1px solid var(--stroke);
+    border-radius:10px; background:linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 100%);
+  }
+  .nav a:hover{border-color:#2f4463; box-shadow:0 6px 16px rgba(0,0,0,.3)}
+
+  /* Hero */
+  .hero{
+    padding:26px 18px 10px; border-bottom:1px solid var(--stroke);
+    background:
+      radial-gradient(400px 140px at right -80px, rgba(0,208,255,.08), transparent 60%),
+      radial-gradient(380px 160px at 20% 10%, rgba(255,210,77,.06), transparent 65%);
+  }
+  .hero h1{margin:0 0 6px; font-size:28px; letter-spacing:1px}
+  .hero p{margin:0; color:var(--muted)}
+  .cta{display:flex; gap:10px; margin-top:12px; flex-wrap:wrap}
+  .btn{
+    display:inline-flex; align-items:center; gap:8px; font-weight:700; letter-spacing:.5px;
+    border:none; cursor:pointer; text-decoration:none; color:#101418;
+    padding:10px 14px; border-radius:12px; transition:transform .15s, box-shadow .15s;
+    background:linear-gradient(90deg, var(--accent), var(--accent-2));
+    box-shadow:0 10px 24px rgba(255,136,0,.25);
+  }
+  .btn.blue{
+    color:#02131a; background:linear-gradient(90deg, #6bf3ff 0%, #00d0ff 100%);
+    box-shadow:0 10px 24px rgba(0,208,255,.2);
+  }
+  .micro{margin-top:6px; color:var(--muted); font-size:13px}
+
+  /* Painéis / inputs */
+  .panel{
+    background:linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 100%);
+    border:1px solid var(--stroke); border-radius:var(--radius); box-shadow:var(--shadow);
+    padding:14px; margin:14px 0;
+  }
+  .panel h3{margin:0 0 8px; font-size:18px}
+  input[type="file"], input[type="text"]{
+    width:100%; background:#0c1320; color:var(--text);
+    border:1px solid var(--stroke); border-radius:10px; padding:10px 12px; outline:none;
+  }
+  input[type="file"]::-webkit-file-upload-button{
+    border:none; margin-right:10px; padding:8px 12px; border-radius:8px; cursor:pointer;
+    color:#101418; font-weight:700; background:linear-gradient(90deg, #6bf3ff, #00d0ff);
+  }
+  .actions{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px}
+  .ghost{background:transparent; color:var(--text); border:1px solid var(--stroke); border-radius:10px; padding:10px 14px; font-weight:700; cursor:pointer}
+  .danger{background:linear-gradient(90deg, #ff8a7a, #ff5f57); color:#1a0e0e; border:none; border-radius:10px; padding:10px 14px; font-weight:700; cursor:pointer}
+
+  ul#audioList{list-style:none; padding:0; margin:0}
+  ul#audioList li{
+    background:#111a28; border:1px solid #243146; border-radius:12px; padding:10px 12px;
+    display:flex; gap:8px; align-items:center; justify-content:space-between; margin:8px 0;
+  }
+  ul#audioList li .controls button{
+    background:#0c1320; color:#cfe3ff; border:1px solid #243146; border-radius:8px; padding:6px 10px; cursor:pointer;
+  }
+  ul#audioList li .controls button:hover{border-color:#2f4463}
+
+  #progressBar{width:100%; background-color:#333; border-radius:8px; overflow:hidden; margin:10px 0; display:none}
+  #progress{height:16px; background:linear-gradient(90deg, #19c37d, #00d0ff); width:0}
+
+  .footer{margin:26px 0 34px; color:var(--muted); text-align:center; font-size:14px}
+  .spectrum{height:6px; border-radius:8px; overflow:hidden; margin-top:10px}
+  .spectrum > div{height:100%;
+    background:linear-gradient(90deg, #ff4d4d, #ffd24d, #19c37d, #00d0ff, #7b61ff);
+    filter:drop-shadow(0 0 8px rgba(0,208,255,.25));
+  }
+</style>
+</head>
+<body>
+
+<header class="vov-header">
+  <div class="wrap row">
+    <div class="brand"><span class="badge"></span><strong>BLACKVOX</strong><span style="color:var(--muted)">Campeão · Visual V O V</span></div>
+    <nav class="nav">
+      <a href="/vov/index.html">Início</a>
+      <a href="/vov/vov_players.html">Players</a>
+      <a href="/vov/edicoes.html">Edições</a>
+      <a href="/vov/ebooks.html">E-books</a>
+      <a href="/vov/contato.html">Contato</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <h1>Player Campeão — compatível com seus JSON antigos</h1>
+    <p>Upload de MP3 • Ordenar faixas • Salvar/Carregar playlists • Exportar/Importar JSON • Auto-play contínuo</p>
+    <div class="cta">
+      <a class="btn blue" href="#player">Abrir Player</a>
+      <a class="btn" href="/vov/index.html">Portal V O V</a>
+    </div>
+    <div class="micro">Salvador • Amaralina • Brasil</div>
+  </div>
+</section>
+
+<main id="player" class="wrap">
+  <!-- PAINEL: Upload + Ação -->
+  <div class="panel">
+    <h3>Adicionar faixas</h3>
+    <input type="file" id="audioInput" accept="audio/*" />
+    <div class="actions">
+      <button class="btn" onclick="addAudio()">Adicionar à lista</button>
+      <button class="ghost" onclick="playPlaylist()">▶ Tocar playlist</button>
+    </div>
+  </div>
+
+  <!-- Lista de faixas -->
+  <div class="panel">
+    <h3>Lista de reprodução</h3>
+    <ul id="audioList"></ul>
+    <div id="saveStatus" class="micro"></div>
+    <div id="progressBar"><div id="progress"></div></div>
+    <audio id="audioPlayer" controls style="width:100%; display:none; margin-top:10px;"></audio>
+    <div id="audioName" style="text-align:center; margin-top:12px;"></div>
+  </div>
+
+  <!-- Playlists (Salvar/Carregar/Importar/Exportar) -->
+  <div class="panel">
+    <h3>Playlists</h3>
+    <div class="actions" style="flex-wrap:wrap;">
+      <input type="text" id="playlistName" placeholder="Nome da playlist" style="max-width:320px;">
+      <button class="btn" onclick="savePlaylist()">💾 Salvar</button>
+      <button class="ghost" onclick="loadPlaylist()">📂 Ver playlists salvas</button>
+      <input type="file" id="importJson" accept="application/json" style="max-width:320px;">
+      <button class="ghost" onclick="importPlaylist()">⬆ Importar JSON</button>
+      <button class="ghost" onclick="exportPlaylist()">⬇ Exportar JSON</button>
+      <button class="danger" onclick="clearAll()">🗑️ Limpar tudo</button>
+    </div>
+  </div>
+
+  <!-- Rodapé -->
+  <div class="footer">
+    <div>“Sapere aude.” • V O V — Ver · Ouvir · Vender · Viver</div>
+    <div class="spectrum"><div></div></div>
+  </div>
+</main>
+
+<!-- ================== JS ORIGINAL (preservado) + utilidades ================== -->
+<script>
+  /* ====== Trecho JS original do seu Campeão Velho (sem alterações na lógica) ====== */
+  let audioList = [];
+  let playlists = {};
+
+  function addAudio() {
+    const audioInput = document.getElementById("audioInput");
+    const file = audioInput.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const audio = { url: e.target.result, name: file.name };
+        audioList.push(audio);
+        displayAudioList();
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function displayAudioList() {
+    const audioListElement = document.getElementById("audioList");
+    audioListElement.innerHTML = "";
+    audioList.forEach((audio, index) => {
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <span>${audio.name}</span>
+        <div class="controls">
+          <button onclick="playAudio(${index})">▶</button>
+          <button onclick="removeAudio(${index})">✕</button>
+          <button onclick="moveAudioUp(${index})">↑</button>
+          <button onclick="moveAudioDown(${index})">↓</button>
+        </div>
+      `;
+      audioListElement.appendChild(li);
+    });
+  }
+
+  function playAudio(index) {
+    const audioPlayer = document.getElementById("audioPlayer");
+    const audioName = document.getElementById("audioName");
+    audioPlayer.src = audioList[index].url;
+    audioPlayer.style.display = "block";
+    audioName.textContent = `Tocando: ${audioList[index].name}`;
+    audioPlayer.play();
+    audioPlayer.onended = () => {
+      const nextIndex = index + 1;
+      if (nextIndex < audioList.length) {
+        playAudio(nextIndex);
+      }
+    };
+  }
+
+  function removeAudio(index) {
+    audioList.splice(index, 1);
+    displayAudioList();
+  }
+
+  function moveAudioUp(index) {
+    if (index > 0) {
+      [audioList[index], audioList[index - 1]] = [audioList[index - 1], audioList[index]];
+      displayAudioList();
+    }
+  }
+
+  function moveAudioDown(index) {
+    if (index < audioList.length - 1) {
+      [audioList[index], audioList[index + 1]] = [audioList[index + 1], audioList[index]];
+      displayAudioList();
+    }
+  }
+
+  function showProgressBar() {
+    const progressBar = document.getElementById("progressBar");
+    const progress = document.getElementById("progress");
+    progress.style.width = "0";
+    progressBar.style.display = "block";
+    let width = 0;
+    const interval = setInterval(() => {
+      if (width >= 100) {
+        clearInterval(interval);
+      } else {
+        width++;
+        progress.style.width = width + "%";
+      }
+    }, 20);
+  }
+
+  function hideProgressBar() {
+    const progressBar = document.getElementById("progressBar");
+    progressBar.style.display = "none";
+  }
+
+  /* ====== Pequenos melhoramentos utilitários (sem quebrar nada) ====== */
+  function playPlaylist() {
+    if (audioList.length > 0) {
+      playAudio(0);
+    } else {
+      alert("Nenhuma música na playlist para tocar.");
+    }
+  }
+
+  function savePlaylist() {
+    const playlistName = document.getElementById("playlistName").value?.trim();
+    if (!playlistName) {
+      alert("Por favor, insira um nome para a playlist.");
+      return;
+    }
+    showProgressBar();
+    setTimeout(() => {
+      playlists[playlistName] = audioList;
+      localStorage.setItem('playlists', JSON.stringify(playlists));
+      hideProgressBar();
+      alert("Playlist salva com sucesso!");
+    }, 500);
+  }
+
+  function loadPlaylist() {
+    const storedPlaylists = localStorage.getItem('playlists');
+    if (storedPlaylists) {
+      playlists = JSON.parse(storedPlaylists);
+      const names = Object.keys(playlists);
+      if (!names.length) return alert("Nenhuma playlist salva encontrada.");
+      const pick = prompt("Qual playlist deseja carregar?\n" + names.join("\n"));
+      if (pick && playlists[pick]) {
+        audioList = playlists[pick];
+        displayAudioList();
+      }
+    } else {
+      alert("Nenhuma playlist salva encontrada.");
+    }
+  }
+
+  function exportPlaylist() {
+    if (!audioList.length) return alert("Adicione faixas antes de exportar.");
+    const name = (document.getElementById('playlistName').value || 'Playlist').trim();
+    const data = { [name]: audioList.map(it => ({ url: it.url, name: it.name || '' })) }; // formato legado do seu Campeão
+    const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `${name}.json`;
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  function importPlaylist() {
+    const inp = document.getElementById('importJson') || (() => {
+      const f = document.createElement('input');
+      f.type = 'file'; f.accept = 'application/json';
+      f.onchange = () => importPlaylistFromFile(f.files[0]);
+      f.click();
+    })();
+    if (inp && inp.files && inp.files[0]) importPlaylistFromFile(inp.files[0]);
+  }
+
+  async function importPlaylistFromFile(file) {
+    try{
+      const text = await file.text();
+      const data = JSON.parse(text);
+
+      // Aceita seu formato legado: { "Nome": [ {url:"data:..."}, ... ] }
+      const keys = Object.keys(data || {});
+      if (keys.length === 1 && Array.isArray(data[keys[0]])) {
+        const arr = data[keys[0]];
+        audioList = arr.map(it => ({ url: it.url, name: it.name || '' })).filter(x => x.url);
+        document.getElementById('playlistName').value = keys[0];
+        displayAudioList();
+        alert('Playlist importada com sucesso!');
+        return;
+      }
+
+      // Aceita também o formato novo {name, tracks:[]}
+      if (data && data.tracks && Array.isArray(data.tracks)) {
+        audioList = data.tracks.map(t => ({ url: t.url, name: t.title || '' })).filter(x => x.url);
+        document.getElementById('playlistName').value = data.name || 'Playlist';
+        displayAudioList();
+        alert('Playlist importada com sucesso!');
+        return;
+      }
+
+      alert('JSON inválido: não encontrei faixas.');
+    }catch(e){
+      alert('Erro ao importar JSON.');
+    }
+  }
+
+  function clearAll(){
+    if(!confirm('Limpar lista e campos?')) return;
+    audioList = [];
+    displayAudioList();
+    document.getElementById('playlistName').value = '';
+    const ap = document.getElementById('audioPlayer');
+    ap.pause(); ap.removeAttribute('src'); ap.style.display='none';
+    document.getElementById('audioName').textContent='';
+  }
+</script>
+</body>
+</html>
