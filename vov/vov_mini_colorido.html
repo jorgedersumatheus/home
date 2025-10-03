@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BLACKVOX Mini Player</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      color: #fff;
+      background: linear-gradient(270deg, #ff0000, #ff8c00, #ffff00, #008000, #0000ff, #4b0082, #ee82ee);
+      background-size: 1400% 1400%;
+      animation: gradient 20s ease infinite;
+    }
+    @keyframes gradient {
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
+    }
+    h1 {
+      margin: 20px 0;
+      color: #fff;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 20px auto;
+      max-width: 420px;
+    }
+    li {
+      background: rgba(0,0,0,0.6);
+      margin: 8px 0;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+    li:hover {
+      transform: scale(1.05);
+      background: rgba(255,255,255,0.2);
+    }
+    audio {
+      margin-top: 20px;
+      width: 90%;
+      border-radius: 8px;
+      outline: none;
+      box-shadow: 0 0 20px rgba(255,255,255,0.6);
+    }
+    footer {
+      margin-top: 30px;
+      font-size: 0.85em;
+      color: #fff;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
+    }
+    a {
+      color: #ffff00;
+      font-weight: bold;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+      color: #00ffcc;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎶 BLACKVOX Mini Colorido</h1>
+  <p>Escolha uma faixa e deixe rolar.</p>
+
+  <ul id="trackList">
+    <li onclick="playTrack(0)">Faixa 1 – Hermeto Pascoal</li>
+    <li onclick="playTrack(1)">Faixa 2 – Coltrane</li>
+    <li onclick="playTrack(2)">Faixa 3 – Eno</li>
+    <li onclick="playTrack(3)">Faixa 4 – Miles Davis</li>
+    <li onclick="playTrack(4)">Faixa 5 – Letieres Leite</li>
+  </ul>
+
+  <audio id="player" controls></audio>
+
+  <footer>
+    VOV • BLACKVOX Mini Player Colorido 🌈<br>
+    <a href="/vov/index.html">← Voltar ao Início</a>
+  </footer>
+
+  <script>
+    const tracks = [
+      "audios/faixa1.mp3",
+      "audios/faixa2.mp3",
+      "audios/faixa3.mp3",
+      "audios/faixa4.mp3",
+      "audios/faixa5.mp3"
+    ];
+    
+    let currentTrack = 0;
+    const player = document.getElementById("player");
+
+    function playTrack(index) {
+      currentTrack = index;
+      player.src = tracks[index];
+      player.play();
+    }
+
+    player.addEventListener("ended", () => {
+      currentTrack++;
+      if (currentTrack < tracks.length) {
+        playTrack(currentTrack);
+      }
+    });
+  </script>
+</body>
+</html>
