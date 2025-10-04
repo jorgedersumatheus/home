@@ -1,284 +1,349 @@
-<!doctype html>
-<html lang="pt-BR">
+<!DOCTYPE html><html lang="pt-BR">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Rádio V O V — Vinheta + Player</title>
-<meta name="color-scheme" content="dark light" />
-<style>
-  :root{
-    --bg:#0b0f16; --panel:#111726; --text:#e8eefc; --muted:#a9b7d3;
-    --brand:#1dd4ff; --brand2:#00ffa8; --accent:#ffd94a; --danger:#ff6b6b;
-    --card:#0f1524; --edge:rgba(255,255,255,.08);
-  }
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{
-    margin:0; background:radial-gradient(1200px 600px at 70% -10%,rgba(29,212,255,.08),transparent) ,
-                      radial-gradient(900px 500px at 10% 120%,rgba(0,255,168,.06),transparent),
-                      var(--bg);
-    color:var(--text); font:500 16px/1.45 Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-  }
-  header{display:flex; gap:12px; align-items:center; padding:20px 18px 10px}
-  .dot{width:10px;height:10px;border-radius:50%;background:linear-gradient(135deg,var(--brand),var(--brand2));box-shadow:0 0 18px rgba(29,212,255,.8)}
-  h1{font-size:20px;margin:0;font-weight:800;letter-spacing:.4px}
-  .sub{color:var(--muted);font-size:14px;margin:2px 18px 14px}
-
-  /* bloco vinheta */
-  .stage{max-width:980px;margin:0 auto;padding:10px 18px 26px}
-  .card{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02)); 
-        border:1px solid var(--edge); border-radius:18px; box-shadow:0 10px 40px rgba(0,0,0,.35)}
-  #vinhetaWrap{position:relative; overflow:hidden}
-  video{width:100%; display:block; background:#000; border-radius:18px}
-  .overlay{
-    position:absolute; inset:0; display:flex; gap:10px; align-items:end; justify-content:space-between;
-    padding:14px; background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,.45));
-  }
-  .row{display:flex;gap:10px;align-items:center}
-  .btn{
-    appearance:none; border:1px solid var(--edge); background:linear-gradient(180deg,#172035,#0f1626);
-    color:var(--text); padding:10px 14px; border-radius:12px; font-weight:700; cursor:pointer;
-    box-shadow:0 6px 20px rgba(0,0,0,.25); transition:transform .08s ease, background .2s ease, border .2s ease;
-  }
-  .btn:hover{transform:translateY(-1px); border-color:rgba(255,255,255,.18)}
-  .btn.brand{background:linear-gradient(180deg,rgba(29,212,255,.18),rgba(0,255,168,.18)); border-color:rgba(29,212,255,.35)}
-  .btn.warn{background:linear-gradient(180deg,#2a210b,#1c1608); border-color:rgba(255,217,74,.4); color:#ffe9a3}
-  .chips{display:flex;gap:8px;flex-wrap:wrap}
-  .chip{font-size:12px; color:#02131a; background:linear-gradient(135deg,var(--brand),var(--brand2));
-        padding:6px 10px; border-radius:999px; font-weight:800; letter-spacing:.2px}
-
-  /* player embutido */
-  #player{display:none; margin-top:18px; padding:18px}
-  .grid{display:grid; grid-template-columns:1.1fr .9fr; gap:18px}
-  @media (max-width:840px){ .grid{grid-template-columns:1fr} }
-  .panel{background:linear-gradient(180deg,#0e1526,#0c1220); border:1px solid var(--edge); border-radius:16px; padding:14px}
-  .panel h2{margin:0 0 8px; font-size:16px; letter-spacing:.3px}
-  .tracks{max-height:300px; overflow:auto; margin-top:8px}
-  .track{display:flex;align-items:center;justify-content:space-between;gap:10px;
-         padding:10px 12px; border:1px solid var(--edge); border-radius:12px; background:var(--card); margin-bottom:10px}
-  .tname{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
-  .icons button{border:0;background:#121a2d;color:#dfe9ff;border:1px solid var(--edge);border-radius:10px;
-                width:36px;height:36px;display:grid;place-items:center;cursor:pointer}
-  .icons button:hover{border-color:rgba(255,255,255,.2)}
-  .meta{color:var(--muted); font-size:13px; margin-top:8px}
-  audio{width:100%; margin-top:8px}
-
-  /* links externos */
-  .links{display:flex; gap:10px; flex-wrap:wrap}
-  .a{ text-decoration:none }
-  .cta{
-    display:inline-flex; align-items:center; gap:10px; padding:12px 14px; border-radius:14px; 
-    border:1px solid var(--edge); background:linear-gradient(180deg,#141c2f,#0e1526); color:var(--text); font-weight:800
-  }
-  .cta:hover{border-color:rgba(255,255,255,.2)}
-  footer{max-width:980px;margin:26px auto 40px;color:var(--muted);font-size:13px;padding:0 18px}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rádio V O V — Versão Estendida</title>
+  <style>
+    :root{
+      --bg:#0f1115;--panel:#171a21;--ink:#f2f2f2;--muted:#a7a7a7;--pri:#5dd2ff;--warn:#ff4d4d;--ok:#3ddc84;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;background:var(--bg);color:var(--ink);}
+    header{padding:20px 16px;background:linear-gradient(180deg,#141821,#0f1115);border-bottom:1px solid #242836}
+    h1{margin:0;font-weight:800;letter-spacing:.5px}
+    .sub{color:var(--muted);margin-top:6px}
+    .wrap{max-width:1100px;margin:0 auto;padding:16px}
+    .card{background:var(--panel);border:1px solid #242836;border-radius:16px;padding:16px;margin:16px 0;box-shadow:0 8px 30px rgba(0,0,0,.25)}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .stack{display:flex;flex-direction:column;gap:10px}
+    video{width:100%;max-height:420px;border-radius:12px;background:black}
+    .btn{appearance:none;border:none;border-radius:999px;padding:10px 16px;font-weight:700;cursor:pointer}
+    .btn:disabled{opacity:.5;cursor:not-allowed}
+    .b-white{background:#fff;color:#111}
+    .b-warn{background:var(--warn);color:#fff}
+    .b-ghost{background:transparent;border:1px solid #2b3042;color:var(--ink)}
+    .b-pri{background:var(--pri);color:#00131a}
+    .b-ok{background:var(--ok);color:#00160c}
+    .controls{display:flex;gap:8px;flex-wrap:wrap}
+    .controls .btn{min-width:44px}
+    .pill{padding:6px 10px;border-radius:999px;background:#1c2130;color:var(--muted);font-size:.85rem}
+    .grid{display:grid;grid-template-columns:1fr;gap:16px}
+    @media(min-width:900px){.grid{grid-template-columns:2fr 1fr}}
+    .now{font-weight:700}
+    .input, input[type="url"], input[type="text"]{width:100%;padding:10px 12px;border-radius:10px;border:1px solid #2b3042;background:#10131b;color:var(--ink)}
+    .list{margin:0;padding:0;list-style:none;max-height:360px;overflow:auto;border:1px solid #222635;border-radius:12px}
+    .track{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid #1e2232}
+    .track:last-child{border-bottom:none}
+    .track.active{background:#121729;border-left:3px solid var(--pri)}
+    .track .name{flex:1}
+    .track .mini{display:flex;gap:6px}
+    .muted{color:var(--muted)}
+    .hint{font-size:.9rem;color:var(--muted)}
+    .tag{font-size:.75rem;padding:2px 8px;border:1px solid #2b3042;border-radius:999px;color:var(--muted)}
+  </style>
 </head>
 <body>
   <header>
-    <span class="dot"></span><h1>Rádio V O V</h1>
-  </header>
-  <div class="sub">Vinheta na abertura • depois o player entra automático • “a música não pode parar”.</div>
-
-  <main class="stage">
+    <h1>Rádio V O V</h1>
+    <div class="sub">Vinheta na abertura • Upload local • Playlist com Próxima Faixa</div>
+  </header>  <div class="wrap">
     <!-- VINHETA -->
-    <section id="vinhetaWrap" class="card">
-      <video id="vinheta" autoplay muted playsinline preload="auto" poster="/vov/poster_radio.jpg">
-        <source src="/Vinheta_RV.mp4" type="video/mp4">
-      </video>
-      <div class="overlay">
-        <div class="chips">
-          <span class="chip">VOV</span><span class="chip">Abertura Oficial</span><span class="chip">Som On</span>
+    <section id="vinhetawrap" class="card">
+      <div class="stack">
+        <video id="vinheta" autoplay muted playsinline>
+          <source src="/vov/Vinheta_RV.mp4" type="video/mp4" />
+        </video>
+        <div class="row">
+          <button id="btnSom" class="btn b-white">🔊 Som</button>
+          <button id="btnSkip" class="btn b-warn">⏭️ Pular</button>
+          <span class="pill">Dica: o autoplay funciona em <em>mute</em>. Toque em <strong>Som</strong> para habilitar o áudio.</span>
         </div>
         <div class="row">
-          <button id="btnSom" class="btn brand" aria-pressed="false">🔊 Ativar som</button>
-          <button id="btnSkip" class="btn warn">⏭️ Pular vinheta</button>
+          <label class="tag">📂 Trocar Vinheta</label>
+          <input id="vinhetaUpload" type="file" accept="video/mp4,audio/mp3,video/webm,audio/mpeg" />
+          <span class="hint">O arquivo roda localmente no seu navegador (não faz upload para o servidor).</span>
         </div>
       </div>
-    </section>
-
-    <!-- PLAYER -->
-    <section id="player" class="card">
-      <div class="grid">
-        <div class="panel">
-          <h2>Player VOV (embutido)</h2>
-          <input type="file" id="pick" accept="audio/*" multiple class="btn" />
-          <div class="meta">Dica: você pode <b>arrastar MP3</b> para esta área.</div>
-          <div id="tracks" class="tracks"></div>
-          <div class="meta" id="now">—</div>
-          <audio id="audio" controls></audio>
+    </section><!-- PLAYER + PLAYLIST -->
+<section id="playerwrap" class="card" style="display:none">
+  <div class="grid">
+    <!-- LADO ESQUERDO: PLAYER PRINCIPAL -->
+    <div class="stack">
+      <div class="row" style="justify-content:space-between;align-items:center">
+        <div>
+          <div class="muted">Tocando agora</div>
+          <div id="nowTitle" class="now">—</div>
         </div>
-
-        <div class="panel">
-          <h2>Abrir em páginas dedicadas</h2>
-          <div class="links" style="margin-top:8px">
-            <a class="a" href="/vov/vov_players.html" target="_blank">
-              <span class="cta">🎚️ Clássico (página)</span>
-            </a>
-            <a class="a" href="/vov/vov_mini_colorido.html" target="_blank">
-              <span class="cta">🎛️ Mini (página)</span>
-            </a>
-          </div>
-          <hr style="border:none;border-top:1px solid var(--edge);margin:14px 0">
-          <label style="display:flex;align-items:center;gap:10px">
-            <input type="checkbox" id="hora" />
-            Repetir vinheta no topo de cada hora
-          </label>
-          <div class="meta">Quando ativo, a vinheta pausa o player e volta sozinho ao fim.</div>
+        <div class="row">
+          <span id="modeShuffle" class="tag">🔀 Shuffle: off</span>
+          <span id="modeRepeat" class="tag">🔁 Repeat: off</span>
         </div>
       </div>
-    </section>
-  </main>
 
-  <footer>© 2025 V O V — Ver • Ouvir • Vender • Viver</footer>
+      <audio id="audio" preload="metadata"></audio>
 
-<script>
-  // --- VINHETA ---
-  const vinheta = document.getElementById('vinheta');
-  const wrap    = document.getElementById('vinhetaWrap');
-  const btnSom  = document.getElementById('btnSom');
-  const btnSkip = document.getElementById('btnSkip');
-  const player  = document.getElementById('player');
+      <div class="controls">
+        <button id="prev" class="btn b-ghost" title="Anterior">⏮️</button>
+        <button id="play" class="btn b-pri" title="Play/Pause">▶️/⏸️</button>
+        <button id="next" class="btn b-ghost" title="Próxima">⏭️</button>
+        <button id="shuffle" class="btn b-ghost" title="Alternar Shuffle">🔀</button>
+        <button id="repeat" class="btn b-ghost" title="Alternar Repeat">🔁</button>
+        <button id="clear" class="btn b-warn" title="Limpar Playlist">🗑️ Limpar</button>
+      </div>
 
-  // em iOS/Android, autoplay com som exige gesto. Mantemos muted e oferecemos "ativar som".
-  btnSom.addEventListener('click', () => {
-    vinheta.muted = !vinheta.muted;
-    btnSom.textContent = vinheta.muted ? '🔊 Ativar som' : '🔈 Silenciar vinheta';
-    btnSom.setAttribute('aria-pressed', String(!vinheta.muted));
-    if (vinheta.paused) vinheta.play().catch(()=>{});
-  });
+      <div class="stack">
+        <label class="muted">Adicionar streaming (Icecast/Shoutcast/URL de áudio):</label>
+        <div class="row" style="gap:8px">
+          <input id="streamUrl" type="url" class="input" placeholder="https://exemplo.com:8000/stream.mp3" />
+          <button id="addStream" class="btn b-ok">➕ Adicionar</button>
+        </div>
+        <div class="row" style="gap:8px">
+          <label class="tag">📥 Arquivos locais</label>
+          <input id="files" type="file" accept="audio/*" multiple />
+        </div>
+        <span class="hint">Dica: você pode selecionar vários arquivos de uma vez. Eles tocam apenas localmente (sem enviar para a internet).</span>
+      </div>
+    </div>
 
-  function entrarNoAr(){
-    wrap.style.display = 'none';
-    player.style.display = 'block';
-    // foca no botão de escolher arquivos para facilitar no mobile
-    document.getElementById('pick').focus({preventScroll:true});
-  }
-  vinheta.addEventListener('ended', entrarNoAr);
-  btnSkip.addEventListener('click', entrarNoAr);
+    <!-- LADO DIREITO: LISTA DE FAIXAS -->
+    <div class="stack">
+      <div class="row" style="justify-content:space-between;align-items:center">
+        <h3 style="margin:0">Playlist</h3>
+        <span id="count" class="muted">0 faixas</span>
+      </div>
+      <ul id="playlist" class="list"></ul>
+    </div>
+  </div>
+</section>
 
-  // --- PLAYER EMBUTIDO (simples, com auto-avançar e drag&drop) ---
-  const pick   = document.getElementById('pick');
-  const listEl = document.getElementById('tracks');
-  const audio  = document.getElementById('audio');
-  const nowEl  = document.getElementById('now');
+  </div>  <script>
+    // ===================== VINHETA =====================
+    const vinheta = document.getElementById('vinheta');
+    const btnSom = document.getElementById('btnSom');
+    const btnSkip = document.getElementById('btnSkip');
+    const vinhetaWrap = document.getElementById('vinhetawrap');
+    const vinhetaUpload = document.getElementById('vinhetaUpload');
+    const playerWrap = document.getElementById('playerwrap');
 
-  /** estado */
-  let queue = []; // {name, url}
-  let idx   = -1;
-
-  // escolher arquivos
-  pick.addEventListener('change', async (e)=>{
-    await addFiles(e.target.files);
-  });
-
-  // drag & drop
-  ['dragenter','dragover'].forEach(ev=>{
-    player.addEventListener(ev, e=>{ e.preventDefault(); e.dataTransfer.dropEffect='copy'; player.style.outline='2px dashed #28e1ff';});
-  });
-  ['dragleave','drop'].forEach(ev=>{
-    player.addEventListener(ev, e=>{ e.preventDefault(); player.style.outline='none';});
-  });
-  player.addEventListener('drop', async (e)=>{
-    await addFiles(e.dataTransfer.files);
-  });
-
-  async function addFiles(fileList){
-    const files = [...fileList].filter(f=>/^audio\//.test(f.type) || /\.mp3$/i.test(f.name));
-    for (const f of files){
+    btnSom.addEventListener('click', () => { vinheta.muted = false; vinheta.play(); });
+    btnSkip.addEventListener('click', () => { vinhetaWrap.style.display='none'; playerWrap.style.display='block'; });
+    vinheta.addEventListener('ended', () => { vinhetaWrap.style.display='none'; playerWrap.style.display='block'; });
+    vinhetaUpload.addEventListener('change', (e)=>{
+      const f = e.target.files[0];
+      if(!f) return;
       const url = URL.createObjectURL(f);
-      queue.push({name:f.name, url});
-    }
-    render();
-    if (idx === -1 && queue.length) playAt(0);
-  }
-
-  function render(){
-    listEl.innerHTML = '';
-    queue.forEach((t,i)=>{
-      const row = document.createElement('div');
-      row.className = 'track';
-      row.innerHTML = `
-        <div class="tname">${i===idx ? '▶️ ' : ''}${t.name}</div>
-        <div class="icons">
-          <button title="Tocar"   onclick="playAt(${i})">▶</button>
-          <button title="Subir"   onclick="moveUp(${i})">↑</button>
-          <button title="Descer"  onclick="moveDown(${i})">↓</button>
-          <button title="Remover" onclick="removeAt(${i})">×</button>
-        </div>`;
-      listEl.appendChild(row);
+      vinheta.src = url;
+      vinheta.muted = false;
+      vinheta.play();
     });
-  }
 
-  window.playAt = function(i){
-    idx = i;
-    const t = queue[i];
-    if (!t) return;
-    audio.src = t.url;
-    nowEl.textContent = 'Tocando agora: ' + t.name;
-    audio.play().catch(()=>{});
-    render();
-  }
-  window.moveUp = function(i){
-    if (i<=0) return;
-    [queue[i-1], queue[i]] = [queue[i], queue[i-1]];
-    if (idx===i) idx=i-1; else if (idx===i-1) idx=i;
-    render();
-  }
-  window.moveDown = function(i){
-    if (i>=queue.length-1) return;
-    [queue[i+1], queue[i]] = [queue[i], queue[i+1]];
-    if (idx===i) idx=i+1; else if (idx===i+1) idx=i;
-    render();
-  }
-  window.removeAt = function(i){
-    const was = (i===idx);
-    queue.splice(i,1);
-    if (queue.length===0){ audio.pause(); audio.removeAttribute('src'); idx=-1; nowEl.textContent='—'; }
-    else if (was){ idx = i>=queue.length ? queue.length-1 : i; playAt(idx); }
-    render();
-  }
+    // ===================== PLAYER & PLAYLIST =====================
+    const audio = document.getElementById('audio');
+    const nowTitle = document.getElementById('nowTitle');
+    const playlistEl = document.getElementById('playlist');
+    const countEl = document.getElementById('count');
 
-  // auto-avançar
-  audio.addEventListener('ended', ()=>{
-    if (idx < queue.length-1) playAt(idx+1);
-    else { idx = -1; render(); nowEl.textContent='—'; } // fim da fila
-  });
+    const btnPrev = document.getElementById('prev');
+    const btnPlay = document.getElementById('play');
+    const btnNext = document.getElementById('next');
+    const btnShuffle = document.getElementById('shuffle');
+    const btnRepeat = document.getElementById('repeat');
+    const btnClear = document.getElementById('clear');
 
-  // --- Vinheta de hora cheia ---
-  const chkHora = document.getElementById('hora');
-  let timerHora = null;
+    const streamUrl = document.getElementById('streamUrl');
+    const addStream = document.getElementById('addStream');
+    const filesInput = document.getElementById('files');
 
-  function scheduleTopOfHour(){
-    clearTimeout(timerHora);
-    const now = new Date();
-    const msToNext = (60 - now.getMinutes())*60*1000 - now.getSeconds()*1000 - now.getMilliseconds();
-    timerHora = setTimeout(()=>{
-      tocarVinhetaTopoHora();
-      scheduleTopOfHour(); // agenda a próxima
-    }, Math.max(1000, msToNext));
-  }
+    const modeShuffle = document.getElementById('modeShuffle');
+    const modeRepeat = document.getElementById('modeRepeat');
 
-  async function tocarVinhetaTopoHora(){
-    // pausa player, mostra video só com fade
-    const wasPlaying = !audio.paused;
-    audio.pause();
-    wrap.style.display='block';
-    vinheta.currentTime = 0;
-    vinheta.muted = false; // na hora cheia, tentamos com som (poderá exigir gesto em alguns mobiles)
-    try{ await vinheta.play(); }catch(e){}
-    vinheta.onended = ()=>{
-      wrap.style.display='none';
-      if (wasPlaying) audio.play().catch(()=>{});
-      // restaura handler padrão de primeira carga
-      vinheta.onended = entrarNoAr;
-    };
-  }
+    /**
+     * Estrutura da faixa na playlist:
+     * { title: string, url: string, kind: 'local'|'stream' }
+     */
+    let tracks = [];
+    let index = -1; // índice da faixa atual
+    let shuffle = false; // embaralhar
+    // repeat: 0=off, 1=one, 2=all
+    let repeat = 0;
 
-  chkHora.addEventListener('change', (e)=>{
-    if (e.target.checked) scheduleTopOfHour();
-    else clearTimeout(timerHora);
-  });
-</script>
-</body>
+    function renderPlaylist(){
+      playlistEl.innerHTML = '';
+      tracks.forEach((t, i)=>{
+        const li = document.createElement('li');
+        li.className = 'track' + (i===index ? ' active' : '');
+        li.innerHTML = `
+          <span class="tag">${t.kind === 'stream' ? 'URL' : 'Local'}</span>
+          <div class="name">${escapeHtml(t.title)}</div>
+          <div class="mini">
+            <button class="btn b-ghost" data-act="up" data-i="${i}" title="Subir">⬆️</button>
+            <button class="btn b-ghost" data-act="down" data-i="${i}" title="Descer">⬇️</button>
+            <button class="btn b-ghost" data-act="play" data-i="${i}" title="Tocar">▶️</button>
+            <button class="btn b-warn" data-act="del" data-i="${i}" title="Remover">🗑️</button>
+          </div>`;
+        li.addEventListener('dblclick', ()=> playAt(i));
+        playlistEl.appendChild(li);
+      });
+      countEl.textContent = `${tracks.length} faixa${tracks.length===1?'':'s'}`;
+    }
+
+    function escapeHtml(s){return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');}
+
+    function playAt(i){
+      if(i<0||i>=tracks.length) return;
+      index = i;
+      const t = tracks[i];
+      audio.src = t.url;
+      audio.play().catch(()=>{});
+      nowTitle.textContent = t.title;
+      renderPlaylist();
+      persistState();
+    }
+
+    function nextTrack(){
+      if(tracks.length===0) return;
+      if(repeat===1){ // repetir a mesma
+        playAt(index);
+        return;
+      }
+      if(shuffle){
+        let ni = Math.floor(Math.random()*tracks.length);
+        if(tracks.length>1){
+          // evitar repetir a mesma na sequência
+          while(ni===index){ ni = Math.floor(Math.random()*tracks.length); }
+        }
+        playAt(ni);
+        return;
+      }
+      let ni = index + 1;
+      if(ni >= tracks.length){
+        if(repeat===2){ ni = 0; }
+        else { audio.pause(); return; }
+      }
+      playAt(ni);
+    }
+
+    function prevTrack(){
+      if(tracks.length===0) return;
+      let pi = index - 1;
+      if(pi < 0){ pi = (repeat===2 ? tracks.length-1 : 0); }
+      playAt(pi);
+    }
+
+    audio.addEventListener('ended', nextTrack);
+
+    btnPlay.addEventListener('click', ()=>{
+      if(!audio.src){ if(tracks.length) playAt(0); return; }
+      if(audio.paused) audio.play(); else audio.pause();
+    });
+    btnNext.addEventListener('click', nextTrack);
+    btnPrev.addEventListener('click', prevTrack);
+    btnShuffle.addEventListener('click', ()=>{
+      shuffle = !shuffle; modeShuffle.textContent = `🔀 Shuffle: ${shuffle?'on':'off'}`; persistState();
+    });
+    btnRepeat.addEventListener('click', ()=>{
+      repeat = (repeat+1)%3; // 0->1->2->0
+      const label = repeat===0?'off':(repeat===1?'one':'all');
+      modeRepeat.textContent = `🔁 Repeat: ${label}`; persistState();
+    });
+    btnClear.addEventListener('click', ()=>{
+      audio.pause(); audio.removeAttribute('src'); nowTitle.textContent='—';
+      tracks = []; index = -1; renderPlaylist(); persistState();
+    });
+
+    // Reordenar / tocar / remover via botões de cada item
+    playlistEl.addEventListener('click', (e)=>{
+      const btn = e.target.closest('button');
+      if(!btn) return;
+      const act = btn.dataset.act; const i = +btn.dataset.i;
+      if(act==='play') playAt(i);
+      if(act==='del') { tracks.splice(i,1); if(index>=tracks.length) index=tracks.length-1; renderPlaylist(); persistState(); }
+      if(act==='up' && i>0){ [tracks[i-1],tracks[i]]=[tracks[i],tracks[i-1]]; index = (index===i? i-1 : index===i-1? i : index); renderPlaylist(); persistState(); }
+      if(act==='down' && i<tracks.length-1){ [tracks[i+1],tracks[i]]=[tracks[i],tracks[i+1]]; index = (index===i? i+1 : index===i+1? i : index); renderPlaylist(); persistState(); }
+    });
+
+    // Adicionar streaming URL
+    addStream.addEventListener('click', ()=>{
+      const url = (streamUrl.value||'').trim();
+      if(!url) return;
+      const title = inferTitleFromUrl(url);
+      tracks.push({ title, url, kind:'stream' });
+      renderPlaylist(); persistState();
+      if(tracks.length===1) playAt(0);
+      streamUrl.value='';
+    });
+
+    function inferTitleFromUrl(u){
+      try{ const p = new URL(u); return decodeURIComponent((p.pathname.split('/').pop()||p.host) || u); }catch{ return u; }
+    }
+
+    // Adicionar arquivos locais
+    filesInput.addEventListener('change', (e)=>{
+      const files = Array.from(e.target.files||[]);
+      for(const f of files){
+        const url = URL.createObjectURL(f);
+        tracks.push({ title: f.name, url, kind:'local' });
+      }
+      renderPlaylist(); persistState(); if(tracks.length && index===-1) playAt(0);
+      filesInput.value='';
+    });
+
+    // Persistência mínima (sem blobs locais, apenas modos + índice + URLs de stream)
+    function persistState(){
+      try{
+        const data = {
+          shuffle, repeat, index,
+          tracks: tracks.map(t=> t.kind==='stream' ? t : null).filter(Boolean)
+        };
+        localStorage.setItem('vov_radio_state', JSON.stringify(data));
+      }catch{}
+    }
+
+    function restoreState(){
+      try{
+        const raw = localStorage.getItem('vov_radio_state');
+        if(!raw) return;
+        const data = JSON.parse(raw);
+        shuffle = !!data.shuffle; repeat = data.repeat|0; index = -1;
+        modeShuffle.textContent = `🔀 Shuffle: ${shuffle?'on':'off'}`;
+        const label = repeat===0?'off':(repeat===1?'one':'all');
+        modeRepeat.textContent = `🔁 Repeat: ${label}`;
+        // só restauramos URLs de stream
+        tracks = Array.isArray(data.tracks) ? data.tracks.map(t=>({title:t.title,url:t.url,kind:'stream'})) : [];
+        renderPlaylist();
+        if(typeof data.index==='number' && tracks[data.index]){ playAt(data.index); }
+      }catch{}
+    }
+
+    restoreState();
+    // ===== Atalhos de teclado =====
+    document.addEventListener('keydown', (e) => {
+      const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
+      if (tag === 'input' || tag === 'textarea') return; // não interferir ao digitar
+      switch (e.code) {
+        case 'Space':
+          e.preventDefault();
+          btnPlay.click();
+          break;
+        case 'ArrowRight':
+          e.preventDefault();
+          nextTrack();
+          break;
+        case 'ArrowLeft':
+          e.preventDefault();
+          prevTrack();
+          break;
+        case 'KeyS': // toggle shuffle
+          shuffle = !shuffle;
+          modeShuffle.textContent = `🔀 Shuffle: ${shuffle ? 'on' : 'off'}`;
+          persistState();
+          break;
+        case 'KeyR': // toggle repeat
+          repeat = (repeat + 1) % 3;
+          modeRepeat.textContent = `🔁 Repeat: ${repeat === 0 ? 'off' : (repeat === 1 ? 'one' : 'all')}`;
+          persistState();
+          break;
+      }
+    });
+  </script></body>
 </html>
