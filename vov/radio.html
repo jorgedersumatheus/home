@@ -1,0 +1,70 @@
+<!DOCTYPE html><html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rádio V O V — Acesso Inteligente</title>
+  <style>
+    :root{--bg:#0f1115;--panel:#171a21;--ink:#f2f2f2;--muted:#a7a7a7;--pri:#5dd2ff;--warn:#ff4d4d;}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+    .wrap{max-width:840px;margin:0 auto;padding:24px}
+    .card{background:var(--panel);border:1px solid #242836;border-radius:16px;padding:18px;margin:16px 0;box-shadow:0 8px 30px rgba(0,0,0,.25)}
+    h1{margin:0 0 6px 0}
+    .muted{color:var(--muted)}
+    .btn{appearance:none;border:none;border-radius:12px;padding:12px 16px;font-weight:800;cursor:pointer}
+    .b-pri{background:var(--pri);color:#00121a}
+    .b-ghost{background:transparent;border:1px solid #2b3042;color:var(--ink)}
+    .b-warn{background:var(--warn);color:#fff}
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    .live{display:flex;align-items:center;gap:8px}
+    .dot{width:10px;height:10px;border-radius:999px;background:var(--warn);box-shadow:0 0 10px var(--warn);animation:blip 1s infinite}
+    @keyframes blip{0%,100%{opacity:.35}50%{opacity:1}}
+    a{color:var(--pri);text-decoration:none}
+    a:hover{text-decoration:underline}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="live"><span class="dot"></span><h1 style="margin:0">Rádio V O V — Acesso</h1></div>
+      <p class="muted">Esta página escolhe automaticamente a melhor forma de tocar a sua rádio, dependendo se o site está em HTTP ou HTTPS.</p>
+      <div id="httpBlock" class="card" style="display:none">
+        <h3>Carregando player ao vivo…</h3>
+        <p class="muted">Você está em <strong>HTTP</strong>. Vamos abrir o player completo.</p>
+      </div>
+      <div id="httpsBlock" class="card" style="display:none">
+        <h3>Você está em HTTPS (site seguro)</h3>
+        <p class="muted">Como o stream da rádio é <strong>HTTP</strong>, alguns navegadores bloqueiam por segurança ("conteúdo misto"). Escolha uma opção:</p>
+        <div class="row">
+          <button id="btnTryHttp" class="btn b-warn">Tentar versão HTTP desta página</button>
+          <button id="btnOpenApp" class="btn b-pri">📲 Abrir no app / player do sistema</button>
+          <a class="btn b-ghost" id="btnPublic" href="http://radiovov.radio12345.com" target="_blank" rel="noopener">Abrir página pública da rádio</a>
+        </div>
+        <p class="muted" style="margin-top:10px">Se o seu domínio não permitir HTTP (ex.: GitHub Pages), use o botão <strong>“Abrir no app”</strong> ou a <strong>página pública</strong>.</p>
+      </div>
+    </div>
+  </div>  <script>
+    (function(){
+      const STREAM_URL = 'http://uk20freenew.listen2myradio.com:34331/;stream';
+      const httpBlock = document.getElementById('httpBlock');
+      const httpsBlock = document.getElementById('httpsBlock');
+      const btnTryHttp = document.getElementById('btnTryHttp');
+      const btnOpenApp = document.getElementById('btnOpenApp');
+
+      if(location.protocol === 'http:'){
+        httpBlock.style.display = 'block';
+        // Redireciona para o player completo ao vivo (mesmo diretório)
+        setTimeout(()=>{ window.location.href = 'radio_vov_ao_vivo.html'; }, 600);
+      } else {
+        httpsBlock.style.display = 'block';
+      }
+
+      btnTryHttp && btnTryHttp.addEventListener('click', ()=>{
+        try{ window.location.href = location.href.replace('https:', 'http:'); }catch{ /* noop */ }
+      });
+      btnOpenApp && btnOpenApp.addEventListener('click', ()=>{
+        try{ window.open(STREAM_URL, '_blank'); }catch{ location.href = STREAM_URL; }
+      });
+    })();
+  </script></body>
+</html>
