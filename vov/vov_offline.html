@@ -1,1 +1,77 @@
-vov_offline.html
+
+<!DOCTYPE html><html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rádio V O V — Ao Vivo</title>
+  <style>
+    :root{
+      --bg:#0f1115;--panel:#171a21;--ink:#f2f2f2;--muted:#a7a7a7;--pri:#5dd2ff;--warn:#ff4d4d;--ok:#3ddc84;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;background:var(--bg);color:var(--ink);}
+    header{padding:20px 16px;background:linear-gradient(180deg,#141821,#0f1115);border-bottom:1px solid #242836}
+    h1{margin:0;font-weight:800;letter-spacing:.5px}
+    .sub{color:var(--muted);margin-top:6px}
+    .wrap{max-width:1100px;margin:0 auto;padding:16px}
+    .card{background:var(--panel);border:1px solid #242836;border-radius:16px;padding:16px;margin:16px 0;box-shadow:0 8px 30px rgba(0,0,0,.25)}
+    video{width:100%;max-height:420px;border-radius:12px;background:black}
+    .btn{appearance:none;border:none;border-radius:999px;padding:10px 16px;font-weight:700;cursor:pointer}
+    .b-white{background:#fff;color:#111}
+    .b-warn{background:var(--warn);color:#fff}
+    .b-ghost{background:transparent;border:1px solid #2b3042;color:var(--ink)}
+    .b-pri{background:var(--pri);color:#00131a}
+    .b-ok{background:var(--ok);color:#00160c}
+    .controls{display:flex;gap:8px;flex-wrap:wrap}
+    .pill{padding:6px 10px;border-radius:999px;background:#1c2130;color:var(--muted);font-size:.85rem}
+    .list{margin:0;padding:0;list-style:none;max-height:360px;overflow:auto;border:1px solid #222635;border-radius:12px}
+    .track{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid #1e2232}
+    .track:last-child{border-bottom:none}
+    .track.active{background:#121729;border-left:3px solid var(--pri)}
+    .muted{color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Rádio V O V</h1>
+    <div class="sub">Transmissão ao vivo • Listen2MyRadio</div>
+  </header>  <div class="wrap">
+    <section id="vinhetawrap" class="card">
+      <video id="vinheta" autoplay muted playsinline>
+        <source src="/vov/Vinheta_RV.mp4" type="video/mp4" />
+      </video>
+      <div>
+        <button id="btnSom" class="btn b-white">🔊 Som</button>
+        <button id="btnSkip" class="btn b-warn">⏭️ Pular</button>
+      </div>
+      <div style="margin-top:10px;">
+        <label class="muted">📂 Trocar Vinheta</label>
+        <input id="vinhetaUpload" type="file" accept="video/mp4,audio/mp3,video/webm,audio/mpeg" />
+      </div>
+    </section><section id="playerwrap" class="card" style="display:none">
+  <h2>🎶 Player VOV (ao vivo)</h2>
+  <audio id="audio" controls autoplay preload="none" src="http://uk20freenew.listen2myradio.com:34331/;stream"></audio>
+  <p class="muted">Servidor: uk20freenew.listen2myradio.com:34331 — Senha: vov25radio</p>
+</section>
+
+  </div>  <script>
+    const vinheta = document.getElementById('vinheta');
+    const btnSom = document.getElementById('btnSom');
+    const btnSkip = document.getElementById('btnSkip');
+    const vinhetaWrap = document.getElementById('vinhetawrap');
+    const vinhetaUpload = document.getElementById('vinhetaUpload');
+    const playerWrap = document.getElementById('playerwrap');
+
+    btnSom.addEventListener('click', () => { vinheta.muted = false; vinheta.play(); });
+    btnSkip.addEventListener('click', () => { vinhetaWrap.style.display='none'; playerWrap.style.display='block'; });
+    vinheta.addEventListener('ended', () => { vinhetaWrap.style.display='none'; playerWrap.style.display='block'; });
+    vinhetaUpload.addEventListener('change', (e)=>{
+      const f = e.target.files[0];
+      if(!f) return;
+      const url = URL.createObjectURL(f);
+      vinheta.src = url;
+      vinheta.muted = false;
+      vinheta.play();
+    });
+  </script></body>
+</html>
