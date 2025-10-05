@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Rádio V O V — No Ar</title>
+  <meta name="theme-color" content="#0b0b0f" />
+  <style>
+    :root{
+      --bg:#0b0b0f;
+      --card:#121218;
+      --gold:#d4af37;
+      --gold-soft:#e7c96a;
+      --text:#f5f5f7;
+      --muted:#9aa0a6;
+      --danger:#ff3b30;
+      --ok:#1fdf64;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
+      color:var(--text); background:
+        radial-gradient(1200px 500px at 20% -10%, #1a1a22 0%, rgba(26,26,34,0) 60%),
+        radial-gradient(1200px 600px at 110% 110%, #1a1a22 0%, rgba(26,26,34,0) 60%),
+        var(--bg);
+    }
+    .wrap{max-width:980px; margin:0 auto; padding:28px 20px 64px}
+    header{display:flex; align-items:center; gap:14px; margin-bottom:20px}
+    .mark{
+      width:42px;height:42px;border-radius:50%;
+      background:linear-gradient(145deg,#1b1b22,#0c0c10);
+      border:1px solid #242432; position:relative; display:grid; place-items:center;
+      box-shadow:0 0 0 2px rgba(212,175,55,.08), 0 18px 40px rgba(0,0,0,.35);
+    }
+    .mark::after{
+      content:"VOV"; font-weight:700; letter-spacing:.5px; font-size:.8rem; color:var(--gold);
+    }
+    h1{margin:0; font-weight:800; letter-spacing:.4px}
+    .badge{
+      margin-left:auto; padding:6px 10px; border-radius:999px;
+      background:rgba(255,59,48,.1); color:#ffb0aa; border:1px solid rgba(255,59,48,.25);
+      display:flex; align-items:center; gap:8px; font-weight:700; text-transform:uppercase; font-size:.75rem;
+    }
+    .dot{width:8px;height:8px;border-radius:50%;background:var(--danger);box-shadow:0 0 10px var(--danger)}
+    .card{
+      background:linear-gradient(180deg,rgba(212,175,55,.06),transparent 40%) , var(--card);
+      border:1px solid rgba(212,175,55,.16);
+      border-radius:18px; padding:22px; position:relative; overflow:hidden;
+      box-shadow:0 24px 60px rgba(0,0,0,.45);
+    }
+    .title{font-size:1.65rem; font-weight:800; margin:2px 0 8px}
+    .sub{color:var(--muted); margin-bottom:18px}
+    .row{display:flex; gap:14px; flex-wrap:wrap}
+    .btn{
+      appearance:none; border:0; cursor:pointer; outline:0;
+      padding:14px 18px; border-radius:14px; font-weight:750; letter-spacing:.2px;
+      background:var(--gold); color:#1b1b1f; transition:transform .06s ease, box-shadow .2s ease;
+      box-shadow:0 10px 22px rgba(212,175,55,.25), inset 0 1px 0 #fff4;
+    }
+    .btn:hover{transform:translateY(-1px)}
+    .btn.secondary{
+      background:transparent; color:var(--gold); border:1px solid rgba(212,175,55,.45);
+      box-shadow:none;
+    }
+    .now{
+      display:flex; align-items:center; gap:10px; margin-top:12px; color:var(--gold-soft);
+      font-weight:600; letter-spacing:.3px;
+    }
+    .eq{height:46px; display:flex; gap:3px; align-items:flex-end; position:absolute; right:22px; bottom:22px; opacity:.35}
+    .bar{width:6px; background:linear-gradient(#ffd977,#d4af37); border-radius:3px; animation:beat 1s ease-in-out infinite}
+    .bar:nth-child(2){animation-delay:.1s}.bar:nth-child(3){animation-delay:.2s}.bar:nth-child(4){animation-delay:.3s}
+    @keyframes beat{0%{height:10%}50%{height:100%}100%{height:20%}}
+    footer{margin-top:28px; color:var(--muted); display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap}
+    .link{color:var(--gold-soft); text-decoration:none; border-bottom:1px dashed rgba(212,175,55,.35)}
+    .hint{margin-top:12px; color:#fbd9d6; background:rgba(255,59,48,.06); border:1px solid rgba(255,59,48,.2); padding:10px 12px; border-radius:12px; display:none}
+    .ok{color:#9ff5bf; background:rgba(31,223,100,.08); border-color:rgba(31,223,100,.2)}
+    .muted{color:var(--muted)}
+    .grid{display:grid; gap:18px}
+    @media (min-width:860px){
+      .grid{grid-template-columns:1.3fr .7fr}
+      .aside{padding:22px}
+    }
+    .aside{border:1px dashed rgba(212,175,55,.25); border-radius:16px}
+    .aside h3{margin:0 0 8px}
+    .qr{
+      width:128px; height:128px; border-radius:12px; border:1px solid rgba(212,175,55,.25);
+      background:#fff url("./imgs/qr_vov.png") center/cover no-repeat; /* troque pela sua imagem de QR */
+      box-shadow:0 10px 24px rgba(0,0,0,.35);
+    }
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="mark"></div>
+      <h1>Rádio V O V — No Ar</h1>
+      <div id="liveBadge" class="badge" title="Status do player">
+        <span class="dot"></span> ao vivo
+      </div>
+    </header>
+
+    <div class="grid">
+      <!-- CARD PRINCIPAL -->
+      <section class="card">
+        <div class="title">Inteligência Vital em Sintonia</div>
+        <div class="sub">De Salvador para o mundo — #SaveSimpatia</div>
+
+        <div class="row">
+          <button id="playBtn" class="btn">▶︎ Ouvir agora</button>
+          <a id="openApp" class="btn secondary" target="_blank" rel="noopener">📲 Abrir no app / player</a>
+          <a id="publicPage" class="btn secondary" target="_blank" rel="noopener">🌐 Página pública</a>
+        </div>
+
+        <div id="hint" class="hint"></div>
+        <div id="ok" class="hint ok"></div>
+
+        <div class="now">
+          <span>🔊</span>
+          <span id="nowTxt">Rádio V O V — Sintonize sua inteligência vital</span>
+        </div>
+
+        <!-- equalizador decorativo -->
+        <div class="eq" aria-hidden="true">
+          <div class="bar" style="height:60%"></div>
+          <div class="bar" style="height:35%"></div>
+          <div class="bar" style="height:85%"></div>
+          <div class="bar" style="height:45%"></div>
+        </div>
+
+        <!-- AUDIO (não mostrar visualmente) -->
+        <audio id="player" preload="none" crossorigin="anonymous">
+          <!-- tente estes, o navegador usa o que tocar -->
+          <source src="http://uk6freenew.listen2myradio.com:18908/;" type="audio/mpeg" />
+          <source src="http://uk6freenew.listen2myradio.com:18908/;stream.mp3" type="audio/mpeg" />
+          <source src="http://uk6freenew.listen2myradio.com:18908/stream" type="audio/mpeg" />
+        </audio>
+      </section>
+
+      <!-- LATERAL: QR + INFO -->
+      <aside class="aside">
+        <h3 style="color:var(--gold)">Escaneie e ouça agora</h3>
+        <div class="qr" title="QR para radio.html"></div>
+        <p class="muted" style="margin-top:10px">
+          Divulgue este link único:<br>
+          <span class="mono">https://jorgematheus.mus.br/vov/radio.html</span>
+        </p>
+        <p class="muted">Se o player não tocar em site seguro (HTTPS), use “Abrir no app / player”.</p>
+      </aside>
+    </div>
+
+    <footer>
+      <div>© V O V — Rádio Escola da Alma • Black &amp; Gold Edition</div>
+      <div class="muted">“A inteligência toca som vital.”</div>
+    </footer>
+  </div>
+
+  <script>
+    // ====== CONFIGS ======
+    const STREAM_HTTP = "http://uk6freenew.listen2myradio.com:18908/;";
+    const PUBLIC_PAGE = "http://radiovovdigital.radio12345.com";
+
+    // ====== ELEMENTOS ======
+    const player = document.getElementById('player');
+    const playBtn = document.getElementById('playBtn');
+    const openApp = document.getElementById('openApp');
+    const publicPage = document.getElementById('publicPage');
+    const hint = document.getElementById('hint');
+    const ok = document.getElementById('ok');
+    const liveBadge = document.getElementById('liveBadge');
+
+    // links
+    openApp.href = STREAM_HTTP;
+    publicPage.href = PUBLIC_PAGE;
+
+    // HTTPS x HTTP
+    const isHttps = location.protocol === 'https:';
+    if (isHttps) {
+      hint.style.display = 'block';
+      hint.textContent = 'Você está em HTTPS. Alguns navegadores bloqueiam áudio HTTP. Toque “Abrir no app / player” ou visite a página pública.';
+    } else {
+      ok.style.display = 'block';
+      ok.textContent = 'Conexão direta habilitada. Toque “Ouvir agora”.';
+    }
+
+    // tocar/parar
+    let playing = false;
+    playBtn.addEventListener('click', async () => {
+      try {
+        if (!playing) {
+          await player.play();
+          playing = true;
+          playBtn.textContent = '⏸︎ Pausar';
+          liveBadge.querySelector('.dot').style.background = 'var(--ok)';
+          liveBadge.querySelector('.dot').style.boxShadow = '0 0 10px var(--ok)';
+        } else {
+          player.pause();
+          playing = false;
+          playBtn.textContent = '▶︎ Ouvir agora';
+          liveBadge.querySelector('.dot').style.background = 'var(--danger)';
+          liveBadge.querySelector('.dot').style.boxShadow = '0 0 10px var(--danger)';
+        }
+      } catch (e) {
+        hint.style.display = 'block';
+        hint.textContent = 'O navegador não permitiu tocar o áudio automaticamente. Use “Abrir no app / player”.';
+      }
+    });
+
+    // quando o som começar
+    player.addEventListener('playing', () => {
+      ok.style.display = 'block';
+      ok.textContent = 'AO VIVO: stream conectado. Bom som! #SaveSimpatia';
+    });
+
+    // fallback: se der erro no áudio
+    player.addEventListener('error', () => {
+      if (isHttps) {
+        hint.style.display = 'block';
+        hint.textContent = 'Player bloqueado pelo navegador em HTTPS. Clique em “Abrir no app / player” ou use a página pública.';
+      } else {
+        hint.style.display = 'block';
+        hint.textContent = 'Não foi possível reproduzir agora. Tente o botão “Abrir no app / player”.';
+      }
+    });
+  </script>
+</body>
+</html>
