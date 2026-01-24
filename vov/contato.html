@@ -61,18 +61,30 @@
     }
   </style>
 </head>
+
+<script>
+  const form = document.getElementById("vovForm");
+
+  form.addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const formData = new FormData(form);
+
+    await fetch("http://localhost:5678/webhook-test/be3fd784-0e69-4e5f-901a-c24da5d31145", {
+      method: "POST",
+      body: formData
+    });
+
+    window.location.href = "https://jorgematheus.mus.br/vov/obrigado.html";
+  });
+</script>
+  
 <body>
   <div class="form-container">
     <h1>Entre em contato</h1>
-       <form action="http://localhost:5678/webhook-test/be3fd784-0e69-4e5f-901a-c24da5d31145" method="POST">
+       <form id="vovForm"> "http://localhost:5678/webhook-test/be3fd784-0e69-4e5f-901a-c24da5d31145" method="POST">
 
-      <!-- Configurações ocultas -->
-      <input type="hidden" name="_next" value="https://jorgematheus.mus.br/vov/obrigado.html">
-      <input type="hidden" name="_captcha" value="false">
-      <input type="hidden" name="_cc" value="www.jorgematheus.mus.br@gmail.com">
-      <input type="hidden" name="_subject" value="VOV-IA / Novo contato \">
-      <input type="hidden" name="_autoresponse" value="Olá! Recebemos sua mensagem na V O V. Obrigado pelo contato — retornaremos em breve.">
-      <input type="text" name="_honey" style="display:none">
+      <!-- Con
 
       <!-- Campos visíveis -->
       <label for="name">Seu nome</label>
@@ -85,8 +97,8 @@
       <textarea id="message" name="message" rows="5" required></textarea>
 
       <button type="submit">Enviar para VOV IA - Agente IA</button>
-    </form>
-  
+    
+       </form>form id="vovForm">
 </body>
 </html>
 
