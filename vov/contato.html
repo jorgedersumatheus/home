@@ -1,9 +1,11 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Contato – V O V</title>
+
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -62,31 +64,12 @@
   </style>
 </head>
 
-<script>
-  const form = document.getElementById("vovForm");
-
-  form.addEventListener("submit", async function (e) {
-    e.preventDefault();
-
-    const formData = new FormData(form);
-
-    await fetch("http://localhost:5678/webhook-test/be3fd784-0e69-4e5f-901a-c24da5d31145", {
-      method: "POST",
-      body: formData
-    });
-
-    window.location.href = "https://jorgematheus.mus.br/vov/obrigado.html";
-  });
-</script>
-  
 <body>
+
   <div class="form-container">
     <h1>Entre em contato</h1>
-       <form id="vovForm"> "http://localhost:5678/webhook-test/be3fd784-0e69-4e5f-901a-c24da5d31145" method="POST">
 
-      <!-- Con
-
-      <!-- Campos visíveis -->
+    <form id="vovForm">
       <label for="name">Seu nome</label>
       <input type="text" id="name" name="name" required>
 
@@ -96,9 +79,26 @@
       <label for="message">Mensagem</label>
       <textarea id="message" name="message" rows="5" required></textarea>
 
-      <button type="submit">Enviar para VOV IA - Agente IA</button>
-    
-       </form>form id="vovForm">
+      <button type="submit">Enviar para VOV IA – Agente IA</button>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById("vovForm");
+
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+
+      await fetch("http://localhost:5678/webhook-test/be3fd784-0e69-4e5f-901a-c24da5d31145", {
+        method: "POST",
+        body: formData
+      });
+
+      window.location.href = "https://jorgematheus.mus.br/vov/obrigado.html";
+    });
+  </script>
+
 </body>
 </html>
-
