@@ -1,132 +1,84 @@
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <title>Contato — Ver Ouvir Vendas</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>Contato — Ver Ouvir Vendas</title>
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #0d1b2a;
-      color: #fff;
-      margin: 0;
-      padding: 0;
-    }
+<style>
+body{
+font-family: Arial, sans-serif;
+background:#f4f4f4;
+padding:40px;
+text-align:center;
+}
 
-    .container {
-      max-width: 600px;
-      margin: 60px auto;
-      padding: 30px;
-      background: #1b263b;
-      border-radius: 10px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.3);
-    }
+form{
+background:white;
+padding:25px;
+border-radius:10px;
+max-width:420px;
+margin:auto;
+box-shadow:0 0 12px rgba(0,0,0,0.1);
+}
 
-    h1 {
-      text-align: center;
-      color: #ffd60a;
-      margin-bottom: 20px;
-    }
+input, textarea{
+width:100%;
+padding:12px;
+margin:10px 0;
+border:1px solid #ccc;
+border-radius:6px;
+}
 
-    label {
-      display: block;
-      margin-top: 15px;
-      font-weight: bold;
-    }
+button{
+background:#000;
+color:#fff;
+padding:14px;
+border:none;
+width:100%;
+border-radius:6px;
+font-size:16px;
+cursor:pointer;
+}
 
-    input, textarea {
-      width: 100%;
-      padding: 12px;
-      margin-top: 6px;
-      border: none;
-      border-radius: 6px;
-      font-size: 16px;
-    }
-
-    textarea {
-      min-height: 120px;
-      resize: vertical;
-    }
-
-    button {
-      margin-top: 20px;
-      width: 100%;
-      padding: 14px;
-      background: #ffd60a;
-      border: none;
-      border-radius: 6px;
-      font-size: 18px;
-      font-weight: bold;
-      cursor: pointer;
-      color: #000;
-      transition: 0.3s;
-    }
-
-    button:hover {
-      background: #ffc300;
-    }
-
-    .rodape {
-      text-align: center;
-      margin-top: 20px;
-      font-size: 12px;
-      opacity: 0.7;
-    }
-  </style>
+button:hover{
+background:#333;
+}
+</style>
 </head>
 
 <body>
 
-  <div class="container">
-    <h1>Fale com a VOV</h1>
+<h2>Fale com a Ver Ouvir Vendas</h2>
 
-    <form id="vovForm">
-      <label>Nome</label>
-      <input type="text" name="nome" required>
+<form id="form">
 
-      <label>Email</label>
-      <input type="email" name="email" required>
+<input type="text" name="nome" placeholder="Seu nome" required>
+<input type="email" name="email" placeholder="Seu e-mail" required>
+<textarea name="mensagem" placeholder="Sua mensagem" rows="5" required></textarea>
 
-      <label>Mensagem</label>
-      <textarea name="mensagem" required></textarea>
+<button type="submit">Enviar mensagem</button>
 
-      <button type="submit">Enviar mensagem</button>
-    </form>
+</form>
 
-    <div class="rodape">
-      Ver Ouvir Vendas — Comunicação Inteligente
-    </div>
-  </div>
+<script>
+document.getElementById("form").addEventListener("submit", function(e){
 
-  <script>
-    const form = document.getElementById("vovForm");
+e.preventDefault();
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
+fetch("https://script.google.com/macros/s/AKfycbx14GHUSOUPRCYS9nkMD7yuHHBdA2NaHH6vfJV3c2rY2rikWFf3u8csopiPA2kSJEn0Cw/exec",{
+method:"POST",
+body:new FormData(this)
+})
+.then(()=>{
+window.location.href="obrigado.html";
+})
+.catch(()=>{
+alert("Erro ao enviar. Tente novamente.");
+});
 
-      const formData = new FormData(form);
-
-      try {
-        const response = await fetch(
-          "https://n8n-vov.onrender.com/webhook/pedido-show",
-          {
-            method: "POST",
-            body: formData
-          }
-        );
-
-        if (response.ok) {
-          alert("Mensagem enviada com sucesso!");
-          form.reset();
-        } else {
-          alert("Erro ao enviar. Tente novamente.");
-        }
-      } catch (error) {
-        alert("Não foi possível conectar ao servidor.");
-      }
-    });
-  </script>
+});
+</script>
 
 </body>
 </html>
