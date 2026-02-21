@@ -61,21 +61,34 @@ background:#333;
 
 </form>
 
-<script>
-document.getElementById("form").addEventListener("submit", function(e){
 
-e.preventDefault();
 
-fetch("https://script.google.com/macros/s/AKfycbx14GHUSOUPRCYS9nkMD7yuHHBdA2NaHH6vfJV3c2rY2rikWFf3u8csopiPA2kSJEn0Cw/exec",{
-method:"POST",
-body:new FormData(this)
-})
-.then(()=>{
-window.location.href="obrigado.html";
-})
-.catch(()=>{
-alert("Erro ao enviar. Tente novamente.");
-});
+  <script>
+document.getElementById("form").addEventListener("submit", async function(e){
+
+  e.preventDefault();
+
+  const dados = {
+    nome: this.nome.value,
+    email: this.email.value,
+    mensagem: this.mensagem.value,
+    origem: "site-vov"
+  };
+
+  try{
+    await fetch("https://n8n-vov.onrender.com/webhook/comunica",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body: JSON.stringify(dados)
+    });
+
+    window.location.href="obrigado.html";
+
+  }catch(e){
+    alert("Erro ao enviar. Tente novamente.");
+  }
 
 });
 </script>
