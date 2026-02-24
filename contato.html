@@ -84,29 +84,38 @@ button:hover{
 
 <h2>Fale com Jorge Luis Aparecido Matheus</h2>
 
-<form id="form">
+<form id="form-contato">
   <input type="text" name="nome" placeholder="Seu nome" required>
   <input type="email" name="email" placeholder="Seu e-mail" required>
-  <textarea name="mensagem" placeholder="Sua mensagem" rows="5" required></textarea>
-  <button type="submit">Enviar mensagem</button>
+  <textarea name="mensagem" placeholder="Sua mensagem" required></textarea>
+
+  <input type="hidden" name="origem" value="VOV">
+
+  <button type="submit">Enviar</button>
 </form>
 
 <script>
-document.getElementById("form").addEventListener("submit", function(e){
-
+document.getElementById("form-contato").addEventListener("submit", async function(e) {
   e.preventDefault();
 
-  fetch("https://n8n-vov.onrender.com/webhook/comunica",{
-    method:"POST",
-    body:new FormData(this)
-  })
-  .then(()=>{
-    window.location.href="https://jorgedersumatheus.github.io/obrigado.html";
-  })
-  .catch(()=>{
-    alert("Erro ao enviar. Tente novamente.");
-  });
+  const form = e.target;
+  const dados = new FormData(form);
 
+  try {
+   oonst resposta = await fetch("https://n8n-vov.onrender.com/webhook/comunica", {
+      method: "POST",
+      body: dados
+    });
+
+    if (resposta.ok) {
+      window.location.href = "obrigado.html";
+    } else {
+      alert("Erro ao enviar. Tente novamente.");
+    }
+
+  } catch (erro) {
+    alert("Erro de conexão. Tente novamente.");
+  }
 });
 </script>
 
