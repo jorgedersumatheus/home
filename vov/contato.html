@@ -1,97 +1,85 @@
 
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Contato — Ver Ouvir Vendas</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contato - VOV</title>
 
 <style>
 body{
-font-family: Arial, sans-serif;
-background:#f4f4f4;
-padding:40px;
-text-align:center;
+  font-family: Arial, sans-serif;
+  background:#f4f6f8;
+  margin:0;
+  padding:0;
 }
-
-form{
-background:white;
-padding:25px;
-border-radius:10px;
-max-width:420px;
-margin:auto;
-box-shadow:0 0 12px rgba(0,0,0,0.1);
+.container{
+  max-width:600px;
+  margin:60px auto;
+  background:#fff;
+  padding:30px;
+  border-radius:10px;
+  box-shadow:0 5px 20px rgba(0,0,0,0.08);
 }
-
+h1{
+  text-align:center;
+  margin-bottom:20px;
+}
 input, textarea{
-width:100%;
-padding:12px;
-margin:10px 0;
-border:1px solid #ccc;
-border-radius:6px;
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  margin-bottom:15px;
+  border:1px solid #ccc;
+  border-radius:6px;
+  font-size:16px;
 }
-
 button{
-background:#000;
-color:#fff;
-padding:14px;
-border:none;
-width:100%;
-border-radius:6px;
-font-size:16px;
-cursor:pointer;
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:6px;
+  background:#0a4cff;
+  color:white;
+  font-size:16px;
+  cursor:pointer;
 }
-
 button:hover{
-background:#333;
+  background:#083bcc;
+}
+.footer{
+  text-align:center;
+  margin-top:20px;
+  font-size:13px;
+  color:#666;
 }
 </style>
-</head>
 
+</head>
 <body>
 
-<h2>Fale com a Ver Ouvir Vendas</h2>
+<div class="container">
+<h1>Fale Conosco</h1>
 
-<form id="form">
+<form action="https://formsubmit.co/verouvirvendas@jorgematheus.mus.br" method="POST">
 
-<input type="text" name="nome" placeholder="Seu nome" required>
-<input type="email" name="email" placeholder="Seu e-mail" required>
-<textarea name="mensagem" placeholder="Sua mensagem" rows="5" required></textarea>
+<input type="hidden" name="_next" value="https://jorgedersumatheus.github.io/home/obrigado.html">
+<input type="hidden" name="_captcha" value="false">
+<input type="hidden" name="_subject" value="Novo contato pelo site VOV">
+
+<input type="text" name="Nome" placeholder="Seu nome" required>
+<input type="email" name="Email" placeholder="Seu e-mail" required>
+<textarea name="Mensagem" rows="5" placeholder="Escreva sua mensagem" required></textarea>
 
 <button type="submit">Enviar mensagem</button>
 
 </form>
 
+<div class="footer">
+Ver Ouvir Vendas • Contato direto
+</div>
 
-
-  <script>
-document.getElementById("form").addEventListener("submit", async function(e){
-
-  e.preventDefault();
-
-  const dados = {
-    nome: this.nome.value,
-    email: this.email.value,
-    mensagem: this.mensagem.value,
-    origem: "site-vov"
-  };
-
-  try{
-    await fetch("https://n8n-vov.onrender.com/webhook/comunica",{
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json"
-      },
-      body: JSON.stringify(dados)
-    });
-
-    window.location.href="obrigado.html";
-
-  }catch(e){
-    alert("Erro ao enviar. Tente novamente.");
-  }
-
-});
-</script>
+</div>
 
 </body>
 </html>
