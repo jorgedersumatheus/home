@@ -1,123 +1,84 @@
-8<!DOCTYPE html>
-<html lang="pt-br">
+<!DOCTYPE html>
+<html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Contato — Ver Ouvir Vendas</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contato - VOV</title>
 
 <style>
 body{
   font-family: Arial, sans-serif;
-  background:#f4f4f4;
-  padding:40px;
-  text-align:center;
+  background:#f4f6f8;
+  margin:0;
+  padding:0;
 }
-
-/* Caixa da mensagem */
-.mensagem-contato{
-  max-width:700px;
-  margin:0 auto 35px auto;
-  padding:24px 28px;
-  background:#f7f9fc;
-  border-left:4px solid #2b6cb0;
-  border-radius:8px;
-  font-family:system-ui, -apple-system, sans-serif;
-  line-height:1.6;
-  color:#1a202c;
-  box-shadow:0 4px 10px rgba(0,0,0,0.04);
-  text-align:left;
-}
-.mensagem-contato strong{
-  color:#2b6cb0;
-}
-
-/* Formulário */
-form{
-  background:white;
-  padding:25px;
+.container{
+  max-width:600px;
+  margin:60px auto;
+  background:#fff;
+  padding:30px;
   border-radius:10px;
-  max-width:420px;
-  margin:auto;
-  box-shadow:0 0 12px rgba(0,0,0,0.1);
+  box-shadow:0 5px 20px rgba(0,0,0,0.08);
 }
-
+h1{
+  text-align:center;
+  margin-bottom:20px;
+}
 input, textarea{
   width:100%;
   padding:12px;
-  margin:10px 0;
+  margin-top:10px;
+  margin-bottom:15px;
   border:1px solid #ccc;
   border-radius:6px;
-  font-size:15px;
+  font-size:16px;
 }
-
 button{
-  background:#000;
-  color:#fff;
+  width:100%;
   padding:14px;
   border:none;
-  width:100%;
   border-radius:6px;
+  background:#0a4cff;
+  color:white;
   font-size:16px;
   cursor:pointer;
 }
-
 button:hover{
-  background:#333;
+  background:#083bcc;
+}
+.footer{
+  text-align:center;
+  margin-top:20px;
+  font-size:13px;
+  color:#666;
 }
 </style>
-</head>
 
+</head>
 <body>
 
-<section class="mensagem-contato">
-  <p><strong>Você chegou até aqui — isso já nos alegra.</strong></p>
+<div class="container">
+<h1>Fale Conosco</h1>
 
-  <p>Este espaço não é apenas um formulário.  
-  É um ponto de encontro entre pessoas que acreditam que é possível construir caminhos novos, com inteligência, simplicidade e cooperação.</p>
+<form action="https://formsubmit.co/verouvirvendas@jorgematheus.mus.br" method="POST">
 
-  <p>Estamos experimentando, aprendendo e compartilhando tudo de forma aberta, gratuita e prática.</p>
+<input type="hidden" name="_next" value="https://jorgedersumatheus.github.io/home/obrigado.html">
+<input type="hidden" name="_captcha" value="false">
+<input type="hidden" name="_subject" value="Novo contato pelo site VOV">
 
-  <p>Se você escreve, participa do processo.  
-  Se participa, ajuda a inventar o próximo passo.</p>
+<input type="text" name="Nome" placeholder="Seu nome" required>
+<input type="email" name="Email" placeholder="Seu e-mail" required>
+<textarea name="Mensagem" rows="5" placeholder="Escreva sua mensagem" required></textarea>
 
-  <p><strong>Deixe sua mensagem. Seguimos juntos.</strong></p>
-</section>
+<button type="submit">Enviar mensagem</button>
 
-<h2>Entrar em Contato</h2>
-
-<form id="form-contato">
-  <input type="text" name="nome" placeholder="Seu nome" required>
-  <input type="email" name="email" placeholder="Seu e-mail" required>
-  <textarea name="mensagem" placeholder="Sua mensagem" required></textarea>
-
-  <input type="hidden" name="origem" value="VOV">
-
-  <button type="submit">Enviar</button>
 </form>
 
-<script>
-document.getElementById("form-contato").addEventListener("submit", async function(e) {
-  e.preventDefault();
+<div class="footer">
+Ver Ouvir Vendas • Contato direto
+</div>
 
-  const form = e.target;
-  const dados = new FormData(form);
-
-  try {
-    const resposta = await fetch("https://n8n-vov.onrender.com/webhook/comunica", {
-      method: "POST",
-      body: dados
-    });
-
-    if (resposta.ok) {
-      window.location.href = "obrigado.html";
-    } else {
-      alert("Erro ao enviar. Tente novamente.");
-    }
-
-  } catch (erro) {
-    alert("Erro de conexão. Tente novamente.");
-  }
-});
-</script>
+</div>
 
 </body>
 </html>
