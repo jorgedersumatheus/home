@@ -80,5 +80,30 @@ Jorge LA Matheus• Contato direto
 
 </div>
 
+  <script>
+document.getElementById("form-contato").addEventListener("submit", async function(e) {
+  e.preventDefault();
+
+  const form = e.target;
+  const dados = new FormData(form);
+
+  try {
+    const resposta = await fetch("https://formsubmit.co/www.jorgematheus.mus.br@gmail.com", {
+      method: "POST",
+      body: dados
+    });
+
+    if (resposta.ok) {
+      window.location.href = "obrigado.html"; // ou /home/obrigado.html
+    } else {
+      alert("Erro ao enviar. Tente novamente.");
+    }
+
+  } catch (erro) {
+    alert("Erro de conexão. Tente novamente.");
+  }
+});
+</script>
+
 </body>
 </html>
