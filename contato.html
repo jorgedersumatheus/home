@@ -79,31 +79,34 @@ Jorge LA Matheus• Contato direto
 
 </div>
 
-  <script>
+<script>
 document.getElementById("form-contato").addEventListener("submit", async function(e) {
   e.preventDefault();
 
-  const form = e.target;
-  const dados = new FormData(form);
+  const dados = new FormData(this);
 
   try {
-    const resposta = await fetch("https://rolled-vehicle-remind-versus.trycloudflare.com/webhook/comunica", {
-    
+    const resposta = await fetch("https://culture-apparatus-montana-hunt.trycloudflare.com/webhook/comunica", {
       method: "POST",
       body: dados
     });
 
     if (resposta.ok) {
-      window.location.href = "obrigado.html"; // ou /home/obrigado.html
+      window.location.href = "obrigado.html";
     } else {
-      alert("Erro ao enviar. Tente novamente.");
+      alert("Erro ao enviar para o servidor.");
     }
 
   } catch (erro) {
-    alert("Erro de conexão. Tente novamente.");
+    alert("Não foi possível conectar ao servidor.");
   }
 });
 </script>
 
+
+
+
+
+  
 </body>
 </html>
