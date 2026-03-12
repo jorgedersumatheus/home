@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rádio VOV</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<nav>
+  <ul>
+    <li><a href="/index.html">Home</a></li>
+    <li><a href="radio.html">Rádio</a></li>
+    <li><a href="programas.html">Programas</a></li>
+    <li><a href="videos.html">Vídeos</a></li>
+    <li><a href="arquivo-musical.html">Arquivo Musical</a></li>
+    <li><a href="agente-cultural.html">Agente Cultural</a></li>
+    <li><a href="../inteligencia-vital.html">Inteligência Vital</a></li>
+    <li><a href="../contato.html">Contato</a></li>
+  </ul>
+</nav>
+
+<header>
+  <h1>Rádio VOV Online</h1>
+  <p>Ouça a programação ao vivo!</p>
+  <audio controls autoplay>
+    <source src="https://radiovovdigital.radiostream123.com/stream" type="audio/mpeg">
+    Seu navegador não suporta o player de áudio.
+  </audio>
+</header>
+
+<section id="status-radio">
+  <h2>Status da Rádio</h2>
+  <div id="radio-status">Carregando...</div>
+</section>
+
+<footer>
+  <p>&copy; 2026 Ver Ouvir Vendas – Todos os direitos reservados</p>
+  <p><a href="../contato.html">Contato</a></p>
+</footer>
+
+<script>
+async function atualizarStatus() {
+  try {
+    const resp = await fetch('/webhook/radio-status');
+    const data = await resp.json();
+    const statusEl = document.getElementById('radio-status');
+    statusEl.textContent = data.status === 'ativa' ? '🔊 Ativa' : '⏹️ Off';
+  } catch(e) {
+    document.getElementById('radio-status').textContent = 'Erro ao consultar status';
+  }
+}
+atualizarStatus();
+setInterval(atualizarStatus, 30000);
+</script>
+
+</body>
+</html>
