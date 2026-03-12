@@ -1,112 +1,68 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Contato - VOV</title>
-
-<style>
-body{
-  font-family: Arial, sans-serif;
-  background:#f4f6f8;
-  margin:0;
-  padding:0;
-}
-.container{
-  max-width:600px;
-  margin:60px auto;
-  background:#fff;
-  padding:30px;
-  border-radius:10px;
-  box-shadow:0 5px 20px rgba(0,0,0,0.08);
-}
-h1{
-  text-align:center;
-  margin-bottom:20px;
-}
-input, textarea{
-  width:100%;
-  padding:12px;
-  margin-top:10px;
-  margin-bottom:15px;
-  border:1px solid #ccc;
-  border-radius:6px;
-  font-size:16px;
-}
-button{
-  width:100%;
-  padding:14px;
-  border:none;
-  border-radius:6px;
-  background:#0a4cff;
-  color:white;
-  font-size:16px;
-  cursor:pointer;
-}
-button:hover{
-  background:#083bcc;
-}
-.footer{
-  text-align:center;
-  margin-top:20px;
-  font-size:13px;
-  color:#666;
-}
-</style>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contato - VOV</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="container">
-<h1>escreva para o músico</h1>
+<nav>
+  <ul>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="radio.html">Rádio</a></li>
+    <li><a href="programas.html">Programas</a></li>
+    <li><a href="videos.html">Vídeos</a></li>
+    <li><a href="arquivo-musical.html">Arquivo Musical</a></li>
+    <li><a href="agente-cultural.html">Agente Cultural</a></li>
+    <li><a href="inteligencia-vital.html">Inteligência Vital</a></li>
+    <li><a href="contato.html">Contato</a></li>
+  </ul>
+</nav>
 
-<form id="form-contato"> 
-<input type="hidden" name="_next" value="https://jorgedersumatheus.github.io/home/obrigado.html">
-<input type="hidden" name="_captcha" value="false">
-<input type="hidden" name="_subject" value="novo contato">
+<header>
+  <h1>Fale Conosco</h1>
+  <p>Envie sua mensagem para a equipe VOV</p>
+</header>
 
-<input type="text" name="Nome" placeholder="nome" required>
-<input type="email" name="Email" placeholder="e-mail" required>
-<textarea name="Mensagem" rows="5" placeholder="mensagem para o artista" required></textarea>
+<section>
+  <form id="form-contato" onsubmit="return enviarFormulario();">
+    <label for="nome">Nome:</label>
+    <input type="text" id="nome" name="nome" required>
 
-<button type="submit">mandar a mensagem</button>
+    <label for="email">E-mail:</label>
+    <input type="email" id="email" name="email" required>
 
-</form>
+    <label for="mensagem">Mensagem:</label>
+    <textarea id="mensagem" name="mensagem" rows="5" required></textarea>
 
-<div class="footer">
-Jorge LA Matheus• Contato direto
-</div>
+    <button type="submit">Enviar</button>
+  </form>
+</section>
 
-</div>
+<footer>
+  <p>&copy; 2026 Ver Ouvir Vendas</p>
+</footer>
 
 <script>
-document.getElementById("form-contato").addEventListener("submit", async function(e) {
-  e.preventDefault();
-
-  const dados = new FormData(this);
+async function enviarFormulario() {
+  const form = document.getElementById('form-contato');
+  const data = new FormData(form);
 
   try {
-    const resposta = await fetch("https://culture-apparatus-montana-hunt.trycloudflare.com/webhook/comunica", {
-      method: "POST",
-      body: dados
+    await fetch('/webhook/contato', {
+      method: 'POST',
+      body: data
     });
-
-    if (resposta.ok) {
-      window.location.href = "obrigado.html";
-    } else {
-      alert("Erro ao enviar para o servidor.");
-    }
-
-  } catch (erro) {
-    alert("Não foi possível conectar ao servidor.");
+    window.location.href = "obrigado.html"; // redireciona após envio
+  } catch (err) {
+    alert('Erro ao enviar. Tente novamente.');
   }
-});
+
+  return false; // previne reload
+}
 </script>
 
-
-
-
-
-  
 </body>
 </html>
