@@ -1,132 +1,68 @@
-/* ===========================
-   ESTILO PORTAL MUSICAL VOV
-   Criado para consistência visual
-=========================== */
-body {
-  font-family: 'Segoe UI', Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  background: #fff;
-  color: #111;
+body{
+font-family: Georgia, "Times New Roman", serif;
+background:white;
+color:#222;
+margin:0;
+line-height:1.7;
 }
 
-nav {
-  background: #222;
-  color: #fff;
-  padding: 10px 20px;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
+.container{
+max-width:860px;
+margin:auto;
+padding:80px 30px;
 }
 
-nav ul {
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  margin: 0;
-  padding: 0;
+header{
+margin-bottom:50px;
 }
 
-nav ul li {
-  margin-right: 15px;
+h1{
+font-weight:normal;
+font-size:44px;
+margin-bottom:10px;
+letter-spacing:1px;
 }
 
-nav ul li a {
-  color: #fff;
-  text-decoration: none;
-  font-weight: bold;
+.manifesto{
+font-size:18px;
+color:#444;
 }
 
-nav ul li a:hover {
-  text-decoration: underline;
+nav{
+margin:40px 0;
 }
 
-header {
-  padding: 40px 20px;
-  text-align: center;
-  background: linear-gradient(to right, #000, #111);
-  color: #fff;
+nav a{
+margin-right:24px;
+text-decoration:none;
+color:#222;
+border-bottom:1px solid transparent;
+padding-bottom:4px;
+font-size:18px;
 }
 
-header h1 {
-  margin-bottom: 10px;
-  font-size: 2.2em;
+nav a:hover{
+border-bottom:1px solid #222;
 }
 
-header p {
-  margin-bottom: 20px;
-  font-size: 1.2em;
+h2{
+font-weight:normal;
+margin-top:40px;
+font-size:28px;
 }
 
-.btn {
-  display: inline-block;
-  padding: 12px 25px;
-  background: #f1c40f;
-  color: #000;
-  text-decoration: none;
-  font-weight: bold;
-  border-radius: 5px;
-  transition: 0.3s;
+p{
+font-size:18px;
 }
 
-.btn:hover {
-  background: #d4ac0d;
+hr{
+border:none;
+border-top:1px solid #eee;
+margin:50px 0;
 }
 
-section {
-  padding: 30px 20px;
-  max-width: 1200px;
-  margin: auto;
-}
-
-.cards {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-  margin-top: 15px;
-  justify-content: center;
-}
-
-.card {
-  background: #eee;
-  flex: 1 1 200px;
-  padding: 20px;
-  text-align: center;
-  border-radius: 8px;
-  transition: 0.3s;
-}
-
-.card:hover {
-  background: #ddd;
-}
-
-footer {
-  background: #222;
-  color: #fff;
-  text-align: center;
-  padding: 15px;
-  margin-top: 30px;
-}
-
-footer a {
-  color: #f1c40f;
-  text-decoration: none;
-}
-
-footer a:hover {
-  text-decoration: underline;
-}
-
-/* Player de rádio */
-audio {
-  width: 100%;
-  max-width: 500px;
-  margin-top: 15px;
-}
-
-/* Status da rádio */
-#radio-status {
-  font-weight: bold;
-  font-size: 1.2em;
-  margin-top: 10px;
+footer{
+margin-top:80px;
+font-size:14px;
+color:#777;
 }
