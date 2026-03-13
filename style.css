@@ -21,13 +21,7 @@ margin-bottom:5px;
 .subtitulo{
 font-size:16px;
 color:#777;
-margin-bottom:20px;
-}
-
-.manifesto{
-font-size:18px;
-color:#444;
-margin-bottom:40px;
+margin-bottom:25px;
 }
 
 .menu{
@@ -49,23 +43,70 @@ padding-bottom:3px;
 border-bottom:1px solid #222;
 }
 
-.conteudo{
-max-width:760px;
-margin:auto;
-padding:60px 25px;
+/* abertura */
+
+.abertura{
+max-width:700px;
+margin:120px auto 80px auto;
+text-align:center;
+padding:0 25px;
 }
 
-h2{
+.abertura h2{
+font-size:36px;
 font-weight:normal;
-font-size:28px;
+margin-bottom:10px;
+}
+
+.assinatura{
+font-size:18px;
+color:#666;
+margin-bottom:25px;
+}
+
+.abertura p{
+font-size:19px;
+line-height:1.8;
+}
+
+/* radio */
+
+.radio{
+max-width:600px;
+margin:80px auto;
+text-align:center;
+padding:0 25px;
+}
+
+.radio h3{
+font-weight:normal;
+margin-bottom:10px;
+}
+
+.radio-sub{
+color:#666;
 margin-bottom:20px;
 }
 
-p{
-font-size:18px;
+audio{
+width:100%;
+margin-top:10px;
 }
 
-/* FORMULÁRIO */
+/* destaque */
+
+.destaque{
+max-width:760px;
+margin:80px auto;
+padding:0 25px;
+}
+
+.destaque h3{
+font-weight:normal;
+margin-bottom:20px;
+}
+
+/* formulário */
 
 .formulario{
 max-width:650px;
@@ -121,4 +162,5 @@ font-size:14px;
 color:#777;
 padding:40px 20px;
 border-top:1px solid #eee;
+margin-top:80px;
 }
