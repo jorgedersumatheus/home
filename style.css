@@ -65,6 +65,56 @@ p{
 font-size:18px;
 }
 
+/* FORMULÁRIO */
+
+.formulario{
+max-width:650px;
+margin:40px auto;
+display:flex;
+flex-direction:column;
+}
+
+.formulario label{
+margin-top:20px;
+font-size:18px;
+}
+
+.formulario input{
+width:100%;
+padding:14px;
+font-size:17px;
+margin-top:6px;
+border:1px solid #ccc;
+border-radius:6px;
+}
+
+.formulario textarea{
+width:100%;
+min-height:220px;
+padding:14px;
+font-size:17px;
+margin-top:6px;
+border:1px solid #ccc;
+border-radius:6px;
+resize:vertical;
+}
+
+.formulario button{
+margin-top:25px;
+width:200px;
+padding:14px;
+font-size:17px;
+background:#222;
+color:white;
+border:none;
+border-radius:6px;
+cursor:pointer;
+}
+
+.formulario button:hover{
+background:#444;
+}
+
 footer{
 text-align:center;
 font-size:14px;
