@@ -6,63 +6,69 @@ margin:0;
 line-height:1.7;
 }
 
-.container{
-max-width:860px;
-margin:auto;
-padding:80px 30px;
-}
-
-header{
-margin-bottom:50px;
+.topo{
+text-align:center;
+padding:80px 20px 40px;
 }
 
 h1{
 font-weight:normal;
-font-size:44px;
-margin-bottom:10px;
-letter-spacing:1px;
+font-size:46px;
+letter-spacing:2px;
+margin-bottom:5px;
+}
+
+.subtitulo{
+font-size:16px;
+color:#777;
+margin-bottom:20px;
 }
 
 .manifesto{
 font-size:18px;
 color:#444;
+margin-bottom:40px;
 }
 
-nav{
-margin:40px 0;
+.menu{
+border-top:1px solid #eee;
+border-bottom:1px solid #eee;
+padding:15px 0;
 }
 
-nav a{
-margin-right:24px;
+.menu a{
+margin:0 14px;
 text-decoration:none;
 color:#222;
+font-size:17px;
 border-bottom:1px solid transparent;
-padding-bottom:4px;
-font-size:18px;
+padding-bottom:3px;
 }
 
-nav a:hover{
+.menu a:hover{
 border-bottom:1px solid #222;
+}
+
+.conteudo{
+max-width:760px;
+margin:auto;
+padding:60px 25px;
 }
 
 h2{
 font-weight:normal;
-margin-top:40px;
 font-size:28px;
+margin-bottom:20px;
 }
 
 p{
 font-size:18px;
 }
 
-hr{
-border:none;
-border-top:1px solid #eee;
-margin:50px 0;
-}
-
 footer{
-margin-top:80px;
+text-align:center;
 font-size:14px;
 color:#777;
+padding:40px 20px;
+border-top:1px solid #eee;
 }
