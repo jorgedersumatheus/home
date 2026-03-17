@@ -1,41 +1,47 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 
 <head>
+
 <meta charset="UTF-8">
-<title>Contato – Portal VOV</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Contato – VOV</title>
+
 <link rel="stylesheet" href="style.css">
+
 </head>
 
 <body>
 
-<header class="topo">
+<header>
 
 <h1>VOV</h1>
+<p class="subtitulo">Contato</p>
 
-<p class="subtitulo">Portal Musical</p>
-
-<nav class="menu">
-
-<a href="arquivo-musical.html">Música</a>
-<a href="videos.html">Vídeos</a>
+<nav>
+<a href="index.html">Home</a>
 <a href="radio.html">Rádio</a>
 <a href="programas.html">Programas</a>
+<a href="videos.html">Vídeos</a>
+<a href="arquivo-musical.html">Arquivo</a>
 <a href="inteligencia-vital.html">Inteligência Vital</a>
-<a href="agente-cultural.html">Agente Cultural</a>
-<a href="contato.html">Contato</a>
-
 </nav>
 
 </header>
 
-<main class="conteudo">
 
-<h2>Contato</h2>
+<main>
 
-<p>Envie sua mensagem.</p>
+<section>
 
-<form action="https://app.jorgematheus.mus.br/webhook/contato" method="POST" class="formulario">
+<h2>Fale com a VOV</h2>
+
+<p class="descricao">
+Envie sua mensagem. Vamos ouvir você.
+</p>
+
+<form id="form-contato" class="formulario">
 
 <label>Nome</label>
 <input type="text" name="nome" required>
@@ -44,20 +50,59 @@
 <input type="email" name="email" required>
 
 <label>Mensagem</label>
-<textarea name="mensagem" required></textarea>
+<textarea name="mensagem" rows="6" required></textarea>
 
 <button type="submit">Enviar</button>
 
 </form>
 
+</section>
+
 </main>
+
 
 <footer>
 
-<p>Portal VOV • Jorge LA Matheus</p>
+<p>© Jorge L A Matheus – Portal VOV</p>
 
 </footer>
 
-</body>
 
+<script>
+
+document.getElementById('form-contato').addEventListener('submit', async function(e) {
+
+  e.preventDefault();
+
+  const formData = new FormData(this);
+
+  const data = {
+    nome: formData.get('nome'),
+    email: formData.get('email'),
+    mensagem: formData.get('mensagem')
+  };
+
+  try {
+
+    const response = await fetch('/api/contato', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+
+    if (response.ok) {
+      window.location.href = 'obrigado.html';
+    } else {
+      alert('Erro ao enviar mensagem.');
+    }
+
+  } catch (error) {
+    alert('Erro de conexão.');
+  }
+
+});
+
+</script>
+
+</body>
 </html>
