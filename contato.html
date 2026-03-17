@@ -28,24 +28,20 @@
   <h2>Escreva para a VOV</h2>
   <p>Sua mensagem. Em breve retornaremos.</p>
 
-  <form action="https://formspree.io/f/xeerpjre" method="POST" class="form-vov">
+<form id="form-vov" class="form-vov">
 
-    <label>Nome</label>
-    <input type="text" name="name" required>
+  <label>Nome</label>
+  <input type="text" name="name" required>
 
-    <label>Email</label>
-    <input type="email" name="email" required>
+  <label>Email</label>
+  <input type="email" name="email" required>
 
-    <label>Mensagem</label>
-    <textarea name="message" rows="6" required></textarea>
+  <label>Mensagem</label>
+  <textarea name="message" rows="6" required></textarea>
 
-    <!-- Redirecionamento -->
-    <input type="hidden" name="_next" value="https://home-two-sandy.vercel.app/obrigado.html">
+  <button type="submit">Enviar</button>
 
-    <button type="submit">Enviar</button>
-
-  </form>
-
+</form>
 </section>
 
 </main>
@@ -53,6 +49,29 @@
 <footer>
   <p>V O V — Ver Ouvir Vendas</p>
 </footer>
+<script>
+document.getElementById("form-vov").addEventListener("submit", async function(e) {
+  e.preventDefault();
 
+  const form = e.target;
+  const data = new FormData(form);
+
+  try {
+    await fetch("https://formspree.io/f/xerppjre", {
+      method: "POST",
+      body: data,
+      headers: {
+        'Accept': 'application/json'
+      }
+    });
+
+    // REDIRECIONAMENTO GARANTIDO
+    window.location.href = "obrigado.html";
+
+  } catch (error) {
+    alert("Erro ao enviar. Tente novamente.");
+  }
+});
+</script>
 </body>
 </html>
