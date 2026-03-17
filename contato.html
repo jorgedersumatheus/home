@@ -1,77 +1,118 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <title>Contato | VOV</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <link rel="stylesheet" href="style.css">
+
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: #ffffff;
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 500px;
+      text-align: center;
+    }
+
+    h2 {
+      font-weight: normal;
+      margin-bottom: 30px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 14px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    textarea {
+      min-height: 150px;
+      resize: vertical;
+    }
+
+    button {
+      padding: 14px;
+      font-size: 16px;
+      border: none;
+      background: black;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      opacity: 0.8;
+    }
+
+    .voltar {
+      margin-top: 25px;
+      display: block;
+      text-decoration: none;
+      color: #333;
+      font-size: 14px;
+    }
+
+    .voltar:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 
 <body>
 
-<header>
-  <h1>V O V</h1>
-  <nav>
-    <a href="index.html">Home</a>
-    <a href="radio.html">Rádio</a>
-    <a href="programas.html">Programas</a>
-    <a href="videos.html">Vídeos</a>
-    <a href="arquivo-musical.html">Arquivo</a>
-    <a href="inteligencia-vital.html">Inteligência Vital</a>
-    <a href="contato.html">Contato</a>
-  </nav>
-</header>
+  <div class="container">
 
-<main>
+    <h2>Contato</h2>
 
-<section class="contato">
+    <form id="form-vov">
+      <input type="text" name="name" placeholder="Nome" required>
+      <input type="email" name="email" placeholder="E-mail" required>
+      <textarea name="message" placeholder="Mensagem" required></textarea>
+      <button type="submit">Enviar</button>
+    </form>
 
-  <h2>Escreva para a VOV</h2>
-  <p>Sua mensagem. Em breve retornaremos.</p>
+    <a class="voltar" href="index.html">Voltar ao Portal</a>
 
-<form id="form-vov" class="form-vov">
+  </div>
 
-  <label>Nome</label>
-  <input type="text" name="name" required>
+  <script>
+    document.getElementById("form-vov").addEventListener("submit", async function(e) {
+      e.preventDefault();
 
-  <label>Email</label>
-  <input type="email" name="email" required>
+      const form = e.target;
+      const data = new FormData(form);
 
-  <label>Mensagem</label>
-  <textarea name="message" rows="6" required></textarea>
+      try {
+        await fetch("https://object-scanner-thumb-gps.trycloudflare.com/webhook/contato-vov", {
+          method: "POST",
+          body: data
+        });
 
-  <button type="submit">Enviar</button>
+        window.location.href = "obrigado.html";
 
-</form>
-</section>
-
-</main>
-
-<footer>
-  <p>V O V — Ver Ouvir Vendas</p>
-</footer>
-<script>
-document.getElementById("form-vov").addEventListener("submit", async function(e) {
-  e.preventDefault();
-
-  const form = e.target;
-  const data = new FormData(form);
-
-  try {
-    await fetch("https://formspree.io/f/xerppjre", {
-      method: "POST",
-      body: data,
-      headers: {
-        'Accept': 'application/json'
+      } catch (error) {
+        alert("Erro ao enviar. Tente novamente.");
       }
     });
+  </script>
 
-    // REDIRECIONAMENTO GARANTIDO
-    window.location.href = "obrigado.html";
-
-  } catch (error) {
-    alert("Erro ao enviar. Tente novamente.");
-  }
-});
-</script>
 </body>
 </html>
