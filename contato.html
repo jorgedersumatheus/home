@@ -1,108 +1,58 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-
+<html lang="pt-br">
 <head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Contato – VOV</title>
-
-<link rel="stylesheet" href="style.css">
-
+  <meta charset="UTF-8">
+  <title>Contato | VOV</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
 <header>
-
-<h1>VOV</h1>
-<p class="subtitulo">Contato</p>
-
-<nav>
-<a href="index.html">Home</a>
-<a href="radio.html">Rádio</a>
-<a href="programas.html">Programas</a>
-<a href="videos.html">Vídeos</a>
-<a href="arquivo-musical.html">Arquivo</a>
-<a href="inteligencia-vital.html">Inteligência Vital</a>
-</nav>
-
+  <h1>V O V</h1>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="radio.html">Rádio</a>
+    <a href="programas.html">Programas</a>
+    <a href="videos.html">Vídeos</a>
+    <a href="arquivo-musical.html">Arquivo</a>
+    <a href="inteligencia-vital.html">Inteligência Vital</a>
+    <a href="contato.html">Contato</a>
+  </nav>
 </header>
-
 
 <main>
 
-<section>
+<section class="contato">
 
-<h2>Fale com a VOV</h2>
+  <h2>Fale com a VOV</h2>
+  <p>Envie sua mensagem. Em breve retornaremos.</p>
 
-<p class="descricao">
-Envie sua mensagem. Vamos ouvir você.
-</p>
+  <form action="https://formspree.io/f/xerppjre" method="POST" class="form-vov">
 
-<form id="form-contato" class="formulario">
+    <label>Nome</label>
+    <input type="text" name="name" required>
 
-<label>Nome</label>
-<input type="text" name="nome" required>
+    <label>Email</label>
+    <input type="email" name="email" required>
 
-<label>E-mail</label>
-<input type="email" name="email" required>
+    <label>Mensagem</label>
+    <textarea name="message" rows="6" required></textarea>
 
-<label>Mensagem</label>
-<textarea name="mensagem" rows="6" required></textarea>
+    <!-- Redirecionamento -->
+    <input type="hidden" name="_next" value="https://home-two-sandy.vercel.app/obrigado.html">
 
-<button type="submit">Enviar</button>
+    <button type="submit">Enviar</button>
 
-</form>
+  </form>
 
 </section>
 
 </main>
 
-
 <footer>
-
-<p>© Jorge L A Matheus – Portal VOV</p>
-
+  <p>V O V — Ver Ouvir Vendas</p>
 </footer>
-
-
-<script>
-
-document.getElementById('form-contato').addEventListener('submit', async function(e) {
-
-  e.preventDefault();
-
-  const formData = new FormData(this);
-
-  const data = {
-    nome: formData.get('nome'),
-    email: formData.get('email'),
-    mensagem: formData.get('mensagem')
-  };
-
-  try {
-
-    const response = await fetch('/api/contato', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    });
-
-    if (response.ok) {
-      window.location.href = 'obrigado.html';
-    } else {
-      alert('Erro ao enviar mensagem.');
-    }
-
-  } catch (error) {
-    alert('Erro de conexão.');
-  }
-
-});
-
-</script>
 
 </body>
 </html>
