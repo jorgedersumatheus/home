@@ -164,3 +164,40 @@ padding:40px 20px;
 border-top:1px solid #eee;
 margin-top:80px;
 }
+
+.formulario {
+    max-width: 500px;
+    margin: 0 auto;
+    text-align: left;
+}
+
+.formulario label {
+    display: block;
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+.formulario input,
+.formulario textarea {
+    width: 100%;
+    padding: 12px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.formulario button {
+    margin-top: 25px;
+    width: 100%;
+    padding: 14px;
+    background: #111;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.formulario button:hover {
+    opacity: 0.8;
+}
