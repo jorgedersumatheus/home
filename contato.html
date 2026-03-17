@@ -82,7 +82,7 @@
 
     <h2>Contato</h2>
 
-    <form action="https://object-scanner-thumb-gps.trycloudflare.com/webhook/vov-contato" method="POST">
+    <form id="form-vov">
 
   <input type="text" name="name" placeholder="Nome" required>
 
@@ -98,26 +98,26 @@
 
   </div>
 
-  <script>
-    document.getElementById("form-vov").addEventListener("submit", async function(e) {
-      e.preventDefault();
+  
+<script>
+  document.getElementById("form-vov").addEventListener("submit", async function(e) {
+    e.preventDefault();
 
-      const form = e.target;
-      const data = new FormData(form);
+    const form = e.target;
+    const data = new FormData(form);
 
-      try {
-        await fetch("https://really-hats-deliver-egg.trycloudflare.com.com/webhook/contato-vov", {
-          method: "POST",
-          body: data
-        });
+    try {
+      await fetch("https://object-scanner-thumb-gps.trycloudflare.com/webhook/vov-contato", {
+        method: "POST",
+        body: data
+      });
 
-        window.location.href = "obrigado.html";
+      window.location.href = "obrigado.html";
 
-      } catch (error) {
-        alert("Erro ao enviar. Tente novamente.");
-      }
-    });
-  </script>
-
+    } catch (error) {
+      alert("Erro ao enviar. Tente novamente.");
+    }
+  });
+</script>
 </body>
 </html>
