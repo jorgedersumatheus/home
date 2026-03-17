@@ -201,3 +201,37 @@ margin-top:80px;
 .formulario button:hover {
     opacity: 0.8;
 }
+
+.contato {
+  max-width: 600px;
+  margin: 60px auto;
+  text-align: center;
+}
+
+.form-vov {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.form-vov input,
+.form-vov textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+}
+
+.form-vov button {
+  padding: 12px;
+  background: black;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.form-vov button:hover {
+  opacity: 0.8;
+}
