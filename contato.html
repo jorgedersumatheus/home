@@ -85,9 +85,7 @@
  <form id="form-vov">
 
   <input type="text" name="name" placeholder="Nome" required>
-
   <input type="email" name="email" placeholder="E-mail" required>
-
   <textarea name="message" placeholder="Mensagem" required></textarea>
 
   <button type="submit">Enviar</button>
@@ -102,7 +100,7 @@
     const data = new FormData(form);
 
     try {
-      const response = await fetch("https://really-hats-deliver-egg.trycloudflare.com/webhook/vov-contato", {
+      const response = await fetch("https://certainly-babies-gzip-commitments.trycloudflare.com/webhook/vov-contato", {
         method: "POST",
         body: data
       });
@@ -111,7 +109,7 @@
         throw new Error("Erro no servidor");
       }
 
-      window.location.href = "obrigado.html";
+      window.location.href = "/obrigado.html";
 
     } catch (error) {
       console.error(error);
@@ -119,5 +117,7 @@
     }
   });
 </script>
+
+  
 </body>
 </html>
