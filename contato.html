@@ -70,36 +70,37 @@
       <button type="submit">Enviar</button>
     </form>
   </div>
+<script>
+async function enviar(e) {
+  e.preventDefault();
 
-  <script>
-    async function enviar(e) {
-      e.preventDefault();
+  const nome = document.querySelector("[name=name]").value;
+  const email = document.querySelector("[name=email]").value;
+  const mensagem = document.querySelector("[name=message]").value;
 
-      const nome = document.querySelector("[name=name]").value;
-      const email = document.querySelector("[name=email]").value;
-      const mensagem = document.querySelector("[name=message]").value;
+  try {
+    await fetch("https://webhook.site/12a9cf17-3592-4536-9d63-96c8f909fdb4", {
+      method: "POST",
+      mode: "no-cors",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        name: nome,
+        email: email,
+        message: mensagem
+      })
+    });
 
-      try {
-        await fetch("https://webhook.site/12a9cf17-3592-4536-9d63-96c8f909fdb4", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            name: nome,
-            email: email,
-            message: mensagem
-          })
-        });
+    window.location.href = "obrigado.html";
 
-        window.location.href = "obrigado.html";
-
-      } catch (erro) {
-        alert("Erro ao enviar o formulário.");
-        console.error(erro);
-      }
-    }
-  </script>
+  } catch (erro) {
+    alert("Erro ao enviar o formulário.");
+    console.error(erro);
+  }
+}
+</script>
+  
 
 </body>
 </html>
