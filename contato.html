@@ -2,76 +2,57 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Contato | VOV</title>
+  <title>Contato - VOV</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <link rel="stylesheet" href="style.css">
 
   <style>
     body {
+      font-family: Arial, sans-serif;
+      background: #0f0f0f;
+      color: #ffffff;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
-      background: #ffffff;
+      height: 100vh;
       margin: 0;
-      font-family: Arial, sans-serif;
     }
 
     .container {
-      width: 90%;
-      max-width: 500px;
-      text-align: center;
+      background: #1a1a1a;
+      padding: 30px;
+      border-radius: 10px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
     }
 
     h2 {
-      font-weight: normal;
-      margin-bottom: 30px;
-    }
-
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
+      text-align: center;
+      margin-bottom: 20px;
     }
 
     input, textarea {
       width: 100%;
-      padding: 14px;
-      font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-    }
-
-    textarea {
-      min-height: 150px;
-      resize: vertical;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: none;
+      border-radius: 5px;
+      font-size: 14px;
     }
 
     button {
-      padding: 14px;
-      font-size: 16px;
+      width: 100%;
+      padding: 12px;
+      background: #00c853;
       border: none;
-      background: black;
-      color: white;
-      border-radius: 6px;
+      border-radius: 5px;
+      color: #fff;
+      font-size: 16px;
       cursor: pointer;
     }
 
     button:hover {
-      opacity: 0.8;
-    }
-
-    .voltar {
-      margin-top: 25px;
-      display: block;
-      text-decoration: none;
-      color: #333;
-      font-size: 14px;
-    }
-
-    .voltar:hover {
-      text-decoration: underline;
+      background: #00b34a;
     }
   </style>
 </head>
@@ -79,45 +60,46 @@
 <body>
 
   <div class="container">
+    <h2>Fale com a VOV</h2>
 
-    <h2>Contato</h2>
+    <form onsubmit="enviar(event)">
+      <input type="text" name="name" placeholder="Seu nome" required>
+      <input type="email" name="email" placeholder="Seu email" required>
+      <textarea name="message" placeholder="Sua mensagem" rows="5" required></textarea>
 
- <form id="form-vov">
+      <button type="submit">Enviar</button>
+    </form>
+  </div>
 
-  <input type="text" name="name" placeholder="Nome" required>
-  <input type="email" name="email" placeholder="E-mail" required>
-  <textarea name="message" placeholder="Mensagem" required></textarea>
+  <script>
+    async function enviar(e) {
+      e.preventDefault();
 
-  <button type="submit">Enviar</button>
+      const nome = document.querySelector("[name=name]").value;
+      const email = document.querySelector("[name=email]").value;
+      const mensagem = document.querySelector("[name=message]").value;
 
-</form>
+      try {
+        await fetch("https://webhook.site/12a9cf17-3592-4536-9d63-96c8f909fdb4", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            name: nome,
+            email: email,
+            message: mensagem
+          })
+        });
 
-<script>
-  document.getElementById("form-vov").addEventListener("submit", async function(e) {
-    e.preventDefault();
+        window.location.href = "obrigado.html";
 
-    const form = e.target;
-    const data = new FormData(form);
-
-    try {
-      const response = await fetch("https://telephone-textbooks-freight-monitor.trycloudflare.com/webhook/vov-contato", {
-        method: "POST",
-        body: data
-      });
-
-      if (!response.ok) {
-        throw new Error("Erro no servidor");
+      } catch (erro) {
+        alert("Erro ao enviar o formulário.");
+        console.error(erro);
       }
-
-      window.location.href = "/obrigado.html";
-
-    } catch (error) {
-      console.error(error);
-      alert("Erro ao enviar. Tente novamente.");
     }
-  });
-</script>
+  </script>
 
-  
 </body>
 </html>
