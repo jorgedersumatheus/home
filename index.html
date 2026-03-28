@@ -1,191 +1,74 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-
+<html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>VOV – Portal Musical</title>
+<title>Portal VOV – Jorge LA Matheus</title>
 <link rel="stylesheet" href="style.css">
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#ffffff">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 body {
   margin:0;
   font-family: 'Arial', sans-serif;
-  background-color: #fff;
+  background-color: #fff;  /* folha branca */
   color: #111;
   text-align: center;
 }
-
-header.topo h1 {
-  margin: 10px 0 5px 0;
-  font-size: 3em;
-  color: #222;
-}
-
-header.topo .subtitulo {
-  font-size: 1.2em;
-  color: #555;
-  margin-bottom: 20px;
-}
-
-nav.menu a {
-  margin: 0 12px;
-  color: #222;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-nav.menu a:hover {
-  text-decoration: underline;
-}
-
-section {
-  margin: 40px auto;
-  padding: 20px;
-  max-width: 800px;
-  border-top: 2px solid #ccc;
-}
-
-h3 {
-  margin-bottom: 15px;
-  color: #222;
-}
-
-iframe {
-  border: 1px solid #ccc;
-  border-radius: 12px;
-  max-width: 100%;
-  margin: 20px 0;
-}
-
-audio {
-  width: 100%;
-  margin: 20px 0;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-form input, form textarea, form button {
-  width: 100%;
-  max-width: 500px;
-  margin: 10px 0;
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 1em;
-}
-
-form button {
-  background-color: #222;
-  color: #ff0;
-  border: 2px solid #ff0;
-  cursor: pointer;
-}
-
-form button:hover {
-  background-color: #ff0;
-  color: #000;
-}
-
-footer {
-  margin:50px 0;
-  border-top:2px solid #ccc;
-  padding-top:20px;
-  color: #555;
-}
+h1, h2, h3 { margin: 20px 0; }
+a { color: #0066cc; text-decoration: none; font-weight: bold; }
+a:hover { text-decoration: underline; }
+section { margin: 40px 0; padding: 20px; border-top: 2px solid #ccc; }
+img { max-width: 90%; margin: 20px 0; border-radius: 12px; box-shadow: 0 0 20px #aaa; }
+iframe, video { border: 1px solid #ccc; max-width: 100%; border-radius: 12px; margin: 20px 0; }
+button { background-color: #eee; color: #111; border: 2px solid #0066cc; padding: 10px 20px; margin: 10px; cursor: pointer; border-radius: 8px; }
+button:hover { background-color: #0066cc; color: #fff; }
+form { max-width: 500px; margin: auto; text-align: left; }
+input, textarea { width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ccc; border-radius: 6px; }
+input[type=submit] { cursor: pointer; background-color: #0066cc; color: #fff; border: none; }
+input[type=submit]:hover { background-color: #004999; }
 </style>
 </head>
-
 <body>
 
-<header class="topo">
-<h1>VOV</h1>
-<p class="subtitulo">Portal Musical</p>
+<h1>Portal VOV – Jorge LA Matheus</h1>
 
-<nav class="menu">
-<a href="arquivo-musical.html">Música</a>
-<a href="videos.html">Vídeos</a>
-<a href="radio.html">Rádio</a>
-<a href="programas.html">Programas</a>
-<a href="inteligencia-vital.html">Inteligência Vital</a>
-<a href="agente-cultural.html">Agente Cultural</a>
-<a href="contato.html">Contato</a>
-</nav>
-</header>
-
-<section class="abertura">
-<h2>Jorge LA Matheus</h2>
-<p class="assinatura">Compositor • Violonista • Agente Cultural</p>
-<p>O Portal VOV reúne música, pensamento e criação independente. Um território livre de encontro entre arte, reflexão e cultura.</p>
-</section>
-
-<!-- Seção Tom Jobim -->
-<section class="destaque">
-<h3>🎵 Tom Jobim</h3>
-<iframe width="100%" height="315"
-src="https://www.youtube.com/embed/z8dM5eF29fE?list=PL85Pq0MetFdPiZpQYvy2uegOufKOI0w1S"
-frameborder="0" allowfullscreen></iframe>
-</section>
-
-<!-- Seção BLACKVOX -->
-<section class="destaque">
-<h3>🎤 BLACKVOX</h3>
-<iframe width="100%" height="315"
-src="BLACKVOX_VIDEO_FINAL.mp4" 
-frameborder="0" allowfullscreen></iframe>
+<!-- Seção eBook -->
+<section id="ebooks">
+<h2>📚 Nossas Criações Autorais</h2>
+<p><a href="anuncios-que-vendem.pdf" target="_blank">📖 Baixe o eBook "Anúncios que Vendem"</a></p>
+<img src="vov-ebook-cover.jpeg" alt="Capa eBook VOV">
 </section>
 
 <!-- Seção I Ching -->
-<section class="destaque">
-<h3>🔮 Jogo do I Ching – VOV</h3>
-<iframe src="ICHING_FINAL.pdf" width="100%" height="700"></iframe>
+<section id="iching">
+<h2>🔮 I Ching – VOV</h2>
+<p><a href="iching_jung.pdf" target="_blank">📄 Abrir I Ching (PDF)</a></p>
+<iframe src="iching_jung.pdf" width="100%" height="700"></iframe>
+<img src="jorgeiching.jpeg" alt="I Ching VOV">
 </section>
 
-<!-- Seção Rádio -->
-<section class="radio">
-<h3>📻 Rádio VOV ao Vivo</h3>
-<p class="radio-sub">Sintonize a transmissão contínua do Portal Musical VOV.</p>
-<audio controls>
-<source src="SEU_STREAM_DA_RADIO_AQUI" type="audio/mpeg">
-Seu navegador não suporta áudio.
-</audio>
+<!-- Seção Música -->
+<section id="musica">
+<h2>🎵 Música & BLACKVOX</h2>
+<h3>Tom Jobim</h3>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/z8dM5eF29fE?list=PL85Pq0MetFdPiZpQYvy2uegOufKOI0w1S" allowfullscreen></iframe>
+
+<h3>BLACKVOX</h3>
+<video src="blackvox.mp4" width="100%" height="315" controls></video>
 </section>
 
 <!-- Seção Formulário -->
-<section class="formulario">
-<h3>✉️ Contato & Inscrição</h3>
-<form id="vov-form">
-  <input type="text" name="nome" placeholder="Seu nome" required>
-  <input type="email" name="email" placeholder="Seu e-mail" required>
-  <textarea name="mensagem" rows="5" placeholder="Sua mensagem" required></textarea>
-  <button type="submit">Enviar</button>
+<section id="contato">
+<h2>✉️ Contato VOV</h2>
+<form action="https://SEU_WEBHOOK_DO_N8N_AQUI" method="post">
+  <label for="name">Nome:</label>
+  <input type="text" id="name" name="name" required>
+
+  <label for="email">E-mail:</label>
+  <input type="email" id="email" name="email" required>
+
+  <label for="mensagem">Mensagem:</label>
+  <textarea id="mensagem" name="mensagem" rows="5" required></textarea>
+
+  <input type="submit" value="Enviar">
 </form>
-<p id="form-feedback" style="color:green; display:none;">Obrigado! Sua mensagem foi enviada.</p>
-</section>
-
-<footer>
-<p>Portal VOV • Jorge LA Matheus<br>
-Música • Pensamento • Cultura</p>
-</footer>
-
-<script>
-// Service Worker
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("service-worker.js");
-}
-
-// Placeholder do envio do formulário
-document.getElementById('vov-form').addEventListener('submit', function(e){
-  e.preventDefault();
-  // Aqui vamos conectar aos nós do n8n futuramente
-  document.getElementById('form-feedback').style.display = 'block';
-  this.reset();
-});
-</script>
-
-</body>
-</html>
+<p>E-mail: <a href="mailto:verouvir
