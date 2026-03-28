@@ -1,74 +1,46 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Portal VOV – Jorge LA Matheus</title>
-<link rel="stylesheet" href="style.css">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portal VOV – Jorge LA Matheus</title>
 <style>
-body {
-  margin:0;
-  font-family: 'Arial', sans-serif;
-  background-color: #fff;  /* folha branca */
-  color: #111;
-  text-align: center;
-}
-h1, h2, h3 { margin: 20px 0; }
-a { color: #0066cc; text-decoration: none; font-weight: bold; }
-a:hover { text-decoration: underline; }
-section { margin: 40px 0; padding: 20px; border-top: 2px solid #ccc; }
-img { max-width: 90%; margin: 20px 0; border-radius: 12px; box-shadow: 0 0 20px #aaa; }
-iframe, video { border: 1px solid #ccc; max-width: 100%; border-radius: 12px; margin: 20px 0; }
-button { background-color: #eee; color: #111; border: 2px solid #0066cc; padding: 10px 20px; margin: 10px; cursor: pointer; border-radius: 8px; }
-button:hover { background-color: #0066cc; color: #fff; }
-form { max-width: 500px; margin: auto; text-align: left; }
-input, textarea { width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ccc; border-radius: 6px; }
-input[type=submit] { cursor: pointer; background-color: #0066cc; color: #fff; border: none; }
-input[type=submit]:hover { background-color: #004999; }
-</style>
-</head>
-<body>
+  body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: #fff;
+    color: #111;
+    line-height: 1.6;
+    text-align: center;
+  }
 
-<h1>Portal VOV – Jorge LA Matheus</h1>
+  h1, h2, h3 {
+    margin: 20px 0;
+  }
 
-<!-- Seção eBook -->
-<section id="ebooks">
-<h2>📚 Nossas Criações Autorais</h2>
-<p><a href="anuncios-que-vendem.pdf" target="_blank">📖 Baixe o eBook "Anúncios que Vendem"</a></p>
-<img src="vov-ebook-cover.jpeg" alt="Capa eBook VOV">
-</section>
+  a {
+    color: #222;
+    text-decoration: none;
+    font-weight: bold;
+  }
 
-<!-- Seção I Ching -->
-<section id="iching">
-<h2>🔮 I Ching – VOV</h2>
-<p><a href="iching_jung.pdf" target="_blank">📄 Abrir I Ching (PDF)</a></p>
-<iframe src="iching_jung.pdf" width="100%" height="700"></iframe>
-<img src="jorgeiching.jpeg" alt="I Ching VOV">
-</section>
+  a:hover {
+    text-decoration: underline;
+  }
 
-<!-- Seção Música -->
-<section id="musica">
-<h2>🎵 Música & BLACKVOX</h2>
-<h3>Tom Jobim</h3>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/z8dM5eF29fE?list=PL85Pq0MetFdPiZpQYvy2uegOufKOI0w1S" allowfullscreen></iframe>
+  section {
+    margin: 40px auto;
+    padding: 20px;
+    max-width: 900px;
+    border-top: 1px solid #ccc;
+  }
 
-<h3>BLACKVOX</h3>
-<video src="blackvox.mp4" width="100%" height="315" controls></video>
-</section>
+  iframe, audio {
+    width: 100%;
+    max-width: 800px;
+    margin: 20px 0;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+  }
 
-<!-- Seção Formulário -->
-<section id="contato">
-<h2>✉️ Contato VOV</h2>
-<form action="https://SEU_WEBHOOK_DO_N8N_AQUI" method="post">
-  <label for="name">Nome:</label>
-  <input type="text" id="name" name="name" required>
-
-  <label for="email">E-mail:</label>
-  <input type="email" id="email" name="email" required>
-
-  <label for="mensagem">Mensagem:</label>
-  <textarea id="mensagem" name="mensagem" rows="5" required></textarea>
-
-  <input type="submit" value="Enviar">
-</form>
-<p>E-mail: <a href="mailto:verouvir
+  input, textarea, button {
