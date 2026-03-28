@@ -6,31 +6,31 @@
 <title>VOV – Portal Musical</title>
 <link rel="stylesheet" href="style.css">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#222222">
+<meta name="theme-color" content="#ffffff">
 <style>
 body {
   margin:0;
   font-family: 'Arial', sans-serif;
-  background-color: #111;
-  color: #fff;
+  background-color: #fff;
+  color: #111;
   text-align: center;
 }
 
 header.topo h1 {
   margin: 10px 0 5px 0;
   font-size: 3em;
-  color: #ff0;
+  color: #222;
 }
 
 header.topo .subtitulo {
   font-size: 1.2em;
-  color: #ccc;
+  color: #555;
   margin-bottom: 20px;
 }
 
 nav.menu a {
   margin: 0 12px;
-  color: #ff0;
+  color: #222;
   text-decoration: none;
   font-weight: bold;
 }
@@ -43,11 +43,16 @@ section {
   margin: 40px auto;
   padding: 20px;
   max-width: 800px;
-  border-top: 2px solid #444;
+  border-top: 2px solid #ccc;
+}
+
+h3 {
+  margin-bottom: 15px;
+  color: #222;
 }
 
 iframe {
-  border: 1px solid #333;
+  border: 1px solid #ccc;
   border-radius: 12px;
   max-width: 100%;
   margin: 20px 0;
@@ -58,11 +63,39 @@ audio {
   margin: 20px 0;
 }
 
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+form input, form textarea, form button {
+  width: 100%;
+  max-width: 500px;
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 1em;
+}
+
+form button {
+  background-color: #222;
+  color: #ff0;
+  border: 2px solid #ff0;
+  cursor: pointer;
+}
+
+form button:hover {
+  background-color: #ff0;
+  color: #000;
+}
+
 footer {
   margin:50px 0;
-  border-top:2px solid #444;
+  border-top:2px solid #ccc;
   padding-top:20px;
-  color: #ccc;
+  color: #555;
 }
 </style>
 </head>
@@ -102,36 +135,10 @@ frameborder="0" allowfullscreen></iframe>
 <section class="destaque">
 <h3>🎤 BLACKVOX</h3>
 <iframe width="100%" height="315"
-src="https://www.youtube.com/embed/BLACKVOX_VIDEO_ID"
+src="BLACKVOX_VIDEO_FINAL.mp4" 
 frameborder="0" allowfullscreen></iframe>
 </section>
 
 <!-- Seção I Ching -->
 <section class="destaque">
-<h3>🔮 I Ching – VOV</h3>
-<iframe src="https://www.jorgematheus.mus.br/iching_jung.pdf" width="100%" height="700"></iframe>
-</section>
-
-<!-- Seção Rádio -->
-<section class="radio">
-<h3>📻 Rádio VOV ao Vivo</h3>
-<p class="radio-sub">Sintonize a transmissão contínua do Portal Musical VOV.</p>
-<audio controls>
-<source src="SEU_STREAM_DA_RADIO_AQUI" type="audio/mpeg">
-Seu navegador não suporta áudio.
-</audio>
-</section>
-
-<footer>
-<p>Portal VOV • Jorge LA Matheus<br>
-Música • Pensamento • Cultura</p>
-</footer>
-
-<script>
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("service-worker.js");
-}
-</script>
-
-</body>
-</html>
+<h3>🔮 Jogo do I Ching – V
