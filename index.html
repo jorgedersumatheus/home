@@ -3,135 +3,127 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Portal VOV</title>
+<title>Portal VOV – Ver Ouvir Vendas</title>
 <style>
-  /* Reset básico */
-  * { margin:0; padding:0; box-sizing:border-box; font-family: Arial, sans-serif; }
-  body { background-color:#000; color:#fff; min-height:100vh; }
+body {
+  margin:0;
+  font-family: 'Arial', sans-serif;
+  background-color: #111;
+  color: #fff;
+  text-align: center;
+}
 
-  /* Header */
-  header { background-color:#111; padding:15px 20px; text-align:center; }
-  header nav a { color:#fff; margin:0 10px; text-decoration:none; font-weight:bold; }
-  header nav a:hover { text-decoration: underline; }
+h1, h2 {
+  margin: 20px 0;
+}
 
-  /* Seções */
-  section { padding:40px 20px; text-align:center; }
+a {
+  color: #ff0;
+  text-decoration: none;
+  font-weight: bold;
+}
 
-  /* Cards de vídeo/playlists */
-  .cards { display:flex; flex-wrap:wrap; justify-content:center; gap:15px; }
-  .card { width:180px; background:#111; border-radius:8px; overflow:hidden; cursor:pointer; transition: transform 0.2s; }
-  .card img { width:100%; display:block; }
-  .card p { padding:8px; font-size:14px; color:#fff; text-align:center; }
-  .card:hover { transform: scale(1.05); }
+a:hover {
+  text-decoration: underline;
+}
 
-  /* Player de áudio */
-  #audioPlayer { width:90%; margin:20px auto; display:block; }
+section {
+  margin: 40px 0;
+  padding: 20px;
+  border-top: 2px solid #444;
+}
 
-  /* Formulários discretos */
-  .form-section { background:#111; padding:30px 20px; border-radius:8px; display:inline-block; margin-top:20px; }
-  .form-section input { padding:8px; margin:5px; width:200px; border-radius:4px; border:none; }
-  .form-section button { padding:8px 15px; margin-top:10px; border:none; border-radius:4px; background:#0066cc; color:#fff; cursor:pointer; }
-  .form-section button:hover { background:#004999; }
+img {
+  max-width: 90%;
+  margin: 20px 0;
+  border-radius: 12px;
+  box-shadow: 0 0 20px #000;
+}
 
-  /* Footer */
-  footer { background:#111; padding:20px; text-align:center; margin-top:30px; font-size:14px; }
+iframe {
+  border: 1px solid #333;
+  max-width: 100%;
+  border-radius: 12px;
+  margin: 20px 0;
+}
 
-  @media(max-width:600px) { .cards { flex-direction:column; align-items:center; } .card { width:90%; } .form-section input { width:90%; } }
+button {
+  background-color: #222;
+  color: #ff0;
+  border: 2px solid #ff0;
+  padding: 10px 20px;
+  margin: 10px;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+button:hover {
+  background-color: #ff0;
+  color: #000;
+}
 </style>
 </head>
 <body>
 
-<!-- Header -->
-<header>
-  <h1>Portal VOV</h1>
-  <nav>
-    <a href="#videos">Vídeos</a>
-    <a href="#playlists">Playlists</a>
-    <a href="#landing">Newsletter</a>
-    <a href="contato.html">Contato</a>
-  </nav>
-</header>
+<h1>Portal VOV – Ver Ouvir Vendas</h1>
 
-<!-- Vídeos em destaque -->
-<section id="videos">
-  <h2>Vídeos em Destaque</h2>
-  <div class="cards">
-    <div class="card" onclick="playPlaylist('tomjobim')">
-      <img src="https://img.youtube.com/vi/ID_DO_TOMJOBIM/0.jpg" alt="Tom Jobim">
-      <p>Playlist Tom Jobim</p>
-    </div>
-    <div class="card" onclick="playPlaylist('blackvox')">
-      <img src="https://img.youtube.com/vi/ID_DO_BLACKVOX/0.jpg" alt="BlackVox">
-      <p>Playlist BlackVox</p>
-    </div>
-    <div class="card" onclick="playPlaylist('iching')">
-      <img src="https://img.youtube.com/vi/ID_DO_ICHING/0.jpg" alt="I Ching">
-      <p>Playlist I Ching</p>
-    </div>
-  </div>
-  <audio id="audioPlayer" controls></audio>
-  <div id="audioName" style="margin-top:10px;"></div>
+<!-- Seção eBook -->
+<section id="ebooks">
+<h2>📚 Nossas Criações Autorais</h2>
+<p><a href="https://www.jorgematheus.mus.br/ebooks/anuncios-que-vendem.pdf" target="_blank">📖 Baixe o eBook "Anúncios que Vendem – Um Guia com Inteligência Vital"</a></p>
+<img src="vov-ebook-cover.jpeg" alt="Capa eBook VOV">
+
 </section>
 
-<!-- Landing / Newsletter -->
-<section id="landing">
-  <h2>Receba novidades do VOV</h2>
-  <form class="form-section formulario" data-page="landing">
-    <input type="text" name="name" placeholder="Seu nome" required>
-    <input type="email" name="email" placeholder="Seu e-mail" required>
-    <input type="hidden" name="page" value="landing">
-    <button type="submit">Cadastrar</button>
-  </form>
+<!-- Seção I Ching -->
+<section id="iching">
+<h2>🔮 I Ching – VOV</h2>
+<p><a href="https://www.jorgematheus.mus.br/iching_jung.pdf" target="_blank">📄 Abrir I Ching (PDF)</a></p>
+<iframe src="https://www.jorgematheus.mus.br/iching_jung.pdf" width="100%" height="600"></iframe>
+<img src="jorgeiching.jpeg" alt="I Ching VOV">
 </section>
 
-<!-- Footer -->
-<footer>
-  <p>Ver Ouvir Vendas – VOV</p>
-  <p>Contato: verouvirvendas@jorgematheus.mus.br</p>
-  <p>&copy; 2026 Jorge LA Matheus</p>
+<!-- Seção Música & BLACKVOX -->
+<section id="musica">
+<h2>🎵 Música & BLACKVOX</h2>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/TOM_JOBIM_VIDEO_ID" title="Tom Jobim" allowfullscreen></iframe><br>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/BLACKVOX_VIDEO_ID" title="BLACKVOX" allowfullscreen></iframe><br>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/ICHING_VIDEO_ID" title="I Ching em vídeo" allowfullscreen></iframe>
+</section>
+
+<!-- Seção Playlists -->
+<section id="playlists">
+<h2>🎶 Playlists VOV</h2>
+<p>Ouça nossas playlists autorais e selecionadas:</p>
+<iframe src="https://open.spotify.com/embed/playlist/13MUSICAIS_PLAYLIST_ID" width="300" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+</section>
+
+<!-- Seção Rádio (opcional) -->
+<section id="radio">
+<h2>📻 Rádio VOV</h2>
+<p>Transmissão suspensa temporariamente, mas logo estaremos de volta ao ar!</p>
+</section>
+
+<!-- Seção Contato -->
+<section id="contato">
+<h2>✉️ Contato & Formulários</h2>
+<p>Entre em contato diretamente conosco:</p>
+<p><a href="contato.html">Formulário de Contato VOV</a></p>
+<p>E-mail: <a href="mailto:verouvirvendas@jorgematheus.mus.br">verouvirvendas@jorgematheus.mus.br</a></p>
+</section>
+
+<!-- Seção QR Code -->
+<section id="qrcode">
+<h2>🔗 QR Codes & Links Rápidos</h2>
+<p>Escaneie e acesse nossos conteúdos diretamente:</p>
+<img src="vov-qrcode-ebook.jpeg" alt="QR Code eBook VOV" width="200">
+<img src="vov-qrcode-iching.jpeg" alt="QR Code I Ching VOV" width="200">
+</section>
+
+<footer style="margin:50px 0; border-top:2px solid #444; padding-top:20px;">
+<p>© 2026 Jorge LA Matheus – VOV | Save Simpatia!!!</p>
+<p><a href="#top">↑ Voltar ao topo</a></p>
 </footer>
-
-<script>
-  // Playlists simplificadas
-  const playlists = {
-    tomjobim: ['URL_DO_AUDIO_1', 'URL_DO_AUDIO_2'],
-    blackvox: ['URL_DO_AUDIO_1', 'URL_DO_AUDIO_2'],
-    iching: ['URL_DO_AUDIO_1', 'URL_DO_AUDIO_2']
-  };
-
-  function playPlaylist(name) {
-    const audioPlayer = document.getElementById('audioPlayer');
-    const audioName = document.getElementById('audioName');
-    if(playlists[name] && playlists[name].length > 0){
-      audioPlayer.src = playlists[name][0];
-      audioPlayer.style.display = 'block';
-      audioName.textContent = `Tocando: ${name}`;
-      audioPlayer.play();
-    } else { alert('Playlist vazia'); }
-  }
-
-  // Formulários discretos
-  const forms = document.querySelectorAll('.formulario');
-  forms.forEach(form => {
-    form.addEventListener('submit', async function(e){
-      e.preventDefault();
-      const data = { 
-        name: this.name.value,
-        email: this.email.value,
-        page: this.page.value
-      };
-      try {
-        const response = await fetch('https://SEU-LINK-DE-WEBHOOK', {
-          method:'POST',
-          headers:{'Content-Type':'application/json'},
-          body: JSON.stringify(data)
-        });
-        if(response.ok){ alert('Cadastro enviado!'); this.reset(); }
-        else alert('Erro no envio, tente novamente.');
-      } catch(err){ alert('Erro de conexão.'); console.error(err); }
-    });
-  });
-</script>
 
 </body>
 </html>
