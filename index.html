@@ -3,44 +3,105 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Portal VOV – Jorge LA Matheus</title>
+<title>Portal VOV</title>
+
 <style>
-  body {
-    margin: 0;
-    font-family: 'Arial', sans-serif;
-    background-color: #fff;
-    color: #111;
-    line-height: 1.6;
-    text-align: center;
-  }
+body {
+  margin:0;
+  font-family: Arial, sans-serif;
+  background:#fff;
+  color:#111;
+  text-align:center;
+  line-height:1.6;
+}
 
-  h1, h2, h3 {
-    margin: 20px 0;
-  }
+section {
+  max-width:900px;
+  margin:50px auto;
+  padding:20px;
+  border-top:1px solid #ddd;
+}
 
-  a {
-    color: #222;
-    text-decoration: none;
-    font-weight: bold;
-  }
+iframe {
+  width:100%;
+  border:none;
+  border-radius:10px;
+}
 
-  a:hover {
-    text-decoration: underline;
-  }
+h1 { margin-top:30px; }
 
-  section {
-    margin: 40px auto;
-    padding: 20px;
-    max-width: 900px;
-    border-top: 1px solid #ccc;
-  }
+.leve { color:#555; }
 
-  iframe, audio {
-    width: 100%;
-    max-width: 800px;
-    margin: 20px 0;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-  }
+.sarau {
+  background:#fafafa;
+  border-radius:12px;
+  padding:25px;
+}
+</style>
+</head>
 
-  input, textarea, button {
+<body>
+
+<h1>VOV</h1>
+<p class="leve">Música • Pensamento • Cultura</p>
+
+<!-- Música -->
+<section>
+<h2>🎵 Tom Jobim</h2>
+<iframe height="315"
+src="https://www.youtube.com/embed/z8dM5eF29fE"
+allowfullscreen></iframe>
+</section>
+
+<!-- BLACKVOX -->
+<section>
+<h2>🎶 BLACKVOX</h2>
+<iframe src="blackvox.html" height="420"></iframe>
+</section>
+
+<!-- I CHING -->
+<section>
+<h2>🔮 I Ching</h2>
+<iframe src="iching.html" height="650"></iframe>
+<p><a href="iching.html" target="_blank">Abrir completo</a></p>
+</section>
+
+<!-- SARAU -->
+<section class="sarau">
+<h2>🌊 Sarau da Sereia</h2>
+
+<p>
+O Sarau da Sereia chega com uma proposta viva: a roda como centro de tudo.
+Música e poesia se encontram num fluxo de troca, presença e emoção.
+</p>
+
+<p>
+📍 Espaço Cultural Rumo do Vento – Itapuã<br>
+🗓 Sábado – 28 de março – 18h
+</p>
+
+<p>
+Com <strong>Jonga Lima</strong>, <strong>Ivan Maia</strong>,
+<strong>Jorge LA Matheus</strong> e convidados.
+</p>
+
+<p><em>Vem pra roda.</em></p>
+</section>
+
+<!-- CONTATO -->
+<section>
+<h2>✉️ Contato</h2>
+<form action="https://SEU_WEBHOOK_N8N_AQUI" method="post">
+<input type="text" name="name" placeholder="Nome" required>
+<input type="email" name="email" placeholder="Email" required>
+<textarea name="mensagem" placeholder="Mensagem"></textarea>
+<button type="submit">Enviar</button>
+</form>
+</section>
+
+<footer>
+<p class="leve">© VOV • Jorge LA Matheus</p>
+</footer>
+
+</body>
+</html>
