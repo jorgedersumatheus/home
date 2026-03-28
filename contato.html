@@ -1,106 +1,143 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Contato - VOV</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #0f0f0f;
-      color: #ffffff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-    }
+<title>Contato – Portal VOV</title>
 
-    .container {
-      background: #1a1a1a;
-      padding: 30px;
-      border-radius: 10px;
-      width: 100%;
-      max-width: 400px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.5);
-    }
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #ffffff;
+  color: #222;
+  text-align: center;
+}
 
-    h2 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
+h1 {
+  margin-top: 30px;
+  font-weight: normal;
+}
 
-    input, textarea {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 15px;
-      border: none;
-      border-radius: 5px;
-      font-size: 14px;
-    }
+p {
+  max-width: 600px;
+  margin: 10px auto;
+  line-height: 1.6;
+}
 
-    button {
-      width: 100%;
-      padding: 12px;
-      background: #00c853;
-      border: none;
-      border-radius: 5px;
-      color: #fff;
-      font-size: 16px;
-      cursor: pointer;
-    }
+form {
+  max-width: 500px;
+  margin: 30px auto;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
 
-    button:hover {
-      background: #00b34a;
-    }
-  </style>
+input, textarea {
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+button {
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background-color: #000;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #444;
+}
+
+footer {
+  margin: 40px 0;
+  font-size: 14px;
+  color: #666;
+}
+
+a {
+  color: #000;
+  text-decoration: none;
+  font-weight: bold;
+}
+</style>
+
 </head>
 
 <body>
 
-  <div class="container">
-    <h2>Fale com a VOV</h2>
+<h1>Contato VOV</h1>
 
-    <form onsubmit="enviar(event)">
-      <input type="text" name="name" placeholder="Seu nome" required>
-      <input type="email" name="email" placeholder="Seu email" required>
-      <textarea name="message" placeholder="Sua mensagem" rows="5" required></textarea>
+<p>
+Entre em contato para parcerias, apresentações, projetos culturais ou simplesmente para trocar ideias.
+</p>
 
-      <button type="submit">Enviar</button>
-    </form>
-  </div>
+<form id="formContato">
+
+<input type="text" name="nome" placeholder="Seu nome" required>
+
+<input type="email" name="email" placeholder="Seu e-mail" required>
+
+<textarea name="mensagem" placeholder="Sua mensagem..." required></textarea>
+
+<button type="submit">Enviar mensagem</button>
+
+</form>
+
+<p id="status"></p>
+
+<footer>
+<p>
+Portal VOV • Jorge LA Matheus<br>
+Música • Pensamento • Cultura
+</p>
+
+<p>
+<a href="index.html">← Voltar ao Portal</a>
+</p>
+</footer>
+
 <script>
-async function enviar(e) {
+document.getElementById("formContato").addEventListener("submit", async function(e) {
   e.preventDefault();
 
-  const nome = document.querySelector("[name=name]").value;
-  const email = document.querySelector("[name=email]").value;
-  const mensagem = document.querySelector("[name=message]").value;
+  const status = document.getElementById("status");
+  status.innerText = "Enviando...";
+
+  const data = {
+    nome: this.nome.value,
+    email: this.email.value,
+    mensagem: this.mensagem.value
+  };
 
   try {
-    await fetch("https://webhook.site/12a9cf17-3592-4536-9d63-96c8f909fdb4", {
+    await fetch("SEU_WEBHOOK_N8N_AQUI", {
       method: "POST",
-      mode: "no-cors",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({
-        name: nome,
-        email: email,
-        message: mensagem
-      })
+      body: JSON.stringify(data)
     });
 
-    window.location.href = "obrigado.html";
+    status.innerText = "Mensagem enviada com sucesso!";
+    this.reset();
 
-  } catch (erro) {
-    alert("Erro ao enviar o formulário.");
-    console.error(erro);
+  } catch (error) {
+    status.innerText = "Erro ao enviar. Tente novamente.";
   }
-}
+});
 </script>
-  
 
 </body>
 </html>
