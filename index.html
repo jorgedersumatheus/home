@@ -98,10 +98,82 @@ Com <strong>Jonga Lima</strong>, <strong>Ivan Maia</strong>,
 <button type="submit">Enviar</button>
 </form>
 </section>
+  
+<footer style="margin-top:60px; padding:40px 20px; background:#f5f5f5; color:#222;">
 
-<footer>
-<p class="leve">© VOV • Jorge LA Matheus</p>
+  <div style="max-width:700px; margin:auto;">
+
+    <h3 style="font-weight:normal;">Contato</h3>
+
+    <p style="font-size:14px;">
+      Para parcerias, apresentações e projetos culturais:
+    </p>
+
+    <form id="formContatoRodape" style="display:flex; flex-direction:column; gap:10px; margin-top:20px;">
+
+      <input type="text" name="nome" placeholder="Seu nome" required
+      style="padding:10px; border-radius:6px; border:1px solid #ccc;">
+
+      <input type="email" name="email" placeholder="Seu e-mail" required
+      style="padding:10px; border-radius:6px; border:1px solid #ccc;">
+
+      <textarea name="mensagem" placeholder="Mensagem..." required
+      style="padding:10px; border-radius:6px; border:1px solid #ccc; min-height:100px;"></textarea>
+
+      <button type="submit"
+      style="padding:10px; border:none; border-radius:6px; background:#000; color:#fff; cursor:pointer;">
+        Enviar
+      </button>
+
+    </form>
+
+    <p id="statusRodape" style="margin-top:10px; font-size:14px;"></p>
+
+    <hr style="margin:40px 0;">
+
+    <p style="font-size:14px;">
+      Portal VOV • Jorge LA Matheus<br>
+      Música • Pensamento • Cultura
+    </p>
+
+    <p style="font-size:13px;">
+      <a href="mailto:verouvirvendas@jorgematheus.mus.br">verouvirvendas@jorgematheus.mus.br</a>
+    </p>
+
+  </div>
+
 </footer>
 
+
+  <script>
+document.getElementById("formContatoRodape").addEventListener("submit", async function(e) {
+  e.preventDefault();
+
+  const status = document.getElementById("statusRodape");
+  status.innerText = "Enviando...";
+
+  const data = {
+    nome: this.nome.value,
+    email: this.email.value,
+    mensagem: this.mensagem.value
+  };
+
+  try {
+    await fetch("SEU_WEBHOOK_N8N_AQUI", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+    });
+
+    status.innerText = "Mensagem enviada ✨";
+    this.reset();
+
+  } catch (error) {
+    status.innerText = "Erro ao enviar.";
+  }
+});
+</script>
 </body>
 </html>
