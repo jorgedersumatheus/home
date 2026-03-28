@@ -141,4 +141,51 @@ frameborder="0" allowfullscreen></iframe>
 
 <!-- Seção I Ching -->
 <section class="destaque">
-<h3>🔮 Jogo do I Ching – V
+<h3>🔮 Jogo do I Ching – VOV</h3>
+<iframe src="ICHING_FINAL.pdf" width="100%" height="700"></iframe>
+</section>
+
+<!-- Seção Rádio -->
+<section class="radio">
+<h3>📻 Rádio VOV ao Vivo</h3>
+<p class="radio-sub">Sintonize a transmissão contínua do Portal Musical VOV.</p>
+<audio controls>
+<source src="SEU_STREAM_DA_RADIO_AQUI" type="audio/mpeg">
+Seu navegador não suporta áudio.
+</audio>
+</section>
+
+<!-- Seção Formulário -->
+<section class="formulario">
+<h3>✉️ Contato & Inscrição</h3>
+<form id="vov-form">
+  <input type="text" name="nome" placeholder="Seu nome" required>
+  <input type="email" name="email" placeholder="Seu e-mail" required>
+  <textarea name="mensagem" rows="5" placeholder="Sua mensagem" required></textarea>
+  <button type="submit">Enviar</button>
+</form>
+<p id="form-feedback" style="color:green; display:none;">Obrigado! Sua mensagem foi enviada.</p>
+</section>
+
+<footer>
+<p>Portal VOV • Jorge LA Matheus<br>
+Música • Pensamento • Cultura</p>
+</footer>
+
+<script>
+// Service Worker
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("service-worker.js");
+}
+
+// Placeholder do envio do formulário
+document.getElementById('vov-form').addEventListener('submit', function(e){
+  e.preventDefault();
+  // Aqui vamos conectar aos nós do n8n futuramente
+  document.getElementById('form-feedback').style.display = 'block';
+  this.reset();
+});
+</script>
+
+</body>
+</html>
