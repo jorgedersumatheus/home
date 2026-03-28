@@ -1,132 +1,100 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
+
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Portal VOV – Ver Ouvir Vendas</title>
-<style>
-body {
-  margin:0;
-  font-family: 'Arial', sans-serif;
-  background-color: #111;
-  color: #fff;
-  text-align: center;
-}
+<title>VOV – Portal Musical</title>
+<link rel="stylesheet" href="style.css">
 
-h1, h2 {
-  margin: 20px 0;
-}
-
-a {
-  color: #ff0;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-a:hover {
-  text-decoration: underline;
-}
-
-section {
-  margin: 40px 0;
-  padding: 20px;
-  border-top: 2px solid #444;
-}
-
-img {
-  max-width: 90%;
-  margin: 20px 0;
-  border-radius: 12px;
-  box-shadow: 0 0 20px #000;
-}
-
-iframe {
-  border: 1px solid #333;
-  max-width: 100%;
-  border-radius: 12px;
-  margin: 20px 0;
-}
-
-button {
-  background-color: #222;
-  color: #ff0;
-  border: 2px solid #ff0;
-  padding: 10px 20px;
-  margin: 10px;
-  cursor: pointer;
-  border-radius: 8px;
-}
-
-button:hover {
-  background-color: #ff0;
-  color: #000;
-}
-</style>
+  <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#222222">
 </head>
+
 <body>
 
-<h1>Portal VOV – Ver Ouvir Vendas</h1>
+<header class="topo">
 
-<!-- Seção eBook -->
-<section id="ebooks">
-<h2>📚 Nossas Criações Autorais</h2>
-<p><a href="https://www.jorgematheus.mus.br/ebooks/anuncios-que-vendem.pdf" target="_blank">📖 Baixe o eBook "Anúncios que Vendem – Um Guia com Inteligência Vital"</a></p>
-<img src="vov-ebook-cover.jpeg" alt="Capa eBook VOV">
+<h1>VOV</h1>
+
+<p class="subtitulo">Portal Musical</p>
+
+<nav class="menu">
+
+<a href="arquivo-musical.html">Música</a>
+<a href="videos.html">Vídeos</a>
+<a href="radio.html">Rádio</a>
+<a href="programas.html">Programas</a>
+<a href="inteligencia-vital.html">Inteligência Vital</a>
+<a href="agente-cultural.html">Agente Cultural</a>
+<a href="contato.html">Contato</a>
+
+</nav>
+
+</header>
+
+
+<section class="abertura">
+
+<h2>Jorge LA Matheus</h2>
+
+<p class="assinatura">
+Compositor • Violonista • Agente Cultural
+</p>
+
+<p>
+O Portal VOV reúne música, pensamento e criação independente.
+Um território livre de encontro entre arte, reflexão e cultura.
+</p>
+
 </section>
 
-<!-- Seção Música: Tom Jobim -->
-<section id="musica">
-<h2>🎵 Tom Jobim</h2>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/TOM_JOBIM_VIDEO_ID" title="Tom Jobim" allowfullscreen></iframe>
+
+<section class="radio">
+
+<h3>Rádio VOV ao Vivo</h3>
+
+<p class="radio-sub">
+Sintonize a transmissão contínua do Portal Musical VOV.
+</p>
+
+<audio controls>
+
+<source src="SEU_STREAM_DA_RADIO_AQUI" type="audio/mpeg">
+
+Seu navegador não suporta áudio.
+
+</audio>
+
 </section>
 
-<!-- Seção I Ching -->
-<section id="iching">
-<h2>🔮 I Ching – VOV</h2>
-<p><a href="https://www.jorgematheus.mus.br/iching_jung.pdf" target="_blank">📄 Abrir I Ching (PDF)</a></p>
-<iframe src="https://www.jorgematheus.mus.br/iching_jung.pdf" width="100%" height="600"></iframe>
-<img src="jorgeiching.jpeg" alt="I Ching VOV">
+
+<section class="destaque">
+
+<h3>Canção em Destaque</h3>
+
+<iframe width="100%" height="315"
+src="https://www.youtube.com/embed/VIDEO_ID"
+frameborder="0"
+allowfullscreen>
+</iframe>
+
 </section>
 
-<!-- Seção BLACKVOX -->
-<section id="blackvox">
-<h2>🎵 BLACKVOX</h2>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/BLACKVOX_VIDEO_ID" title="BLACKVOX" allowfullscreen></iframe>
-</section>
 
-<!-- Seção Playlists -->
-<section id="playlists">
-<h2>🎶 Playlists VOV</h2>
-<p>Ouça nossas playlists autorais e selecionadas:</p>
-<iframe src="https://open.spotify.com/embed/playlist/13MUSICAIS_PLAYLIST_ID" width="300" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
-</section>
+<footer>
 
-<!-- Seção Rádio (opcional) -->
-<section id="radio">
-<h2>📻 Rádio VOV</h2>
-<p>Transmissão suspensa temporariamente, mas logo estaremos de volta ao ar!</p>
-</section>
+<p>
+Portal VOV • Jorge LA Matheus<br>
+Música • Pensamento • Cultura
+</p>
 
-<!-- Seção Contato -->
-<section id="contato">
-<h2>✉️ Contato & Formulários</h2>
-<p>Entre em contato diretamente conosco:</p>
-<p><a href="contato.html">Formulário de Contato VOV</a></p>
-<p>E-mail: <a href="mailto:verouvirvendas@jorgematheus.mus.br">verouvirvendas@jorgematheus.mus.br</a></p>
-</section>
-
-<!-- Seção QR Code -->
-<section id="qrcode">
-<h2>🔗 QR Codes & Links Rápidos</h2>
-<p>Escaneie e acesse nossos conteúdos diretamente:</p>
-<img src="vov-qrcode-ebook.jpeg" alt="QR Code eBook VOV" width="200">
-<img src="vov-qrcode-iching.jpeg" alt="QR Code I Ching VOV" width="200">
-</section>
-
-<footer style="margin:50px 0; border-top:2px solid #444; padding-top:20px;">
-<p>© 2026 Jorge LA Matheus – VOV | Save Simpatia!!!</p>
-<p><a href="#top">↑ Voltar ao topo</a></p>
 </footer>
+
+  <script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("service-worker.js");
+}
+</script>
 
 </body>
 </html>
