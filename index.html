@@ -188,5 +188,42 @@ document.getElementById("formContatoRodape").addEventListener("submit", async fu
   }
 });
 </script>
+
+
+<script>
+document.getElementById("formContato").addEventListener("submit", async function(e) {
+  e.preventDefault();
+
+  const status = document.getElementById("status");
+  status.innerText = "Enviando...";
+
+  const data = {
+    nome: this.nome.value,
+    email: this.email.value,
+    mensagem: this.mensagem.value
+  };
+
+  try {
+    const response = await fetch("https://n8n-69-zkbi.onrender.com/webhook/contato", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+    });
+
+    if (response.ok) {
+      status.innerText = "Mensagem enviada ✨";
+      this.reset();
+    } else {
+      status.innerText = "Erro ao enviar.";
+    }
+
+  } catch (error) {
+    status.innerText = "Erro de conexão.";
+  }
+});
+</script>
+  
 </body>
 </html>
