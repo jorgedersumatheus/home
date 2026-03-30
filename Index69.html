@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal Ver Ouvir Vendas</title>
+  <style>
+    body { font-family:'Arial', sans-serif; background:#f0f4f8; margin:0; padding:0; }
+    header { background:#0077cc; color:#fff; padding:20px; text-align:center; font-size:2em; font-weight:bold; }
+    section { padding:40px 20px; max-width:1000px; margin:auto; background:#fff; border-radius:15px; box-shadow:0 4px 15px rgba(0,0,0,0.05); margin-top:40px; }
+    h2 { color:#0077cc; text-align:center; }
+    /* Formulário isolado */
+    #vovFormBlock { max-width:500px; margin:40px auto; background:#fff; padding:25px; border-radius:15px; box-shadow:0 4px 15px rgba(0,0,0,0.1); }
+    #vovFormBlock input, #vovFormBlock textarea, #vovFormBlock button { width:100%; margin-top:12px; padding:12px; border-radius:8px; border:1px solid #ccc; font-size:1em; }
+    #vovFormBlock textarea { min-height:120px; resize:vertical; }
+    #vovFormBlock button { background:#0077cc; color:#fff; border:none; cursor:pointer; font-weight:bold; transition:0.3s; }
+    #vovFormBlock button:hover { background:#005fa3; }
+    #vovFormStatus { margin-top:15px; font-weight:bold; text-align:center; color:#0077cc; }
+    footer { margin-top:40px; padding:20px; text-align:center; font-size:0.9em; color:#555; }
+  </style>
+</head>
+<body>
+
+<header>Portal Ver Ouvir Vendas</header>
+
+<!-- BLOCO BLACKVOX -->
+<section id="blackvox">
+  <h2>BLACKVOX</h2>
+  <!-- Substitua abaixo pelo conteúdo completo do BLACKVOX -->
+  <div>
+    <p>Conteúdo completo do BLACKVOX vai aqui...</p>
+  </div>
+</section>
+
+<!-- BLOCO I CHING -->
+<section id="iching">
+  <h2>I CHING</h2>
+  <!-- Substitua abaixo pelo conteúdo completo do I CHING -->
+  <div>
+    <p>Conteúdo completo do I CHING vai aqui...</p>
+  </div>
+</section>
+
+<!-- BLOCO JORGE LA MATHEUS CANTA TOM BRASILEIRO JOBIM -->
+<section id="jobim">
+  <h2>JORGE LA MATHEUS CANTA TOM BRASILEIRO JOBIM</h2>
+  <!-- Substitua abaixo pelo conteúdo completo do JOBIM -->
+  <div>
+    <p>Conteúdo completo do JOBIM vai aqui...</p>
+  </div>
+</section>
+
+<!-- BLOCO FORMULÁRIO DE CONTATO -->
+<div id="vovFormBlock">
+  <h2 style="text-align:center;">Fale Conosco</h2>
+  <form id="vovContatoForm">
+    <input type="text" name="name" placeholder="Seu nome" required>
+    <input type="email" name="email" placeholder="Seu e-mail" required>
+    <textarea name="mensagem" placeholder="Sua mensagem" required></textarea>
+    <button type="submit">Enviar</button>
+  </form>
+  <div id="vovFormStatus"></div>
+</div>
+
+<footer>© Ver Ouvir Vendas - Salvador, BA</footer>
+
+<script>
+document.getElementById("vovContatoForm").addEventListener("submit", async function(e){
+  e.preventDefault();
+  const form = e.target;
+  const data = { name: form.name.value, email: form.email.value, mensagem: form.mensagem.value };
+
+  try {
+    const response = await fetch("https://n8n-69-zkbi.onrender.com/form/c8df3df2-2f78-40e8-8328-692bde59fcc1", {
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify(data)
+    });
+    if(response.ok){
+      document.getElementById("vovFormStatus").textContent="Obrigado! Sua mensagem foi recebida.";
+      form.reset();
+    } else {
+      document.getElementById("vovFormStatus").textContent="Ocorreu um erro ao enviar. Tente novamente.";
+    }
+  } catch(err){
+    console.error(err);
+    document.getElementById("vovFormStatus").textContent="Erro de conexão. Tente novamente.";
+  }
+});
+</script>
+
+</body>
+</html>
