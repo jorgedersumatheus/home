@@ -1,84 +1,28 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html>
 <head>
   <meta charset="UTF-8">
-  <title>Contato | Ver Ouvir Vendas</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f5f5f5;
-      padding: 20px;
-    }
-
-    .container {
-      max-width: 500px;
-      margin: auto;
-      background: #fff;
-      padding: 25px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-
-    h1 {
-      text-align: center;
-    }
-
-    input, textarea, button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 10px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      font-size: 16px;
-    }
-
-    button {
-      background: #000;
-      color: #fff;
-      cursor: pointer;
-      border: none;
-    }
-
-    button:hover {
-      background: #333;
-    }
-
-    .status {
-      margin-top: 10px;
-      font-size: 14px;
-    }
-  </style>
+  <title>Contato VOV</title>
 </head>
 <body>
 
-<div class="container">
-  <h1>Contato VOV</h1>
+<h2>Contato</h2>
 
-  <form onsubmit="enviar(event)">
-    <input type="text" name="name" placeholder="Seu nome" required>
-    <input type="email" name="email" placeholder="Seu e-mail" required>
-    <textarea name="message" placeholder="Sua mensagem" rows="5" required></textarea>
-    <button type="submit">Enviar</button>
-  </form>
-
-  <div class="status" id="status"></div>
-</div>
+<form onsubmit="enviar(event)">
+  <input name="name" placeholder="Nome" required><br><br>
+  <input name="email" type="email" placeholder="Email" required><br><br>
+  <textarea name="message" placeholder="Mensagem" required></textarea><br><br>
+  <button type="submit">Enviar</button>
+</form>
 
 <script>
 async function enviar(e) {
   e.preventDefault();
 
-  const status = document.getElementById("status");
-  status.innerText = "Enviando...";
-
   try {
-    const res = await fetch("SEU_WEBHOOK_AQUI", {
+    const res = await fetch("https://n8n-69-zkbi.onrender.com/webhook/contato", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
+      headers: {"Content-Type": "application/json"},
       body: JSON.stringify({
         name: document.querySelector("[name=name]").value,
         email: document.querySelector("[name=email]").value,
@@ -89,11 +33,11 @@ async function enviar(e) {
     if (res.ok) {
       window.location.href = "/obrigado.html";
     } else {
-      status.innerText = "Erro ao enviar. Tente novamente.";
+      alert("Erro ao enviar.");
     }
 
-  } catch (err) {
-    status.innerText = "Falha de conexão.";
+  } catch (e) {
+    alert("Falha de conexão.");
   }
 }
 </script>
