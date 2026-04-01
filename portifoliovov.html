@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>VOV | Portfólio Técnico de Integrações</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: Arial, sans-serif; background:#0b0c10; color:#eaeaea; margin:0; padding:20px; }
+    h1, h2 { color:#66fcf1; }
+    .box { background:#1f2833; padding:20px; margin-bottom:20px; border-radius:8px; }
+    code { background:#000; padding:4px 8px; border-radius:4px; }
+  </style>
+</head>
+<body>
+
+<h1>Ver Ouvir Vendas (VOV)</h1>
+<p><strong>Responsável:</strong> Jorge LA Matheus</p>
+<p><strong>Domínio:</strong> jorgematheus.mus.br</p>
+
+<div class="box">
+<h2>1. Objetivo Técnico</h2>
+<p>
+Este projeto utiliza APIs para automação de marketing, processamento de leads e distribuição de conteúdo digital.
+As integrações são projetadas para operar via webhooks, requisições HTTP e filas de execução.
+</p>
+</div>
+
+<div class="box">
+<h2>2. Arquitetura</h2>
+<ul>
+  <li>Orquestração: n8n (self-hosted)</li>
+  <li>Entrada de dados: Webhooks HTTP</li>
+  <li>Processamento: lógica condicional + JavaScript</li>
+  <li>Saída: APIs externas (Meta, e-mail SMTP, etc.)</li>
+</ul>
+</div>
+
+<div class="box">
+<h2>3. Caso de Uso da API</h2>
+<p>
+A API da Meta será utilizada para:
+</p>
+<ul>
+  <li>Publicação automatizada de conteúdo</li>
+  <li>Envio de mensagens transacionais (quando aplicável)</li>
+  <li>Integração com fluxos de marketing digital</li>
+</ul>
+
+<p>
+Todos os envios seguem lógica baseada em eventos (event-driven), acionados por ações do usuário (formulários ou interações).
+</p>
+</div>
+
+<div class="box">
+<h2>4. Fluxo de Dados</h2>
+<ol>
+  <li>Usuário preenche formulário</li>
+  <li>Webhook recebe dados</li>
+  <li>n8n processa e valida</li>
+  <li>Dados são enviados via API</li>
+  <li>Resposta é registrada para auditoria</li>
+</ol>
+</div>
+
+<div class="box">
+<h2>5. Segurança</h2>
+<ul>
+  <li>Uso de HTTPS em todas as requisições</li>
+  <li>Autenticação via Bearer Token</li>
+  <li>Variáveis sensíveis protegidas em ambiente</li>
+  <li>Controle de acesso restrito</li>
+</ul>
+</div>
+
+<div class="box">
+<h2>6. Conformidade</h2>
+<p>
+O sistema respeita boas práticas de privacidade e uso de dados.
+Não realiza envio de spam ou automação abusiva.
+Todos os fluxos dependem de interação prévia do usuário.
+</p>
+</div>
+
+<div class="box">
+<h2>7. Contato Técnico</h2>
+<p>Email: verouvirvendas@jorgematheus.mus.br</p>
+</div>
+
+</body>
+</html>
