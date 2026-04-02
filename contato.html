@@ -4,88 +4,80 @@
   <meta charset="UTF-8">
   <title>Contato | VOV</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #0b0c10;
-      color: #ffffff;
+      background: #0b1a2b;
+      color: #fff;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
       margin: 0;
     }
-
     .container {
-      background: #1f2833;
-      padding: 30px;
+      background: #132a44;
+      padding: 20px;
       border-radius: 10px;
       width: 100%;
       max-width: 400px;
     }
-
-    input, select, textarea, button {
+    h2 {
+      text-align: center;
+      color: #f4c542;
+    }
+    input, textarea, button {
       width: 100%;
       margin-top: 10px;
       padding: 10px;
       border-radius: 5px;
       border: none;
+      font-size: 14px;
     }
-
+    input, textarea {
+      background: #0b1a2b;
+      color: #fff;
+    }
     button {
-      background: #66fcf1;
+      background: #f4c542;
       color: #000;
       font-weight: bold;
       cursor: pointer;
     }
-
     button:hover {
-      opacity: 0.9;
-    }
-
-    .status {
-      margin-top: 15px;
-      font-size: 14px;
+      background: #ffd95e;
     }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <h2>Contato com a VOV</h2>
+  <h2>Fale com a VOV</h2>
 
-  <form id="vov-form">
+  <form id="formContato">
     <input type="text" name="name" placeholder="Seu nome" required>
-
-    <input type="email" name="email" placeholder="Seu melhor email" required>
-
-    <select name="intention" required>
-      <option value="">Qual seu interesse?</option>
-      <option value="comprar">Quero comprar</option>
-      <option value="aprender">Quero aprender</option>
-      <option value="parceria">Quero parceria</option>
-    </select>
-
-    <textarea name="message" placeholder="Sua mensagem"></textarea>
-
+    <input type="email" name="email" placeholder="Seu email" required>
+    <textarea name="message" placeholder="Sua mensagem" required></textarea>
     <button type="submit">Enviar</button>
   </form>
-
-  <div class="status" id="status"></div>
 </div>
 
 <script>
-document.getElementById("vov-form").addEventListener("submit", async (e) => {
+document.getElementById("formContato").addEventListener("submit", async function(e) {
   e.preventDefault();
 
-  const status = document.getElementById("status");
-  status.innerText = "Enviando...";
+  const form = e.target;
 
-  const data = Object.fromEntries(new FormData(e.target));
+  const data = {
+    name: form.name.value,
+    email: form.email.value,
+    message: form.message.value
+  };
+
+  console.log("Enviando dados:", data);
 
   try {
-    const response = await fetch("    fetch("https://n8n-69-zkbi.onrender.com/webhook/vovn8n", {  ", {
+    const response = await fetch("https://n8n-69-zkbi.onrender.com/webhook/vovn8n", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -93,15 +85,18 @@ document.getElementById("vov-form").addEventListener("submit", async (e) => {
       body: JSON.stringify(data)
     });
 
+    console.log("Status da resposta:", response.status);
+
     if (response.ok) {
-      status.innerText = "Recebido! Verifique seu email.";
-      e.target.reset();
+      alert("✅ Mensagem enviada com sucesso!");
+      form.reset();
     } else {
-      status.innerText = "Erro ao enviar. Tente novamente.";
+      alert("❌ Erro ao enviar. Status: " + response.status);
     }
 
   } catch (error) {
-    status.innerText = "Falha de conexão.";
+    console.error("Erro de conexão:", error);
+    alert("❌ Falha na conexão com o servidor.");
   }
 });
 </script>
