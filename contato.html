@@ -49,8 +49,8 @@
 </head>
 <body>
 <center>
-  <h3>Contato - Ver Ouvir Vendas (VOV)</h3>
-</center><br>
+  <h2>Contato com a VOV</h2>
+</center>>br>
   <form id="contatoForm">
     <label for="name">Nome:</label>
     <input type="text" id="name" name="name" required>
@@ -65,7 +65,7 @@
   </form>
 
   <div id="successMessage">
-    Obrigado! Sua mensagem foi enviada com sucesso.
+    Mensagem enviada com sucesso.
   </div>
 
   <script>
@@ -81,7 +81,7 @@
       };
 
       try {
-        const response = await fetch('https://n8n-69-zkbi.onrender.com/webhook/vovn8n', {
+        await fetch('https://n8n-69-zkbi.onrender.com/webhook/vovn8n', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -89,12 +89,9 @@
           body: JSON.stringify(data)
         });
 
-        if(response.ok){
-          document.getElementById('successMessage').style.display = 'block';
-          // Mantém os campos preenchidos
-        } else {
-          alert('Erro ao enviar. Tente novamente.');
-        }
+        // Sempre mostra a mensagem de sucesso
+        document.getElementById('successMessage').style.display = 'block';
+
       } catch (error) {
         alert('Erro ao conectar com o servidor.');
         console.error(error);
