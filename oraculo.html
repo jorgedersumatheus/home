@@ -12,7 +12,6 @@ body {
     text-align:center;
     padding:30px;
 }
-
 h1 { color:#e60000; }
 
 input, textarea, button {
@@ -21,8 +20,6 @@ input, textarea, button {
     border:none;
     border-radius:5px;
 }
-
-input, textarea { width:300px; }
 
 button {
     background:#e60000;
@@ -35,15 +32,12 @@ button {
     letter-spacing:6px;
 }
 
-#resultado, #historico {
-    margin-top:30px;
-    max-width:600px;
-    margin-left:auto;
-    margin-right:auto;
-    text-align:left;
+.bloco {
+    margin-top:25px;
+    padding:15px;
+    border:1px solid #333;
 }
 </style>
-
 </head>
 
 <body>
@@ -51,246 +45,187 @@ button {
 <h1>V O V — Oráculo Estratégico PRO</h1>
 <p>Ver • Ouvir • Vender</p>
 
-<input type="text" id="pergunta" placeholder="Qual é a sua questão?">
-<br>
+<input type="text" id="pergunta" placeholder="Qual é a sua questão?"><br>
 
 <button onclick="consultar()">Consultar</button>
-<button onclick="narrar()">Ouvir leitura</button>
-<button onclick="exportar()">Exportar leitura</button>
+<button onclick="narrar()">Ouvir</button>
 
-<div id="hexagrama"></div>
-<div id="resultado"></div>
+<div id="presente" class="bloco"></div>
+<div id="futuro" class="bloco"></div>
 
 <hr>
 
 <h2>Leitura Manual</h2>
 
-<input type="text" id="manualNumero" placeholder="Digite o número (1–64)">
-<br>
-
 <textarea id="manualLinhas" rows="6"
-placeholder="Cole as linhas:
+placeholder="Digite:
 ___
 _ _
-_ _
 ___
-..."></textarea>
-<br>
+..."></textarea><br>
 
-<button onclick="lerManual()">Ler manualmente</button>
-
-<h2>Histórico</h2>
-<div id="historico"></div>
+<button onclick="lerManual()">Interpretar Manual</button>
 
 <script>
 
 // =========================
-// HEXAGRAMAS (com texto)
+// BASE (adicione os 64 depois)
 // =========================
 
 const hex64 = {
-
-41:{
-nome:"Diminuição",
-direcao:"reduzir",
-texto:`Diminuição não é perda, é estratégia.
-
-Cortar o excesso fortalece o essencial.
-Simplificar cria direção.
-
-O momento pede redução consciente.
-Menos dispersão, mais foco.
-
-Reduza agora para crescer depois.`
-},
-
-42:{
-nome:"Aumento",
-direcao:"expandir",
-texto:`Aumento acontece quando há base.
-
-Expandir sem estrutura gera colapso.
-Com alinhamento, o crescimento é natural.
-
-Avance, mas com consciência.
-
-Expanda sem perder o centro.`
-},
-
-29:{
-nome:"Abismo",
-direcao:"cautela",
-texto:`O abismo exige presença.
-
-Não é momento de pressa.
-Cada passo deve ser consciente.
-
-Disciplina emocional atravessa o risco.
-
-Permaneça firme no centro.`
-},
-
-30:{
-nome:"Clareza",
-direcao:"iluminar",
-texto:`Clareza revela padrões.
-
-Ver corretamente muda tudo.
-
-A luz não força — mostra.
-
-Use inteligência antes da ação.`
-}
-
-};
-
-// =========================
-// LINHAS
-// =========================
-
-const linhasVOV = {
-1:"Início imaturo.",
-2:"Ajuste correto.",
-3:"Risco de erro.",
-4:"Transição.",
-5:"Decisão forte.",
-6:"Excesso."
+1:{nome:"Criativo",direcao:"iniciar",texto:"Força criativa pura."},
+2:{nome:"Receptivo",direcao:"receber",texto:"Acolher e sustentar."},
+29:{nome:"Abismo",direcao:"cautela",texto:"Perigo exige presença."},
+30:{nome:"Clareza",direcao:"ver",texto:"A luz revela o caminho."},
+41:{nome:"Diminuição",direcao:"reduzir",texto:"Menos é estratégia."},
+42:{nome:"Aumento",direcao:"expandir",texto:"Expandir com base."}
 };
 
 // =========================
 // MOTOR
 // =========================
 
-function gerarLinha() {
+function gerarLinha(){
     let v = Math.floor(Math.random()*4);
+
     return {
-        valor: v % 2 === 0 ? 0 : 1,
+        valor: v % 2,
         mutavel: v === 0 || v === 3
     };
 }
 
-function gerarHexagrama() {
+function gerarHexagrama(){
     let linhas = [];
     let mutaveis = [];
 
     for(let i=0;i<6;i++){
         let l = gerarLinha();
         linhas.push(l.valor);
-        if(l.mutavel) mutaveis.push(i+1);
+        if(l.mutavel) mutaveis.push(i);
     }
 
     return {linhas, mutaveis};
 }
 
 // =========================
-// DESENHO
+// CÁLCULO REAL
 // =========================
 
-function desenhar(linhas) {
-    let html="";
-    linhas.slice().reverse().forEach(l=>{
-        html += `<div class="linha">${l ? "___" : "_ _"}</div>`;
+function calcularNumero(linhas){
+    let num = 0;
+
+    for(let i=0;i<6;i++){
+        if(linhas[i] === 1){
+            num += Math.pow(2, i);
+        }
+    }
+
+    return num + 1;
+}
+
+// =========================
+// MUTAÇÃO
+// =========================
+
+function mutarHexagrama(h){
+    let novo = [...h.linhas];
+
+    h.mutaveis.forEach(i=>{
+        novo[i] = novo[i] === 1 ? 0 : 1;
     });
-    document.getElementById("hexagrama").innerHTML = html;
+
+    return novo;
 }
 
 // =========================
-// LEITURA AUTOMÁTICA
+// VISUAL
 // =========================
 
-function interpretar(h){
+function desenhar(linhas){
+    return linhas.slice().reverse().map(l=>{
+        return `<div class="linha">${l ? "___" : "_ _"}</div>`;
+    }).join("");
+}
 
-    // simplificado (exemplo)
-    let num = 41;
+// =========================
+// INTERPRETAÇÃO
+// =========================
 
-    let data = hex64[num];
+function montarTexto(num){
 
-    let texto = `
-    <p><b>Hexagrama ${num} — ${data.nome}</b></p>
-    <p><b>Direção:</b> ${data.direcao}</p>
-    <p>${data.texto.replace(/\n/g,"<br>")}</p>
+    let h = hex64[num];
+
+    if(!h){
+        return `<p><b>Hexagrama ${num}</b><br>Em expansão VOV.</p>`;
+    }
+
+    return `
+    <p><b>${num} — ${h.nome}</b></p>
+    <p><b>Direção:</b> ${h.direcao}</p>
+    <p>${h.texto}</p>
     `;
-
-    return texto;
 }
 
 // =========================
-// CONSULTA
+// CONSULTA COMPLETA
 // =========================
 
-async function consultar(){
-
-    let pergunta = document.getElementById("pergunta").value;
+function consultar(){
 
     let h = gerarHexagrama();
 
-    desenhar(h.linhas);
+    let num1 = calcularNumero(h.linhas);
 
-    let resultado = interpretar(h);
+    let linhasMutadas = mutarHexagrama(h);
 
-    document.getElementById("resultado").innerHTML = resultado;
+    let num2 = calcularNumero(linhasMutadas);
 
-    salvarConsulta(pergunta, resultado);
+    document.getElementById("presente").innerHTML = `
+    <h3>Presente</h3>
+    ${desenhar(h.linhas)}
+    ${montarTexto(num1)}
+    <p><b>Linhas mutáveis:</b> ${h.mutaveis.map(i=>i+1).join(", ") || "nenhuma"}</p>
+    `;
 
-    document.getElementById("pergunta").value = "";
+    document.getElementById("futuro").innerHTML = `
+    <h3>Transformação</h3>
+    ${desenhar(linhasMutadas)}
+    ${montarTexto(num2)}
+    `;
 }
 
 // =========================
 // MANUAL
 // =========================
 
+function converterManual(texto){
+
+    let linhas = texto.trim().split("\n").map(l=>{
+        return l.includes("___") ? 1 : 0;
+    });
+
+    return linhas.reverse();
+}
+
 function lerManual(){
 
-    let num = document.getElementById("manualNumero").value;
+    let texto = document.getElementById("manualLinhas").value;
 
-    if(hex64[num]){
-        let h = hex64[num];
+    let linhas = converterManual(texto);
 
-        document.getElementById("resultado").innerHTML = `
-        <p><b>Hexagrama ${num} — ${h.nome}</b></p>
-        <p><b>Direção:</b> ${h.direcao}</p>
-        <p>${h.texto.replace(/\n/g,"<br>")}</p>
-        `;
-    } else {
-        document.getElementById("resultado").innerHTML = "Hexagrama não disponível ainda.";
-    }
-}
+    let num1 = calcularNumero(linhas);
 
-// =========================
-// HISTÓRICO
-// =========================
+    let linhasMutadas = linhas.map(l=>l); // sem mutação manual
 
-function salvarConsulta(pergunta, resultado){
+    let num2 = calcularNumero(linhasMutadas);
 
-    let historico = JSON.parse(localStorage.getItem("vov_historico")) || [];
+    document.getElementById("presente").innerHTML = `
+    <h3>Leitura Manual</h3>
+    ${desenhar(linhas)}
+    ${montarTexto(num1)}
+    `;
 
-    historico.unshift({
-        data: new Date().toLocaleString(),
-        pergunta,
-        resultado
-    });
-
-    localStorage.setItem("vov_historico", JSON.stringify(historico));
-
-    renderHistorico();
-}
-
-function renderHistorico(){
-
-    let historico = JSON.parse(localStorage.getItem("vov_historico")) || [];
-
-    let html = "";
-
-    historico.slice(0,10).forEach(item=>{
-        html += `
-        <div style="border-bottom:1px solid #333; margin:10px;">
-            <p><b>${item.data}</b></p>
-            <p>${item.pergunta}</p>
-        </div>
-        `;
-    });
-
-    document.getElementById("historico").innerHTML = html;
+    document.getElementById("futuro").innerHTML = "";
 }
 
 // =========================
@@ -299,12 +234,7 @@ function renderHistorico(){
 
 function narrar(){
 
-    let texto = document.getElementById("resultado").innerText;
-
-    if(!texto){
-        alert("Faça uma leitura primeiro.");
-        return;
-    }
+    let texto = document.body.innerText;
 
     let fala = new SpeechSynthesisUtterance(texto);
 
@@ -314,25 +244,6 @@ function narrar(){
     speechSynthesis.cancel();
     speechSynthesis.speak(fala);
 }
-
-// =========================
-// EXPORTAR
-// =========================
-
-function exportar(){
-
-    let texto = document.getElementById("resultado").innerText;
-
-    let blob = new Blob([texto], {type: "text/plain"});
-    let url = URL.createObjectURL(blob);
-
-    let a = document.createElement("a");
-    a.href = url;
-    a.download = "leitura_vov.txt";
-    a.click();
-}
-
-renderHistorico();
 
 </script>
 
