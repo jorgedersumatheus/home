@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Oráculo Estratégico VOV</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to bottom, #000000, #1a1a1a);
+      color: #ffffff;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: auto;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+      letter-spacing: 2px;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      opacity: 0.8;
+      margin-bottom: 30px;
+    }
+
+    .frase {
+      font-style: italic;
+      margin-bottom: 40px;
+      opacity: 0.7;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 15px;
+      border-radius: 10px;
+      border: none;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    button {
+      padding: 15px 30px;
+      border: none;
+      border-radius: 30px;
+      background: #ffd700;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #ffffff;
+    }
+
+    .resultado {
+      margin-top: 40px;
+      padding: 25px;
+      border-radius: 15px;
+      background: rgba(255,255,255,0.05);
+    }
+
+    .estado {
+      font-size: 22px;
+      margin-bottom: 15px;
+      color: #ffd700;
+    }
+
+    .bloco {
+      margin-bottom: 15px;
+    }
+
+    footer {
+      margin-top: 60px;
+      font-size: 12px;
+      opacity: 0.6;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>ORÁCULO ESTRATÉGICO VOV</h1>
+
+  <div class="subtitle">
+    Ver • Ouvir • Vender
+  </div>
+
+  <div class="frase">
+    “Concentre-se na sua questão. O tempo responde.”
+  </div>
+
+  <textarea id="pergunta" placeholder="Digite sua questão (opcional)..."></textarea>
+
+  <br>
+
+  <button onclick="consultar()">CONSULTAR AGORA</button>
+
+  <div id="resultado" class="resultado" style="display:none;"></div>
+
+  <footer>
+    VER OUVIR VENDAS — VOV<br>
+    jorgematheus.mus.br
+  </footer>
+
+</div>
+
+<script>
+
+const estados = [
+
+{
+nome: "☰ CÉU — INICIAR",
+diagnostico: "Há força disponível. O momento pede ação.",
+acao: "Comece. Lance. Tome a iniciativa.",
+alerta: "Evite arrogância ou excesso de controle."
+},
+
+{
+nome: "☷ TERRA — ESTRUTURAR",
+diagnostico: "O campo pede base e organização.",
+acao: "Acolha, organize e sustente o processo.",
+alerta: "Evite passividade."
+},
+
+{
+nome: "☳ TROVÃO — REAGIR",
+diagnostico: "Uma mudança aconteceu.",
+acao: "Ajuste rápido. Responda com presença.",
+alerta: "Não entre em pânico."
+},
+
+{
+nome: "☵ ÁGUA — PERSISTIR",
+diagnostico: "Ambiente instável. Risco ativo.",
+acao: "Siga com disciplina e cautela.",
+alerta: "Não force decisões."
+},
+
+{
+nome: "☶ MONTANHA — PAUSAR",
+diagnostico: "O momento pede contenção.",
+acao: "Pare. Observe. Recolha-se.",
+alerta: "Agir agora pode gerar erro."
+},
+
+{
+nome: "☴ VENTO — PENETRAR",
+diagnostico: "O avanço é gradual.",
+acao: "Seja constante. Repita. Insista.",
+alerta: "Evite pressa."
+},
+
+{
+nome: "☲ FOGO — CLAREAR",
+diagnostico: "É hora de tornar visível.",
+acao: "Comunique. Ensine. Mostre.",
+alerta: "Evite confusão."
+},
+
+{
+nome: "☱ LAGO — CONECTAR",
+diagnostico: "Há abertura para troca.",
+acao: "Engaje. Dialogue. Venda.",
+alerta: "Evite superficialidade."
+}
+
+];
+
+function consultar() {
+
+  const sorte = Math.floor(Math.random() * estados.length);
+  const e = estados[sorte];
+
+  document.getElementById("resultado").style.display = "block";
+
+  document.getElementById("resultado").innerHTML = `
+    <div class="estado">${e.nome}</div>
+
+    <div class="bloco"><strong>Diagnóstico:</strong><br>${e.diagnostico}</div>
+
+    <div class="bloco"><strong>Ação:</strong><br>${e.acao}</div>
+
+    <div class="bloco"><strong>Alerta:</strong><br>${e.alerta}</div>
+  `;
+}
+
+</script>
+
+</body>
+</html>
