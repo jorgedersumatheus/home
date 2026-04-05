@@ -37,6 +37,14 @@ button {
     padding:15px;
     border:1px solid #333;
 }
+
+#historico {
+    margin-top:30px;
+    text-align:left;
+    max-width:600px;
+    margin-left:auto;
+    margin-right:auto;
+}
 </style>
 </head>
 
@@ -58,28 +66,59 @@ button {
 <h2>Leitura Manual</h2>
 
 <textarea id="manualLinhas" rows="6"
-placeholder="Digite:
-___
+placeholder="___
 _ _
 ___
 ..."></textarea><br>
 
 <button onclick="lerManual()">Interpretar Manual</button>
 
+<h2>Histórico</h2>
+<div id="historico"></div>
+
 <script>
 
 // =========================
-// BASE (adicione os 64 depois)
+// 64 HEXAGRAMAS VOV
 // =========================
 
-const hex64 = {
-1:{nome:"Criativo",direcao:"iniciar",texto:"Força criativa pura."},
-2:{nome:"Receptivo",direcao:"receber",texto:"Acolher e sustentar."},
-29:{nome:"Abismo",direcao:"cautela",texto:"Perigo exige presença."},
-30:{nome:"Clareza",direcao:"ver",texto:"A luz revela o caminho."},
-41:{nome:"Diminuição",direcao:"reduzir",texto:"Menos é estratégia."},
-42:{nome:"Aumento",direcao:"expandir",texto:"Expandir com base."}
-};
+const hex64 = {};
+
+const nomes = [
+"Criação","Recepção","Dificuldade Inicial","Juventude","Esperar","Conflito","Exército","Solidariedade",
+"Pequeno Domar","Conduta","Paz","Estagnação","Comunidade","Grande Possuir","Modéstia","Entusiasmo",
+"Seguir","Corrigir","Aproximação","Contemplação","Morder","Graça","Fragmentação","Retorno",
+"Inocência","Grande Domar","Nutrição","Excesso","Abismo","Clareza","Influência","Duração",
+"Retirada","Grande Poder","Progresso","Escurecimento","Família","Oposição","Obstrução","Libertação",
+"Diminuição","Aumento","Ruptura","Encontro","Reunião","Ascensão","Exaustão","Poço",
+"Revolução","Caldeirão","Trovão","Montanha","Desenvolvimento","Noiva","Abundância","Viajante",
+"Suave","Alegria","Dispersão","Limitação","Verdade Interior","Pequeno Excesso","Após Conclusão","Antes da Conclusão"
+];
+
+// cria base automática
+for(let i=1;i<=64;i++){
+    hex64[i] = {
+        nome: nomes[i-1],
+        direcao: "interpretar",
+        texto: `Hexagrama ${i} — ${nomes[i-1]}
+
+Aqui não há acaso.
+
+O que se apresenta é um padrão em movimento.
+
+Leia assim:
+→ O que precisa ser visto?
+→ O que precisa ser ajustado?
+→ O que precisa ser feito agora?
+
+VOV diz:
+Ver com lucidez.
+Ouvir com presença.
+Vender com verdade.
+
+Movimento consciente muda destino.`
+    };
+}
 
 // =========================
 // MOTOR
@@ -108,7 +147,7 @@ function gerarHexagrama(){
 }
 
 // =========================
-// CÁLCULO REAL
+// CÁLCULO
 // =========================
 
 function calcularNumero(linhas){
@@ -148,62 +187,100 @@ function desenhar(linhas){
 }
 
 // =========================
-// INTERPRETAÇÃO
+// TEXTO
 // =========================
 
 function montarTexto(num){
-
     let h = hex64[num];
-
-    if(!h){
-        return `<p><b>Hexagrama ${num}</b><br>Em expansão VOV.</p>`;
-    }
 
     return `
     <p><b>${num} — ${h.nome}</b></p>
-    <p><b>Direção:</b> ${h.direcao}</p>
-    <p>${h.texto}</p>
+    <p>${h.texto.replace(/\n/g,"<br>")}</p>
     `;
 }
 
 // =========================
-// CONSULTA COMPLETA
+// CONSULTA
 // =========================
 
 function consultar(){
 
+    let pergunta = document.getElementById("pergunta").value;
+
     let h = gerarHexagrama();
 
     let num1 = calcularNumero(h.linhas);
-
     let linhasMutadas = mutarHexagrama(h);
-
     let num2 = calcularNumero(linhasMutadas);
+
+    let texto1 = montarTexto(num1);
+    let texto2 = montarTexto(num2);
 
     document.getElementById("presente").innerHTML = `
     <h3>Presente</h3>
     ${desenhar(h.linhas)}
-    ${montarTexto(num1)}
+    ${texto1}
     <p><b>Linhas mutáveis:</b> ${h.mutaveis.map(i=>i+1).join(", ") || "nenhuma"}</p>
     `;
 
     document.getElementById("futuro").innerHTML = `
     <h3>Transformação</h3>
     ${desenhar(linhasMutadas)}
-    ${montarTexto(num2)}
+    ${texto2}
     `;
+
+    salvar(pergunta, num1, num2);
 }
+
+// =========================
+// HISTÓRICO
+// =========================
+
+function salvar(pergunta, n1, n2){
+
+    let h = JSON.parse(localStorage.getItem("vov_hist")) || [];
+
+    h.unshift({
+        data: new Date().toLocaleString(),
+        pergunta,
+        presente: n1,
+        futuro: n2
+    });
+
+    localStorage.setItem("vov_hist", JSON.stringify(h));
+
+    renderHistorico();
+}
+
+function renderHistorico(){
+
+    let h = JSON.parse(localStorage.getItem("vov_hist")) || [];
+
+    let html = "";
+
+    h.slice(0,10).forEach(i=>{
+        html += `
+        <div style="border-bottom:1px solid #333; margin:10px;">
+            <p><b>${i.data}</b></p>
+            <p>${i.pergunta}</p>
+            <p>→ ${i.presente} → ${i.futuro}</p>
+        </div>
+        `;
+    });
+
+    document.getElementById("historico").innerHTML = html;
+}
+
+renderHistorico();
 
 // =========================
 // MANUAL
 // =========================
 
 function converterManual(texto){
-
     let linhas = texto.trim().split("\n").map(l=>{
         return l.includes("___") ? 1 : 0;
     });
-
     return linhas.reverse();
 }
 
@@ -213,16 +290,12 @@ function lerManual(){
 
     let linhas = converterManual(texto);
 
-    let num1 = calcularNumero(linhas);
-
-    let linhasMutadas = linhas.map(l=>l); // sem mutação manual
-
-    let num2 = calcularNumero(linhasMutadas);
+    let num = calcularNumero(linhas);
 
     document.getElementById("presente").innerHTML = `
-    <h3>Leitura Manual</h3>
+    <h3>Manual</h3>
     ${desenhar(linhas)}
-    ${montarTexto(num1)}
+    ${montarTexto(num)}
     `;
 
     document.getElementById("futuro").innerHTML = "";
