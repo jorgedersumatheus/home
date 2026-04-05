@@ -36,14 +36,14 @@ button {
     margin-top:25px;
     padding:15px;
     border:1px solid #333;
+    text-align:left;
 }
 
 #historico {
     margin-top:30px;
-    text-align:left;
     max-width:600px;
-    margin-left:auto;
-    margin-right:auto;
+    margin:auto;
+    text-align:left;
 }
 </style>
 </head>
@@ -56,21 +56,18 @@ button {
 <input type="text" id="pergunta" placeholder="Qual é a sua questão?"><br>
 
 <button onclick="consultar()">Consultar</button>
-<button onclick="narrar()">Ouvir</button>
+<button onclick="narrar()">Ouvir leitura</button>
 
 <div id="presente" class="bloco"></div>
 <div id="futuro" class="bloco"></div>
+
+<div id="leitura" style="display:none;"></div>
 
 <hr>
 
 <h2>Leitura Manual</h2>
 
-<textarea id="manualLinhas" rows="6"
-placeholder="___
-_ _
-___
-..."></textarea><br>
-
+<textarea id="manualLinhas" rows="6"></textarea><br>
 <button onclick="lerManual()">Interpretar Manual</button>
 
 <h2>Histórico</h2>
@@ -79,44 +76,73 @@ ___
 <script>
 
 // =========================
-// 64 HEXAGRAMAS VOV
+// MAPA REI WEN
+// =========================
+
+const mapaHexagramas = {
+"111111":1,"000000":2,"010001":3,"100010":4,
+"010111":5,"111010":6,"000010":7,"010000":8,
+"110111":9,"111011":10,"000111":11,"111000":12,
+"111101":13,"101111":14,"000100":15,"001000":16,
+"011001":17,"100110":18,"000011":19,"110000":20,
+"101001":21,"100101":22,"000001":23,"100000":24,
+"111001":25,"100111":26,"100001":27,"011110":28,
+"010010":29,"101101":30,"011100":31,"001110":32,
+"111100":33,"001111":34,"101000":35,"000101":36,
+"101011":37,"110101":38,"001010":39,"010100":40,
+"110001":41,"100011":42,"111110":43,"011111":44,
+"000110":45,"011000":46,"010110":47,"011010":48,
+"101110":49,"011101":50,"001001":51,"100100":52,
+"110100":53,"001011":54,"001101":55,"101100":56,
+"110110":57,"011011":58,"110010":59,"010011":60,
+"110011":61,"001100":62,"101010":63,"010101":64
+};
+
+// =========================
+// NOMES
+// =========================
+
+const nomes = [
+"Criação","Recepção","Dificuldade Inicial","Juventude","Esperar","Conflito","Exército","União",
+"Pequeno Domar","Conduta","Paz","Estagnação","Comunidade","Grande Possuir","Modéstia","Entusiasmo",
+"Seguir","Corrigir","Aproximação","Contemplação","Morder","Graça","Fragmentação","Retorno",
+"Inocência","Grande Domar","Nutrição","Excesso","Abismo","Clareza","Influência","Duração",
+"Retirada","Grande Poder","Progresso","Escuridão","Família","Oposição","Obstrução","Libertação",
+"Diminuição","Aumento","Ruptura","Encontro","Reunião","Ascensão","Exaustão","Poço",
+"Revolução","Caldeirão","Trovão","Montanha","Desenvolvimento","Noiva","Abundância","Viajante",
+"Suavidade","Alegria","Dispersão","Limitação","Verdade Interior","Pequeno Excesso","Conclusão","Início"
+];
+
+// =========================
+// TEXTOS PROFUNDOS VOV
 // =========================
 
 const hex64 = {};
 
-const nomes = [
-"Criação","Recepção","Dificuldade Inicial","Juventude","Esperar","Conflito","Exército","Solidariedade",
-"Pequeno Domar","Conduta","Paz","Estagnação","Comunidade","Grande Possuir","Modéstia","Entusiasmo",
-"Seguir","Corrigir","Aproximação","Contemplação","Morder","Graça","Fragmentação","Retorno",
-"Inocência","Grande Domar","Nutrição","Excesso","Abismo","Clareza","Influência","Duração",
-"Retirada","Grande Poder","Progresso","Escurecimento","Família","Oposição","Obstrução","Libertação",
-"Diminuição","Aumento","Ruptura","Encontro","Reunião","Ascensão","Exaustão","Poço",
-"Revolução","Caldeirão","Trovão","Montanha","Desenvolvimento","Noiva","Abundância","Viajante",
-"Suave","Alegria","Dispersão","Limitação","Verdade Interior","Pequeno Excesso","Após Conclusão","Antes da Conclusão"
-];
-
-// cria base automática
 for(let i=1;i<=64;i++){
+
     hex64[i] = {
         nome: nomes[i-1],
-        direcao: "interpretar",
-        texto: `Hexagrama ${i} — ${nomes[i-1]}
 
-Aqui não há acaso.
+        texto: `
+Hexagrama ${i} — ${nomes[i-1]}
 
-O que se apresenta é um padrão em movimento.
+VER:
+A realidade está se revelando em camadas.
+Nem tudo é imediato — observe padrões, não eventos isolados.
 
-Leia assim:
-→ O que precisa ser visto?
-→ O que precisa ser ajustado?
-→ O que precisa ser feito agora?
+OUVIR:
+Existe um movimento mais sutil por trás da situação.
+Escute sinais, pessoas e também o silêncio.
 
-VOV diz:
-Ver com lucidez.
-Ouvir com presença.
-Vender com verdade.
+VENDER:
+A ação correta aqui não é forçar — é alinhar.
+Quando visão e escuta convergem, a ação se torna inevitável.
 
-Movimento consciente muda destino.`
+VOV:
+Clareza antes da pressa.
+Presença antes da decisão.
+Movimento com propósito.`
     };
 }
 
@@ -126,40 +152,26 @@ Movimento consciente muda destino.`
 
 function gerarLinha(){
     let v = Math.floor(Math.random()*4);
-
-    return {
-        valor: v % 2,
-        mutavel: v === 0 || v === 3
-    };
+    return { valor: v % 2, mutavel: v === 0 || v === 3 };
 }
 
 function gerarHexagrama(){
-    let linhas = [];
-    let mutaveis = [];
-
+    let linhas = [], mutaveis = [];
     for(let i=0;i<6;i++){
         let l = gerarLinha();
         linhas.push(l.valor);
         if(l.mutavel) mutaveis.push(i);
     }
-
     return {linhas, mutaveis};
 }
 
 // =========================
-// CÁLCULO
+// CALCULO
 // =========================
 
 function calcularNumero(linhas){
-    let num = 0;
-
-    for(let i=0;i<6;i++){
-        if(linhas[i] === 1){
-            num += Math.pow(2, i);
-        }
-    }
-
-    return num + 1;
+    let chave = linhas.map(l=>l?1:0).join("");
+    return mapaHexagramas[chave];
 }
 
 // =========================
@@ -168,11 +180,9 @@ function calcularNumero(linhas){
 
 function mutarHexagrama(h){
     let novo = [...h.linhas];
-
     h.mutaveis.forEach(i=>{
-        novo[i] = novo[i] === 1 ? 0 : 1;
+        novo[i] = novo[i] ? 0 : 1;
     });
-
     return novo;
 }
 
@@ -182,21 +192,8 @@ function mutarHexagrama(h){
 
 function desenhar(linhas){
     return linhas.slice().reverse().map(l=>{
-        return `<div class="linha">${l ? "___" : "_ _"}</div>`;
+        return `<div class="linha">${l?"___":"_ _"}</div>`;
     }).join("");
-}
-
-// =========================
-// TEXTO
-// =========================
-
-function montarTexto(num){
-    let h = hex64[num];
-
-    return `
-    <p><b>${num} — ${h.nome}</b></p>
-    <p>${h.texto.replace(/\n/g,"<br>")}</p>
-    `;
 }
 
 // =========================
@@ -208,26 +205,33 @@ function consultar(){
     let pergunta = document.getElementById("pergunta").value;
 
     let h = gerarHexagrama();
-
     let num1 = calcularNumero(h.linhas);
-    let linhasMutadas = mutarHexagrama(h);
-    let num2 = calcularNumero(linhasMutadas);
 
-    let texto1 = montarTexto(num1);
-    let texto2 = montarTexto(num2);
+    let mutado = mutarHexagrama(h);
+    let num2 = calcularNumero(mutado);
 
     document.getElementById("presente").innerHTML = `
     <h3>Presente</h3>
     ${desenhar(h.linhas)}
-    ${texto1}
-    <p><b>Linhas mutáveis:</b> ${h.mutaveis.map(i=>i+1).join(", ") || "nenhuma"}</p>
+    <p><b>${num1} — ${hex64[num1].nome}</b></p>
+    <p>${hex64[num1].texto.replace(/\n/g,"<br>")}</p>
     `;
 
     document.getElementById("futuro").innerHTML = `
     <h3>Transformação</h3>
-    ${desenhar(linhasMutadas)}
-    ${texto2}
+    ${desenhar(mutado)}
+    <p><b>${num2} — ${hex64[num2].nome}</b></p>
+    <p>${hex64[num2].texto.replace(/\n/g,"<br>")}</p>
     `;
+
+    document.getElementById("leitura").innerText =
+    `Pergunta: ${pergunta}
+
+Presente:
+${hex64[num1].texto}
+
+Transformação:
+${hex64[num2].texto}`;
 
     salvar(pergunta, num1, num2);
 }
@@ -236,36 +240,34 @@ function consultar(){
 // HISTÓRICO
 // =========================
 
-function salvar(pergunta, n1, n2){
+function salvar(p,n1,n2){
 
     let h = JSON.parse(localStorage.getItem("vov_hist")) || [];
 
     h.unshift({
-        data: new Date().toLocaleString(),
-        pergunta,
-        presente: n1,
-        futuro: n2
+        data:new Date().toLocaleString(),
+        pergunta:p,
+        p:n1,
+        f:n2
     });
 
     localStorage.setItem("vov_hist", JSON.stringify(h));
-
     renderHistorico();
 }
 
 function renderHistorico(){
 
-    let h = JSON.parse(localStorage.getItem("vov_hist")) || [];
+    let h = JSON.parse(localStorage.getItem("vov_hist")) || "";
 
-    let html = "";
+    let html="";
 
-    h.slice(0,10).forEach(i=>{
-        html += `
-        <div style="border-bottom:1px solid #333; margin:10px;">
-            <p><b>${i.data}</b></p>
-            <p>${i.pergunta}</p>
-            <p>→ ${i.presente} → ${i.futuro}</p>
-        </div>
-        `;
+    (h||[]).slice(0,10).forEach(i=>{
+        html+=`
+        <div style="border-bottom:1px solid #333;margin:10px;">
+        <p><b>${i.data}</b></p>
+        <p>${i.pergunta}</p>
+        <p>${i.p} → ${i.f}</p>
+        </div>`;
     });
 
     document.getElementById("historico").innerHTML = html;
@@ -277,42 +279,39 @@ renderHistorico();
 // MANUAL
 // =========================
 
-function converterManual(texto){
-    let linhas = texto.trim().split("\n").map(l=>{
-        return l.includes("___") ? 1 : 0;
-    });
-    return linhas.reverse();
-}
-
 function lerManual(){
 
-    let texto = document.getElementById("manualLinhas").value;
-
-    let linhas = converterManual(texto);
+    let linhas = document.getElementById("manualLinhas").value
+        .trim().split("\n")
+        .map(l=>l.includes("___")?1:0)
+        .reverse();
 
     let num = calcularNumero(linhas);
 
     document.getElementById("presente").innerHTML = `
     <h3>Manual</h3>
     ${desenhar(linhas)}
-    ${montarTexto(num)}
+    <p><b>${num} — ${hex64[num].nome}</b></p>
+    <p>${hex64[num].texto.replace(/\n/g,"<br>")}</p>
     `;
 
-    document.getElementById("futuro").innerHTML = "";
+    document.getElementById("futuro").innerHTML="";
 }
 
 // =========================
-// ÁUDIO
+// NARRADOR
 // =========================
 
 function narrar(){
 
-    let texto = document.body.innerText;
+    let texto = document.getElementById("leitura").innerText;
+
+    if(!texto) return alert("Faça uma leitura.");
 
     let fala = new SpeechSynthesisUtterance(texto);
 
-    fala.lang = "pt-BR";
-    fala.rate = 0.9;
+    fala.lang="pt-BR";
+    fala.rate=0.9;
 
     speechSynthesis.cancel();
     speechSynthesis.speak(fala);
