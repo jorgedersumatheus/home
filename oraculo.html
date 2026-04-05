@@ -1,200 +1,284 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <title>Oráculo Estratégico VOV</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>VOV — Oráculo Estratégico PRO</title>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: linear-gradient(to bottom, #000000, #1a1a1a);
-      color: #ffffff;
-      text-align: center;
-    }
+<style>
+body {
+    background:#000;
+    color:#fff;
+    font-family:Arial;
+    text-align:center;
+    padding:30px;
+}
 
-    .container {
-      max-width: 700px;
-      margin: auto;
-      padding: 40px 20px;
-    }
+h1 { color:#e60000; }
 
-    h1 {
-      font-size: 28px;
-      margin-bottom: 10px;
-      letter-spacing: 2px;
-    }
+input, button {
+    padding:12px;
+    margin:10px;
+    border:none;
+    border-radius:5px;
+}
 
-    .subtitle {
-      font-size: 16px;
-      opacity: 0.8;
-      margin-bottom: 30px;
-    }
+input { width:300px; }
 
-    .frase {
-      font-style: italic;
-      margin-bottom: 40px;
-      opacity: 0.7;
-    }
+button {
+    background:#e60000;
+    color:#fff;
+    cursor:pointer;
+}
 
-    textarea {
-      width: 100%;
-      padding: 15px;
-      border-radius: 10px;
-      border: none;
-      margin-bottom: 20px;
-      font-size: 14px;
-    }
+.linha {
+    font-size:26px;
+    letter-spacing:6px;
+}
 
-    button {
-      padding: 15px 30px;
-      border: none;
-      border-radius: 30px;
-      background: #ffd700;
-      color: #000;
-      font-weight: bold;
-      cursor: pointer;
-      transition: 0.3s;
-    }
+#resultado, #historico {
+    margin-top:30px;
+    max-width:600px;
+    margin-left:auto;
+    margin-right:auto;
+}
+</style>
 
-    button:hover {
-      background: #ffffff;
-    }
-
-    .resultado {
-      margin-top: 40px;
-      padding: 25px;
-      border-radius: 15px;
-      background: rgba(255,255,255,0.05);
-    }
-
-    .estado {
-      font-size: 22px;
-      margin-bottom: 15px;
-      color: #ffd700;
-    }
-
-    .bloco {
-      margin-bottom: 15px;
-    }
-
-    footer {
-      margin-top: 60px;
-      font-size: 12px;
-      opacity: 0.6;
-    }
-  </style>
 </head>
 
 <body>
 
-<div class="container">
+<h1>V O V — Oráculo Estratégico PRO</h1>
+<p>Ver • Ouvir • Vender</p>
 
-  <h1>ORÁCULO ESTRATÉGICO VOV</h1>
+<input type="text" id="pergunta" placeholder="Qual é a sua questão?">
+<br>
 
-  <div class="subtitle">
-    Ver • Ouvir • Vender
-  </div>
+<button onclick="consultar()">Consultar</button>
+<button onclick="narrar()">Ouvir leitura</button>
+<button onclick="exportar()">Exportar leitura</button>
 
-  <div class="frase">
-    “Concentre-se na sua questão. O tempo responde.”
-  </div>
+<div id="hexagrama"></div>
+<div id="resultado"></div>
 
-  <textarea id="pergunta" placeholder="Digite sua questão (opcional)..."></textarea>
-
-  <br>
-
-  <button onclick="consultar()">CONSULTAR AGORA</button>
-
-  <div id="resultado" class="resultado" style="display:none;"></div>
-
-  <footer>
-    VER OUVIR VENDAS — VOV<br>
-    jorgematheus.mus.br
-  </footer>
-
-</div>
+<h2>Histórico</h2>
+<div id="historico"></div>
 
 <script>
 
-const estados = [
-
-{
-nome: "☰ CÉU — INICIAR",
-diagnostico: "Há força disponível. O momento pede ação.",
-acao: "Comece. Lance. Tome a iniciativa.",
-alerta: "Evite arrogância ou excesso de controle."
-},
-
-{
-nome: "☷ TERRA — ESTRUTURAR",
-diagnostico: "O campo pede base e organização.",
-acao: "Acolha, organize e sustente o processo.",
-alerta: "Evite passividade."
-},
-
-{
-nome: "☳ TROVÃO — REAGIR",
-diagnostico: "Uma mudança aconteceu.",
-acao: "Ajuste rápido. Responda com presença.",
-alerta: "Não entre em pânico."
-},
-
-{
-nome: "☵ ÁGUA — PERSISTIR",
-diagnostico: "Ambiente instável. Risco ativo.",
-acao: "Siga com disciplina e cautela.",
-alerta: "Não force decisões."
-},
-
-{
-nome: "☶ MONTANHA — PAUSAR",
-diagnostico: "O momento pede contenção.",
-acao: "Pare. Observe. Recolha-se.",
-alerta: "Agir agora pode gerar erro."
-},
-
-{
-nome: "☴ VENTO — PENETRAR",
-diagnostico: "O avanço é gradual.",
-acao: "Seja constante. Repita. Insista.",
-alerta: "Evite pressa."
-},
-
-{
-nome: "☲ FOGO — CLAREAR",
-diagnostico: "É hora de tornar visível.",
-acao: "Comunique. Ensine. Mostre.",
-alerta: "Evite confusão."
-},
-
-{
-nome: "☱ LAGO — CONECTAR",
-diagnostico: "Há abertura para troca.",
-acao: "Engaje. Dialogue. Venda.",
-alerta: "Evite superficialidade."
-}
-
+// TRIGRAMAS
+const trigramas = [
+    {nome:"Céu", valor:7},
+    {nome:"Terra", valor:0},
+    {nome:"Trovão", valor:1},
+    {nome:"Água", valor:2},
+    {nome:"Montanha", valor:3},
+    {nome:"Vento", valor:4},
+    {nome:"Fogo", valor:5},
+    {nome:"Lago", valor:6}
 ];
 
-function consultar() {
+// LINHAS VOV
+const linhasVOV = {
+1:"Início imaturo. Evite pressa.",
+2:"Ajuste correto. Avance com equilíbrio.",
+3:"Zona de erro. Risco por impulsividade.",
+4:"Transição. Prepare o movimento.",
+5:"Centro de poder. Decisão favorecida.",
+6:"Excesso. Tendência à ruptura."
+};
 
-  const sorte = Math.floor(Math.random() * estados.length);
-  const e = estados[sorte];
+// HEXAGRAMAS BASE
+const hexagramas = {
+"7-7":"Força Criativa",
+"0-0":"Receptividade",
+"0-7":"Harmonia",
+"7-0":"Bloqueio",
+"1-1":"Movimento",
+"2-2":"Abismo",
+"3-3":"Imobilidade",
+"4-4":"Penetração",
+"5-5":"Clareza",
+"6-6":"Alegria"
+};
 
-  document.getElementById("resultado").style.display = "block";
-
-  document.getElementById("resultado").innerHTML = `
-    <div class="estado">${e.nome}</div>
-
-    <div class="bloco"><strong>Diagnóstico:</strong><br>${e.diagnostico}</div>
-
-    <div class="bloco"><strong>Ação:</strong><br>${e.acao}</div>
-
-    <div class="bloco"><strong>Alerta:</strong><br>${e.alerta}</div>
-  `;
+// GERAR LINHA
+function gerarLinha() {
+    let v = Math.floor(Math.random()*4);
+    return {
+        valor: v % 2 === 0 ? 0 : 1,
+        mutavel: v === 0 || v === 3
+    };
 }
+
+// GERAR HEXAGRAMA
+function gerarHexagrama() {
+    let linhas = [];
+    let mutaveis = [];
+
+    for(let i=0;i<6;i++){
+        let l = gerarLinha();
+        linhas.push(l.valor);
+        if(l.mutavel) mutaveis.push(i+1);
+    }
+
+    let baixo = parseInt(linhas.slice(0,3).join(''),2)%8;
+    let cima = parseInt(linhas.slice(3,6).join(''),2)%8;
+
+    return {linhas, mutaveis, baixo, cima};
+}
+
+// DESENHAR
+function desenhar(linhas) {
+    let html="";
+    linhas.slice().reverse().forEach(l=>{
+        html += `<div class="linha">${l ? "———" : "— —"}</div>`;
+    });
+    document.getElementById("hexagrama").innerHTML = html;
+}
+
+// INTERPRETAÇÃO
+function interpretar(nome, mutaveis){
+
+    let base = `<p><b>Estado:</b> ${nome}</p>`;
+
+    let linhasTxt = "";
+
+    if(mutaveis.length){
+        linhasTxt += "<p><b>Tensão ativa:</b></p>";
+        mutaveis.forEach(l=>{
+            linhasTxt += `<p>Linha ${l}: ${linhasVOV[l]}</p>`;
+        });
+    } else {
+        linhasTxt = "<p>Situação estável.</p>";
+    }
+
+    let decisao = "<p><b>Direção:</b> ";
+
+    if(mutaveis.includes(3) || mutaveis.includes(6)){
+        decisao += "Recuar e reavaliar.";
+    } else if(mutaveis.includes(5)){
+        decisao += "Avançar com confiança.";
+    } else {
+        decisao += "Aguardar e observar.";
+    }
+
+    decisao += "</p>";
+
+    return base + linhasTxt + decisao;
+}
+
+// HISTÓRICO
+function salvarConsulta(pergunta, nome){
+
+    let historico = JSON.parse(localStorage.getItem("vov_historico")) || [];
+
+    historico.unshift({
+        data: new Date().toLocaleString(),
+        pergunta,
+        nome
+    });
+
+    localStorage.setItem("vov_historico", JSON.stringify(historico));
+
+    renderHistorico();
+}
+
+function renderHistorico(){
+
+    let historico = JSON.parse(localStorage.getItem("vov_historico")) || [];
+
+    let html = "";
+
+    historico.slice(0,10).forEach(item=>{
+        html += `
+        <div style="border-bottom:1px solid #333; margin:10px; padding:10px;">
+            <p><b>${item.data}</b></p>
+            <p>${item.pergunta}</p>
+            <p><i>${item.nome}</i></p>
+        </div>
+        `;
+    });
+
+    document.getElementById("historico").innerHTML = html;
+}
+
+// LIMITE FREE
+function podeConsultar(){
+
+    let limite = 3;
+    let total = parseInt(localStorage.getItem("vov_total")) || 0;
+
+    if(total >= limite){
+        alert("Limite gratuito atingido.");
+        return false;
+    }
+
+    localStorage.setItem("vov_total", total+1);
+    return true;
+}
+
+// DELAY
+function delay(ms){
+    return new Promise(r => setTimeout(r, ms));
+}
+
+// CONSULTA
+async function consultar(){
+
+    if(!podeConsultar()) return;
+
+    let pergunta = document.getElementById("pergunta").value;
+
+    document.getElementById("resultado").innerHTML = "Consultando...";
+
+    await delay(800);
+
+    let h = gerarHexagrama();
+
+    desenhar(h.linhas);
+
+    let chave = `${h.cima}-${h.baixo}`;
+    let nome = hexagramas[chave] || "Transmutação";
+
+    await delay(800);
+
+    let interpretacao = interpretar(nome, h.mutaveis);
+
+    document.getElementById("resultado").innerHTML = interpretacao;
+
+    salvarConsulta(pergunta, nome);
+
+    document.getElementById("pergunta").value = "";
+}
+
+// EXPORTAR
+function exportar(){
+
+    let texto = document.getElementById("resultado").innerText;
+
+    let blob = new Blob([texto], {type: "text/plain"});
+    let url = URL.createObjectURL(blob);
+
+    let a = document.createElement("a");
+    a.href = url;
+    a.download = "leitura_vov.txt";
+    a.click();
+}
+
+// ÁUDIO
+function narrar(){
+
+    let texto = document.getElementById("resultado").innerText;
+
+    let fala = new SpeechSynthesisUtterance(texto);
+
+    fala.lang = "pt-BR";
+
+    speechSynthesis.speak(fala);
+}
+
+// INICIAR HISTÓRICO
+renderHistorico();
 
 </script>
 
