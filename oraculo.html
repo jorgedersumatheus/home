@@ -15,14 +15,14 @@ body {
 
 h1 { color:#e60000; }
 
-input, button {
+input, textarea, button {
     padding:12px;
     margin:10px;
     border:none;
     border-radius:5px;
 }
 
-input { width:300px; }
+input, textarea { width:300px; }
 
 button {
     background:#e60000;
@@ -40,6 +40,7 @@ button {
     max-width:600px;
     margin-left:auto;
     margin-right:auto;
+    text-align:left;
 }
 </style>
 
@@ -60,48 +61,106 @@ button {
 <div id="hexagrama"></div>
 <div id="resultado"></div>
 
+<hr>
+
+<h2>Leitura Manual</h2>
+
+<input type="text" id="manualNumero" placeholder="Digite o número (1–64)">
+<br>
+
+<textarea id="manualLinhas" rows="6"
+placeholder="Cole as linhas:
+___
+_ _
+_ _
+___
+..."></textarea>
+<br>
+
+<button onclick="lerManual()">Ler manualmente</button>
+
 <h2>Histórico</h2>
 <div id="historico"></div>
 
 <script>
 
-// TRIGRAMAS
-const trigramas = [
-    {nome:"Céu", valor:7},
-    {nome:"Terra", valor:0},
-    {nome:"Trovão", valor:1},
-    {nome:"Água", valor:2},
-    {nome:"Montanha", valor:3},
-    {nome:"Vento", valor:4},
-    {nome:"Fogo", valor:5},
-    {nome:"Lago", valor:6}
-];
+// =========================
+// HEXAGRAMAS (com texto)
+// =========================
 
-// LINHAS VOV
+const hex64 = {
+
+41:{
+nome:"Diminuição",
+direcao:"reduzir",
+texto:`Diminuição não é perda, é estratégia.
+
+Cortar o excesso fortalece o essencial.
+Simplificar cria direção.
+
+O momento pede redução consciente.
+Menos dispersão, mais foco.
+
+Reduza agora para crescer depois.`
+},
+
+42:{
+nome:"Aumento",
+direcao:"expandir",
+texto:`Aumento acontece quando há base.
+
+Expandir sem estrutura gera colapso.
+Com alinhamento, o crescimento é natural.
+
+Avance, mas com consciência.
+
+Expanda sem perder o centro.`
+},
+
+29:{
+nome:"Abismo",
+direcao:"cautela",
+texto:`O abismo exige presença.
+
+Não é momento de pressa.
+Cada passo deve ser consciente.
+
+Disciplina emocional atravessa o risco.
+
+Permaneça firme no centro.`
+},
+
+30:{
+nome:"Clareza",
+direcao:"iluminar",
+texto:`Clareza revela padrões.
+
+Ver corretamente muda tudo.
+
+A luz não força — mostra.
+
+Use inteligência antes da ação.`
+}
+
+};
+
+// =========================
+// LINHAS
+// =========================
+
 const linhasVOV = {
-1:"Início imaturo. Evite pressa.",
-2:"Ajuste correto. Avance com equilíbrio.",
-3:"Zona de erro. Risco por impulsividade.",
-4:"Transição. Prepare o movimento.",
-5:"Centro de poder. Decisão favorecida.",
-6:"Excesso. Tendência à ruptura."
+1:"Início imaturo.",
+2:"Ajuste correto.",
+3:"Risco de erro.",
+4:"Transição.",
+5:"Decisão forte.",
+6:"Excesso."
 };
 
-// HEXAGRAMAS BASE
-const hexagramas = {
-"7-7":"Força Criativa",
-"0-0":"Receptividade",
-"0-7":"Harmonia",
-"7-0":"Bloqueio",
-"1-1":"Movimento",
-"2-2":"Abismo",
-"3-3":"Imobilidade",
-"4-4":"Penetração",
-"5-5":"Clareza",
-"6-6":"Alegria"
-};
+// =========================
+// MOTOR
+// =========================
 
-// GERAR LINHA
 function gerarLinha() {
     let v = Math.floor(Math.random()*4);
     return {
@@ -110,7 +169,6 @@ function gerarLinha() {
     };
 }
 
-// GERAR HEXAGRAMA
 function gerarHexagrama() {
     let linhas = [];
     let mutaveis = [];
@@ -121,61 +179,95 @@ function gerarHexagrama() {
         if(l.mutavel) mutaveis.push(i+1);
     }
 
-    let baixo = parseInt(linhas.slice(0,3).join(''),2)%8;
-    let cima = parseInt(linhas.slice(3,6).join(''),2)%8;
-
-    return {linhas, mutaveis, baixo, cima};
+    return {linhas, mutaveis};
 }
 
-// DESENHAR
+// =========================
+// DESENHO
+// =========================
+
 function desenhar(linhas) {
     let html="";
     linhas.slice().reverse().forEach(l=>{
-        html += `<div class="linha">${l ? "———" : "— —"}</div>`;
+        html += `<div class="linha">${l ? "___" : "_ _"}</div>`;
     });
     document.getElementById("hexagrama").innerHTML = html;
 }
 
-// INTERPRETAÇÃO
-function interpretar(nome, mutaveis){
+// =========================
+// LEITURA AUTOMÁTICA
+// =========================
 
-    let base = `<p><b>Estado:</b> ${nome}</p>`;
+function interpretar(h){
 
-    let linhasTxt = "";
+    // simplificado (exemplo)
+    let num = 41;
 
-    if(mutaveis.length){
-        linhasTxt += "<p><b>Tensão ativa:</b></p>";
-        mutaveis.forEach(l=>{
-            linhasTxt += `<p>Linha ${l}: ${linhasVOV[l]}</p>`;
-        });
-    } else {
-        linhasTxt = "<p>Situação estável.</p>";
-    }
+    let data = hex64[num];
 
-    let decisao = "<p><b>Direção:</b> ";
+    let texto = `
+    <p><b>Hexagrama ${num} — ${data.nome}</b></p>
+    <p><b>Direção:</b> ${data.direcao}</p>
+    <p>${data.texto.replace(/\n/g,"<br>")}</p>
+    `;
 
-    if(mutaveis.includes(3) || mutaveis.includes(6)){
-        decisao += "Recuar e reavaliar.";
-    } else if(mutaveis.includes(5)){
-        decisao += "Avançar com confiança.";
-    } else {
-        decisao += "Aguardar e observar.";
-    }
-
-    decisao += "</p>";
-
-    return base + linhasTxt + decisao;
+    return texto;
 }
 
+// =========================
+// CONSULTA
+// =========================
+
+async function consultar(){
+
+    let pergunta = document.getElementById("pergunta").value;
+
+    let h = gerarHexagrama();
+
+    desenhar(h.linhas);
+
+    let resultado = interpretar(h);
+
+    document.getElementById("resultado").innerHTML = resultado;
+
+    salvarConsulta(pergunta, resultado);
+
+    document.getElementById("pergunta").value = "";
+}
+
+// =========================
+// MANUAL
+// =========================
+
+function lerManual(){
+
+    let num = document.getElementById("manualNumero").value;
+
+    if(hex64[num]){
+        let h = hex64[num];
+
+        document.getElementById("resultado").innerHTML = `
+        <p><b>Hexagrama ${num} — ${h.nome}</b></p>
+        <p><b>Direção:</b> ${h.direcao}</p>
+        <p>${h.texto.replace(/\n/g,"<br>")}</p>
+        `;
+    } else {
+        document.getElementById("resultado").innerHTML = "Hexagrama não disponível ainda.";
+    }
+}
+
+// =========================
 // HISTÓRICO
-function salvarConsulta(pergunta, nome){
+// =========================
+
+function salvarConsulta(pergunta, resultado){
 
     let historico = JSON.parse(localStorage.getItem("vov_historico")) || [];
 
     historico.unshift({
         data: new Date().toLocaleString(),
         pergunta,
-        nome
+        resultado
     });
 
     localStorage.setItem("vov_historico", JSON.stringify(historico));
@@ -191,10 +283,9 @@ function renderHistorico(){
 
     historico.slice(0,10).forEach(item=>{
         html += `
-        <div style="border-bottom:1px solid #333; margin:10px; padding:10px;">
+        <div style="border-bottom:1px solid #333; margin:10px;">
             <p><b>${item.data}</b></p>
             <p>${item.pergunta}</p>
-            <p><i>${item.nome}</i></p>
         </div>
         `;
     });
@@ -202,56 +293,32 @@ function renderHistorico(){
     document.getElementById("historico").innerHTML = html;
 }
 
-// LIMITE FREE
-function podeConsultar(){
+// =========================
+// ÁUDIO
+// =========================
 
-    let limite = 3;
-    let total = parseInt(localStorage.getItem("vov_total")) || 0;
+function narrar(){
 
-    if(total >= limite){
-        alert("Limite gratuito atingido.");
-        return false;
+    let texto = document.getElementById("resultado").innerText;
+
+    if(!texto){
+        alert("Faça uma leitura primeiro.");
+        return;
     }
 
-    localStorage.setItem("vov_total", total+1);
-    return true;
+    let fala = new SpeechSynthesisUtterance(texto);
+
+    fala.lang = "pt-BR";
+    fala.rate = 0.9;
+
+    speechSynthesis.cancel();
+    speechSynthesis.speak(fala);
 }
 
-// DELAY
-function delay(ms){
-    return new Promise(r => setTimeout(r, ms));
-}
-
-// CONSULTA
-async function consultar(){
-
-    if(!podeConsultar()) return;
-
-    let pergunta = document.getElementById("pergunta").value;
-
-    document.getElementById("resultado").innerHTML = "Consultando...";
-
-    await delay(800);
-
-    let h = gerarHexagrama();
-
-    desenhar(h.linhas);
-
-    let chave = `${h.cima}-${h.baixo}`;
-    let nome = hexagramas[chave] || "Transmutação";
-
-    await delay(800);
-
-    let interpretacao = interpretar(nome, h.mutaveis);
-
-    document.getElementById("resultado").innerHTML = interpretacao;
-
-    salvarConsulta(pergunta, nome);
-
-    document.getElementById("pergunta").value = "";
-}
-
+// =========================
 // EXPORTAR
+// =========================
+
 function exportar(){
 
     let texto = document.getElementById("resultado").innerText;
@@ -265,19 +332,6 @@ function exportar(){
     a.click();
 }
 
-// ÁUDIO
-function narrar(){
-
-    let texto = document.getElementById("resultado").innerText;
-
-    let fala = new SpeechSynthesisUtterance(texto);
-
-    fala.lang = "pt-BR";
-
-    speechSynthesis.speak(fala);
-}
-
-// INICIAR HISTÓRICO
 renderHistorico();
 
 </script>
