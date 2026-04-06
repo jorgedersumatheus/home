@@ -9,8 +9,8 @@ body {font-family: Arial; background:#0b0b0b; color:#fff; text-align:center;}
 .container {max-width:650px; margin:auto;}
 input {width:90%; padding:12px; border-radius:10px; border:none;}
 button {padding:10px 20px; margin:5px; border-radius:10px; border:none; cursor:pointer;}
-.hex {font-size:22px; margin:20px;}
-.card {background:#111; padding:15px; border-radius:10px; margin-top:15px; text-align:left;}
+.card {background:#111; padding:15px; border-radius:10px; margin-top:15px;}
+.mantra {opacity:0.7; font-size:14px; margin-bottom:15px; white-space:pre-line;}
 </style>
 </head>
 
@@ -20,12 +20,23 @@ button {padding:10px 20px; margin:5px; border-radius:10px; border:none; cursor:p
 
 <h1>Oráculo VOV Supremo</h1>
 
+<div class="mantra" id="mantra">
+amar o mar
+amar sem arma
+com alma
+
+o mar ama
+
+alinha
+</div>
+
 <input id="pergunta" placeholder="Qual é a sua questão?" />
 
 <br>
 
 <button onclick="consultar()">Consultar</button>
 <button onclick="ouvir()">Ouvir</button>
+<button onclick="ouvirMantra()">Ouvir Mantra</button>
 <button onclick="limparHistorico()">Limpar Tudo</button>
 
 <div id="hexagrama"></div>
@@ -42,7 +53,6 @@ function linha(){
   return Math.random() < 0.5 ? 0 : 1;
 }
 
-// MAPA CORRETO (Rei Wen)
 const mapa = {
 "111111":1,"000000":2,"100010":3,"010001":4,"111010":5,"010111":6,
 "010000":7,"000010":8,"111011":9,"110111":10,"111000":11,"000111":12,
@@ -62,22 +72,20 @@ const mapa = {
 function gerarHex(){
 
   let linhas = [];
+  for(let i=0;i<6;i++) linhas.push(linha());
 
-  // BASE → TOPO (fundamental)
-  for(let i=0;i<6;i++){
-    linhas.push(linha());
-  }
+  let inferior = linhas.slice(0,3).join("");
+  let superior = linhas.slice(3,6).join("");
 
-  let inferior = linhas.slice(0,3).join(""); // base
-  let superior = linhas.slice(3,6).join(""); // topo
+  // CORREÇÃO DEFINITIVA
+  let chave = inferior.split("").reverse().join("") +
+              superior.split("").reverse().join("");
 
-  let chave = inferior + superior;
   let numero = mapa[chave];
 
-  return {linhas,numero,chave};
+  return {linhas,numero};
 }
 
-// DESENHO REAL (topo em cima)
 function desenhar(l){
   return [...l].reverse().map(x => x ? "━━━" : "━ ━").join("<br>");
 }
@@ -112,25 +120,20 @@ function consultar(){
   speechSynthesis.cancel();
 
   let pergunta = document.getElementById("pergunta").value.trim();
-
   if(!pergunta){
     alert("Digite uma pergunta.");
     return;
   }
 
-  // LIMPA TUDO ANTES
-  document.getElementById("resultado").innerHTML = "";
-  ultimaLeitura = "";
+  document.getElementById("resultado").innerHTML="";
+  ultimaLeitura="";
 
   let h = gerarHex();
 
   document.getElementById("hexagrama").innerHTML =
     "Hexagrama "+h.numero+"<br><br>"+desenhar(h.linhas);
 
-  let texto = `${nomes[h.numero]}. 
-Momento de leitura estratégica. Observe antes de agir.
-Risco: agir sem consciência.
-Ação: alinhar percepção e decisão.`;
+  let texto = nomes[h.numero] + ". Observe antes de agir.";
 
   ultimaLeitura = texto;
 
@@ -143,18 +146,18 @@ Ação: alinhar percepção e decisão.`;
 // ================= VOZ =================
 
 function ouvir(){
-
-  if(!ultimaLeitura){
-    alert("Faça uma consulta primeiro.");
-    return;
-  }
-
+  if(!ultimaLeitura) return alert("Faça uma consulta.");
   speechSynthesis.cancel();
-
   let msg = new SpeechSynthesisUtterance(ultimaLeitura);
   msg.lang="pt-BR";
-  msg.rate=0.95;
+  speechSynthesis.speak(msg);
+}
 
+function ouvirMantra(){
+  speechSynthesis.cancel();
+  let msg = new SpeechSynthesisUtterance(document.getElementById("mantra").innerText);
+  msg.lang="pt-BR";
+  msg.rate=0.9;
   speechSynthesis.speak(msg);
 }
 
@@ -169,31 +172,16 @@ function salvar(p,n){
 
 function mostrar(){
   let h = JSON.parse(localStorage.getItem("vov")||"[]");
-
   let html="<h3>Histórico</h3>";
-
   h.slice().reverse().forEach((i,idx)=>{
-    html+=`
-    <div class="card">
-    <b>${i.p}</b><br>
-    Hex ${i.n} - ${nomes[i.n]}<br>
-    <button onclick="apagar(${idx})">Excluir</button>
-    </div>`;
+    html+=`<div class="card"><b>${i.p}</b><br>Hex ${i.n} - ${nomes[i.n]}</div>`;
   });
-
   document.getElementById("historico").innerHTML=html;
-}
-
-function apagar(i){
-  let h = JSON.parse(localStorage.getItem("vov")||"[]");
-  h.splice(h.length-1-i,1);
-  localStorage.setItem("vov",JSON.stringify(h));
-  mostrar();
 }
 
 function limparHistorico(){
   localStorage.clear();
-  document.getElementById("historico").innerHTML="";
+  mostrar();
 }
 
 mostrar();
