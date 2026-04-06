@@ -5,45 +5,12 @@
 <title>Oráculo VOV Supremo</title>
 
 <style>
-body {
-  font-family: Arial;
-  background: #0b0b0b;
-  color: #fff;
-  text-align: center;
-}
-
-.container {
-  max-width: 650px;
-  margin: auto;
-}
-
-input {
-  width: 90%;
-  padding: 12px;
-  border-radius: 10px;
-  border: none;
-}
-
-button {
-  padding: 10px 20px;
-  margin: 5px;
-  border-radius: 10px;
-  border: none;
-  cursor: pointer;
-}
-
-.hex {
-  font-size: 22px;
-  margin: 20px;
-}
-
-.card {
-  background: #111;
-  padding: 15px;
-  border-radius: 10px;
-  margin-top: 15px;
-  text-align: left;
-}
+body {font-family: Arial; background:#0b0b0b; color:#fff; text-align:center;}
+.container {max-width:650px; margin:auto;}
+input {width:90%; padding:12px; border-radius:10px; border:none;}
+button {padding:10px 20px; margin:5px; border-radius:10px; border:none; cursor:pointer;}
+.hex {font-size:22px; margin:20px;}
+.card {background:#111; padding:15px; border-radius:10px; margin-top:15px; text-align:left;}
 </style>
 </head>
 
@@ -61,7 +28,7 @@ button {
 <button onclick="ouvir()">Ouvir</button>
 <button onclick="limparHistorico()">Limpar Tudo</button>
 
-<div id="hexagrama" class="hex"></div>
+<div id="hexagrama"></div>
 <div id="resultado"></div>
 <div id="historico"></div>
 
@@ -71,11 +38,11 @@ button {
 
 // ================= BASE =================
 
-// 0 = yin | 1 = yang
 function linha(){
   return Math.random() < 0.5 ? 0 : 1;
 }
 
+// MAPA CORRETO (Rei Wen)
 const mapa = {
 "111111":1,"000000":2,"100010":3,"010001":4,"111010":5,"010111":6,
 "010000":7,"000010":8,"111011":9,"110111":10,"111000":11,"000111":12,
@@ -90,28 +57,34 @@ const mapa = {
 "110011":61,"001100":62,"010101":63,"101010":64
 };
 
-// ================= HEXAGRAMA =================
+// ================= HEX =================
 
 function gerarHex(){
 
   let linhas = [];
-  for(let i=0;i<6;i++) linhas.push(linha());
 
-  let inferior = linhas.slice(0,3).join("");
-  let superior = linhas.slice(3,6).join("");
+  // BASE → TOPO (fundamental)
+  for(let i=0;i<6;i++){
+    linhas.push(linha());
+  }
 
-  let numero = mapa[superior + inferior];
+  let inferior = linhas.slice(0,3).join(""); // base
+  let superior = linhas.slice(3,6).join(""); // topo
 
-  return {linhas,numero};
+  let chave = superior + inferior;
+  let numero = mapa[chave];
+
+  return {linhas,numero,chave};
 }
 
+// DESENHO REAL (topo em cima)
 function desenhar(l){
-  return l.map(x => x ? "━━━" : "━ ━").join("<br>");
+  return [...l].reverse().map(x => x ? "━━━" : "━ ━").join("<br>");
 }
 
 // ================= DADOS =================
 
-const hex = {
+const nomes = {
 1:"O Criativo",2:"O Receptivo",3:"Dificuldade Inicial",4:"Juventude Inexperiente",
 5:"A Espera",6:"O Conflito",7:"O Exército",8:"A União",
 9:"O Poder do Pequeno",10:"O Porte",11:"A Paz",12:"O Impasse",
@@ -136,34 +109,33 @@ let ultimaLeitura = "";
 
 function consultar(){
 
-  speechSynthesis.cancel(); // evita sobreposição
+  speechSynthesis.cancel();
 
-  let pergunta = document.getElementById("pergunta").value;
+  let pergunta = document.getElementById("pergunta").value.trim();
 
   if(!pergunta){
     alert("Digite uma pergunta.");
     return;
   }
 
+  // LIMPA TUDO ANTES
+  document.getElementById("resultado").innerHTML = "";
+  ultimaLeitura = "";
+
   let h = gerarHex();
 
   document.getElementById("hexagrama").innerHTML =
     "Hexagrama "+h.numero+"<br><br>"+desenhar(h.linhas);
 
-  let texto = `
-${hex[h.numero]}.
-
-Momento de leitura estratégica.
-Observe o movimento presente antes de agir.
-
+  let texto = `${nomes[h.numero]}. 
+Momento de leitura estratégica. Observe antes de agir.
 Risco: agir sem consciência.
-Ação: alinhar percepção e decisão.
-`;
+Ação: alinhar percepção e decisão.`;
 
   ultimaLeitura = texto;
 
   document.getElementById("resultado").innerHTML =
-    `<div class="card">${texto.replace(/\n/g,"<br>")}</div>`;
+    `<div class="card">${texto}</div>`;
 
   salvar(pergunta,h.numero);
 }
@@ -204,7 +176,7 @@ function mostrar(){
     html+=`
     <div class="card">
     <b>${i.p}</b><br>
-    Hex ${i.n} - ${hex[i.n]}<br>
+    Hex ${i.n} - ${nomes[i.n]}<br>
     <button onclick="apagar(${idx})">Excluir</button>
     </div>`;
   });
@@ -220,8 +192,8 @@ function apagar(i){
 }
 
 function limparHistorico(){
-  localStorage.removeItem("vov");
-  mostrar();
+  localStorage.clear();
+  document.getElementById("historico").innerHTML="";
 }
 
 mostrar();
