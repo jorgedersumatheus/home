@@ -58,19 +58,20 @@ button {
 <br>
 
 <button onclick="consultar()">Consultar</button>
+<button onclick="ouvir()">Ouvir</button>
 <button onclick="limparHistorico()">Limpar Tudo</button>
 
 <div id="hexagrama" class="hex"></div>
-
 <div id="resultado"></div>
-
 <div id="historico"></div>
 
 </div>
 
 <script>
 
-// yin = 0 | yang = 1
+// ================= BASE =================
+
+// 0 = yin | 1 = yang
 function linha(){
   return Math.random() < 0.5 ? 0 : 1;
 }
@@ -89,6 +90,8 @@ const mapa = {
 "110011":61,"001100":62,"010101":63,"101010":64
 };
 
+// ================= HEXAGRAMA =================
+
 function gerarHex(){
 
   let linhas = [];
@@ -97,47 +100,43 @@ function gerarHex(){
   let inferior = linhas.slice(0,3).join("");
   let superior = linhas.slice(3,6).join("");
 
-  let numero = mapa[superior+inferior];
+  let numero = mapa[superior + inferior];
 
   return {linhas,numero};
 }
 
 function desenhar(l){
-  return l.map(x => x ? "━━━" : "━ ━").reverse().join("<br>");
+  return l.map(x => x ? "━━━" : "━ ━").join("<br>");
 }
 
-// 64 HEXAGRAMAS REAIS (nomes)
+// ================= DADOS =================
+
 const hex = {
-1:["O Criativo"],2:["O Receptivo"],3:["Dificuldade Inicial"],4:["Juventude Inexperiente"],
-5:["A Espera"],6:["O Conflito"],7:["O Exército"],8:["A União"],
-9:["O Poder do Pequeno"],10:["O Porte"],11:["A Paz"],12:["O Impasse"],
-13:["Comunhão"],14:["Grande Posse"],15:["Modéstia"],16:["Entusiasmo"],
-17:["Seguir"],18:["Correção"],19:["Aproximação"],20:["Contemplação"],
-21:["Morder"],22:["Graça"],23:["Desintegração"],24:["Retorno"],
-25:["Inocência"],26:["Grande Domínio"],27:["Alimentação"],28:["Excesso"],
-29:["Abismo"],30:["Fogo"],31:["Influência"],32:["Duração"],
-33:["Retirada"],34:["Grande Poder"],35:["Progresso"],36:["Escuridão"],
-37:["Família"],38:["Oposição"],39:["Obstáculo"],40:["Liberação"],
-41:["Diminuição"],42:["Aumento"],43:["Ruptura"],44:["Encontro"],
-45:["Reunião"],46:["Ascensão"],47:["Exaustão"],48:["Poço"],
-49:["Revolução"],50:["Caldeirão"],51:["Trovão"],52:["Montanha"],
-53:["Desenvolvimento"],54:["Noiva"],55:["Abundância"],56:["Viajante"],
-57:["Suavidade"],58:["Alegria"],59:["Dispersão"],60:["Limitação"],
-61:["Verdade Interior"],62:["Pequeno Excesso"],63:["Após Conclusão"],64:["Antes da Conclusão"]
+1:"O Criativo",2:"O Receptivo",3:"Dificuldade Inicial",4:"Juventude Inexperiente",
+5:"A Espera",6:"O Conflito",7:"O Exército",8:"A União",
+9:"O Poder do Pequeno",10:"O Porte",11:"A Paz",12:"O Impasse",
+13:"Comunhão",14:"Grande Posse",15:"Modéstia",16:"Entusiasmo",
+17:"Seguir",18:"Correção",19:"Aproximação",20:"Contemplação",
+21:"Morder",22:"Graça",23:"Desintegração",24:"Retorno",
+25:"Inocência",26:"Grande Domínio",27:"Alimentação",28:"Excesso",
+29:"Abismo",30:"Fogo",31:"Influência",32:"Duração",
+33:"Retirada",34:"Grande Poder",35:"Progresso",36:"Escuridão",
+37:"Família",38:"Oposição",39:"Obstáculo",40:"Liberação",
+41:"Diminuição",42:"Aumento",43:"Ruptura",44:"Encontro",
+45:"Reunião",46:"Ascensão",47:"Exaustão",48:"Poço",
+49:"Revolução",50:"Caldeirão",51:"Trovão",52:"Montanha",
+53:"Desenvolvimento",54:"Noiva",55:"Abundância",56:"Viajante",
+57:"Suavidade",58:"Alegria",59:"Dispersão",60:"Limitação",
+61:"Verdade Interior",62:"Pequeno Excesso",63:"Após Conclusão",64:"Antes da Conclusão"
 };
 
-// interpretação VOV inteligente
-function interpretar(n){
+let ultimaLeitura = "";
 
-  return {
-    nome: hex[n][0],
-    leitura: "Momento de alinhamento entre percepção e ação.",
-    risco: "agir sem consciência do fluxo",
-    acao: "observar, compreender e agir com precisão"
-  }
-}
+// ================= CONSULTA =================
 
 function consultar(){
+
+  speechSynthesis.cancel(); // evita sobreposição
 
   let pergunta = document.getElementById("pergunta").value;
 
@@ -147,42 +146,51 @@ function consultar(){
   }
 
   let h = gerarHex();
-  let d = interpretar(h.numero);
 
   document.getElementById("hexagrama").innerHTML =
     "Hexagrama "+h.numero+"<br><br>"+desenhar(h.linhas);
 
-  let html = `
-  <div class="card">
-  <b>${d.nome}</b><br><br>
-  ${d.leitura}<br><br>
-  <b>Risco:</b> ${d.risco}<br>
-  <b>Ação:</b> ${d.acao}
-  </div>
-  `;
+  let texto = `
+${hex[h.numero]}.
 
-  document.getElementById("resultado").innerHTML = html;
+Momento de leitura estratégica.
+Observe o movimento presente antes de agir.
 
-  narrar(d);
+Risco: agir sem consciência.
+Ação: alinhar percepção e decisão.
+`;
 
-  salvar(pergunta,h.numero,d.nome);
+  ultimaLeitura = texto;
+
+  document.getElementById("resultado").innerHTML =
+    `<div class="card">${texto.replace(/\n/g,"<br>")}</div>`;
+
+  salvar(pergunta,h.numero);
 }
 
-// voz natural
-function narrar(d){
-  let t = `${d.nome}. ${d.leitura}. Atenção ao risco ${d.risco}. Ação ${d.acao}`;
+// ================= VOZ =================
 
-  let msg = new SpeechSynthesisUtterance(t);
+function ouvir(){
+
+  if(!ultimaLeitura){
+    alert("Faça uma consulta primeiro.");
+    return;
+  }
+
+  speechSynthesis.cancel();
+
+  let msg = new SpeechSynthesisUtterance(ultimaLeitura);
   msg.lang="pt-BR";
   msg.rate=0.95;
 
   speechSynthesis.speak(msg);
 }
 
-// histórico
-function salvar(p,n,nome){
+// ================= HISTÓRICO =================
+
+function salvar(p,n){
   let h = JSON.parse(localStorage.getItem("vov")||"[]");
-  h.push({p,n,nome});
+  h.push({p,n});
   localStorage.setItem("vov",JSON.stringify(h));
   mostrar();
 }
@@ -196,7 +204,7 @@ function mostrar(){
     html+=`
     <div class="card">
     <b>${i.p}</b><br>
-    Hex ${i.n} - ${i.nome}<br>
+    Hex ${i.n} - ${hex[i.n]}<br>
     <button onclick="apagar(${idx})">Excluir</button>
     </div>`;
   });
