@@ -65,15 +65,22 @@ const mapa = {
 
 // ================= HEX =================
 function gerarHex(){
-  let linhas=[];
+  let linhas = [];
   for(let i=0;i<6;i++) linhas.push(linha());
+
+  // linhas[0] = base, linhas[5] = topo
   let inferior = linhas.slice(0,3).join("");
   let superior = linhas.slice(3,6).join("");
-  let chave = superior + inferior; // trigrama superior + inferior
+
+  // chave correta para mapa
+  let chave = inferior + superior;
+
   let numero = mapa[chave];
   return {linhas, numero};
 }
 
+
+  
 function desenhar(l){ return l.map(x => x?"━━━":"━ ━").join("<br>"); }
 
 // ================= DADOS =================
