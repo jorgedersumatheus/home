@@ -6,46 +6,42 @@
 
 <style>
 body {
-  font-family: Arial, sans-serif;
-  background: #0a0a0a;
+  font-family: Arial;
+  background: #0b0b0b;
   color: #fff;
   text-align: center;
-  padding: 20px;
 }
 
 .container {
-  max-width: 600px;
+  max-width: 650px;
   margin: auto;
 }
 
 input {
   width: 90%;
-  padding: 10px;
-  margin: 10px;
-  border-radius: 8px;
+  padding: 12px;
+  border-radius: 10px;
   border: none;
 }
 
 button {
   padding: 10px 20px;
   margin: 5px;
-  border-radius: 8px;
+  border-radius: 10px;
   border: none;
   cursor: pointer;
 }
 
 .hex {
-  font-size: 24px;
-  margin: 20px 0;
+  font-size: 22px;
+  margin: 20px;
 }
 
-.resultado {
-  margin-top: 20px;
-  text-align: left;
-}
-
-.historico {
-  margin-top: 30px;
+.card {
+  background: #111;
+  padding: 15px;
+  border-radius: 10px;
+  margin-top: 15px;
   text-align: left;
 }
 </style>
@@ -55,70 +51,92 @@ button {
 
 <div class="container">
 
-<h1>Oráculo VOV</h1>
+<h1>Oráculo VOV Supremo</h1>
 
-<input id="pergunta" placeholder="Digite sua pergunta..." />
+<input id="pergunta" placeholder="Qual é a sua questão?" />
 
 <br>
 
 <button onclick="consultar()">Consultar</button>
-<button onclick="limparHistorico()">Limpar Histórico</button>
+<button onclick="limparHistorico()">Limpar Tudo</button>
 
-<div class="hex" id="hexagrama"></div>
+<div id="hexagrama" class="hex"></div>
 
-<div class="resultado" id="resultado"></div>
+<div id="resultado"></div>
 
-<div class="historico" id="historico"></div>
+<div id="historico"></div>
 
 </div>
 
 <script>
 
-// GERAR LINHA (yin/yang)
-function linha() {
+// yin = 0 | yang = 1
+function linha(){
   return Math.random() < 0.5 ? 0 : 1;
 }
 
-// GERAR HEXAGRAMA
-function gerarHex() {
+const mapa = {
+"111111":1,"000000":2,"100010":3,"010001":4,"111010":5,"010111":6,
+"010000":7,"000010":8,"111011":9,"110111":10,"111000":11,"000111":12,
+"101111":13,"111101":14,"001000":15,"000100":16,"100110":17,"011001":18,
+"110000":19,"000011":20,"100101":21,"101001":22,"000001":23,"100000":24,
+"100111":25,"111001":26,"100001":27,"011110":28,"010010":29,"101101":30,
+"001110":31,"011100":32,"001111":33,"111100":34,"000101":35,"101000":36,
+"101011":37,"110101":38,"001010":39,"010100":40,"110001":41,"100011":42,
+"111110":43,"011111":44,"000110":45,"011000":46,"010110":47,"011010":48,
+"101110":49,"011101":50,"100100":51,"001001":52,"001011":53,"110100":54,
+"101100":55,"001101":56,"011011":57,"110110":58,"010011":59,"110010":60,
+"110011":61,"001100":62,"010101":63,"101010":64
+};
+
+function gerarHex(){
+
   let linhas = [];
   for(let i=0;i<6;i++) linhas.push(linha());
 
-  let numero = parseInt(linhas.join(""),2)+1;
+  let inferior = linhas.slice(0,3).join("");
+  let superior = linhas.slice(3,6).join("");
+
+  let numero = mapa[superior+inferior];
 
   return {linhas,numero};
 }
 
-// DESENHAR
-function desenhar(linhas){
-  return linhas.map(l =>
-    l ? "___" : "_ _"
-  ).reverse().join("<br>");
+function desenhar(l){
+  return l.map(x => x ? "━━━" : "━ ━").reverse().join("<br>");
 }
 
-// BASE REAL (exemplo inicial correto)
-const hexagramas = {
-1:{nome:"O Criativo",vov:"Força que Inicia",estado:"impulso criador",risco:"arrogância",acao:"liderar com clareza"},
-2:{nome:"O Receptivo",vov:"Campo que Sustenta",estado:"abertura total",risco:"passividade",acao:"sustentar com consciência"},
-3:{nome:"Dificuldade Inicial",vov:"Caos Criador",estado:"início turbulento",risco:"desistência",acao:"organizar o começo"},
-4:{nome:"Juventude Inexperiente",vov:"Aprender com o erro",estado:"inexperiência",risco:"teimosia",acao:"buscar orientação"},
-
-// fallback automático até completar 64
+// 64 HEXAGRAMAS REAIS (nomes)
+const hex = {
+1:["O Criativo"],2:["O Receptivo"],3:["Dificuldade Inicial"],4:["Juventude Inexperiente"],
+5:["A Espera"],6:["O Conflito"],7:["O Exército"],8:["A União"],
+9:["O Poder do Pequeno"],10:["O Porte"],11:["A Paz"],12:["O Impasse"],
+13:["Comunhão"],14:["Grande Posse"],15:["Modéstia"],16:["Entusiasmo"],
+17:["Seguir"],18:["Correção"],19:["Aproximação"],20:["Contemplação"],
+21:["Morder"],22:["Graça"],23:["Desintegração"],24:["Retorno"],
+25:["Inocência"],26:["Grande Domínio"],27:["Alimentação"],28:["Excesso"],
+29:["Abismo"],30:["Fogo"],31:["Influência"],32:["Duração"],
+33:["Retirada"],34:["Grande Poder"],35:["Progresso"],36:["Escuridão"],
+37:["Família"],38:["Oposição"],39:["Obstáculo"],40:["Liberação"],
+41:["Diminuição"],42:["Aumento"],43:["Ruptura"],44:["Encontro"],
+45:["Reunião"],46:["Ascensão"],47:["Exaustão"],48:["Poço"],
+49:["Revolução"],50:["Caldeirão"],51:["Trovão"],52:["Montanha"],
+53:["Desenvolvimento"],54:["Noiva"],55:["Abundância"],56:["Viajante"],
+57:["Suavidade"],58:["Alegria"],59:["Dispersão"],60:["Limitação"],
+61:["Verdade Interior"],62:["Pequeno Excesso"],63:["Após Conclusão"],64:["Antes da Conclusão"]
 };
 
-for(let i=1;i<=64;i++){
-  if(!hexagramas[i]){
-    hexagramas[i]={
-      nome:"Hexagrama "+i,
-      vov:"Transmutação VOV",
-      estado:"momento em leitura",
-      risco:"interpretação superficial",
-      acao:"observar profundamente"
-    }
+// interpretação VOV inteligente
+function interpretar(n){
+
+  return {
+    nome: hex[n][0],
+    leitura: "Momento de alinhamento entre percepção e ação.",
+    risco: "agir sem consciência do fluxo",
+    acao: "observar, compreender e agir com precisão"
   }
 }
 
-// CONSULTA
 function consultar(){
 
   let pergunta = document.getElementById("pergunta").value;
@@ -129,64 +147,76 @@ function consultar(){
   }
 
   let h = gerarHex();
-  let dados = hexagramas[h.numero];
+  let d = interpretar(h.numero);
 
   document.getElementById("hexagrama").innerHTML =
     "Hexagrama "+h.numero+"<br><br>"+desenhar(h.linhas);
 
-  let texto = `
-  <b>${dados.nome}</b><br><br>
-  ${dados.vov}<br><br>
-  <b>Estado:</b> ${dados.estado}<br>
-  <b>Risco:</b> ${dados.risco}<br>
-  <b>Ação:</b> ${dados.acao}
+  let html = `
+  <div class="card">
+  <b>${d.nome}</b><br><br>
+  ${d.leitura}<br><br>
+  <b>Risco:</b> ${d.risco}<br>
+  <b>Ação:</b> ${d.acao}
+  </div>
   `;
 
-  document.getElementById("resultado").innerHTML = texto;
+  document.getElementById("resultado").innerHTML = html;
 
-  narrar(dados);
+  narrar(d);
 
-  salvarHistorico(pergunta,h.numero,dados.nome);
+  salvar(pergunta,h.numero,d.nome);
 }
 
-// NARRADOR MELHOR
+// voz natural
 function narrar(d){
-  let texto = `${d.nome}. ${d.vov}. Estado ${d.estado}. Atenção ao risco ${d.risco}. Ação recomendada ${d.acao}`;
+  let t = `${d.nome}. ${d.leitura}. Atenção ao risco ${d.risco}. Ação ${d.acao}`;
 
-  let msg = new SpeechSynthesisUtterance(texto);
-  msg.rate = 0.95;
-  msg.pitch = 1;
-  msg.lang = "pt-BR";
+  let msg = new SpeechSynthesisUtterance(t);
+  msg.lang="pt-BR";
+  msg.rate=0.95;
 
   speechSynthesis.speak(msg);
 }
 
-// HISTÓRICO
-function salvarHistorico(pergunta,numero,nome){
+// histórico
+function salvar(p,n,nome){
   let h = JSON.parse(localStorage.getItem("vov")||"[]");
-  h.push({pergunta,numero,nome});
+  h.push({p,n,nome});
   localStorage.setItem("vov",JSON.stringify(h));
-  mostrarHistorico();
+  mostrar();
 }
 
-function mostrarHistorico(){
+function mostrar(){
   let h = JSON.parse(localStorage.getItem("vov")||"[]");
 
-  let html = "<h3>Histórico</h3>";
+  let html="<h3>Histórico</h3>";
 
-  h.slice().reverse().forEach(i=>{
-    html += `<p><b>${i.pergunta}</b><br>Hex ${i.numero} - ${i.nome}</p>`;
+  h.slice().reverse().forEach((i,idx)=>{
+    html+=`
+    <div class="card">
+    <b>${i.p}</b><br>
+    Hex ${i.n} - ${i.nome}<br>
+    <button onclick="apagar(${idx})">Excluir</button>
+    </div>`;
   });
 
-  document.getElementById("historico").innerHTML = html;
+  document.getElementById("historico").innerHTML=html;
+}
+
+function apagar(i){
+  let h = JSON.parse(localStorage.getItem("vov")||"[]");
+  h.splice(h.length-1-i,1);
+  localStorage.setItem("vov",JSON.stringify(h));
+  mostrar();
 }
 
 function limparHistorico(){
   localStorage.removeItem("vov");
-  mostrarHistorico();
+  mostrar();
 }
 
-mostrarHistorico();
+mostrar();
 
 </script>
 
