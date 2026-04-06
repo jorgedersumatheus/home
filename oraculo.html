@@ -185,11 +185,19 @@ function mostrar(){
 }
 
 function limparHistorico(){
-  localStorage.clear();
-  mostrar();
-}
 
-mostrar();
+  localStorage.removeItem("vov");
+
+  document.getElementById("resultado").innerHTML = "";
+  document.getElementById("hexagrama").innerHTML = "";
+  document.getElementById("pergunta").value = "";
+
+  ultimaLeitura = "";
+
+  speechSynthesis.cancel();
+
+  mostrar(); // re-render oficial
+}
 
 </script>
 
