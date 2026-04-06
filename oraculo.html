@@ -84,8 +84,7 @@ function gerarHex(){
   let superior = linhas.slice(3,6).join("");
 
   // CORREÇÃO DEFINITIVA
-  let chave = inferior.split("").reverse().join("") +
-              superior.split("").reverse().join("");
+  let chave = superior + inferior;
 
   let numero = mapa[chave];
 
