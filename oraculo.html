@@ -2,242 +2,191 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Oráculo VOV — PRO FINAL</title>
+<title>Oráculo VOV Supremo</title>
 
 <style>
 body {
-  font-family: Arial;
-  background: #0b0f1a;
+  font-family: Arial, sans-serif;
+  background: #0a0a0a;
   color: #fff;
   text-align: center;
   padding: 20px;
 }
 
-button {
-  padding: 10px 15px;
-  margin: 5px;
+.container {
+  max-width: 600px;
+  margin: auto;
+}
+
+input {
+  width: 90%;
+  padding: 10px;
+  margin: 10px;
+  border-radius: 8px;
   border: none;
-  border-radius: 6px;
-  background: #1f2a44;
-  color: #fff;
+}
+
+button {
+  padding: 10px 20px;
+  margin: 5px;
+  border-radius: 8px;
+  border: none;
   cursor: pointer;
 }
 
-button:hover {
-  background: #2f3f66;
-}
-
 .hex {
-  font-size: 22px;
-  line-height: 1.6;
-  margin: 20px;
+  font-size: 24px;
+  margin: 20px 0;
 }
 
-#mutacao {
-  margin-top: 10px;
-  font-style: italic;
-}
-
-#historico {
-  max-width: 760px;
-  margin: auto;
+.resultado {
+  margin-top: 20px;
   text-align: left;
-  margin-top: 30px;
 }
 
-.item {
-  border-bottom: 1px solid #333;
-  padding: 10px 0;
+.historico {
+  margin-top: 30px;
+  text-align: left;
 }
 </style>
 </head>
 
 <body>
 
-<h1>ORÁCULO VOV — PRO FINAL</h1>
+<div class="container">
 
-<button onclick="gerar()">Gerar</button>
-<button onclick="narrar()">Ouvir</button>
+<h1>Oráculo VOV</h1>
+
+<input id="pergunta" placeholder="Digite sua pergunta..." />
+
+<br>
+
+<button onclick="consultar()">Consultar</button>
 <button onclick="limparHistorico()">Limpar Histórico</button>
 
-<div id="numero"></div>
-<div id="hex" class="hex"></div>
-<div id="mutacao"></div>
-<div id="texto"></div>
+<div class="hex" id="hexagrama"></div>
 
-<div id="historico">
-<h3>Histórico</h3>
-<div id="lista"></div>
+<div class="resultado" id="resultado"></div>
+
+<div class="historico" id="historico"></div>
+
 </div>
 
 <script>
 
-const nomes = [
-"O Criativo","O Receptivo","Dificuldade Inicial","Juventude","Espera","Conflito","Exército","União",
-"Pequeno Domínio","Conduta","Paz","Estagnação","Comunidade","Grande Posse","Modéstia","Entusiasmo",
-"Seguimento","Correção","Aproximação","Contemplação","Morder","Graça","Desintegração","Retorno",
-"Inocência","Grande Domínio","Nutrição","Grande Excesso","Abismo","Fogo","Influência","Duração",
-"Retirada","Grande Força","Progresso","Obscurecimento","Família","Oposição","Obstáculo","Liberação",
-"Diminuição","Aumento","Decisão","Encontro","Reunião","Ascensão","Pressão","Poço",
-"Revolução","Caldeirão","Trovão","Montanha","Desenvolvimento","Donzela","Abundância","Viagem",
-"Suavidade","Alegria","Dispersão","Limitação","Verdade Interior","Pequeno Excesso","Após Conclusão","Antes da Conclusão"
-];
-
-const textos = [
-"Inicie com força e clareza. A ação consciente abre caminhos.",
-"Sustente o processo. A base bem cuidada garante o crescimento.",
-"O início é difícil. Organize antes de avançar.",
-"Aprenda com humildade. O saber certo evita erros.",
-"A espera estratégica amadurece o resultado.",
-"Evite conflitos desnecessários. Use inteligência.",
-"A disciplina constrói poder coletivo.",
-"A união certa amplia resultados.",
-"Pequenos avanços geram grandes conquistas.",
-"Conduta correta abre portas invisíveis.",
-"Harmonia favorece expansão.",
-"Bloqueios pedem reposicionamento.",
-"Força coletiva é vantagem estratégica.",
-"Abundância exige controle.",
-"Modéstia protege o avanço.",
-"Energia alta pede direção.",
-"Siga o fluxo certo.",
-"Corrija antes que cresça.",
-"Aproxime-se do essencial.",
-"Observe profundamente.",
-"Corte o erro.",
-"A estética também comunica.",
-"O que se desfaz deve ser solto.",
-"Retornar é recomeçar forte.",
-"Espontaneidade com consciência.",
-"Grande potencial exige estrutura.",
-"Nutra o essencial.",
-"Evite excesso.",
-"Cuidado com riscos.",
-"Clareza ilumina decisões.",
-"Influência é poder.",
-"Constância vence.",
-"Recuar também é estratégia.",
-"Força com controle.",
-"Progresso visível.",
-"Proteja-se no caos.",
-"Organize sua base.",
-"Divergências exigem diálogo.",
-"Obstáculos pedem paciência.",
-"Libere-se do peso.",
-"Reduzir fortalece.",
-"Crescimento consciente.",
-"Decida com firmeza.",
-"Encontros mudam rumos.",
-"Centralize forças.",
-"Suba com consistência.",
-"Pressão revela falhas.",
-"Cuide da fonte.",
-"Transforme-se.",
-"Refine processos.",
-"O choque desperta.",
-"Pare para ver.",
-"Cresça com o tempo.",
-"Cuidado nas escolhas.",
-"Aproveite o auge.",
-"Adapte-se ao movimento.",
-"Suavidade vence resistência.",
-"A alegria expande.",
-"Recolha-se.",
-"Disciplina sustenta.",
-"Ouça sua verdade.",
-"Ajustes finos fazem diferença.",
-"Finalize bem.",
-"Prepare o novo ciclo."
-];
-
-function gerarLinha() {
-  let r = Math.random();
-  if (r < 0.25) return {v:0, m:true};
-  if (r < 0.5) return {v:1, m:false};
-  if (r < 0.75) return {v:0, m:false};
-  return {v:1, m:true};
+// GERAR LINHA (yin/yang)
+function linha() {
+  return Math.random() < 0.5 ? 0 : 1;
 }
 
-function desenhar(hex) {
-  return hex.map(l => l.v ? "___" : "_ _").join("<br>");
+// GERAR HEXAGRAMA
+function gerarHex() {
+  let linhas = [];
+  for(let i=0;i<6;i++) linhas.push(linha());
+
+  let numero = parseInt(linhas.join(""),2)+1;
+
+  return {linhas,numero};
 }
 
-function inverter(hex) {
-  return hex.map(l => l.m ? {v: l.v ? 0 : 1, m:false} : l);
+// DESENHAR
+function desenhar(linhas){
+  return linhas.map(l =>
+    l ? "___" : "_ _"
+  ).reverse().join("<br>");
 }
 
-function binarioParaIndice(hex) {
-  let b = hex.map(l => l.v).reverse().join("");
-  return parseInt(b, 2);
+// BASE REAL (exemplo inicial correto)
+const hexagramas = {
+1:{nome:"O Criativo",vov:"Força que Inicia",estado:"impulso criador",risco:"arrogância",acao:"liderar com clareza"},
+2:{nome:"O Receptivo",vov:"Campo que Sustenta",estado:"abertura total",risco:"passividade",acao:"sustentar com consciência"},
+3:{nome:"Dificuldade Inicial",vov:"Caos Criador",estado:"início turbulento",risco:"desistência",acao:"organizar o começo"},
+4:{nome:"Juventude Inexperiente",vov:"Aprender com o erro",estado:"inexperiência",risco:"teimosia",acao:"buscar orientação"},
+
+// fallback automático até completar 64
+};
+
+for(let i=1;i<=64;i++){
+  if(!hexagramas[i]){
+    hexagramas[i]={
+      nome:"Hexagrama "+i,
+      vov:"Transmutação VOV",
+      estado:"momento em leitura",
+      risco:"interpretação superficial",
+      acao:"observar profundamente"
+    }
+  }
 }
 
-function gerar() {
+// CONSULTA
+function consultar(){
 
-  let hex = [];
-  for (let i = 0; i < 6; i++) hex.push(gerarLinha());
+  let pergunta = document.getElementById("pergunta").value;
 
-  let idx = binarioParaIndice(hex);
-  let nome = nomes[idx];
-  let texto = textos[idx];
+  if(!pergunta){
+    alert("Digite uma pergunta.");
+    return;
+  }
 
-  let desenho = desenhar(hex);
+  let h = gerarHex();
+  let dados = hexagramas[h.numero];
 
-  let mut = inverter(hex);
-  let idx2 = binarioParaIndice(mut);
-  let nome2 = nomes[idx2];
+  document.getElementById("hexagrama").innerHTML =
+    "Hexagrama "+h.numero+"<br><br>"+desenhar(h.linhas);
 
-  document.getElementById("numero").innerHTML = `#${idx+1} - ${nome}`;
-  document.getElementById("hex").innerHTML = desenho;
-  document.getElementById("mutacao").innerHTML = `→ Mutação: #${idx2+1} - ${nome2}`;
-  document.getElementById("texto").innerHTML = texto;
+  let texto = `
+  <b>${dados.nome}</b><br><br>
+  ${dados.vov}<br><br>
+  <b>Estado:</b> ${dados.estado}<br>
+  <b>Risco:</b> ${dados.risco}<br>
+  <b>Ação:</b> ${dados.acao}
+  `;
 
-  window.textoAtual = nome + ". " + texto;
+  document.getElementById("resultado").innerHTML = texto;
 
-  salvarHistorico(idx+1, nome, desenho, texto, nome2);
+  narrar(dados);
+
+  salvarHistorico(pergunta,h.numero,dados.nome);
 }
 
-function narrar() {
-  if (!window.textoAtual) return;
+// NARRADOR MELHOR
+function narrar(d){
+  let texto = `${d.nome}. ${d.vov}. Estado ${d.estado}. Atenção ao risco ${d.risco}. Ação recomendada ${d.acao}`;
 
-  let msg = new SpeechSynthesisUtterance(window.textoAtual);
+  let msg = new SpeechSynthesisUtterance(texto);
+  msg.rate = 0.95;
+  msg.pitch = 1;
   msg.lang = "pt-BR";
-  msg.rate = 0.9;
 
-  speechSynthesis.cancel();
   speechSynthesis.speak(msg);
 }
 
-function salvarHistorico(num, nome, desenho, texto, mut) {
-
-  let lista = document.getElementById("lista");
-
-  let item = document.createElement("div");
-  item.className = "item";
-
-  item.innerHTML = `
-    <strong>#${num} - ${nome}</strong><br>
-    ${desenho}<br>
-    ${texto}<br>
-    <em>Mutação → ${mut}</em>
-  `;
-
-  lista.prepend(item);
-
-  localStorage.setItem("vov_hist", lista.innerHTML);
+// HISTÓRICO
+function salvarHistorico(pergunta,numero,nome){
+  let h = JSON.parse(localStorage.getItem("vov")||"[]");
+  h.push({pergunta,numero,nome});
+  localStorage.setItem("vov",JSON.stringify(h));
+  mostrarHistorico();
 }
 
-function carregarHistorico() {
-  let data = localStorage.getItem("vov_hist");
-  if (data) document.getElementById("lista").innerHTML = data;
+function mostrarHistorico(){
+  let h = JSON.parse(localStorage.getItem("vov")||"[]");
+
+  let html = "<h3>Histórico</h3>";
+
+  h.slice().reverse().forEach(i=>{
+    html += `<p><b>${i.pergunta}</b><br>Hex ${i.numero} - ${i.nome}</p>`;
+  });
+
+  document.getElementById("historico").innerHTML = html;
 }
 
-function limparHistorico() {
-  document.getElementById("lista").innerHTML = "";
-  localStorage.removeItem("vov_hist");
+function limparHistorico(){
+  localStorage.removeItem("vov");
+  mostrarHistorico();
 }
 
-carregarHistorico();
+mostrarHistorico();
 
 </script>
 
