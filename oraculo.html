@@ -71,7 +71,7 @@ function gerarHex(){
   let inferior = linhas.slice(0,3).join(""); // base
   let superior = linhas.slice(3,6).join(""); // topo
 
-  let chave = superior + inferior;
+  let chave = inferior + superior;
   let numero = mapa[chave];
 
   return {linhas,numero,chave};
