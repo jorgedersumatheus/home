@@ -92,9 +92,9 @@ function gerarHex(){
   return {linhas,numero};
 }
 
-function desenhar(l){
-  return [...l].reverse().map(x => x ? "━━━" : "━ ━").join("<br>");
-}
+ function desenhar(l){
+  return l.map(x => x ? "━━━" : "━ ━").join("<br>");
+} 
 
 // ================= DADOS =================
 
