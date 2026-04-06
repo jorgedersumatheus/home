@@ -2,148 +2,258 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Oráculo VOV Supremo</title>
 <style>
 body {
   font-family: 'Arial', sans-serif;
-  background: #1a1a1a;
-  color: #f0f0f0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  margin:0;
+  background: #0b0b0b;
+  color: #fff;
+  text-align: center;
+  padding: 20px;
 }
 .container {
-  max-width: 800px;
-  padding: 2rem;
-  background: #222;
-  border-radius: 16px;
-  text-align: center;
-  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+  max-width: 700px;
+  margin: auto;
 }
 h1 {
-  margin-bottom: 1rem;
-  color: #f7c600;
+  font-size: 2em;
+  margin-bottom: 20px;
+}
+input {
+  width: 90%;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  margin-bottom: 10px;
 }
 button {
-  background: #f7c600;
-  color: #111;
+  padding: 10px 20px;
+  margin: 5px;
+  border-radius: 10px;
   border: none;
-  padding: 12px 24px;
-  font-size: 1rem;
-  border-radius: 8px;
   cursor: pointer;
-  margin-top: 1rem;
+  background: #222;
+  color: #fff;
+  transition: 0.3s;
 }
 button:hover {
-  background: #e6b500;
+  background: #444;
 }
-.hexagrama {
-  margin-top: 2rem;
-  text-align: left;
-  line-height: 1.6;
+.card {
   background: #111;
-  padding: 1.5rem;
-  border-radius: 12px;
+  padding: 15px;
+  border-radius: 10px;
+  margin-top: 15px;
+  text-align: left;
 }
-.hexagrama h2 {
-  color: #f7c600;
-  margin-bottom: 0.5rem;
+.mantra {
+  opacity: 0.7;
+  font-size: 14px;
+  margin-bottom: 15px;
+  white-space: pre-line;
 }
-.hexagrama p {
-  margin: 0.4rem 0;
+.hex-linhas {
+  font-family: monospace;
+  line-height: 1.5em;
+  margin: 10px 0;
 }
 </style>
 </head>
 <body>
+
 <div class="container">
-  <h1>Oráculo VOV Supremo</h1>
-  <button onclick="sortearHexagrama()">Sortear Hexagrama</button>
-  <div class="hexagrama" id="hexagramaDisplay">
-    <p>Toque no botão acima para receber sua leitura.</p>
-  </div>
+<h1>Oráculo VOV Supremo</h1>
+
+<div class="mantra" id="mantra">
+AMARALINA
+amar
+o mar
+amo
+amar
+sem
+arma
+com
+alma
+o mar
+
+AMARALINDA 
+</div>
+
+<input id="pergunta" placeholder="Qual é a sua questão?" />
+<br>
+<button onclick="consultar()">Consultar</button>
+<button onclick="ouvir()">Ouvir</button>
+<button onclick="ouvirMantra()">Ouvir Mantra</button>
+<button onclick="limparHistorico()">Limpar Tudo</button>
+
+<div id="hexagrama" class="hex-linhas"></div>
+<div id="resultado"></div>
+<div id="historico"></div>
 </div>
 
 <script>
-const HEXAGRAMAS = {
-1:{nome:"O Criativo", essencia:"O Céu em ação, força primordial que move o mundo. Energia pura que se expande sem limites.", diagnostico:"Momento de grande potencial e liderança. Iniciativa e visão podem moldar destinos.", direcao:"Avance com coragem, disciplina e clareza. Transforme potencial em resultados concretos."},
-2:{nome:"O Receptivo", essencia:"A Terra acolhe e sustenta, nutrindo tudo com paciência e abertura.", diagnostico:"Tempo de absorção, aprendizado e fortalecimento de bases.", direcao:"Seja flexível, paciente e apoie. A força vem de sustentar e conectar-se."},
-3:{nome:"Dificuldade Inicial", essencia:"O broto luta para romper a terra, início turbulento cheio de desafios e oportunidades.", diagnostico:"Desafios de início exigem determinação e aprendizado profundo.", direcao:"Organize, busque aliados e persevere. Transforme obstáculos em fundamentos sólidos."},
-4:{nome:"Juventude Inexperiente", essencia:"Mente fresca, visão nova, mas falta experiência.", diagnostico:"Curiosidade e vulnerabilidade coexistem; enganos podem surgir.", direcao:"Procure orientação e ouça os mais experientes. Equilibre entusiasmo com cautela."},
-5:{nome:"A Espera", essencia:"O tempo é mestre; paciência e observação são ações sábias.", diagnostico:"Forçar o movimento agora gera resistência e desequilíbrio.", direcao:"Cultive paciência estratégica. Prepare-se internamente e aguarde o momento certo."},
-6:{nome:"O Conflito", essencia:"Forças opostas se confrontam, revelando verdades e exigindo decisão.", diagnostico:"Conflitos testam inteligência e percepção. Escolha batalhas com sabedoria.", direcao:"Evite confrontos diretos sem preparo. Negocie e transforme tensão em aprendizado."},
-7:{nome:"O Exército", essencia:"Disciplina coletiva e organização estruturada.", diagnostico:"Necessidade de liderança clara e coordenação de forças.", direcao:"Organize, alinhe e conduza com estratégia e propósito."},
-8:{nome:"A União", essencia:"Coesão e conexão entre partes distintas.", diagnostico:"Busca de alianças e pertencimento com objetivos comuns.", direcao:"Una-se com clareza de propósito. A força está na colaboração."},
-9:{nome:"O Poder do Pequeno", essencia:"Influência sutil e ação discreta.", diagnostico:"Pequenos esforços podem gerar grandes efeitos.", direcao:"Aja com delicadeza, precisão e inteligência estratégica."},
-10:{nome:"O Porte", essencia:"Conduta correta, postura equilibrada diante do mundo.", diagnostico:"Situação exige atenção e comportamento adequado.", direcao:"Mantenha prudência, moderação e integridade."},
-11:{nome:"A Paz", essencia:"Harmonia em fluxo, equilíbrio de forças.", diagnostico:"Momento de estabilidade e oportunidades para construção.", direcao:"Aproveite a harmonia para criar e consolidar."},
-12:{nome:"O Impasse", essencia:"Bloqueio e estagnação.", diagnostico:"Conexões interrompidas ou momentos de pausa obrigatória.", direcao:"Recolha-se, avalie, evite forçar soluções."},
-13:{nome:"Comunhão", essencia:"Alinhamento coletivo e convergência de ideias.", diagnostico:"Colaboração frutífera e apoio mútuo estão disponíveis.", direcao:"Trabalhe em conjunto com transparência e propósito."},
-14:{nome:"Grande Posse", essencia:"Abundância consciente e recursos disponíveis.", diagnostico:"Oportunidades de prosperidade requerem responsabilidade.", direcao:"Use com sabedoria e consciência, evitando desperdício."},
-15:{nome:"Modéstia", essencia:"Equilíbrio humilde, força contida.", diagnostico:"Momento de exercer influência sem ostentação.", direcao:"Pratique simplicidade e discrição, mantendo impacto sutil."},
-16:{nome:"Entusiasmo", essencia:"Energia mobilizadora e espírito vibrante.", diagnostico:"Ação inspirada atrai atenção e engajamento.", direcao:"Direcione energia com foco e propósito, evitando dispersão."},
-17:{nome:"Seguir", essencia:"Adaptação e acompanhamento de fluxos maiores.", diagnostico:"Necessidade de sincronizar-se com ritmos externos.", direcao:"Seja flexível, observador e siga com prudência."},
-18:{nome:"Correção", essencia:"Ajuste do que foi corrompido ou desordenado.", diagnostico:"Problemas antigos podem emergir, exigindo ação.", direcao:"Corrija na raiz com clareza e firmeza."},
-19:{nome:"Aproximação", essencia:"Crescimento gradual e aproximação positiva.", diagnostico:"Algo significativo se aproxima, exigindo preparação.", direcao:"Prepare-se para assumir responsabilidades e oportunidades."},
-20:{nome:"Contemplação", essencia:"Observação profunda e reflexão estratégica.", diagnostico:"Momento de análise e compreensão antes da ação.", direcao:"Veja, ouça e compreenda antes de agir."},
-21:{nome:"Morder", essencia:"Decisão firme, ação decisiva.", diagnostico:"Necessidade de cortar o que impede progresso.", direcao:"Aja com coragem e determinação, resolvendo obstáculos."},
-22:{nome:"Graça", essencia:"Beleza e forma que encantam e influenciam.", diagnostico:"A apresentação e sutileza são essenciais agora.", direcao:"Harmonize estética e essência em todas as ações."},
-23:{nome:"Desintegração", essencia:"Queda gradual de estruturas frágeis.", diagnostico:"Processos de desgaste exigem desapego.", direcao:"Prepare-se para liberar o que não serve mais."},
-24:{nome:"Retorno", essencia:"Recomeço e renovação de ciclos.", diagnostico:"Momento propício para reiniciar com aprendizado.", direcao:"Volte ao essencial e reinicie com consciência."},
-25:{nome:"Inocência", essencia:"Pureza de intenção, ação despretensiosa.", diagnostico:"Agir sem segundas intenções gera efeito positivo.", direcao:"Seja verdadeiro e transparente em tudo."},
-26:{nome:"Grande Domínio", essencia:"Força contida e controle sobre recursos.", diagnostico:"Potencial acumulado pronto para uso estratégico.", direcao:"Controle antes de liberar; disciplina é a chave."},
-27:{nome:"Alimentação", essencia:"Nutrição física e espiritual.", diagnostico:"Foco no que sustenta e fortalece.", direcao:"Cuide do que consome e compartilhe sabedoria."},
-28:{nome:"Excesso", essencia:"Sobrecarga de forças ou responsabilidades.", diagnostico:"Pressão acima do limite pode gerar instabilidade.", direcao:"Evite colapso; ajuste e redistribua energia."},
-29:{nome:"Abismo", essencia:"Risco contínuo e atenção permanente.", diagnostico:"Situação perigosa exige cautela extrema.", direcao:"Avance com prudência e vigilância constante."},
-30:{nome:"Fogo", essencia:"Clareza, iluminação e visão penetrante.", diagnostico:"A situação traz luz e revela padrões.", direcao:"Use discernimento e ilumine caminhos."},
-31:{nome:"Influência", essencia:"Atração sutil e poder de persuasão.", diagnostico:"Forças se atraem e relações se fortalecem.", direcao:"Permita conexão consciente e inspire sem manipular."},
-32:{nome:"Duração", essencia:"Continuidade e persistência.", diagnostico:"Situação pede estabilidade e consistência.", direcao:"Seja constante e confiável; pequenos passos sustentam grandes resultados."},
-33:{nome:"Retirada", essencia:"Recuo estratégico diante de circunstâncias desfavoráveis.", diagnostico:"Momento de preservação e reflexão.", direcao:"Retire-se com inteligência e aguarde momento adequado."},
-34:{nome:"Grande Poder", essencia:"Força intensa e energia disponível.", diagnostico:"Capacidade de ação elevada, exige prudência.", direcao:"Use poder com responsabilidade e foco."},
-35:{nome:"Progresso", essencia:"Avanço visível e crescimento sustentado.", diagnostico:"O movimento favorece conquistas graduais.", direcao:"Siga em frente, consolidando cada passo."},
-36:{nome:"Escuridão", essencia:"Ocultamento e introspecção.", diagnostico:"Ambiente adverso exige cautela e proteção.", direcao:"Proteja-se e aja com discrição."},
-37:{nome:"Família", essencia:"Estrutura interna e relações próximas.", diagnostico:"O núcleo familiar ou de equipe é foco principal.", direcao:"Fortaleça vínculos e responsabilidade compartilhada."},
-38:{nome:"Oposição", essencia:"Diferença e confronto de perspectivas.", diagnostico:"Visões conflitantes exigem discernimento.", direcao:"Aceite divergências e busque equilíbrio."},
-39:{nome:"Obstáculo", essencia:"Dificuldade presente, barreiras a superar.", diagnostico:"Obstáculos testam habilidades e paciência.", direcao:"Reavalie caminhos e adapte estratégia."},
-40:{nome:"Liberação", essencia:"Alívio e término de tensões.", diagnostico:"Momento de soltar e concluir processos.", direcao:"Libere o que impede evolução."},
-41:{nome:"Diminuição", essencia:"Redução necessária para equilíbrio.", diagnostico:"Perdas temporárias trazem aprendizado e foco.", direcao:"Simplifique, corte excessos e concentre forças."},
-42:{nome:"Aumento", essencia:"Expansão e crescimento favorecido.", diagnostico:"Situação oferece oportunidades de evolução.", direcao:"Invista energia e recursos com sabedoria."},
-43:{nome:"Ruptura", essencia:"Decisão final e corte radical.", diagnostico:"Mudança inevitável exige firmeza.", direcao:"Seja claro e resoluto; não hesite."},
-44:{nome:"Encontro", essencia:"Contato inesperado e novas conexões.", diagnostico:"Surpresas surgem, demandando atenção.", direcao:"Cuidado com influências; avalie antes de se comprometer."},
-45:{nome:"Reunião", essencia:"Coletividade e agrupamento de forças.", diagnostico:"Agrupamentos estratégicos fortalecem posição.", direcao:"Organize e alinhe esforços com propósito."},
-46:{nome:"Ascensão", essencia:"Crescimento gradual e constante.", diagnostico:"Subida firme, fruto de disciplina e paciência.", direcao:"Persista com constância e determinação."},
-47:{nome:"Exaustão", essencia:"Limite físico ou mental atingido.", diagnostico:"Cansaço e restrição demandam cuidado.", direcao:"Resista com consciência; recupere forças antes de agir."},
-48:{nome:"Poço", essencia:"Fonte profunda de recursos e sabedoria.", diagnostico:"Disponibilidade de energia e insights escondidos.", direcao:"Acesse o essencial e compartilhe aprendizado."},
-49:{nome:"Revolução", essencia:"Transformação radical inevitável.", diagnostico:"Mudanças profundas requerem adaptação e coragem.", direcao:"Adapte-se conscientemente e conduza mudanças."},
-50:{nome:"Caldeirão", essencia:"Transmutação e refinamento do espírito ou projeto.", diagnostico:"Processo de elevação através de experiências.", direcao:"Eleve o nível, aperfeiçoe e compartilhe."},
-51:{nome:"Trovão", essencia:"Impacto súbito e energia instável.", diagnostico:"Eventos inesperados alteram o ritmo.", direcao:"Mantenha presença e equilíbrio diante de choques."},
-52:{nome:"Montanha", essencia:"Imobilidade, estabilidade e introspecção.", diagnostico:"Necessidade de pausa e reflexão profunda.", direcao:"Silencie, observe e consolide bases."},
-53:{nome:"Desenvolvimento", essencia:"Evolução gradual e paciente.", diagnostico:"Crescimento consistente, passo a passo.", direcao:"Siga o ritmo natural; mudanças lentas duram mais."},
-54:{nome:"A Noiva", essencia:"Posição delicada, dependência e aprendizado.", diagnostico:"Situação requer atenção e respeito à hierarquia.", direcao:"Evite imposições; aprenda e ajuste comportamento."},
-55:{nome:"Abundância", essencia:"Plenitude e pico de energia.", diagnostico:"Momento de realização máxima e visibilidade.", direcao:"Aproveite com consciência; mantenha equilíbrio."},
-56:{nome:"O Viajante", essencia:"Transitoriedade e adaptação a ambientes novos.", diagnostico:"Situação temporária exige flexibilidade.", direcao:"Adapte-se, explore e aprenda do entorno."},
-57:{nome:"Suavidade", essencia:"Penetração sutil e influência contínua.", diagnostico:"Forças discretas mas persistentes moldam cenário.", direcao:"Use persuasão sutil e constante, sem pressão."},
-58:{nome:"Alegria", essencia:"Leveza, entusiasmo e ambiente favorável.", diagnostico:"Momento propício para celebrar e compartilhar energia.", direcao:"Expresse gratidão e conecte-se com os outros."},
-59:{nome:"Dispersão", essencia:"Dissolução de barreiras e separações.", diagnostico:"Separações ou dissoluções acontecem; libere o antigo.", direcao:"Deixe ir e permita novos fluxos de energia."},
-60:{nome:"Limitação", essencia:"Restrição e regras que delimitam ação.", diagnostico:"Necessidade de limites claros e disciplina.", direcao:"Defina regras, organize e evite excessos."},
-61:{nome:"Verdade Interior", essencia:"Sinceridade profunda e conexão com o centro.", diagnostico:"Chamado interno exige honestidade e clareza.", direcao:"Confie em sua intuição e mantenha integridade."},
-62:{nome:"Pequeno Excesso", essencia:"Detalhe importante que pode gerar impacto.", diagnostico:"Pequenas ações têm grandes efeitos; atenção ao detalhe.", direcao:"Evite exageros e cuide da precisão."},
-63:{nome:"Após Conclusão", essencia:"Ciclo finalizado, momento de avaliação.", diagnostico:"Situação concluída; resultados e aprendizado estão claros.", direcao:"Mantenha atenção para consolidar conquistas e aprender."},
-64:{nome:"Antes da Conclusão", essencia:"Transição, quase final, mas instável.", diagnostico:"Situação ainda exige cautela; conclusão não está totalmente atingida.", direcao:"Cautela final e ajustes antes da plena realização."}
+// ================= FUNÇÕES BÁSICAS =================
+function linha(){ return Math.random() < 0.5 ? 0 : 1; }
+
+const mapa = {
+"111111":1,"000000":2,"100010":3,"010001":4,"111010":5,"010111":6,
+"010000":7,"000010":8,"111011":9,"110111":10,"111000":11,"000111":12,
+"101111":13,"111101":14,"001000":15,"000100":16,"100110":17,"011001":18,
+"110000":19,"000011":20,"100101":21,"101001":22,"000001":23,"100000":24,
+"100111":25,"111001":26,"100001":27,"011110":28,"010010":29,"101101":30,
+"001110":31,"011100":32,"001111":33,"111100":34,"000101":35,"101000":36,
+"101011":37,"110101":38,"001010":39,"010100":40,"110001":41,"100011":42,
+"111110":43,"011111":44,"000110":45,"011000":46,"010110":47,"011010":48,
+"101110":49,"011101":50,"100100":51,"001001":52,"001011":53,"110100":54,
+"101100":55,"001101":56,"011011":57,"110110":58,"010011":59,"110010":60,
+"110011":61,"001100":62,"010101":63,"101010":64
 };
 
-function sortearHexagrama() {
-  const numero = Math.floor(Math.random() * 64) + 1;
-  const h = HEXAGRAMAS[numero];
-  document.getElementById("hexagramaDisplay").innerHTML = `
-    <h2>${numero}. ${h.nome}</h2>
-    <p><strong>Essência:</strong> ${h.essencia}</p>
-    <p><strong>Diagnóstico:</strong> ${h.diagnostico}</p>
-    <p><strong>Direção:</strong> ${h.direcao}</p>
-  `;
+function gerarHex(){
+  let linhas = [];
+  for(let i=0;i<6;i++) linhas.push(linha());
+  let inferior = linhas.slice(0,3).join("");
+  let superior = linhas.slice(3,6).join("");
+  let chave = superior + inferior;
+  let numero = mapa[chave] || 1;
+  return {linhas,numero};
 }
+
+function desenhar(l){
+  return l.map(x => x ? "━━━" : "━ ━").join("<br>");
+}
+
+// ================= HEXAGRAMAS COMPLETOS =================
+const HEXAGRAMAS = {
+1:{nome:"O Criativo", essencia:"Força ativa em expansão.", diagnostico:"Grande potencial de ação e liderança está presente.", direcao:"Atue com clareza e constância. Evite arrogância."},
+2:{nome:"O Receptivo", essencia:"Acolhimento e sustentação.", diagnostico:"Momento de receber, nutrir e consolidar.", direcao:"Seja flexível. Apoiar pode ser mais forte que agir."},
+3:{nome:"Dificuldade Inicial", essencia:"Começo turbulento.", diagnostico:"Obstáculos naturais de início de ciclo.", direcao:"Organize antes de avançar. Persistência é chave."},
+4:{nome:"Juventude Inexperiente", essencia:"Aprendizado necessário.", diagnostico:"Falta de clareza ou maturidade na situação.", direcao:"Busque orientação. Evite decisões precipitadas."},
+5:{nome:"A Espera", essencia:"Tempo certo.", diagnostico:"Ainda não é hora de agir diretamente.", direcao:"Cultive paciência estratégica."},
+6:{nome:"O Conflito", essencia:"Forças opostas em tensão.", diagnostico:"Disputas e divergências ativas.", direcao:"Evite confronto direto sem preparo. Negocie."},
+7:{nome:"O Exército", essencia:"Disciplina coletiva.", diagnostico:"Necessidade de organização e liderança.", direcao:"Estruture forças antes de agir."},
+8:{nome:"A União", essencia:"Coesão.", diagnostico:"Busca por alianças e pertencimento.", direcao:"Una-se com propósito claro."},
+9:{nome:"O Poder do Pequeno", essencia:"Influência sutil.", diagnostico:"Pequenas forças estão atuando.", direcao:"Aja com delicadeza e precisão."},
+10:{nome:"O Porte", essencia:"Conduta correta.", diagnostico:"Situação exige cautela e postura.", direcao:"Pise com atenção. Evite excessos."},
+11:{nome:"A Paz", essencia:"Harmonia em fluxo.", diagnostico:"Equilíbrio entre forças.", direcao:"Aproveite para construir."},
+12:{nome:"O Impasse", essencia:"Bloqueio.", diagnostico:"Estagnação e desconexão.", direcao:"Recolha-se. Evite forçar."},
+13:{nome:"Comunhão", essencia:"Alinhamento coletivo.", diagnostico:"Convergência de ideias.", direcao:"Trabalhe em conjunto."},
+14:{nome:"Grande Posse", essencia:"Abundância consciente.", diagnostico:"Recursos disponíveis.", direcao:"Use com responsabilidade."},
+15:{nome:"Modéstia", essencia:"Equilíbrio humilde.", diagnostico:"Força sem ostentação.", direcao:"Mantenha simplicidade."},
+16:{nome:"Entusiasmo", essencia:"Energia mobilizadora.", diagnostico:"Momento propício para engajar.", direcao:"Direcione energia com foco."},
+17:{nome:"Seguir", essencia:"Adaptação.", diagnostico:"Necessidade de acompanhar fluxo.", direcao:"Seja flexível."},
+18:{nome:"Correção", essencia:"Ajuste do que foi corrompido.", diagnostico:"Problemas antigos emergem.", direcao:"Corrija na raiz."},
+19:{nome:"Aproximação", essencia:"Crescimento gradual.", diagnostico:"Algo se aproxima positivamente.", direcao:"Prepare-se para assumir."},
+20:{nome:"Contemplação", essencia:"Observação profunda.", diagnostico:"Momento de analisar.", direcao:"Veja antes de agir."},
+21:{nome:"Morder", essencia:"Decisão firme.", diagnostico:"Algo precisa ser resolvido.", direcao:"Corte o que impede avanço."},
+22:{nome:"Graça", essencia:"Beleza e forma.", diagnostico:"Importância da apresentação.", direcao:"Harmonize forma e essência."},
+23:{nome:"Desintegração", essencia:"Queda gradual.", diagnostico:"Estruturas enfraquecendo.", direcao:"Prepare desapego."},
+24:{nome:"Retorno", essencia:"Recomeço.", diagnostico:"Ciclo reiniciando.", direcao:"Volte ao essencial."},
+25:{nome:"Inocência", essencia:"Pureza de intenção.", diagnostico:"Agir sem segundas intenções.", direcao:"Seja verdadeiro."},
+26:{nome:"Grande Domínio", essencia:"Força contida.", diagnostico:"Potencial acumulado.", direcao:"Controle antes de liberar."},
+27:{nome:"Alimentação", essencia:"Nutrição.", diagnostico:"O que sustenta está em foco.", direcao:"Cuide do que consome e produz."},
+28:{nome:"Excesso", essencia:"Sobrecarga.", diagnostico:"Pressão acima do limite.", direcao:"Evite colapso. Ajuste estrutura."},
+29:{nome:"Abismo", essencia:"Risco contínuo.", diagnostico:"Situação perigosa ou repetitiva.", direcao:"Avance com extrema cautela."},
+30:{nome:"Fogo", essencia:"Clareza.", diagnostico:"Iluminação da situação.", direcao:"Use discernimento."},
+31:{nome:"Influência", essencia:"Atração.", diagnostico:"Forças se atraem.", direcao:"Permita conexão consciente."},
+32:{nome:"Duração", essencia:"Continuidade.", diagnostico:"Situação pede estabilidade.", direcao:"Seja constante."},
+33:{nome:"Retirada", essencia:"Recuo estratégico.", diagnostico:"Não é hora de confronto.", direcao:"Retire-se com inteligência."},
+34:{nome:"Grande Poder", essencia:"Força intensa.", diagnostico:"Grande energia disponível.", direcao:"Use com responsabilidade."},
+35:{nome:"Progresso", essencia:"Avanço.", diagnostico:"Crescimento visível.", direcao:"Siga em frente."},
+36:{nome:"Escuridão", essencia:"Ocultamento.", diagnostico:"Ambiente adverso.", direcao:"Proteja-se."},
+37:{nome:"Família", essencia:"Estrutura interna.", diagnostico:"Relações próximas em foco.", direcao:"Fortaleça vínculos."},
+38:{nome:"Oposição", essencia:"Diferença.", diagnostico:"Visões conflitantes.", direcao:"Aceite divergências."},
+39:{nome:"Obstáculo", essencia:"Dificuldade.", diagnostico:"Barreiras presentes.", direcao:"Reavalie caminho."},
+40:{nome:"Liberação", essencia:"Alívio.", diagnostico:"Fim de tensão.", direcao:"Solte o que prende."},
+41:{nome:"Diminuição", essencia:"Redução.", diagnostico:"Perda necessária.", direcao:"Simplifique."},
+42:{nome:"Aumento", essencia:"Expansão.", diagnostico:"Crescimento favorecido.", direcao:"Invista energia."},
+43:{nome:"Ruptura", essencia:"Decisão final.", diagnostico:"Momento de cortar.", direcao:"Seja firme."},
+44:{nome:"Encontro", essencia:"Contato inesperado.", diagnostico:"Algo surge repentinamente.", direcao:"Cuidado com influências."},
+45:{nome:"Reunião", essencia:"Coletividade.", diagnostico:"Agrupamento de forças.", direcao:"Organize união."},
+46:{nome:"Ascensão", essencia:"Crescimento gradual.", diagnostico:"Subida constante.", direcao:"Persistência."},
+47:{nome:"Exaustão", essencia:"Limite.", diagnostico:"Cansaço ou restrição.", direcao:"Resista com consciência."},
+48:{nome:"Poço", essencia:"Fonte.", diagnostico:"Recursos profundos disponíveis.", direcao:"Acesse o essencial."},
+49:{nome:"Revolução", essencia:"Transformação radical.", diagnostico:"Mudança inevitável.", direcao:"Adapte-se."},
+50:{nome:"Caldeirão", essencia:"Transmutação.", diagnostico:"Processo de refinamento.", direcao:"Eleve o nível."},
+51:{nome:"Trovão", essencia:"Impacto.", diagnostico:"Evento súbito.", direcao:"Mantenha presença."},
+52:{nome:"Montanha", essencia:"Imobilidade.", diagnostico:"Necessidade de parar.", direcao:"Silencie."},
+53:{nome:"Desenvolvimento", essencia:"Evolução gradual.", diagnostico:"Crescimento consistente.", direcao:"Siga no ritmo."},
+54:{nome:"A Noiva", essencia:"Posição delicada.", diagnostico:"Falta de autonomia.", direcao:"Evite dependência."},
+55:{nome:"Abundância", essencia:"Plenitude.", diagnostico:"Momento máximo.", direcao:"Aproveite com consciência."},
+56:{nome:"O Viajante", essencia:"Transitoriedade.", diagnostico:"Situação temporária.", direcao:"Adapte-se ao ambiente."},
+57:{nome:"Suavidade", essencia:"Penetração sutil.", diagnostico:"Influência contínua.", direcao:"Seja persistente."},
+58:{nome:"Alegria", essencia:"Leveza.", diagnostico:"Ambiente favorável.", direcao:"Compartilhe energia."},
+59:{nome:"Dispersão", essencia:"Dissolução.", diagnostico:"Separações ocorrendo.", direcao:"Deixe ir."},
+60:{nome:"Limitação", essencia:"Restrição.", diagnostico:"Necessidade de limites.", direcao:"Defina regras."},
+61:{nome:"Verdade Interior", essencia:"Sinceridade.", diagnostico:"Chamado interno.", direcao:"Confie no centro."},
+62:{nome:"Pequeno Excesso", essencia:"Detalhe.", diagnostico:"Pequenas ações importam.", direcao:"Evite exageros."},
+63:{nome:"Após Conclusão", essencia:"Ciclo completo.", diagnostico:"Situação finalizada.", direcao:"Mantenha atenção."},
+64:{nome:"Antes da Conclusão", essencia:"Transição.", diagnostico:"Quase final, mas instável.", direcao:"Cautela final."}
+};
+
+let ultimaLeitura = "";
+
+// ================= FUNÇÕES DE CONSULTA =================
+function consultar(){
+  speechSynthesis.cancel();
+  let pergunta = document.getElementById("pergunta").value.trim();
+  if(!pergunta){ alert("Digite uma pergunta."); return; }
+
+  let h = gerarHex();
+  document.getElementById("hexagrama").innerHTML = "Hexagrama "+h.numero+"<br><br>"+desenhar(h.linhas);
+
+  let leitura = HEXAGRAMAS[h.numero] || {nome:"Desconhecido", essencia:"", diagnostico:"", direcao:""};
+  ultimaLeitura = `Hexagrama ${h.numero} — ${leitura.nome}. ${leitura.essencia} ${leitura.diagnostico} ${leitura.direcao}`;
+  document.getElementById("resultado").innerHTML = `<div class="card"><strong>Hexagrama ${h.numero} — ${leitura.nome}</strong><br><br>${leitura.essencia}<br><br>${leitura.diagnostico}<br><br>${leitura.direcao}</div>`;
+
+  salvar(pergunta,h.numero);
+}
+
+// ================= FUNÇÕES DE VOZ =================
+function ouvir(){
+  if(!ultimaLeitura) return alert("Faça uma consulta.");
+  speechSynthesis.cancel();
+  let msg = new SpeechSynthesisUtterance(ultimaLeitura);
+  msg.lang="pt-BR";
+  speechSynthesis.speak(msg);
+}
+
+function ouvirMantra(){
+  speechSynthesis.cancel();
+  let msg = new SpeechSynthesisUtterance(document.getElementById("mantra").innerText);
+  msg.lang="pt-BR";
+  msg.rate=0.9;
+  speechSynthesis.speak(msg);
+}
+
+// ================= HISTÓRICO =================
+function salvar(p,n){
+  let h = JSON.parse(localStorage.getItem("vov")||"[]");
+  h.push({p,n});
+  localStorage.setItem("vov",JSON.stringify(h));
+  mostrar();
+}
+
+function mostrar(){
+  let h = JSON.parse(localStorage.getItem("vov")||"[]");
+  let html="<h3>Histórico</h3>";
+  h.slice().reverse().forEach((i)=>{ html+=`<div class="card"><b>${i.p}</b><br>Hex ${i.n} - ${HEXAGRAMAS[i.n].nome}</div>`; });
+  document.getElementById("historico").innerHTML=html;
+}
+
+function limparHistorico(){
+  localStorage.removeItem("vov");
+  document.getElementById("resultado").innerHTML = "";
+  document.getElementById("hexagrama").innerHTML = "";
+  document.getElementById("pergunta").value = "";
+  ultimaLeitura = "";
+  speechSynthesis.cancel();
+  mostrar();
+}
+
+// Carrega histórico ao abrir a página
+mostrar();
 </script>
+
 </body>
 </html>
