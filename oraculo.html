@@ -31,7 +31,7 @@ o mar<br>
 ama<br>
 AMARALINA
 
-  BEM VINDA_VINDO
+  69
 </div>
 
 <input id="pergunta" placeholder="Qual é a sua questão?" />
@@ -69,7 +69,7 @@ function gerarHex(){
   for(let i=0;i<6;i++) linhas.push(linha());
   let inferior = linhas.slice(0,3).join("");
   let superior = linhas.slice(3,6).join("");
-  let chave = superior + inferior;
+  let chave = inferior + superior
   let numero = mapa[chave] || 1;
   return {linhas,numero};
 }
