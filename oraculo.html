@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -64,22 +63,18 @@ const mapa = {
 };
 
 // ================= HEX =================
+
+};
+
 function gerarHex(){
   let linhas = [];
   for(let i=0;i<6;i++) linhas.push(linha());
-
-  // linhas[0] = base, linhas[5] = topo
   let inferior = linhas.slice(0,3).join("");
   let superior = linhas.slice(3,6).join("");
-
-  // chave correta para mapa
-  let chave = inferior + superior;
-
-  let numero = mapa[chave];
-  return {linhas, numero};
+  let chave = superior + inferior;
+  let numero = mapa[chave] || 1;
+  return {linhas,numero};
 }
-
-
   
 function desenhar(l){ return l.map(x => x?"━━━":"━ ━").join("<br>"); }
 
