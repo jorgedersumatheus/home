@@ -30,7 +30,7 @@ com<br>
 alma<p>
 o mar<br>
 ama<br>
-AMARALINA
+AMARALINDA!!!
 </div>
 
 <input id="pergunta" placeholder="Qual é a sua questão?" />
@@ -68,8 +68,7 @@ function gerarHex(){
   let linhas = [];
   for(let i=0;i<6;i++) linhas.push(linha());
   // leitura de baixo para cima
-  let chave = linhas.join("");
-  let numero = mapa[chave] || 1;
+  let chave = linhas.slice().reverse().join(""); numero = mapa[chave] || 1;
   return {linhas,numero};
 }
 
