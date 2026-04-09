@@ -1,62 +1,111 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-
+<html lang="pt-br">
 <head>
-
 <meta charset="UTF-8">
+<title>VOV | Conexão Recebida</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Mensagem enviada – VOV</title>
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(to bottom, #000000, #0a0a0a);
+  color: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
+}
 
-<link rel="stylesheet" href="style.css">
+.container {
+  max-width: 500px;
+  padding: 30px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 12px;
+  box-shadow: 0 0 25px rgba(255,255,255,0.1);
+}
 
+h1 {
+  color: #00ffcc;
+  margin-bottom: 15px;
+}
+
+p {
+  opacity: 0.85;
+  margin-bottom: 25px;
+}
+
+.botao {
+  display: block;
+  margin: 10px 0;
+  padding: 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.whatsapp {
+  background: #25D366;
+  color: #000;
+}
+
+.instagram {
+  background: #E1306C;
+  color: #fff;
+}
+
+.portal {
+  background: #00ffcc;
+  color: #000;
+}
+
+.botao:hover {
+  opacity: 0.9;
+}
+
+.footer {
+  margin-top: 20px;
+  font-size: 12px;
+  opacity: 0.6;
+}
+</style>
 </head>
 
 <body>
 
-<header>
+<div class="container">
 
-<h1>VOV</h1>
-<p class="subtitulo">Mensagem enviada</p>
+  <h1>✨ Conexão Recebida</h1>
 
-<nav>
-<a href="index.html">Home</a>
-<a href="radio.html">Rádio</a>
-<a href="programas.html">Programas</a>
-<a href="videos.html">Vídeos</a>
-<a href="arquivo-musical.html">Arquivo</a>
-<a href="inteligencia-vital.html">Inteligência Vital</a>
-<a href="contato.html">Contato</a>
-</nav>
+  <p>
+    A VOV viu.<br>
+    A VOV ouviu.<br>
+    A resposta já está em movimento.
+  </p>
 
-</header>
+  <p>
+    Enquanto isso, escolha seu próximo passo:
+  </p>
 
+  <!-- BOTÕES -->
+  <a class="botao whatsapp" href="https://wa.me/5571000000000" target="_blank">
+    Falar direto no WhatsApp
+  </a>
 
-<main>
+  <a class="botao instagram" href="https://instagram.com/verouvirvendas" target="_blank">
+    Ver no Instagram
+  </a>
 
-<section class="agradecimento">
+  <a class="botao portal" href="https://jorgematheus.mus.br" target="_blank">
+    Entrar no Portal VOV
+  </a>
 
-<h2>Obrigado pela sua mensagem</h2>
+  <div class="footer">
+    V O V — Ver • Ouvir • Vender
+  </div>
 
-<p>
-Recebemos seu contato com atenção.  
-Em breve retornaremos.
-</p>
-
-<a href="index.html" class="botao-voltar">
-Voltar para o Portal
-</a>
-
-</section>
-
-</main>
-
-
-<footer>
-
-<p>© Jorge L A Matheus – Portal VOV</p>
-
-</footer>
+</div>
 
 </body>
 </html>
