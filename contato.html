@@ -1,107 +1,132 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <title>Contato | VOV</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>Contato VOV</title>
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #0b0f1a;
-      color: #ffffff;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(to bottom, #000000, #0a0a0a);
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
 
-    .container {
-      background: #121826;
-      padding: 30px;
-      border-radius: 12px;
-      width: 90%;
-      max-width: 400px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.5);
-    }
+.container {
+  background: rgba(255,255,255,0.05);
+  padding: 30px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 0 20px rgba(255,255,255,0.1);
+}
 
-    h1 {
-      text-align: center;
-      margin-bottom: 20px;
-      color: #ffd700;
-    }
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  letter-spacing: 2px;
+}
 
-    input, textarea {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 15px;
-      border: none;
-      border-radius: 8px;
-      outline: none;
-      font-size: 14px;
-    }
+input, textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: none;
+  border-radius: 6px;
+}
 
-    textarea {
-      resize: none;
-      height: 120px;
-    }
+button {
+  width: 100%;
+  padding: 12px;
+  background: #00ffcc;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
 
-    button {
-      width: 100%;
-      padding: 12px;
-      background: #ffd700;
-      color: #000;
-      border: none;
-      border-radius: 8px;
-      font-weight: bold;
-      cursor: pointer;
-    }
+button:hover {
+  background: #00cc99;
+}
 
-    button:hover {
-      background: #e6c200;
-    }
+#status {
+  margin-top: 15px;
+  text-align: center;
+  font-weight: bold;
+  opacity: 0;
+  transition: opacity 0.5s;
+}
 
-    .footer {
-      text-align: center;
-      margin-top: 15px;
-      font-size: 12px;
-      opacity: 0.7;
-    }
-  </style>
+.sucesso {
+  color: #00ffcc;
+}
+
+.erro {
+  color: #ff4d4d;
+}
+</style>
 </head>
 
 <body>
 
 <div class="container">
-  <h1>Escreva para a VOV</h1>
+  <h2>CONTATO VOV</h2>
 
-  <form action="https://formspree.io/f/xeerpjre" method="POST">
-    
+  <form id="form-contato">
     <input type="text" name="name" placeholder="Seu nome" required>
-
     <input type="email" name="email" placeholder="Seu email" required>
-
     <textarea name="message" placeholder="Sua mensagem"></textarea>
 
-    <!-- Assunto do e-mail -->
-    <input type="hidden" name="_subject" value="Novo contato do Portal VOV">
-
-    <!-- Anti-spam -->
-    <input type="text" name="_gotcha" style="display:none">
-
-    <!-- Redirecionamento após envio -->
-    <input type="hidden" name=" -next" value="https://jorgematheus.mus.br/obrigado.html">
-    <input type="hidden" name=" _gotcha" style="display:none">
-    <button type="submit">Enviar mensagem</button>
-
+    <button type="submit">ENVIAR</button>
   </form>
 
-  <div class="footer">
-    Ver Ouvir Vendas ©
-  </div>
+  <div id="status"></div>
+
+  <p style="text-align:center; margin-top:20px; font-size:12px; opacity:0.6;">
+    V O V — Ver • Ouvir • Vender
+  </p>
 </div>
+
+<script>
+const form = document.getElementById('form-contato');
+const status = document.getElementById('status');
+
+form.addEventListener('submit', async function(e) {
+  e.preventDefault();
+
+  status.style.opacity = 1;
+  status.className = "";
+  status.innerHTML = "⏳ Enviando...";
+
+  const data = new FormData(form);
+
+  try {
+    const response = await fetch("https://formspree.io/f/xeerpjre", {
+      method: "POST",
+      body: data,
+      headers: {
+        'Accept': 'application/json'
+      }
+    });
+
+    if (response.ok) {
+      status.className = "sucesso";
+      status.innerHTML = "✨ Mensagem recebida. Seguimos em conexão.";
+      form.reset();
+    } else {
+      status.className = "erro";
+      status.innerHTML = "⚠️ Algo falhou. Tente novamente.";
+    }
+  } catch (error) {
+    status.className = "erro";
+    status.innerHTML = "❌ Falha de conexão.";
+  }
+});
+</script>
 
 </body>
 </html>
