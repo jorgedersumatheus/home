@@ -115,12 +115,23 @@ form.addEventListener('submit', async function(e) {
 
     if (response.ok) {
       status.className = "sucesso";
-      status.innerHTML = "✨ Mensagem recebida. Seguimos em conexão.";
+      status.innerHTML = `
+      ✨ Recebemos sua mensagem.<br>
+      A VOV vê, ouve e responde.<br><br>
+      Redirecionando...
+      `;
+
       form.reset();
+
+      setTimeout(() => {
+        window.location.href = "obrigado.html";
+      }, 2500);
+
     } else {
       status.className = "erro";
       status.innerHTML = "⚠️ Algo falhou. Tente novamente.";
     }
+
   } catch (error) {
     status.className = "erro";
     status.innerHTML = "❌ Falha de conexão.";
