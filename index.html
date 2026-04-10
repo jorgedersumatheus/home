@@ -70,24 +70,32 @@ h1 { margin-top:30px; }
 
 <p>Em memória de Antônio Carlos Brasileiro de Almeida Jobim.</p>
 
-<audio preload="metadata" autoplay controls>
-
-<source src="t01.mp3" type="audio/mpeg">
-<source src="t02.mp3" type="audio/mpeg">
-  <source src="t03.mp3" type="audio/mpeg">
-  <source src="t04.mp3" type="audio/mpeg">
-  <source src="t05.mp3" type="audio/mpeg">
-  <source src="t06.mp3" type="audio/mpeg">
-  <source src="t07.mp3" type="audio/mpeg">
-  <source src="t08.mp3" type="audio/mpeg">
-  <source src="t09.mp3" type="audio/mpeg">
-  <source src="t010.mp3" type="audio/mpeg">
-  <source src="t011.mp3" type="audio/mpeg">
-  <source src="t012.mp3" type="audio/mpeg">
-  <source src="t013.mp3" type="audio/mpeg">
-  
-
+<audio id="player" controls>
+    <source src="t01.mp3" type="audio/mpeg">
+    Seu navegador não suporta áudio HTML5.
 </audio>
+
+<script>
+    var player = document.getElementById('player');
+    var playlist = 
+
+['t01.mp3', 't02.mp3', 't03.mp3'];
+['t04.mp3', 't05.mp3', 't06.mp3'];
+
+['t07.mp3', 't08.mp3', 't09.mp3'];
+['t010.mp3', 't011.mp3',
+
+  't012.mp3', t013.mp3'];
+
+    var faixatual = 0;
+
+    player.addEventListener('ended', function(e) {
+        faixatual++;
+        if (faixatual >= playlist.length) faixatual = 0; // Reinicia a lista
+        player.src = playlist[faixatual];
+        player.play();
+    });
+</script>
 
 
   
