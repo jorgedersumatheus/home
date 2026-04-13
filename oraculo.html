@@ -1,24 +1,21 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Oráculo VOV</title>
+<title>Oráculo VOV Mestre</title>
 
 <style>
-
 body{
   margin:0;
-  font-family:Arial, sans-serif;
+  font-family:Arial;
   background:#000;
   color:#fff;
   text-align:center;
 }
 
 .container{
-  max-width:600px;
+  max-width:700px;
   margin:auto;
   padding:20px;
 }
@@ -32,56 +29,63 @@ input{
 }
 
 button{
-  padding:12px 20px;
+  padding:10px 15px;
+  margin:5px;
   border-radius:10px;
   border:none;
-  background:#FFD700;
   cursor:pointer;
-  margin-top:10px;
-  font-weight:bold;
 }
 
 .card{
   background:#111;
-  padding:20px;
-  border-radius:12px;
-  margin-top:20px;
+  padding:15px;
+  border-radius:10px;
+  margin-top:15px;
+  text-align:left;
 }
 
 #hexagrama{
-  margin-top:15px;
   font-family:monospace;
-  line-height:1.4em;
+  margin-top:10px;
 }
 
+small{
+  opacity:0.6;
+}
 </style>
-
 </head>
 
 <body>
 
 <div class="container">
 
-<h1>🔥 TESTE NOVO VOV 🔥</h1>
-<p>Oráculo VOV — Motor Real Ativo</p>
+<h1>🔮 Oráculo VOV Mestre</h1>
 
 <input id="pergunta" placeholder="Qual é a sua questão?" />
 
 <br>
 
 <button onclick="consultar()">Consultar</button>
+<button onclick="ouvir()">Ouvir</button>
+<button onclick="limpar()">Limpar</button>
 
 <div id="resultado"></div>
+<div id="historico"></div>
 
 </div>
 
-<!-- BASE -->
-<script src="hexagramas.js"></script>
-
-<!-- MOTOR REAL -->
 <script>
 
-// MAPA DOS 64 HEXAGRAMAS
+// ===== LINHA COM MUTAÇÃO =====
+function linha(){
+  let r = Math.random();
+  if(r < 0.25) return {v:0, m:true};   // yin mutante
+  if(r < 0.5) return {v:1, m:false};  // yang
+  if(r < 0.75) return {v:0, m:false}; // yin
+  return {v:1, m:true};               // yang mutante
+}
+
+// ===== MAPA =====
 const mapa = {
 "111111":1,"000000":2,"100010":3,"010001":4,"111010":5,"010111":6,
 "010000":7,"000010":8,"111011":9,"110111":10,"111000":11,"000111":12,
@@ -96,67 +100,87 @@ const mapa = {
 "110011":61,"001100":62,"010101":63,"101010":64
 };
 
-// GERAR LINHAS (0 = yin, 1 = yang)
-function gerarHex(){
-  let linhas = [];
-  for(let i=0;i<6;i++){
-    linhas.push(Math.random() < 0.5 ? 0 : 1);
-  }
-  return linhas;
-}
+// ===== BASE COMPLETA =====
+const HEX = {
+1:"O Criativo",2:"O Receptivo",3:"Dificuldade Inicial",4:"Insensatez Juvenil",
+5:"A Espera",6:"Conflito",7:"O Exército",8:"União",
+9:"Domar do Pequeno",10:"Conduta",11:"Paz",12:"Estagnação",
+13:"Comunidade",14:"Grandes Posses",15:"Modéstia",16:"Entusiasmo",
+17:"Seguir",18:"Correção",19:"Aproximação",20:"Contemplação",
+21:"Morder",22:"Graça",23:"Desintegração",24:"Retorno",
+25:"Inocência",26:"Domar do Grande",27:"Alimentação",28:"Excesso",
+29:"Abismo",30:"Fogo",31:"Influência",32:"Duração",
+33:"Retirada",34:"Grande Poder",35:"Progresso",36:"Escuridão",
+37:"Família",38:"Oposição",39:"Obstáculo",40:"Liberação",
+41:"Diminuição",42:"Aumento",43:"Ruptura",44:"Encontro",
+45:"Reunião",46:"Ascensão",47:"Exaustão",48:"Poço",
+49:"Revolução",50:"Caldeirão",51:"Trovão",52:"Montanha",
+53:"Desenvolvimento",54:"A Noiva",55:"Abundância",56:"Viajante",
+57:"Suavidade",58:"Alegria",59:"Dispersão",60:"Limitação",
+61:"Verdade Interior",62:"Pequeno Excesso",63:"Após Conclusão",64:"Antes da Conclusão"
+};
 
-// DESENHO
+// ===== DESENHO =====
 function desenhar(linhas){
-  return linhas.map(l => l ? "━━━" : "━ ━").reverse().join("<br>");
+  return linhas.map(l=>{
+    if(l.v===1) return l.m?"━━━ x":"━━━";
+    return l.m?"━ ━ x":"━ ━";
+  }).reverse().join("<br>");
 }
 
-// CONSULTA
+// ===== CONSULTA =====
 function consultar(){
 
-  let pergunta = document.getElementById("pergunta").value.trim();
+let p = document.getElementById("pergunta").value.trim();
+if(!p){ alert("Digite uma pergunta."); return; }
 
-  if(!pergunta){
-    alert("Formule sua pergunta.");
-    return;
-  }
+let linhas = [];
+for(let i=0;i<6;i++) linhas.push(linha());
 
-  let linhas = gerarHex();
+let base = linhas.map(l=>l.v).join("");
+let num = mapa[base];
 
-  let chave = linhas.join("");
-  let numero = mapa[chave];
+// MUTAÇÃO
+let futuro = linhas.map(l=>{
+  if(!l.m) return l.v;
+  return l.v===1?0:1;
+}).join("");
 
-  let info = HEXAGRAMAS[numero];
+let numFuturo = mapa[futuro];
 
-  let resultado = `
-  <div class="card">
+// RESULTADO
+let html = `
+<div class="card">
+<strong>Hexagrama Atual ${num} — ${HEX[num]}</strong><br>
+<div>${desenhar(linhas)}</div>
 
-  <strong>Pergunta:</strong><br>
-  ${pergunta}
+${linhas.some(l=>l.m)?`
+<br><strong>Linhas Mutantes:</strong> Ativas<br>
+<br><strong>Hexagrama Futuro ${numFuturo} — ${HEX[numFuturo]}</strong>
+`:"<br><small>Sem mutação</small>"}
 
-  <br><br>
+</div>
+`;
 
-  <strong>Hexagrama:</strong><br>
-  ${numero} — ${info.nome}
+document.getElementById("resultado").innerHTML = html;
 
-  <div id="hexagrama">
-  ${desenhar(linhas)}
-  </div>
+let hist = document.getElementById("historico");
+hist.innerHTML += "<hr>"+p+"<br>"+html;
+}
 
-  <br>
+// ===== VOZ =====
+function ouvir(){
+let txt = document.getElementById("resultado").innerText;
+let u = new SpeechSynthesisUtterance(txt);
+u.lang="pt-BR";
+speechSynthesis.speak(u);
+}
 
-  <strong>Essência:</strong><br>
-  ${info.essencia}
-
-  <br><br>
-
-  <strong>Direção:</strong><br>
-  ${info.direcao}
-
-  </div>
-  `;
-
-  document.getElementById("resultado").innerHTML = resultado;
-
+// ===== LIMPAR =====
+function limpar(){
+document.getElementById("resultado").innerHTML="";
+document.getElementById("historico").innerHTML="";
+document.getElementById("pergunta").value="";
 }
 
 </script>
