@@ -1,196 +1,165 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Portal VOV</title>
+
+<title>Oráculo VOV</title>
 
 <style>
-body {
+
+body{
   margin:0;
-  font-family: Arial, sans-serif;
-  background:#fff;
-  color:#111;
+  font-family:Arial, sans-serif;
+  background:#000;
+  color:#fff;
   text-align:center;
-  line-height:1.6;
 }
 
-section {
-  max-width:900px;
-  margin:50px auto;
+.container{
+  max-width:600px;
+  margin:auto;
   padding:20px;
-  border-top:1px solid #ddd;
 }
 
-iframe {
-  width:100%;
-  border:none;
+input{
+  width:90%;
+  padding:12px;
   border-radius:10px;
+  border:none;
+  margin-top:10px;
 }
 
-h1 { margin-top:30px; }
+button{
+  padding:12px 20px;
+  border-radius:10px;
+  border:none;
+  background:#FFD700;
+  cursor:pointer;
+  margin-top:10px;
+  font-weight:bold;
+}
 
-.leve { color:#555; }
-
-.sarau {
-  background:#fafafa;
+.card{
+  background:#111;
+  padding:20px;
   border-radius:12px;
-  padding:25px;
+  margin-top:20px;
 }
+
+#hexagrama{
+  margin-top:15px;
+  font-family:monospace;
+  line-height:1.4em;
+}
+
 </style>
+
 </head>
 
 <body>
 
-<h1>VOV</h1>
-<p class="leve">Música • Pensamento • Cultura</p>
+<div class="container">
 
-<!-- Música -->
-<section>
-<h2>🎵Jorge LA Matheus canta Tom Brasileiro Jobim</h2>
+<h1>🔥 TESTE NOVO VOV 🔥</h1>
+<p>Oráculo VOV — Motor Real Ativo</p>
 
+<input id="pergunta" placeholder="Qual é a sua questão?" />
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/videoseries?list=PL85Pq0MetFdPiZpQYvy2uegOufKOI0w1S" 
-  title="YouTube video player" frameborder="0" allow="accelerometer; 
-  autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; 
-  web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<br>
 
+<button onclick="consultar()">Consultar</button>
 
-  
-</section>
+<div id="resultado"></div>
 
-<!-- BLACKVOX -->
-<section>
-<h2>🎶 BLACKVOX</h2>
-<iframe src="https://www.jorgematheus.mus.br/BLACKVOX_PlayPremium.html" height="420"></iframe>
-</section>
+</div>
 
+<!-- BASE -->
+<script src="hexagramas.js"></script>
 
-<h1>Jorge LA Matheus canta Tom Brasileiro Jobim em mp3</h1>
-
-<p>Em memória de Antônio Carlos Brasileiro de Almeida Jobim.</p>
-
-<audio id="player" controls>
-  <source src="t01.mp3" type="audio/mpeg">
-  Seu navegador não suporta áudio HTML5.
-</audio>
-
+<!-- MOTOR REAL -->
 <script>
-var player = document.getElementById('player');
 
-var playlist = [
-  "t01.mp3",
-  "t02.mp3",
-  "t03.mp3",
-  "t04.mp3",
-  "t05.mp3",
-  "t06.mp3",
-  "t07.mp3",
-  "t08.mp3",
-  "t09.mp3",
-  "t010.mp3",
-  "t011.mp3",
-  "t012.mp3",
-  "t013.mp3"
-];
+// MAPA DOS 64 HEXAGRAMAS
+const mapa = {
+"111111":1,"000000":2,"100010":3,"010001":4,"111010":5,"010111":6,
+"010000":7,"000010":8,"111011":9,"110111":10,"111000":11,"000111":12,
+"101111":13,"111101":14,"001000":15,"000100":16,"100110":17,"011001":18,
+"110000":19,"000011":20,"100101":21,"101001":22,"000001":23,"100000":24,
+"100111":25,"111001":26,"100001":27,"011110":28,"010010":29,"101101":30,
+"001110":31,"011100":32,"001111":33,"111100":34,"000101":35,"101000":36,
+"101011":37,"110101":38,"001010":39,"010100":40,"110001":41,"100011":42,
+"111110":43,"011111":44,"000110":45,"011000":46,"010110":47,"011010":48,
+"101110":49,"011101":50,"100100":51,"001001":52,"001011":53,"110100":54,
+"101100":55,"001101":56,"011011":57,"110110":58,"010011":59,"110010":60,
+"110011":61,"001100":62,"010101":63,"101010":64
+};
 
-var faixaAtual = 0;
+// GERAR LINHAS (0 = yin, 1 = yang)
+function gerarHex(){
+  let linhas = [];
+  for(let i=0;i<6;i++){
+    linhas.push(Math.random() < 0.5 ? 0 : 1);
+  }
+  return linhas;
+}
 
-// toca próxima automaticamente
-player.addEventListener('ended', function() {
-  faixaAtual++;
+// DESENHO
+function desenhar(linhas){
+  return linhas.map(l => l ? "━━━" : "━ ━").reverse().join("<br>");
+}
 
-  if (faixaAtual >= playlist.length) {
-    faixaAtual = 0; // reinicia
+// CONSULTA
+function consultar(){
+
+  let pergunta = document.getElementById("pergunta").value.trim();
+
+  if(!pergunta){
+    alert("Formule sua pergunta.");
+    return;
   }
 
-  player.src = playlist[faixaAtual];
-  player.play();
-});
+  let linhas = gerarHex();
+
+  let chave = linhas.join("");
+  let numero = mapa[chave];
+
+  let info = HEXAGRAMAS[numero];
+
+  let resultado = `
+  <div class="card">
+
+  <strong>Pergunta:</strong><br>
+  ${pergunta}
+
+  <br><br>
+
+  <strong>Hexagrama:</strong><br>
+  ${numero} — ${info.nome}
+
+  <div id="hexagrama">
+  ${desenhar(linhas)}
+  </div>
+
+  <br>
+
+  <strong>Essência:</strong><br>
+  ${info.essencia}
+
+  <br><br>
+
+  <strong>Direção:</strong><br>
+  ${info.direcao}
+
+  </div>
+  `;
+
+  document.getElementById("resultado").innerHTML = resultado;
+
+}
+
 </script>
 
-  
-<!-- I CHING -->
-<section>
-<h2>🔮 I Ching</h2>
-<iframe src="https://www.jorgematheus.mus.br/jorgeiching.html" height="650"></iframe>
-<p>
-</section>
-
-
-!-- Oráculo I CHING -->
-<section>
-<h2>🔮 Oráculo VOV I Ching</h2>
-<iframe src="https://www.jorgematheus.mus.br/oraculo.html" height="650"></iframe>
-<p>
-</section>
-
-
-  
-
-<!-- I Ching -->
-<section class="sarau">
-<h2>I Ching - Livro das Transmutações</h2>
-
-<p>
-Encontre o hexagrama, pelo número, no livro acima.
-</p>
-
-<p>
-Na página 5, clique nele.
-  Trigrama inferior na coluna vertical.
-  Trigrama superior na linha horizontal.
-</p>
-
-<p>
-Conclua a consulta, lendo o texto.
-</p>
-
-<p><em>Boa sorte!!!</em></p>
-</section>
-
-!-- LEIA O LIVRO -->
-<section>
-
-<p>
-A Pedra do Pó Branco me ensinou que alguns lugares não existem 
-  apenas para serem visitados, mas para serem vividos. <BR>
-
-Não apenas para serem fotografados, mas para serem sentidos. <BR>
-
-Não apenas para serem conhecidos, mas para serem respeitados 
-  e preservados para as gerações que virão.
-</p>
-
-
-  
-
-<h2>Comprar o livro A PEDRA DO PÓ BRANCO aqui:</h2>
-<iframe src="https://hotm.art/pm25" height="650"></iframe>
-<p>
-
-  <p>
-SOBRE O LIVRO
-
-Entre o azul do mar e o sopro do vento baiano, ergue-se a Pedra do Pó Branco - testemunha silenciosa de lendas, encontros e meditações. Neste livro, Jorge Luis Aparecido Matheus mergulha na essência desta pequena ilha, revelando suas histórias, mistérios e a energia que pulsa em cada onda. Uma jornada de alma e sal, para ser lida com os pés na areia e o coração aberto.
-
-SOBRE O AUTOR
-
-Jorge Luis Aparecido Matheus é músico, escritor e criador da Ver Ouvir Vendas (VOV). Vive em Salvador, Bahia, onde une poesia, tecnologia e espiritualidade em projetos que inspiram e transformam. Com uma trajetória marcada por arte e empreendedorismo, Matheus constrói pontes entre culturas, ideias e pessoas.
-</p>
-  
-</section>
-
-  
-<!-- CONTATO -->
-<section>
-<h2>✉️ Contato</h2>
-<iframe src="https://www.jorgematheus.mus.br/contato.html" height="650" whidt="650"></iframe>
-<p>
-</section>
-
-  
-  <footer>© VOV - Ver Ouvir Vendas - Amaralina - Salvador - BA - Brasil - ter 31 março 26</footer>
-  
 </body>
 </html>
