@@ -1,196 +1,131 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Portal VOV</title>
+
+<title>VOV — Portal da Inteligência Vital</title>
 
 <style>
-body {
+
+body{
   margin:0;
-  font-family: Arial, sans-serif;
-  background:#fff;
-  color:#111;
+  font-family:Arial, sans-serif;
+  background:#000;
+  color:#fff;
   text-align:center;
-  line-height:1.6;
 }
 
-section {
-  max-width:900px;
-  margin:50px auto;
-  padding:20px;
-  border-top:1px solid #ddd;
+.container{
+  max-width:700px;
+  margin:auto;
+  padding:30px 20px;
 }
 
-iframe {
-  width:100%;
-  border:none;
-  border-radius:10px;
+h1{
+  font-size:28px;
+  margin-bottom:10px;
 }
 
-h1 { margin-top:30px; }
+.sub{
+  opacity:0.7;
+  margin-bottom:30px;
+}
 
-.leve { color:#555; }
+.logo{
+  font-size:22px;
+  margin-bottom:20px;
+  letter-spacing:2px;
+}
 
-.sarau {
-  background:#fafafa;
+.btn{
+  display:block;
+  width:90%;
+  margin:10px auto;
+  padding:15px;
   border-radius:12px;
-  padding:25px;
+  border:none;
+  background:#FFD700;
+  color:#000;
+  font-weight:bold;
+  text-decoration:none;
 }
+
+.card{
+  background:#111;
+  padding:20px;
+  border-radius:12px;
+  margin-top:20px;
+}
+
+.footer{
+  margin-top:40px;
+  opacity:0.6;
+  font-size:12px;
+}
+
 </style>
+
 </head>
 
 <body>
 
-<h1>VOV</h1>
-<p class="leve">Música • Pensamento • Cultura</p>
+<div class="container">
 
-<!-- Música -->
-<section>
-<h2>🎵Jorge LA Matheus canta Tom Brasileiro Jobim</h2>
+<div class="logo">
+V O V — Ver • Ouvir • Vendas
+</div>
 
+<h1>PORTAL DA INTELIGÊNCIA VITAL</h1>
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/videoseries?list=PL85Pq0MetFdPiZpQYvy2uegOufKOI0w1S" 
-  title="YouTube video player" frameborder="0" allow="accelerometer; 
-  autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; 
-  web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<div class="sub">
+Ver. Ouvir. Compreender. Vender.<br>
+Consciência aplicada à ação.
+</div>
 
+<!-- BOTÕES PRINCIPAIS -->
 
-  
-</section>
+<a class="btn" href="oraculo_vov.html">
+🔮 ACESSAR ORÁCULO VOV
+</a>
 
-<!-- BLACKVOX -->
-<section>
-<h2>🎶 BLACKVOX</h2>
-<iframe src="https://www.jorgematheus.mus.br/BLACKVOX_PlayPremium.html" height="420"></iframe>
-</section>
+<a class="btn" href="#">
+📚 LOJA VOV (EM BREVE)
+</a>
 
+<a class="btn" href="#">
+🎧 BLACKVOX (EM BREVE)
+</a>
 
-<h1>Jorge LA Matheus canta Tom Brasileiro Jobim em mp3</h1>
+<a class="btn" href="contato.html">
+📩 CONTATO
+</a>
 
-<p>Em memória de Antônio Carlos Brasileiro de Almeida Jobim.</p>
+<!-- MANIFESTO -->
 
-<audio id="player" controls>
-  <source src="t01.mp3" type="audio/mpeg">
-  Seu navegador não suporta áudio HTML5.
-</audio>
+<div class="card">
 
-<script>
-var player = document.getElementById('player');
+<strong>MANIFESTO VOV</strong><br><br>
 
-var playlist = [
-  "t01.mp3",
-  "t02.mp3",
-  "t03.mp3",
-  "t04.mp3",
-  "t05.mp3",
-  "t06.mp3",
-  "t07.mp3",
-  "t08.mp3",
-  "t09.mp3",
-  "t010.mp3",
-  "t011.mp3",
-  "t012.mp3",
-  "t013.mp3"
-];
+Se vês,<br>
+se ouves,<br>
+se vendes,<br><br>
 
-var faixaAtual = 0;
+é teu.<br><br>
 
-// toca próxima automaticamente
-player.addEventListener('ended', function() {
-  faixaAtual++;
+A inteligência vital não se explica —<br>
+se manifesta.<br><br>
 
-  if (faixaAtual >= playlist.length) {
-    faixaAtual = 0; // reinicia
-  }
+PAX • LUX • AXÉ
 
-  player.src = playlist[faixaAtual];
-  player.play();
-});
-</script>
+</div>
 
-  
-<!-- I CHING -->
-<section>
-<h2>🔮 I Ching</h2>
-<iframe src="https://www.jorgematheus.mus.br/jorgeiching.html" height="650"></iframe>
-<p>
-</section>
+<div class="footer">
+© VOV — Ver Ouvir Vendas
+</div>
 
+</div>
 
-!-- Oráculo I CHING -->
-<section>
-<h2>🔮 Oráculo VOV I Ching</h2>
-<iframe src="https://www.jorgematheus.mus.br/oraculo.html" height="650"></iframe>
-<p>
-</section>
-
-
-  
-
-<!-- I Ching -->
-<section class="sarau">
-<h2>I Ching - Livro das Transmutações</h2>
-
-<p>
-Encontre o hexagrama, pelo número, no livro acima.
-</p>
-
-<p>
-Na página 5, clique nele.
-  Trigrama inferior na coluna vertical.
-  Trigrama superior na linha horizontal.
-</p>
-
-<p>
-Conclua a consulta, lendo o texto.
-</p>
-
-<p><em>Boa sorte!!!</em></p>
-</section>
-
-!-- LEIA O LIVRO -->
-<section>
-
-<p>
-A Pedra do Pó Branco me ensinou que alguns lugares não existem 
-  apenas para serem visitados, mas para serem vividos. <BR>
-
-Não apenas para serem fotografados, mas para serem sentidos. <BR>
-
-Não apenas para serem conhecidos, mas para serem respeitados 
-  e preservados para as gerações que virão.
-</p>
-
-
-  
-
-<h2>Comprar o livro A PEDRA DO PÓ BRANCO aqui:</h2>
-<iframe src="https://hotm.art/pm25" height="650"></iframe>
-<p>
-
-  <p>
-SOBRE O LIVRO
-
-Entre o azul do mar e o sopro do vento baiano, ergue-se a Pedra do Pó Branco - testemunha silenciosa de lendas, encontros e meditações. Neste livro, Jorge Luis Aparecido Matheus mergulha na essência desta pequena ilha, revelando suas histórias, mistérios e a energia que pulsa em cada onda. Uma jornada de alma e sal, para ser lida com os pés na areia e o coração aberto.
-
-SOBRE O AUTOR
-
-Jorge Luis Aparecido Matheus é músico, escritor e criador da Ver Ouvir Vendas (VOV). Vive em Salvador, Bahia, onde une poesia, tecnologia e espiritualidade em projetos que inspiram e transformam. Com uma trajetória marcada por arte e empreendedorismo, Matheus constrói pontes entre culturas, ideias e pessoas.
-</p>
-  
-</section>
-
-  
-<!-- CONTATO -->
-<section>
-<h2>✉️ Contato</h2>
-<iframe src="https://www.jorgematheus.mus.br/contato.html" height="650" whidt="650"></iframe>
-<p>
-</section>
-
-  
-  <footer>© VOV - Ver Ouvir Vendas - Amaralina - Salvador - BA - Brasil - ter 31 março 26</footer>
-  
 </body>
 </html>
