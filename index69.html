@@ -5,7 +5,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>VOV — Ver • Ouvir • Vendas</title>
+<title>VOV — O Portal da Inteligência Vital</title>
+
+<meta name="description" content="VOV — O Portal da Inteligência Vital. Ver, Ouvir e Vender com consciência.">
 
 <link rel="manifest" href="manifest.json">
 
@@ -29,15 +31,22 @@ header{
 }
 
 .logo{
-  font-size:24px;
+  font-size:28px;
   font-weight:bold;
-  letter-spacing:2px;
+  letter-spacing:3px;
+  color:#FFD700;
+}
+
+.sublogo{
+  opacity:0.7;
+  font-size:14px;
 }
 
 /* ===== HERO ===== */
 
 .hero{
   padding:60px 20px;
+
   background:
     linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.9)),
     url("assets/img/oxumare.jpg") center/cover no-repeat;
@@ -49,51 +58,62 @@ header{
 }
 
 .hero p{
-  opacity:0.8;
+  opacity:0.85;
   max-width:500px;
   margin:auto;
+}
+
+/* ===== CRUZ VOV ===== */
+
+.cruz{
+  margin-top:40px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:25px;
+}
+
+.meio{
+  display:flex;
+  gap:40px;
 }
 
 /* ===== BOTÕES ===== */
 
 .btn{
-  display:inline-block;
-  margin:10px;
-  padding:12px 20px;
-  border-radius:10px;
-  text-decoration:none;
+  background:#FFD700;
   color:#000;
-  background:#ffd700;
-  font-weight:bold;
-}
-
-/* ===== SEÇÕES ===== */
-
-.section{
-  padding:40px 20px;
-}
-
-.cards{
-  display:flex;
-  flex-wrap:wrap;
-  justify-content:center;
-  gap:20px;
-}
-
-.card{
-  background:#111;
-  padding:20px;
+  padding:12px 22px;
   border-radius:12px;
-  max-width:250px;
+  text-decoration:none;
+  font-weight:bold;
+  transition:0.3s;
+}
+
+.btn:hover{
+  transform:scale(1.05);
+  background:#ffea00;
+}
+
+/* ===== MANIFESTO ===== */
+
+.manifesto{
+  margin-top:60px;
+  padding:20px;
+  max-width:600px;
+  margin-left:auto;
+  margin-right:auto;
+  opacity:0.8;
 }
 
 /* ===== FOOTER ===== */
 
 footer{
+  margin-top:60px;
   padding:20px;
   border-top:1px solid rgba(255,255,255,0.1);
   font-size:14px;
-  opacity:0.7;
+  opacity:0.6;
 }
 
 </style>
@@ -105,50 +125,37 @@ footer{
 <!-- HEADER -->
 <header>
   <div class="logo">V O V</div>
-  <div>Ver • Ouvir • Vendas</div>
+  <div class="sublogo">O Portal da Inteligência Vital</div>
 </header>
 
 <!-- HERO -->
 <section class="hero">
-  <h1>O Portal da Consciência Digital</h1>
+
+  <h1>O Portal da Inteligência Vital</h1>
+
   <p>
-    Ver com clareza.  
-    Ouvir com presença.  
+    Ver com clareza.<br>
+    Ouvir com presença.<br>
     Vender com verdade.
   </p>
 
-  <a href="oraculo.html" class="btn">🔮 Consultar Oráculo</a>
-</section>
+  <!-- CRUZ VOV -->
+  <div class="cruz">
 
-<!-- MÓDULOS -->
-<section class="section">
-
-  <h2>Explorar VOV</h2>
-
-  <div class="cards">
-
-    <div class="card">
-      <h3>🔮 Oráculo</h3>
-      <p>Consulte os 64 hexagramas e receba direção.</p>
-      <a href="oraculo.html" class="btn">Entrar</a>
+    <!-- TOPO -->
+    <div>
+      <a href="oraculo.html" class="btn">🔮 Oráculo</a>
     </div>
 
-    <div class="card">
-      <h3>🛒 Loja</h3>
-      <p>Criações autorais VOV para evolução digital.</p>
-      <a href="loja.html" class="btn">Ver Loja</a>
+    <!-- MEIO -->
+    <div class="meio">
+      <a href="loja.html" class="btn">🛒 Loja</a>
+      <a href="contato.html" class="btn">✉️ Contato</a>
     </div>
 
-    <div class="card">
-      <h3>✉️ Contato</h3>
-      <p>Fale diretamente com a VOV.</p>
-      <a href="contato.html" class="btn">Contato</a>
-    </div>
-
-    <div class="card">
-      <h3>👤 Sobre</h3>
-      <p>Conheça a visão e a origem da VOV.</p>
-      <a href="sobre.html" class="btn">Sobre</a>
+    <!-- BASE -->
+    <div>
+      <a href="sobre.html" class="btn">👤 Sobre</a>
     </div>
 
   </div>
@@ -156,15 +163,14 @@ footer{
 </section>
 
 <!-- MANIFESTO -->
-<section class="section">
+<section class="manifesto">
 
-  <h2>Manifesto VOV</h2>
-
-  <p style="max-width:600px;margin:auto;opacity:0.8;">
+  <p>
     A FAMÍLIA VOV ESTÁ REUNIDA.<br><br>
-    Um espaço onde tecnologia e consciência caminham juntas.<br>
-    Onde cada ação carrega intenção.<br>
-    Onde cada escolha gera direção.
+
+    Direção antes da ação.<br>
+    Consciência antes da decisão.<br>
+    Verdade antes da venda.
   </p>
 
 </section>
@@ -172,15 +178,15 @@ footer{
 <!-- FOOTER -->
 <footer>
 
-  © 2026 VOV — Ver • Ouvir • Vendas  
-  <br><br>
+  © 2026 VOV — Ver • Ouvir • Vendas<br><br>
+
   PAX • LUX • AXÉ • JAH BLESS • AMÉM
 
 </footer>
 
 <script>
 
-// ===== SERVICE WORKER =====
+// SERVICE WORKER
 if("serviceWorker" in navigator){
   navigator.serviceWorker.register("sw.js");
 }
