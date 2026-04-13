@@ -1,129 +1,87 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+
 <meta charset="UTF-8">
-<title>Oráculo VOV Supremo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Oráculo VOV</title>
+
 <style>
 
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.4); /* ajuste aqui */
-  z-index: -1;
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:#000;
+  color:#fff;
+  text-align:center;
 }
 
-  
-body {
-  margin: 0;
-  padding: 0;
-  font-family: Arial, sans-serif;
-
-  background: url("oxumare.jpg") no-repeat center center fixed;
-  background-size: cover;
+.container{
+  max-width:600px;
+  margin:auto;
+  padding:20px;
 }
 
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background: url("oxumare.jpg") no-repeat center center;
-  background-size: cover;
-  filter: blur(3px);
-  z-index: -2;
+input{
+  width:90%;
+  padding:12px;
+  border-radius:10px;
+  border:none;
+  margin-top:10px;
 }
-  
-.container {max-width:650px; margin:auto; color:#fff}
-input {width:90%; padding:12px; border-radius:10px; border:none; margin-top:10px;}
-button {padding:10px 20px; margin:5px; border-radius:10px; border:none; cursor:pointer;}
-.card {background:#111; padding:15px; border-radius:10px; margin-top:15px; text-align:left;}
-.mantra {opacity:0.7; font-size:14px; margin-bottom:15px; white-space:pre-line;}
-#hexagrama {margin-top:15px; font-family:monospace; line-height:1.2em;}
+
+button{
+  padding:12px 20px;
+  border-radius:10px;
+  border:none;
+  background:#FFD700;
+  cursor:pointer;
+  margin-top:10px;
+  font-weight:bold;
+}
+
+.card{
+  background:#111;
+  padding:20px;
+  border-radius:12px;
+  margin-top:20px;
+}
+
+#hexagrama{
+  margin-top:15px;
+  font-family:monospace;
+  line-height:1.4em;
+}
+
 </style>
+
 </head>
+
 <body>
-<div class="overlay"></div>
+
 <div class="container">
-<h1>Oráculo VOV Supremo</h1>
 
-<div class="mantra" id="mantra">
-
-<strong>AMARALINA</strong><br>
-amar<br>
-o mar<p>
-
-amo<br>
-amar<p>
-
-sem<br>
-arma<p>
-
-com<br>
-alma<p>
-
-o mar<br>
-ama<br>
-AMARALINDA 69
-
-<br><br>
-
-<hr style="opacity:0.3">
-
-<br>
-
-<strong>MANTRA</strong><br><br>
-
-Jesus tem poder<br>
-de ressuscitar<br>
-e fazer milagres<br>
-Basta você acreditar<br>
-e ter fé<br>
-pra saber que Ele É<br>
-o Pai<br>
-pra saber que Ele É<br>
-o Filho<br>
-pra saber que Ele É<br>
-o Espírito Santo<p>
-
-<strong>PEDIDO DE AMIZADE</strong><br><br>
-
-1. O que se pensa<br>
-2. O que pode ser dito<br>
-3. O que não se diz<br>
-4. O que é dito<br>
-5. Onde<br>
-6. Como<br>
-7. Quando<br>
-8. Por que<br>
-9. Nascer e morrer<br>
-10. Morrer e nascer<br><br>
-
-PAX LUX AXÉ<br>
-JAH BLESS<br>
-AMÉM<br>
-
-_ / \ _
-
-</div>
+<h1>🔥 TESTE NOVO VOV 🔥</h1>
+<p>Oráculo VOV — Motor Real Ativo</p>
 
 <input id="pergunta" placeholder="Qual é a sua questão?" />
-<br>
-<button onclick="consultar()">Consultar</button>
-<button onclick="ouvir()">Ouvir</button>
-<button onclick="ouvirMantra()">Ouvir Mantra</button>
-<button onclick="limparHistorico()">Limpar Tudo</button>
 
-<div id="hexagrama"></div>
+<br>
+
+<button onclick="consultar()">Consultar</button>
+
 <div id="resultado"></div>
-<div id="historico"></div>
+
 </div>
 
-<script>
-// ================= FUNÇÕES BÁSICAS =================
-function linha(){ return Math.random() < 0.5 ? 0 : 1; }
+<!-- BASE -->
+<script src="hexagramas.js"></script>
 
+<!-- MOTOR REAL -->
+<script>
+
+// MAPA DOS 64 HEXAGRAMAS
 const mapa = {
 "111111":1,"000000":2,"100010":3,"010001":4,"111010":5,"010111":6,
 "010000":7,"000010":8,"111011":9,"110111":10,"111000":11,"000111":12,
@@ -138,134 +96,70 @@ const mapa = {
 "110011":61,"001100":62,"010101":63,"101010":64
 };
 
-// ================= FUNÇÃO CORRETA DE HEXAGRAMA =================
-
+// GERAR LINHAS (0 = yin, 1 = yang)
 function gerarHex(){
   let linhas = [];
-  for(let i=0;i<6;i++) linhas.push(linha());
+  for(let i=0;i<6;i++){
+    linhas.push(Math.random() < 0.5 ? 0 : 1);
+  }
+  return linhas;
+}
+
+// DESENHO
+function desenhar(linhas){
+  return linhas.map(l => l ? "━━━" : "━ ━").reverse().join("<br>");
+}
+
+// CONSULTA
+function consultar(){
+
+  let pergunta = document.getElementById("pergunta").value.trim();
+
+  if(!pergunta){
+    alert("Formule sua pergunta.");
+    return;
+  }
+
+  let linhas = gerarHex();
 
   let chave = linhas.join("");
-  let numero = mapa[chave] || 1;
+  let numero = mapa[chave];
 
-  return {linhas, numero};
-}
-function desenhar(l){
-  // linhas de baixo para cima
-  return l.map(x => x ? "━━━" : "━ ━").reverse().join("<br>");
-}
+  let info = HEXAGRAMAS[numero];
 
-// ================= HEXAGRAMAS =================
-const HEXAGRAMAS = {
-1:{nome:"O Criativo",essencia:"Força ativa em expansão.",diagnostico:"Grande potencial de ação e liderança está presente.",direcao:"Atue com clareza e constância. Evite arrogância.",reflexao:"Como o céu acima, a energia flui sem limites. Mantenha foco e disciplina."},
-2:{nome:"O Receptivo",essencia:"Acolhimento e sustentação.",diagnostico:"Momento de receber, nutrir e consolidar.",direcao:"Seja flexível. Apoiar pode ser mais forte que agir.",reflexao:"Como a terra que acolhe as sementes, permita-se receber antes de agir."},
-3:{nome:"Dificuldade Inicial",essencia:"Começo turbulento.",diagnostico:"Obstáculos naturais de início de ciclo.",direcao:"Organize antes de avançar. Persistência é chave.",reflexao:"Toda jornada começa com hesitação; a clareza vem com o passo firme."},
-4:{nome:"Juventude Inexperiente",essencia:"Aprendizado necessário.",diagnostico:"Falta de clareza ou maturidade na situação.",direcao:"Busque orientação. Evite decisões precipitadas.",reflexao:"Ouça os mais sábios; a experiência é mestre silencioso."},
-5:{nome:"A Espera",essencia:"Tempo certo.",diagnostico:"Ainda não é hora de agir diretamente.",direcao:"Cultive paciência estratégica.",reflexao:"Como o rio aguarda o mar, aguarde o momento certo de mover-se."},
-6:{nome:"O Conflito",essencia:"Forças opostas em tensão.",diagnostico:"Disputas e divergências ativas.",direcao:"Evite confronto direto sem preparo. Negocie.",reflexao:"Em cada choque há aprendizado; mantenha equilíbrio e discernimento."},
-7:{nome:"O Exército",essencia:"Disciplina coletiva.",diagnostico:"Necessidade de organização e liderança.",direcao:"Estruture forças antes de agir.",reflexao:"A união das forças traz vitória, mas a desordem conduz à derrota."},
-8:{nome:"A União",essencia:"Coesão.",diagnostico:"Busca por alianças e pertencimento.",direcao:"Una-se com propósito claro.",reflexao:"Alianças verdadeiras se fundamentam na confiança e no propósito comum."},
-9:{nome:"O Poder do Pequeno",essencia:"Influência sutil.",diagnostico:"Pequenas forças estão atuando.",direcao:"Aja com delicadeza e precisão.",reflexao:"A pequena ação, bem colocada, transforma o grande fluxo."},
-10:{nome:"O Porte",essencia:"Conduta correta.",diagnostico:"Situação exige cautela e postura.",direcao:"Pise com atenção. Evite excessos.",reflexao:"A postura reta abre caminho; o descuido fecha portas."},
-11:{nome:"A Paz",essencia:"Harmonia em fluxo.",diagnostico:"Equilíbrio entre forças.",direcao:"Aproveite para construir.",reflexao:"Quando tudo se harmoniza, até o mais difícil se torna possível."},
-12:{nome:"O Impasse",essencia:"Bloqueio.",diagnostico:"Estagnação e desconexão.",direcao:"Recolha-se. Evite forçar.",reflexao:"O silêncio revela o caminho; a espera traz clareza."},
-13:{nome:"Comunhão",essencia:"Alinhamento coletivo.",diagnostico:"Convergência de ideias.",direcao:"Trabalhe em conjunto.",reflexao:"Somar forças cria efeitos que nenhum isolado alcança."},
-14:{nome:"Grande Posse",essencia:"Abundância consciente.",diagnostico:"Recursos disponíveis.",direcao:"Use com responsabilidade.",reflexao:"A abundância exige sabedoria; gastar sem controle leva à perda."},
-15:{nome:"Modéstia",essencia:"Equilíbrio humilde.",diagnostico:"Força sem ostentação.",direcao:"Mantenha simplicidade.",reflexao:"O grande poder se mostra na discrição e na prudência."},
-16:{nome:"Entusiasmo",essencia:"Energia mobilizadora.",diagnostico:"Momento propício para engajar.",direcao:"Direcione energia com foco.",reflexao:"O entusiasmo certo move montanhas; desperdiçado, dispersa força."},
-17:{nome:"Seguir",essencia:"Adaptação.",diagnostico:"Necessidade de acompanhar fluxo.",direcao:"Seja flexível.",reflexao:"Seguir o fluxo sem perder a essência traz resultados duradouros."},
-18:{nome:"Correção",essencia:"Ajuste do que foi corrompido.",diagnostico:"Problemas antigos emergem.",direcao:"Corrija na raiz.",reflexao:"Não ignore a raiz do problema; a correção antecipada evita danos maiores."},
-19:{nome:"Aproximação",essencia:"Crescimento gradual.",diagnostico:"Algo se aproxima positivamente.",direcao:"Prepare-se para assumir.",reflexao:"Cada aproximação é uma oportunidade de crescimento e alinhamento."},
-20:{nome:"Contemplação",essencia:"Observação profunda.",diagnostico:"Momento de analisar.",direcao:"Veja antes de agir.",reflexao:"Observar com atenção permite agir com precisão e justiça."},
-21:{nome:"Morder",essencia:"Decisão firme.",diagnostico:"Algo precisa ser resolvido.",direcao:"Corte o que impede avanço.",reflexao:"Às vezes, a firmeza é a única forma de libertação."},
-22:{nome:"Graça",essencia:"Beleza e forma.",diagnostico:"Importância da apresentação.",direcao:"Harmonize forma e essência.",reflexao:"A beleza bem aplicada abre portas e corações."},
-23:{nome:"Desintegração",essencia:"Queda gradual.",diagnostico:"Estruturas enfraquecendo.",direcao:"Prepare desapego.",reflexao:"O que não resiste ao tempo deve ser transformado ou liberado."},
-24:{nome:"Retorno",essencia:"Recomeço.",diagnostico:"Ciclo reiniciando.",direcao:"Volte ao essencial.",reflexao:"O retorno às raízes fortalece e renova."},
-25:{nome:"Inocência",essencia:"Pureza de intenção.",diagnostico:"Agir sem segundas intenções.",direcao:"Seja verdadeiro.",reflexao:"A honestidade genuína abre caminhos invisíveis."},
-26:{nome:"Grande Domínio",essencia:"Força contida.",diagnostico:"Potencial acumulado.",direcao:"Controle antes de liberar.",reflexao:"A paciência é aliada do poder; a pressa destrói oportunidades."},
-27:{nome:"Alimentação",essencia:"Nutrição.",diagnostico:"O que sustenta está em foco.",direcao:"Cuide do que consome e produz.",reflexao:"Tudo que nutre deve ser escolhido com cuidado e sabedoria."},
-28:{nome:"Excesso",essencia:"Sobrecarga.",diagnostico:"Pressão acima do limite.",direcao:"Evite colapso. Ajuste estrutura.",reflexao:"A sobrecarga exige reorganização; o equilíbrio restaura força."},
-29:{nome:"Abismo",essencia:"Risco contínuo.",diagnostico:"Situação perigosa ou repetitiva.",direcao:"Avance com extrema cautela.",reflexao:"A consciência do perigo protege mais que a coragem cega."},
-30:{nome:"Fogo",essencia:"Clareza.",diagnostico:"Iluminação da situação.",direcao:"Use discernimento.",reflexao:"A luz revela caminhos; ilumine sem queimar."},
-31:{nome:"Influência",essencia:"Atração.",diagnostico:"Forças se atraem.",direcao:"Permita conexão consciente.",reflexao:"Cada gesto tem impacto; escolha influenciar com sabedoria."},
-32:{nome:"Duração",essencia:"Continuidade.",diagnostico:"Situação pede estabilidade.",direcao:"Seja constante.",reflexao:"Persistir com disciplina gera resultados duradouros."},
-33:{nome:"Retirada",essencia:"Recuo estratégico.",diagnostico:"Não é hora de confronto.",direcao:"Retire-se com inteligência.",reflexao:"A retirada não é perda, mas estratégia de força."},
-34:{nome:"Grande Poder",essencia:"Força intensa.",diagnostico:"Grande energia disponível.",direcao:"Use com responsabilidade.",reflexao:"A potência precisa de direção; o poder sem controle é destrutivo."},
-35:{nome:"Progresso",essencia:"Avanço.",diagnostico:"Crescimento visível.",direcao:"Siga em frente.",reflexao:"Passo a passo, a evolução se manifesta claramente."},
-36:{nome:"Escuridão",essencia:"Ocultamento.",diagnostico:"Ambiente adverso.",direcao:"Proteja-se.",reflexao:"Na sombra, reflita e prepare sua luz."},
-37:{nome:"Família",essencia:"Estrutura interna.",diagnostico:"Relações próximas em foco.",direcao:"Fortaleça vínculos.",reflexao:"O cuidado mútuo constrói raízes profundas."},
-38:{nome:"Oposição",essencia:"Diferença.",diagnostico:"Visões conflitantes.",direcao:"Aceite divergências.",reflexao:"A diferença é oportunidade de crescimento e entendimento."},
-39:{nome:"Obstáculo",essencia:"Dificuldade.",diagnostico:"Barreiras presentes.",direcao:"Reavalie caminho.",reflexao:"Obstáculos são professores silenciosos; escute-os."},
-40:{nome:"Liberação",essencia:"Alívio.",diagnostico:"Fim de tensão.",direcao:"Solte o que prende.",reflexao:"Liberar é abrir espaço para o novo."},
-41:{nome:"Diminuição",essencia:"Redução.",diagnostico:"Perda necessária.",direcao:"Simplifique.",reflexao:"Diminuir é preparar para crescer."},
-42:{nome:"Aumento",essencia:"Expansão.",diagnostico:"Crescimento favorecido.",direcao:"Invista energia.",reflexao:"Crescer requer ação e visão."},
-43:{nome:"Ruptura",essencia:"Decisão final.",diagnostico:"Momento de cortar.",direcao:"Seja firme.",reflexao:"A ruptura é passagem; tenha coragem e clareza."},
-44:{nome:"Encontro",essencia:"Contato inesperado.",diagnostico:"Algo surge repentinamente.",direcao:"Cuidado com influências.",reflexao:"O inesperado chega; perceba antes de reagir."},
-45:{nome:"Reunião",essencia:"Coletividade.",diagnostico:"Agrupamento de forças.",direcao:"Organize união.",reflexao:"Juntos, os pequenos podem realizar grandes feitos."},
-46:{nome:"Ascensão",essencia:"Crescimento gradual.",diagnostico:"Subida constante.",direcao:"Persistência.",reflexao:"Suba passo a passo, firme e atento."},
-47:{nome:"Exaustão",essencia:"Limite.",diagnostico:"Cansaço ou restrição.",direcao:"Resista com consciência.",reflexao:"Conhecer limites é o primeiro passo para superá-los."},
-48:{nome:"Poço",essencia:"Fonte.",diagnostico:"Recursos profundos disponíveis.",direcao:"Acesse o essencial.",reflexao:"O que está oculto sustenta a vida; mergulhe fundo."},
-49:{nome:"Revolução",essencia:"Transformação radical.",diagnostico:"Mudança inevitável.",direcao:"Adapte-se.",reflexao:"A mudança é lei; a resistência é vão esforço."},
-50:{nome:"Caldeirão",essencia:"Transmutação.",diagnostico:"Processo de refinamento.",direcao:"Eleve o nível.",reflexao:"O que é cozido com cuidado torna-se essência pura."},
-51:{nome:"Trovão",essencia:"Impacto.",diagnostico:"Evento súbito.",direcao:"Mantenha presença.",reflexao:"O impacto revela forças ocultas; esteja alerta."},
-52:{nome:"Montanha",essencia:"Imobilidade.",diagnostico:"Necessidade de parar.",direcao:"Silencie.",reflexao:"A quietude permite contemplar e decidir sabiamente."},
-53:{nome:"Desenvolvimento",essencia:"Evolução gradual.",diagnostico:"Crescimento consistente.",direcao:"Siga no ritmo.",reflexao:"A paciência molda o que o tempo aperfeiçoa."},
-54:{nome:"A Noiva",essencia:"Posição delicada.",diagnostico:"Falta de autonomia.",direcao:"Evite dependência.",reflexao:"A espera consciente fortalece independência futura."},
-55:{nome:"Abundância",essencia:"Plenitude.",diagnostico:"Momento máximo.",direcao:"Aproveite com consciência.",reflexao:"A abundância exige gratidão e sabedoria."},
-56:{nome:"O Viajante",essencia:"Transitoriedade.",diagnostico:"Situação temporária.",direcao:"Adapte-se ao ambiente.",reflexao:"Tudo é passageiro; aprenda com cada passo."},
-57:{nome:"Suavidade",essencia:"Penetração sutil.",diagnostico:"Influência contínua.",direcao:"Seja persistente.",reflexao:"A suavidade constante supera a rigidez momentânea."},
-58:{nome:"Alegria",essencia:"Leveza.",diagnostico:"Ambiente favorável.",direcao:"Compartilhe energia.",reflexao:"A alegria verdadeira se espalha sem esforço."},
-59:{nome:"Dispersão",essencia:"Dissolução.",diagnostico:"Separações ocorrendo.",direcao:"Deixe ir.",reflexao:"A dissolução abre espaço para reorganização e harmonia."},
-60:{nome:"Limitação",essencia:"Restrição.",diagnostico:"Necessidade de limites.",direcao:"Defina regras.",reflexao:"Os limites não prendem, protegem e orientam."},
-61:{nome:"Verdade Interior",essencia:"Autoconhecimento profundo.",diagnostico:"A verdade deve emergir de dentro.",direcao:"Confie na intuição.",reflexao:"A clareza interior revela o caminho mesmo na escuridão."},
-62:{nome:"Pequeno Excesso",essencia:"Atenção aos detalhes.",diagnostico:"Riscos de exagero em pequenas coisas.",direcao:"Modere ações e palavras.",reflexao:"O equilíbrio está nas pequenas escolhas diárias."},
-63:{nome:"Depois da Conclusão",essencia:"Fase final de processo.",diagnostico:"Quase tudo resolvido, mas atenção final necessária.",direcao:"Finalize cuidadosamente.",reflexao:"O sucesso depende do cuidado até o último passo."},
-64:{nome:"Antes da Conclusão",essencia:"Último impulso.",diagnostico:"Preparação para o encerramento de ciclo.",direcao:"Revise antes de concluir.",reflexao:"O que não for ajustado agora pode comprometer o resultado final."}
-};
+  let resultado = `
+  <div class="card">
 
-// ================= FUNÇÃO PRINCIPAL =================
-function consultar(){
-  let pergunta = document.getElementById("pergunta").value.trim();
-  if(!pergunta){ alert("Formule sua pergunta."); return; }
-  
-  let h = gerarHex();
-  let desenho = desenhar(h.linhas);
-  let info = HEXAGRAMAS[h.numero];
-  
-  let resultado = `<div class="card">
-  <strong>Hexagrama ${h.numero}: ${info.nome}</strong><br>
-  <pre id="hexagramaline">${desenho}</pre>
-  <strong>Essência:</strong> ${info.essencia}<br>
-  <strong>Diagnóstico:</strong> ${info.diagnostico}<br>
-  <strong>Direção:</strong> ${info.direcao}<br>
-  <strong>Reflexão:</strong> ${info.reflexao}
-  </div>`;
-  
+  <strong>Pergunta:</strong><br>
+  ${pergunta}
+
+  <br><br>
+
+  <strong>Hexagrama:</strong><br>
+  ${numero} — ${info.nome}
+
+  <div id="hexagrama">
+  ${desenhar(linhas)}
+  </div>
+
+  <br>
+
+  <strong>Essência:</strong><br>
+  ${info.essencia}
+
+  <br><br>
+
+  <strong>Direção:</strong><br>
+  ${info.direcao}
+
+  </div>
+  `;
+
   document.getElementById("resultado").innerHTML = resultado;
-  let hist = document.getElementById("historico");
-  hist.innerHTML = (hist.innerHTML ? hist.innerHTML + "<hr>" : "") + "<strong>P:</strong> "+pergunta+"<br>"+resultado;
+
 }
 
-// ================= VOZ =================
-function ouvir(){
-  let r = document.getElementById("resultado").innerText;
-  if(!r){ alert("Consulte primeiro."); return; }
-  let u = new SpeechSynthesisUtterance(r);
-  u.lang="pt-BR";
-  speechSynthesis.speak(u);
-}
-
-function ouvirMantra(){
-  let m = document.getElementById("mantra").innerText;
-  let u = new SpeechSynthesisUtterance(m);
-  u.lang="pt-BR";
-  speechSynthesis.speak(u);
-}
-
-function limparHistorico(){
-  document.getElementById("historico").innerHTML="";
-  document.getElementById("resultado").innerHTML="";
-  document.getElementById("pergunta").value="";
-}
 </script>
+
 </body>
 </html>
