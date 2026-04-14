@@ -44,13 +44,16 @@ button{
   text-align:left;
 }
 
-#hexagrama{
-  font-family:monospace;
-  margin-top:10px;
-}
+small{opacity:0.6;}
 
-small{
-  opacity:0.6;
+.btn{
+  display:inline-block;
+  margin-top:20px;
+  padding:10px 20px;
+  background:#222;
+  border-radius:10px;
+  text-decoration:none;
+  color:#fff;
 }
 </style>
 </head>
@@ -76,13 +79,13 @@ small{
 
 <script>
 
-// ===== LINHA COM MUTAÇÃO =====
+// ===== LINHA =====
 function linha(){
   let r = Math.random();
-  if(r < 0.25) return {v:0, m:true};   // yin mutante
-  if(r < 0.5) return {v:1, m:false};  // yang
-  if(r < 0.75) return {v:0, m:false}; // yin
-  return {v:1, m:true};               // yang mutante
+  if(r < 0.25) return {v:0, m:true};
+  if(r < 0.5) return {v:1, m:false};
+  if(r < 0.75) return {v:0, m:false};
+  return {v:1, m:true};
 }
 
 // ===== MAPA =====
@@ -100,7 +103,7 @@ const mapa = {
 "110011":61,"001100":62,"010101":63,"101010":64
 };
 
-// ===== BASE COMPLETA =====
+// ===== NOMES =====
 const HEX = {
 1:"O Criativo",2:"O Receptivo",3:"Dificuldade Inicial",4:"Insensatez Juvenil",
 5:"A Espera",6:"Conflito",7:"O Exército",8:"União",
@@ -130,7 +133,6 @@ function desenhar(linhas){
 
 // ===== CONSULTA =====
 function consultar(){
-function consultar(){
 
 let p = document.getElementById("pergunta").value.trim();
 if(!p){ alert("Digite uma pergunta."); return; }
@@ -138,19 +140,18 @@ if(!p){ alert("Digite uma pergunta."); return; }
 let linhas = [];
 for(let i=0;i<6;i++) linhas.push(linha());
 
-// BASE
+// base
 let base = linhas.map(l=>l.v).join("");
 let num = mapa[base];
 
-// FUTURO
+// futuro
 let futuro = linhas.map(l=>{
-  if(!l.m) return l.v;
-  return l.v===1?0:1;
+  return l.m ? (l.v===1?0:1) : l.v;
 }).join("");
 
 let numFuturo = mapa[futuro];
 
-// MUTAÇÕES
+// mutantes
 let linhasMutantes = linhas
   .map((l,i)=> l.m ? (i+1) : null)
   .filter(x=>x);
@@ -159,21 +160,17 @@ let textoMutacao = linhasMutantes.length
   ? "Linhas mutantes: " + linhasMutantes.join(", ")
   : "Sem mutação";
 
-// NOMES (usando base simples por enquanto)
-let nome = HEX[num];
-let nomeFuturo = HEX[numFuturo];
-
-// HTML LIMPO (SEM ERRO)
+// HTML
 let html = `
 <div class="card">
 
-<strong>Hexagrama ${num} — ${nome}</strong><br>
+<strong>Hexagrama ${num} — ${HEX[num]}</strong><br>
 <strong>${textoMutacao}</strong><br><br>
 
 <div>${desenhar(linhas)}</div><br>
 
 ${linhasMutantes.length ? `
-<strong>Hexagrama Futuro ${numFuturo} — ${nomeFuturo}</strong>
+<strong>Hexagrama Futuro ${numFuturo} — ${HEX[numFuturo]}</strong>
 ` : "<small>Sem mutação</small>"}
 
 <br><br>
@@ -193,48 +190,6 @@ document.getElementById("resultado").innerHTML = html;
 
 let hist = document.getElementById("historico");
 hist.innerHTML = "<hr><strong>Pergunta:</strong> " + p + "<br>" + html + hist.innerHTML;
-
-}` : ""}
-
-${linhas.some(l=>l.m)?`
-<br><strong>Hexagrama Futuro ${numFuturo} — ${infoFuturo.nome}</strong><br>
-<strong>Essência:</strong> ${infoFuturo.essencia}<br>
-<strong>Direção:</strong> ${infoFuturo.direcao}
-`:""}
-
-<br><br>
-
-<hr style="opacity:0.3">
-
-<br>
-
-<strong>I Ching — O Livro das Mutações</strong><br>
-
-<small>
-Compare com o texto clássico (página 5) e aprofunde sua leitura.
-</small>
-
-<br><br>
-
-<a href="https://jorgematheus.mus.br/iching_jung.pdf" target="_blank">
-📘 Aprofunde a leitura no Livro
-</a>
-
-</div>
-`;
-
-${linhasMutantes.length ? `
-<br><strong>Linhas Mutantes:</strong> Ativas<br>
-<br><strong>Hexagrama Futuro ${numFuturo} — ${HEX[numFuturo]}</strong>
-`:"<br><small>Sem mutação</small>"}
-
-</div>
-`;
-
-document.getElementById("resultado").innerHTML = html;
-
-let hist = document.getElementById("historico");
-hist.innerHTML += "<hr>"+p+"<br>"+html;
 }
 
 // ===== VOZ =====
@@ -254,61 +209,40 @@ document.getElementById("pergunta").value="";
 
 </script>
 
-
-  <!-- I CHING -->
+<!-- PDF -->
 <section>
-<h2>🔮 I Ching - O Livro das Mutações</h2>
-<iframe src="https://www.jorgematheus.mus.br/iching_jung.pdf" height="800" width="600"></iframe>
-<p>
+<h2>🔮 I Ching</h2>
+<iframe src="https://www.jorgematheus.mus.br/iching_jung.pdf" height="600" width="100%"></iframe>
 </section>
 
-
-  <h1>Jorge LA Matheus canta Tom Brasileiro Jobim em mp3</h1>
-
-<p>Em memória de Antônio Carlos Brasileiro de Almeida Jobim.</p>
+<!-- ÁUDIO -->
+<h2>🎵 Tom Jobim</h2>
 
 <audio id="player" controls>
   <source src="t01.mp3" type="audio/mpeg">
-  Seu navegador não suporta áudio HTML5.
 </audio>
 
 <script>
 var player = document.getElementById('player');
 
 var playlist = [
-  "t01.mp3",
-  "t02.mp3",
-  "t03.mp3",
-  "t04.mp3",
-  "t05.mp3",
-  "t06.mp3",
-  "t07.mp3",
-  "t08.mp3",
-  "t09.mp3",
-  "t010.mp3",
-  "t011.mp3",
-  "t012.mp3",
-  "t013.mp3"
+  "t01.mp3","t02.mp3","t03.mp3","t04.mp3","t05.mp3",
+  "t06.mp3","t07.mp3","t08.mp3","t09.mp3","t010.mp3",
+  "t011.mp3","t012.mp3","t013.mp3"
 ];
 
 var faixaAtual = 0;
 
-// toca próxima automaticamente
 player.addEventListener('ended', function() {
-  faixaAtual++;
-
-  if (faixaAtual >= playlist.length) {
-    faixaAtual = 0; // reinicia
-  }
-
+  faixaAtual = (faixaAtual + 1) % playlist.length;
   player.src = playlist[faixaAtual];
   player.play();
 });
 </script>
-<center>
-  <a class="btn" href="index.html">
-🏠 Voltar ao Portal
-</a>
-</center>
+
+<br>
+
+<a class="btn" href="index.html">🏠 Voltar ao Portal</a>
+
 </body>
 </html>
