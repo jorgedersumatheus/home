@@ -185,5 +185,52 @@ document.getElementById("pergunta").value="";
 
 </script>
 
+  <h1>Jorge LA Matheus canta Tom Brasileiro Jobim em mp3</h1>
+
+<p>Em memória de Antônio Carlos Brasileiro de Almeida Jobim.</p>
+
+<audio id="player" controls>
+  <source src="t01.mp3" type="audio/mpeg">
+  Seu navegador não suporta áudio HTML5.
+</audio>
+
+<script>
+var player = document.getElementById('player');
+
+var playlist = [
+  "t01.mp3",
+  "t02.mp3",
+  "t03.mp3",
+  "t04.mp3",
+  "t05.mp3",
+  "t06.mp3",
+  "t07.mp3",
+  "t08.mp3",
+  "t09.mp3",
+  "t010.mp3",
+  "t011.mp3",
+  "t012.mp3",
+  "t013.mp3"
+];
+
+var faixaAtual = 0;
+
+// toca próxima automaticamente
+player.addEventListener('ended', function() {
+  faixaAtual++;
+
+  if (faixaAtual >= playlist.length) {
+    faixaAtual = 0; // reinicia
+  }
+
+  player.src = playlist[faixaAtual];
+  player.play();
+});
+</script>
+<center>
+  <a class="btn" href="index.html">
+🏠 Voltar ao Portal
+</a>
+</center>
 </body>
 </html>
