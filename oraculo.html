@@ -156,6 +156,23 @@ let textoMutacao = linhasMutantes.length
   : "Sem mutação";
 
 // RESULTADO
+
+let info = HEXAGRAMAS[num];
+let infoFuturo = HEXAGRAMAS[numFuturo] || {};
+
+let linhasMutantes = linhas
+  .map((l,i)=> l.m ? (i+1) : null)
+  .filter(x=>x);
+
+let textoMutacao = linhasMutantes.length
+  ? "Linhas mutantes: " + linhasMutantes.join(", ")
+  : "Sem mutação";
+
+let interpretacaoLinhas = linhasMutantes.map(n=>{
+  return LINHAS[num]?.[n] || "Linha sem interpretação.";
+}).join("<br>");
+
+  
 let html = `
 
 <div class="card">
