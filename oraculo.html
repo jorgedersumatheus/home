@@ -137,16 +137,19 @@ if(!p){ alert("Digite uma pergunta."); return; }
 let linhas = [];
 for(let i=0;i<6;i++) linhas.push(linha());
 
+// BASE
 let base = linhas.map(l=>l.v).join("");
 let num = mapa[base];
 
-// MUTAÇÃO
+// FUTURO
 let futuro = linhas.map(l=>{
   if(!l.m) return l.v;
   return l.v===1?0:1;
 }).join("");
 
 let numFuturo = mapa[futuro];
+
+// MUTAÇÕES
 let linhasMutantes = linhas
   .map((l,i)=> l.m ? (i+1) : null)
   .filter(x=>x);
@@ -154,6 +157,49 @@ let linhasMutantes = linhas
 let textoMutacao = linhasMutantes.length
   ? "Linhas mutantes: " + linhasMutantes.join(", ")
   : "Sem mutação";
+
+// INFO (usando HEX simples por enquanto)
+let nome = HEX[num];
+let nomeFuturo = HEX[numFuturo];
+
+// RESULTADO
+let html = `
+<div class="card">
+
+<strong>Hexagrama ${num} — ${nome}</strong><br>
+<strong>${textoMutacao}</strong><br><br>
+
+<div>${desenhar(linhas)}</div><br>
+
+${linhasMutantes.length ? `
+<br><strong>Hexagrama Futuro ${numFuturo} — ${nomeFuturo}</strong>
+` : "<br><small>Sem mutação</small>"}
+
+<br><br>
+
+<hr style="opacity:0.3">
+
+<br>
+
+<strong>I Ching — O Livro das Mutações</strong><br>
+
+<small>
+Compare com o texto clássico (página 5) e aprofunde sua leitura.
+</small>
+
+<br><br>
+
+<a href="https://jorgematheus.mus.br/iching_jung.pdf" target="_blank">
+📘 Aprofunde a leitura no Livro
+</a>
+
+</div>
+`;
+
+document.getElementById("resultado").innerHTML = html;
+
+let hist = document.getElementById("historico");
+hist.innerHTML = "<hr><strong>Pergunta:</strong> " + p + "<br>" + html + hist.innerHTML;
 
 // RESULTADO
 
@@ -249,7 +295,7 @@ document.getElementById("pergunta").value="";
 </script>
 
 
-  !-- I CHING -->
+  <!-- I CHING -->
 <section>
 <h2>🔮 I Ching - O Livro das Mutações</h2>
 <iframe src="https://www.jorgematheus.mus.br/iching_jung.pdf" height="800" width="600"></iframe>
