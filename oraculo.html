@@ -207,6 +207,32 @@ document.getElementById("historico").innerHTML="";
 document.getElementById("pergunta").value="";
 }
 
+
+function salvarPDF(){
+  let conteudo = document.getElementById("resultado").innerHTML;
+
+  let janela = window.open('', '', 'width=800,height=600');
+  
+  janela.document.write(`
+    <html>
+    <head>
+      <title>Oráculo VOV</title>
+      <style>
+        body{font-family:Arial; padding:20px;}
+        .card{background:#fff;color:#000;padding:20px;border-radius:10px;}
+      </style>
+    </head>
+    <body>
+      <h2>🔮 Oráculo VOV</h2>
+      ${conteudo}
+    </body>
+    </html>
+  `);
+
+  janela.document.close();
+  janela.print();
+}
+  
 </script>
 
 <!-- PDF -->
