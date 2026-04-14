@@ -147,14 +147,60 @@ let futuro = linhas.map(l=>{
 }).join("");
 
 let numFuturo = mapa[futuro];
+let linhasMutantes = linhas
+  .map((l,i)=> l.m ? (i+1) : null)
+  .filter(x=>x);
+
+let textoMutacao = linhasMutantes.length
+  ? "Linhas mutantes: " + linhasMutantes.join(", ")
+  : "Sem mutação";
 
 // RESULTADO
 let html = `
+
 <div class="card">
-<strong>Hexagrama Atual ${num} — ${HEX[num]}</strong><br>
-<div>${desenhar(linhas)}</div>
+
+<strong>Hexagrama ${num} — ${info.nome}</strong><br>
+<strong>${textoMutacao}</strong><br><br>
+
+<div>${desenhar(linhas)}</div><br>
+
+<strong>Essência:</strong> ${info.essencia}<br>
+<strong>Direção:</strong> ${info.direcao}<br>
+
+${linhasMutantes.length ? `
+<br><strong>Leitura das Linhas:</strong><br>
+${interpretacaoLinhas}
+` : ""}
 
 ${linhas.some(l=>l.m)?`
+<br><strong>Hexagrama Futuro ${numFuturo} — ${infoFuturo.nome}</strong><br>
+<strong>Essência:</strong> ${infoFuturo.essencia}<br>
+<strong>Direção:</strong> ${infoFuturo.direcao}
+`:""}
+
+<br><br>
+
+<hr style="opacity:0.3">
+
+<br>
+
+<strong>I Ching — O Livro das Mutações</strong><br>
+
+<small>
+Compare com o texto clássico (página 5) e aprofunde sua leitura.
+</small>
+
+<br><br>
+
+<a href="https://jorgematheus.mus.br/iching_jung.pdf" target="_blank">
+📘 Aprofunde a leitura no Livro
+</a>
+
+</div>
+`;
+
+${linhasMutantes.length ? `
 <br><strong>Linhas Mutantes:</strong> Ativas<br>
 <br><strong>Hexagrama Futuro ${numFuturo} — ${HEX[numFuturo]}</strong>
 `:"<br><small>Sem mutação</small>"}
