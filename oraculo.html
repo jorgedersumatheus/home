@@ -130,6 +130,7 @@ function desenhar(linhas){
 
 // ===== CONSULTA =====
 function consultar(){
+function consultar(){
 
 let p = document.getElementById("pergunta").value.trim();
 if(!p){ alert("Digite uma pergunta."); return; }
@@ -158,11 +159,11 @@ let textoMutacao = linhasMutantes.length
   ? "Linhas mutantes: " + linhasMutantes.join(", ")
   : "Sem mutação";
 
-// INFO (usando HEX simples por enquanto)
+// NOMES (usando base simples por enquanto)
 let nome = HEX[num];
 let nomeFuturo = HEX[numFuturo];
 
-// RESULTADO
+// HTML LIMPO (SEM ERRO)
 let html = `
 <div class="card">
 
@@ -172,22 +173,14 @@ let html = `
 <div>${desenhar(linhas)}</div><br>
 
 ${linhasMutantes.length ? `
-<br><strong>Hexagrama Futuro ${numFuturo} — ${nomeFuturo}</strong>
-` : "<br><small>Sem mutação</small>"}
+<strong>Hexagrama Futuro ${numFuturo} — ${nomeFuturo}</strong>
+` : "<small>Sem mutação</small>"}
 
 <br><br>
-
-<hr style="opacity:0.3">
-
-<br>
+<hr style="opacity:0.3"><br>
 
 <strong>I Ching — O Livro das Mutações</strong><br>
-
-<small>
-Compare com o texto clássico (página 5) e aprofunde sua leitura.
-</small>
-
-<br><br>
+<small>Compare com o texto clássico (página 5)</small><br><br>
 
 <a href="https://jorgematheus.mus.br/iching_jung.pdf" target="_blank">
 📘 Aprofunde a leitura no Livro
@@ -201,40 +194,7 @@ document.getElementById("resultado").innerHTML = html;
 let hist = document.getElementById("historico");
 hist.innerHTML = "<hr><strong>Pergunta:</strong> " + p + "<br>" + html + hist.innerHTML;
 
-// RESULTADO
-
-let info = HEXAGRAMAS[num];
-let infoFuturo = HEXAGRAMAS[numFuturo] || {};
-
-let linhasMutantes = linhas
-  .map((l,i)=> l.m ? (i+1) : null)
-  .filter(x=>x);
-
-let textoMutacao = linhasMutantes.length
-  ? "Linhas mutantes: " + linhasMutantes.join(", ")
-  : "Sem mutação";
-
-let interpretacaoLinhas = linhasMutantes.map(n=>{
-  return LINHAS[num]?.[n] || "Linha sem interpretação.";
-}).join("<br>");
-
-  
-let html = `
-
-<div class="card">
-
-<strong>Hexagrama ${num} — ${info.nome}</strong><br>
-<strong>${textoMutacao}</strong><br><br>
-
-<div>${desenhar(linhas)}</div><br>
-
-<strong>Essência:</strong> ${info.essencia}<br>
-<strong>Direção:</strong> ${info.direcao}<br>
-
-${linhasMutantes.length ? `
-<br><strong>Leitura das Linhas:</strong><br>
-${interpretacaoLinhas}
-` : ""}
+}` : ""}
 
 ${linhas.some(l=>l.m)?`
 <br><strong>Hexagrama Futuro ${numFuturo} — ${infoFuturo.nome}</strong><br>
