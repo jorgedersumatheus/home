@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Biblioteca VOV</title>
+
+<style>
+body{
+  font-family:Arial;
+  background:#000;
+  color:#fff;
+  padding:20px;
+}
+
+h1{
+  text-align:center;
+}
+
+textarea{
+  width:100%;
+  height:150px;
+  margin-top:10px;
+}
+
+button{
+  margin-top:10px;
+  padding:10px;
+  cursor:pointer;
+}
+
+.card{
+  background:#111;
+  padding:15px;
+  margin-top:15px;
+  border-radius:10px;
+}
+
+small{
+  opacity:0.6;
+}
+</style>
+</head>
+
+<body>
+
+<h1>📚 Biblioteca de Consultas VOV</h1>
+
+<textarea id="entrada" placeholder="Cole aqui a consulta completa..."></textarea>
+
+<br>
+
+<button onclick="salvar()">Salvar na Biblioteca</button>
+<button onclick="limpar()">Limpar Tudo</button>
+
+<div id="lista"></div>
+
+<script>
+
+// carregar histórico
+let dados = JSON.parse(localStorage.getItem("vov_consultas") || "[]");
+
+render();
+
+// salvar nova consulta
+function salvar(){
+  let texto = document.getElementById("entrada").value.trim();
+  if(!texto) return alert("Cole uma consulta.");
+
+  let registro = {
+    data: new Date().toLocaleString(),
+    texto: texto
+  };
+
+  dados.unshift(registro);
+  localStorage.setItem("vov_consultas", JSON.stringify(dados));
+
+  document.getElementById("entrada").value="";
+  render();
+}
+
+// renderizar lista
+function render(){
+  let html = "";
+
+  dados.forEach((item, i)=>{
+    html += `
+    <div class="card">
+      <small>${item.data}</small><br><br>
+      <div style="white-space:pre-wrap">${item.texto}</div><br>
+
+      <button onclick="baixar(${i})">📄 PDF</button>
+      <button onclick="remover(${i})">🗑️ Excluir</button>
+    </div>
+    `;
+  });
+
+  document.getElementById("lista").innerHTML = html;
+}
+
+// excluir
+function remover(i){
+  if(!confirm("Excluir consulta?")) return;
+  dados.splice(i,1);
+  localStorage.setItem("vov_consultas", JSON.stringify(dados));
+  render();
+}
+
+// baixar PDF (usa print)
+function baixar(i){
+  let w = window.open("", "_blank");
+  w.document.write("<pre style='font-family:serif'>" + dados[i].texto + "</pre>");
+  w.print();
+}
+
+function limpar(){
+  if(!confirm("Apagar toda biblioteca?")) return;
+  localStorage.removeItem("vov_consultas");
+  dados=[];
+  render();
+}
+
+</script>
+
+</body>
+</html>
