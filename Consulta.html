@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Consulta Oráculo VOV</title>
+
+<style>
+body{
+  font-family: Georgia, serif;
+  background:#fff;
+  color:#000;
+  max-width:800px;
+  margin:auto;
+  padding:30px;
+  line-height:1.7;
+}
+
+h1{
+  text-align:center;
+}
+
+textarea{
+  width:100%;
+  height:250px;
+  margin-top:10px;
+}
+
+button{
+  padding:10px 15px;
+  margin-top:10px;
+  cursor:pointer;
+}
+
+#saida{
+  margin-top:30px;
+  white-space:pre-wrap;
+}
+
+@media print {
+  textarea, button {
+    display:none;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<h1>🔮 Consulta ao Oráculo VOV</h1>
+
+<p><em>Por Jorge Luis Aparecido Matheus</em></p>
+
+<textarea id="entrada" placeholder="Cole aqui a consulta completa..."></textarea>
+
+<br>
+
+<button onclick="gerar()">Gerar leitura</button>
+<button onclick="salvar()">Salvar em PDF</button>
+
+<div id="saida"></div>
+
+<script>
+function gerar(){
+  let texto = document.getElementById("entrada").value;
+  document.getElementById("saida").innerText = texto;
+}
+
+function salvar(){
+  window.print();
+}
+</script>
+
+</body>
+</html>
