@@ -1,98 +1,150 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>Xadrez Básico</title>
+<title>Xadrez VOV</title>
+
+<!-- MOTOR CORRETO -->
+<script src="https://jorgematheus.mus.br/chess.min.js"></script>
 
 <style>
-body{background:#000;color:#fff;text-align:center;font-family:Arial;}
-#board{display:grid;grid-template-columns:repeat(8,60px);width:480px;margin:20px auto;}
-.square{width:60px;height:60px;line-height:60px;font-size:30px;cursor:pointer;}
-.light{background:#eee;color:#000;}
-.dark{background:#444;}
-.selected{outline:3px solid yellow;}
-</style>
+body{
+  background:#000;
+  color:#fff;
+  text-align:center;
+  font-family:Arial;
+}
 
+#board{
+  display:grid;
+  grid-template-columns:repeat(8,60px);
+  width:480px;
+  margin:20px auto;
+}
+
+.square{
+  width:60px;
+  height:60px;
+  line-height:60px;
+  font-size:32px;
+  cursor:pointer;
+}
+
+.light{ background:#eee; color:#000; }
+.dark{ background:#444; }
+
+.selected{ outline:3px solid yellow; }
+.move{ background:#6a6 !important; }
+</style>
 </head>
+
 <body>
 
-<h2>♟️ Xadrez (versão mínima)</h2>
+<h2>♟️ Xadrez VOV</h2>
 
 <div id="board"></div>
 
 <p>Turno: <span id="turn"></span></p>
 
-<button onclick="novo()">Novo</button>
+<button onclick="novo()">Novo Jogo</button>
 
 <script>
 
-// TABULEIRO INICIAL SIMPLES
-let board = [
-["r","n","b","q","k","b","n","r"],
-["p","p","p","p","p","p","p","p"],
-["","","","","","","",""],
-["","","","","","","",""],
-["","","","","","","",""],
-["","","","","","","",""],
-["P","P","P","P","P","P","P","P"],
-["R","N","B","Q","K","B","N","R"]
-];
-
-let turn = "w";
+let game = new Chess();
 let selected = null;
+let moves = [];
 
-// DESENHAR
+// DESENHAR TABULEIRO
 function draw(){
-  let el = document.getElementById("board");
-  el.innerHTML="";
+
+  const board = document.getElementById("board");
+  board.innerHTML = "";
+
+  let b = game.board();
 
   for(let i=0;i<8;i++){
     for(let j=0;j<8;j++){
 
       let sq = document.createElement("div");
-      sq.className = "square " + ((i+j)%2==0?"light":"dark");
 
-      let piece = board[i][j];
-      sq.innerText = piece;
+      let color = (i+j)%2==0 ? "light" : "dark";
+      sq.className = "square " + color;
 
-      let coord = [i,j];
+      let coord = String.fromCharCode(97+j) + (8-i);
 
-      sq.onclick = ()=>clickSquare(coord);
+      let piece = b[i][j];
+      if(piece){
+        sq.innerText = simbolo(piece);
+      }
 
-      el.appendChild(sq);
+      if(coord === selected){
+        sq.classList.add("selected");
+      }
+
+      if(moves.includes(coord)){
+        sq.classList.add("move");
+      }
+
+      sq.onclick = () => clickSquare(coord);
+
+      board.appendChild(sq);
     }
   }
 
   document.getElementById("turn").innerText =
-    turn === "w" ? "Brancas" : "Pretas";
+    game.turn() === "w" ? "Brancas" : "Pretas";
 }
 
-// CLIQUE (movimento livre simplificado)
+// SÍMBOLOS DAS PEÇAS
+function simbolo(p){
+  const map = {
+    p:"♟", r:"♜", n:"♞", b:"♝", q:"♛", k:"♚"
+  };
+  let s = map[p.type];
+  return p.color === "w" ? s.toUpperCase() : s;
+}
+
+// CLIQUE NO TABULEIRO
 function clickSquare(c){
 
+  // selecionar peça
   if(!selected){
-    if(board[c[0]][c[1]]==="") return;
+    let m = game.moves({square:c, verbose:true});
+    if(m.length === 0) return;
+
     selected = c;
+    moves = m.map(x=>x.to);
+    draw();
     return;
   }
 
-  // move simples (sem validação)
-  board[c[0]][c[1]] = board[selected[0]][selected[1]];
-  board[selected[0]][selected[1]] = "";
+  // tentar mover
+  let move = game.move({
+    from:selected,
+    to:c,
+    promotion:'q'
+  });
 
   selected = null;
+  moves = [];
 
-  turn = turn==="w"?"b":"w";
+  if(move){
+    draw();
+    return;
+  }
 
   draw();
 }
 
-// NOVO
+// NOVO JOGO
 function novo(){
-  location.reload();
+  game = new Chess();
+  selected = null;
+  moves = [];
+  draw();
 }
 
-// INIT
+// INICIAR
 draw();
 
 </script>
