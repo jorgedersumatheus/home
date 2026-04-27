@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Xadrez VOV Jogável</title>
+
+<script src="chess.min.js"></script>
+
+<style>
+body{
+  background:#000;
+  color:#fff;
+  text-align:center;
+  font-family:Arial;
+}
+
+#tabuleiro{
+  display:grid;
+  grid-template-columns:repeat(8,60px);
+  width:480px;
+  margin:20px auto;
+}
+
+.casa{
+  width:60px;
+  height:60px;
+  line-height:60px;
+  font-size:28px;
+  cursor:pointer;
+}
+
+.branca{ background:#eee; color:#000; }
+.preta{ background:#444; }
+
+.selecionada{
+  outline:3px solid yellow;
+}
+
+.possivel{
+  background:#6a6 !important;
+}
+
+.panel{
+  margin-top:10px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>♟️ Xadrez VOV</h1>
+
+<div id="tabuleiro"></div>
+
+<div class="panel">
+Turno: <span id="turno"></span><br>
+FEN: <span id="fen"></span>
+</div>
+
+<button onclick="novoJogo()">Novo</button>
+
+<script>
+
+let game = new Chess();
+let selecionada = null;
+let movimentosPossiveis = [];
+
+// ===== DESENHAR =====
+function desenhar(){
+
+  let tab = document.getElementById("tabuleiro");
+  tab.innerHTML = "";
+
+  let board = game.board();
+
+  for(let i=0;i<8;i++){
+    for(let j=0;j<8;j++){
+
+      let casa = document.createElement("div");
+      let cor = (i+j)%2==0 ? "branca" : "preta";
+      casa.className = "casa " + cor;
+
+      let coord = String.fromCharCode(97+j) + (8-i);
+
+      // peça
+      let p = board[i][j];
+      if(p){
+        casa.innerText = simbolo(p);
+      }
+
+      // destaque seleção
+      if(coord === selecionada){
+        casa.classList.add("selecionada");
+      }
+
+      // destaque jogadas possíveis
+      if(movimentosPossiveis.includes(coord)){
+        casa.classList.add("possivel");
+      }
+
+      casa.onclick = () => clique(coord);
+
+      tab.appendChild(casa);
+    }
+  }
+
+  document.getElementById("fen").innerText = game.fen();
+  document.getElementById("turno").innerText = game.turn() === "w" ? "Brancas" : "Pretas";
+}
+
+// ===== SÍMBOLOS =====
+function simbolo(p){
+  const mapa = {
+    p:"♟", r:"♜", n:"♞", b:"♝", q:"♛", k:"♚"
+  };
+
+  let s = mapa[p.type];
+  return p.color === "w" ? s.toUpperCase() : s;
+}
+
+// ===== CLIQUE =====
+function clique(c){
+
+  // selecionar peça
+  if(!selecionada){
+
+    let moves = game.moves({ square: c, verbose:true });
+
+    if(moves.length === 0) return;
+
+    selecionada = c;
+    movimentosPossiveis = moves.map(m=>m.to);
+    desenhar();
+    return;
+  }
+
+  // tentar jogar
+  let move = game.move({
+    from: selecionada,
+    to: c,
+    promotion:'q'
+  });
+
+  selecionada = null;
+  movimentosPossiveis = [];
+
+  if(move){
+    desenhar();
+    return;
+  }
+
+  // reset se inválido
+  selecionada = null;
+  desenhar();
+}
+
+// ===== NOVO =====
+function novoJogo(){
+  game = new Chess();
+  selecionada = null;
+  movimentosPossiveis = [];
+  desenhar();
+}
+
+// ===== INIT =====
+desenhar();
+
+</script>
+
+</body>
+</html>
