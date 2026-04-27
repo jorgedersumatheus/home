@@ -2,9 +2,14 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>Xadrez VOV Jogável</title>
+<title>Xadrez VOV</title>
 
-<script src="chess.min.js"></script>
+<!-- TABULEIRO PRONTO -->
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard.min.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.13.4/chess.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard.min.js"></script>
 
 <style>
 body{
@@ -14,34 +19,17 @@ body{
   font-family:Arial;
 }
 
-#tabuleiro{
-  display:grid;
-  grid-template-columns:repeat(8,60px);
-  width:480px;
+#board{
+  width:350px;
   margin:20px auto;
 }
 
-.casa{
-  width:60px;
-  height:60px;
-  line-height:60px;
-  font-size:28px;
-  cursor:pointer;
-}
-
-.branca{ background:#eee; color:#000; }
-.preta{ background:#444; }
-
-.selecionada{
-  outline:3px solid yellow;
-}
-
-.possivel{
-  background:#6a6 !important;
-}
-
 .panel{
-  margin-top:10px;
+  background:#111;
+  padding:15px;
+  border-radius:10px;
+  max-width:350px;
+  margin:auto;
 }
 </style>
 </head>
@@ -50,120 +38,57 @@ body{
 
 <h1>♟️ Xadrez VOV</h1>
 
-<div id="tabuleiro"></div>
+<div id="board"></div>
 
 <div class="panel">
-Turno: <span id="turno"></span><br>
-FEN: <span id="fen"></span>
+<div>Turno: <span id="turno"></span></div>
+<div>FEN: <span id="fen"></span></div>
 </div>
 
 <button onclick="novoJogo()">Novo</button>
 
 <script>
 
-let game = new Chess();
-let selecionada = null;
-let movimentosPossiveis = [];
+// MOTOR
+var game = new Chess();
 
-// ===== DESENHAR =====
-function desenhar(){
+// TABULEIRO
+var board = Chessboard('board', {
+  draggable: true,
+  position: 'start',
+  onDrop: onDrop
+});
 
-  let tab = document.getElementById("tabuleiro");
-  tab.innerHTML = "";
+// MOVIMENTO
+function onDrop(source, target) {
 
-  let board = game.board();
-
-  for(let i=0;i<8;i++){
-    for(let j=0;j<8;j++){
-
-      let casa = document.createElement("div");
-      let cor = (i+j)%2==0 ? "branca" : "preta";
-      casa.className = "casa " + cor;
-
-      let coord = String.fromCharCode(97+j) + (8-i);
-
-      // peça
-      let p = board[i][j];
-      if(p){
-        casa.innerText = simbolo(p);
-      }
-
-      // destaque seleção
-      if(coord === selecionada){
-        casa.classList.add("selecionada");
-      }
-
-      // destaque jogadas possíveis
-      if(movimentosPossiveis.includes(coord)){
-        casa.classList.add("possivel");
-      }
-
-      casa.onclick = () => clique(coord);
-
-      tab.appendChild(casa);
-    }
-  }
-
-  document.getElementById("fen").innerText = game.fen();
-  document.getElementById("turno").innerText = game.turn() === "w" ? "Brancas" : "Pretas";
-}
-
-// ===== SÍMBOLOS =====
-function simbolo(p){
-  const mapa = {
-    p:"♟", r:"♜", n:"♞", b:"♝", q:"♛", k:"♚"
-  };
-
-  let s = mapa[p.type];
-  return p.color === "w" ? s.toUpperCase() : s;
-}
-
-// ===== CLIQUE =====
-function clique(c){
-
-  // selecionar peça
-  if(!selecionada){
-
-    let moves = game.moves({ square: c, verbose:true });
-
-    if(moves.length === 0) return;
-
-    selecionada = c;
-    movimentosPossiveis = moves.map(m=>m.to);
-    desenhar();
-    return;
-  }
-
-  // tentar jogar
-  let move = game.move({
-    from: selecionada,
-    to: c,
-    promotion:'q'
+  var move = game.move({
+    from: source,
+    to: target,
+    promotion: 'q'
   });
 
-  selecionada = null;
-  movimentosPossiveis = [];
+  if (move === null) return 'snapback';
 
-  if(move){
-    desenhar();
-    return;
-  }
-
-  // reset se inválido
-  selecionada = null;
-  desenhar();
+  atualizar();
 }
 
-// ===== NOVO =====
+// ATUALIZA
+function atualizar(){
+  document.getElementById("fen").innerText = game.fen();
+  document.getElementById("turno").innerText =
+    game.turn() === "w" ? "Brancas" : "Pretas";
+}
+
+// NOVO JOGO
 function novoJogo(){
-  game = new Chess();
-  selecionada = null;
-  movimentosPossiveis = [];
-  desenhar();
+  game.reset();
+  board.start();
+  atualizar();
 }
 
-// ===== INIT =====
-desenhar();
+// INIT
+atualizar();
 
 </script>
 
