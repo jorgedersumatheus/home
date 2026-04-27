@@ -85,7 +85,7 @@ Turno: <span id="turn"></span>
 
 <script>
 
-// TABULEIRO
+// ---------------- TABULEIRO ----------------
 let board = [
 ["r","n","b","q","k","b","n","r"],
 ["p","p","p","p","p","p","p","p"],
@@ -100,7 +100,9 @@ let board = [
 let turn = "w";
 let selected = null;
 
-// PEÇAS BONITAS
+  <p id="comentario">IA VOV aguardando...</p>
+
+// ---------------- PEÇAS ----------------
 function simbolo(p){
   const pecas = {
     P:"♙", R:"♖", N:"♘", B:"♗", Q:"♕", K:"♔",
@@ -109,7 +111,9 @@ function simbolo(p){
   return pecas[p] || "";
 }
 
-// DESENHAR
+function isWhite(p){ return p === p.toUpperCase(); }
+
+// ---------------- DESENHO ----------------
 function draw(){
   let el = document.getElementById("board");
   el.innerHTML="";
@@ -134,12 +138,10 @@ function draw(){
   }
 
   document.getElementById("turn").innerText =
-    turn==="w"?"Brancas" : "Pretas";
+    turn==="w"?"Brancas":"Pretas";
 }
 
-// MOVIMENTO BÁSICO
-function isWhite(p){ return p === p.toUpperCase(); }
-
+// ---------------- REGRAS ----------------
 function validMove(i,j,ti,tj){
 
   let piece = board[i][j];
@@ -148,36 +150,28 @@ function validMove(i,j,ti,tj){
   let dx = tj - j;
   let dy = ti - i;
 
-  // peão
   if(piece.toLowerCase() === "p"){
     let dir = isWhite(piece) ? -1 : 1;
-
     if(dx===0 && dy===dir && board[ti][tj]==="") return true;
-
     if(Math.abs(dx)===1 && dy===dir && board[ti][tj] !== "") return true;
   }
 
-  // torre
   if(piece.toLowerCase() === "r"){
     if(i===ti || j===tj) return true;
   }
 
-  // bispo
   if(piece.toLowerCase() === "b"){
     if(Math.abs(dx) === Math.abs(dy)) return true;
   }
 
-  // rainha
   if(piece.toLowerCase() === "q"){
     if(i===ti || j===tj || Math.abs(dx)===Math.abs(dy)) return true;
   }
 
-  // rei
   if(piece.toLowerCase() === "k"){
     if(Math.abs(dx)<=1 && Math.abs(dy)<=1) return true;
   }
 
-  // cavalo
   if(piece.toLowerCase() === "n"){
     if((Math.abs(dx)===2 && Math.abs(dy)===1) ||
        (Math.abs(dx)===1 && Math.abs(dy)===2)) return true;
@@ -186,16 +180,22 @@ function validMove(i,j,ti,tj){
   return false;
 }
 
-// CLIQUE
+// ---------------- MOVIMENTO ----------------
+function movePiece(si,sj,i,j){
+  board[i][j] = board[si][sj];
+  board[si][sj] = "";
+}
+
+// ---------------- CLIQUE ----------------
 function clickSquare(i,j){
+
+  if(turn !== "w") return;
 
   let piece = board[i][j];
 
   if(!selected){
     if(piece==="") return;
-
-    if(turn==="w" && !isWhite(piece)) return;
-    if(turn==="b" && isWhite(piece)) return;
+    if(!isWhite(piece)) return;
 
     selected = [i,j];
     draw();
@@ -205,34 +205,123 @@ function clickSquare(i,j){
   let [si,sj] = selected;
 
   if(validMove(si,sj,i,j)){
-
-    if(board[i][j] !== ""){
-      if(isWhite(board[i][j]) === isWhite(board[si][sj])){
-        selected = null;
-        draw();
-        return;
-      }
+    if(board[i][j] !== "" &&
+       isWhite(board[i][j]) === isWhite(board[si][sj])){
+      selected = null;
+      draw();
+      return;
     }
 
-    board[i][j] = board[si][sj];
-    board[si][sj] = "";
+    movePiece(si,sj,i,j);
+    turn = "b";
+    selected = null;
+    draw();
 
-    turn = turn==="w"?"b":"w";
+    setTimeout(iaMove, 400);
+    return;
   }
 
   selected = null;
   draw();
 }
 
-// NOVO JOGO
-function novo(){
-  location.reload();
+// ---------------- IA ----------------
+
+// valor das peças
+const valor = {
+  p:1, n:3, b:3, r:5, q:9, k:100
+};
+
+// gerar todos movimentos possíveis
+function allMoves(color){
+
+  let moves = [];
+
+  for(let i=0;i<8;i++){
+    for(let j=0;j<8;j++){
+
+      let p = board[i][j];
+      if(!p) continue;
+
+      if(color==="w" && !isWhite(p)) continue;
+      if(color==="b" && isWhite(p)) continue;
+
+      for(let ti=0;ti<8;ti++){
+        for(let tj=0;tj<8;tj++){
+
+          if(validMove(i,j,ti,tj)){
+            moves.push([i,j,ti,tj]);
+          }
+        }
+      }
+    }
+  }
+
+  return moves;
 }
 
-// INICIAR
+// avaliar jogada
+function evaluateMove(move){
+
+  let [si,sj,ti,tj] = move;
+  let target = board[ti][tj];
+
+  if(target){
+    return valor[target.toLowerCase()];
+  }
+
+  return 0;
+}
+
+// IA joga
+function iaMove(){
+
+  let moves = allMoves("b");
+
+  if(moves.length === 0) return;
+
+  // escolher melhor captura
+  let best = moves[0];
+  let bestScore = -999;
+
+  for(let m of moves){
+    let score = evaluateMove(m);
+
+    if(score > bestScore){
+      bestScore = score;
+      best = m;
+    }
+  }
+
+  movePiece(...best);
+
+  turn = "w";
+  draw();
+
+  comentar(best, bestScore);
+}
+
+// ---------------- COMENTÁRIO VOV ----------------
+function comentar(move, score){
+
+  let texto = "";
+
+  if(score > 0){
+    texto = "IA VOV: captura estratégica executada.";
+  } else {
+    texto = "IA VOV: avanço posicional em construção.";
+  }
+
+  document.getElementById("comentario").innerText = texto;
+}
+
+// ---------------- INIT ----------------
 draw();
 
-</script>
+</script>  
+
+
+
 
 </body>
 </html>
