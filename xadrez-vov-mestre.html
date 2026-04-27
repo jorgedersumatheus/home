@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Xadrez VOV Mestre</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.13.4/chess.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css"/>
+
+<script src="https://cdn.jsdelivr.net/npm/stockfish/stockfish.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<style>
+body{
+  font-family:Arial;
+  background:#000;
+  color:#fff;
+  text-align:center;
+}
+
+#board{
+  width:350px;
+  margin:20px auto;
+}
+
+.panel{
+  max-width:420px;
+  margin:auto;
+  background:#111;
+  padding:15px;
+  border-radius:10px;
+  text-align:left;
+}
+
+.log{
+  max-height:200px;
+  overflow:auto;
+  font-size:12px;
+  margin-top:10px;
+  background:#000;
+  padding:10px;
+  border-radius:8px;
+}
+
+button{
+  padding:10px;
+  margin:5px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<h1>♟️ Xadrez VOV Mestre</h1>
+
+<div id="board"></div>
+
+<div class="panel" id="painel">
+
+<div><strong>🔮 Hexagrama:</strong> <span id="hex"></span></div>
+<div><strong>⚡ Mutação:</strong><div id="mut"></div></div>
+<div><strong>🧠 Avaliação IA:</strong> <span id="eval">--</span></div>
+<div><strong>📜 Leitura VOV:</strong> <span id="read">--</span></div>
+
+<div class="log" id="log"></div>
+
+</div>
+
+<button onclick="novoJogo()">Novo</button>
+<button onclick="gerarPDF()">📄 Gerar PDF</button>
+
+<script>
+
+// ===== XADREZ =====
+var game = new Chess();
+var board;
+
+// ===== IA =====
+var engine = new Worker("https://cdn.jsdelivr.net/npm/stockfish/stockfish.js");
+
+// ===== VOV =====
+function linha(){
+  let r=Math.random();
+  if(r<0.25)return{v:0,m:true};
+  if(r<0.5)return{v:1,m:false};
+  if(r<0.75)return{v:0,m:false};
+  return{v:1,m:true};
+}
+
+let linhas=[];
+let rodada=0;
+
+// ===== HEX =====
+function getHex(){
+  let base=linhas.map(l=>l.v).join("");
+  return parseInt(base,2)%64+1;
+}
+
+function desenhar(){
+  return linhas.map(l=>{
+    if(l.v===1)return l.m?"━━━ x":"━━━";
+    return l.m?"━ ━ x":"━ ━";
+  }).reverse().join("<br>");
+}
+
+// ===== LEITURA VOV =====
+function traduzir(score){
+
+  if(score > 200) return "Domínio — fluxo aberto";
+  if(score > 50) return "Clareza crescente";
+  if(score > -50) return "Equilíbrio dinâmico";
+  if(score > -200) return "Pressão adversa";
+  return "Ruptura — perda estrutural";
+}
+
+// ===== LOG =====
+function logar(txt){
+  let el = document.getElementById("log");
+  el.innerHTML = txt + "<br>" + el.innerHTML;
+}
+
+// ===== ATUALIZAR =====
+function atualizar(){
+  document.getElementById("hex").innerHTML = getHex();
+  document.getElementById("mut").innerHTML = desenhar();
+}
+
+// ===== MUTAÇÃO =====
+function mutar(){
+  rodada++;
+  if(rodada<=6)linhas[rodada-1].m=true;
+  atualizar();
+}
+
+// ===== IA FEEDBACK =====
+engine.onmessage = function(event){
+
+  if(event.data.includes("score cp")){
+
+    let score = parseInt(event.data.split("cp ")[1]);
+
+    document.getElementById("eval").innerHTML = score;
+
+    let leitura = traduzir(score);
+    document.getElementById("read").innerHTML = leitura;
+
+    logar("IA: " + leitura + " (" + score + ")");
+  }
+
+  if(event.data.startsWith("bestmove")){
+    let move = event.data.split(" ")[1];
+
+    game.move({
+      from: move.substring(0,2),
+      to: move.substring(2,4),
+      promotion:'q'
+    });
+
+    board.position(game.fen());
+    mutar();
+  }
+};
+
+// ===== IA PENSA =====
+function pensar(){
+  engine.postMessage("position fen " + game.fen());
+  engine.postMessage("go depth 12");
+}
+
+// ===== MOVIMENTO =====
+function onDrop(s,t){
+  let move = game.move({from:s,to:t,promotion:'q'});
+
+  if(move === null) return 'snapback';
+
+  logar("Você: " + move.from + "-" + move.to);
+
+  mutar();
+
+  setTimeout(pensar,300);
+}
+
+// ===== NOVO =====
+function novoJogo(){
+  game.reset();
+
+  linhas=[];
+  for(let i=0;i<6;i++)linhas.push(linha());
+
+  rodada=0;
+
+  board.start();
+  atualizar();
+
+  document.getElementById("log").innerHTML="";
+}
+
+// ===== PDF =====
+function gerarPDF(){
+  html2pdf().from(document.getElementById("painel")).save("vov-mestre.pdf");
+}
+
+// ===== INIT =====
+board = Chessboard('board',{
+  draggable:true,
+  position:'start',
+  onDrop:onDrop
+});
+
+novoJogo();
+
+</script>
+
+</body>
+</html>
