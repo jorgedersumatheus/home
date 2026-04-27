@@ -1,6 +1,6 @@
 let game = new Chess();
 
-function novaPartida() {
+function novoJogo() {
   game = new Chess();
   atualizar();
 }
