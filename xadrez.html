@@ -318,7 +318,60 @@ function comentar(move, score){
 // ---------------- INIT ----------------
 draw();
 
-</script>  
+
+// IA SIMPLES (não quebra o sistema)
+
+function jogadaIA(){
+
+  if(turn !== "b") return;
+
+  let moves = [];
+
+  for(let i=0;i<8;i++){
+    for(let j=0;j<8;j++){
+
+      let p = board[i][j];
+      if(!p) continue;
+      if(p === p.toUpperCase()) continue;
+
+      for(let ti=0;ti<8;ti++){
+        for(let tj=0;tj<8;tj++){
+
+          if(validMove(i,j,ti,tj)){
+            moves.push([i,j,ti,tj]);
+          }
+        }
+      }
+    }
+  }
+
+  if(moves.length === 0) return;
+
+  let m = moves[Math.floor(Math.random()*moves.length)];
+
+  board[m[2]][m[3]] = board[m[0]][m[1]];
+  board[m[0]][m[1]] = "";
+
+  turn = "w";
+  draw();
+
+  comentarIA();
+}
+
+function comentarIA(){
+  let frases = [
+    "IA VOV: movimento em fluxo.",
+    "IA VOV: leitura posicional.",
+    "IA VOV: avanço consciente.",
+    "IA VOV: jogada simples e eficaz."
+  ];
+
+  document.getElementById("comentario").innerText =
+    frases[Math.floor(Math.random()*frases.length)];
+}
+  
+  
+</script>
 
 
 
