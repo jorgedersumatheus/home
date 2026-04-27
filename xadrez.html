@@ -2,7 +2,10 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>Xadrez Funcional</title>
+<title>Xadrez VOV</title>
+
+<!-- MOTOR CORRETO -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.13.4/chess.min.js"></script>
 
 <style>
 body{
@@ -37,7 +40,7 @@ body{
 
 <body>
 
-<h2>♟️ Xadrez</h2>
+<h2>♟️ Xadrez VOV</h2>
 
 <div id="board"></div>
 
@@ -45,14 +48,13 @@ body{
 
 <button onclick="novo()">Novo Jogo</button>
 
-<script src="chess.min.js"></script>
-
 <script>
 
 let game = new Chess();
 let selected = null;
 let moves = [];
 
+// DESENHAR TABULEIRO
 function draw(){
 
   const board = document.getElementById("board");
@@ -72,7 +74,7 @@ function draw(){
 
       let piece = b[i][j];
       if(piece){
-        sq.innerText = piece.type.toUpperCase();
+        sq.innerText = simbolo(piece);
       }
 
       if(coord === selected){
@@ -93,6 +95,16 @@ function draw(){
     game.turn() === "w" ? "Brancas" : "Pretas";
 }
 
+// SÍMBOLOS
+function simbolo(p){
+  const map = {
+    p:"♟", r:"♜", n:"♞", b:"♝", q:"♛", k:"♚"
+  };
+  let s = map[p.type];
+  return p.color === "w" ? s.toUpperCase() : s;
+}
+
+// CLIQUE
 function clickSquare(c){
 
   if(!selected){
@@ -122,6 +134,7 @@ function clickSquare(c){
   draw();
 }
 
+// NOVO JOGO
 function novo(){
   game = new Chess();
   selected = null;
@@ -129,6 +142,7 @@ function novo(){
   draw();
 }
 
+// INIT
 draw();
 
 </script>
