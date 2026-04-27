@@ -2,256 +2,188 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>Xadrez VOV</title>
+<title>Xadrez VOV IA</title>
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css"/>
 
 <style>
 body{
-  background:#0a0a0a;
-  color:#f5f5f5;
-  text-align:center;
-  font-family:Arial;
+    background:#0f0f0f;
+    color:#fff;
+    font-family:Arial;
+    text-align:center;
 }
 
 #board{
-  display:grid;
-  grid-template-columns:repeat(8,70px);
-  width:560px;
-  margin:30px auto;
-  border:4px solid #c9a227;
+    width:420px;
+    margin:20px auto;
 }
 
-.square{
-  width:70px;
-  height:70px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:38px;
-  cursor:pointer;
-}
-
-.light{ background:#f0d9b5; }
-.dark{ background:#b58863; }
-
-.selected{
-  outline:3px solid yellow;
+#status{
+    margin-top:10px;
+    font-size:18px;
+    min-height:24px;
 }
 
 button{
-  padding:10px 20px;
-  margin-top:10px;
-  background:#c9a227;
-  border:none;
-  cursor:pointer;
+    margin-top:10px;
+    padding:10px 14px;
+    cursor:pointer;
+    font-size:16px;
 }
 </style>
 </head>
 
 <body>
 
-<h2>♟️ Xadrez VOV</h2>
+<h2>♟️ Xadrez VOV IA Avançada</h2>
 
 <div id="board"></div>
+<div id="status">Carregando...</div>
+<button onclick="restartGame()">Reiniciar</button>
 
-<p>Turno: <span id="turn"></span></p>
-<p id="comentario">IA VOV aguardando...</p>
-
-<button onclick="novo()">Novo Jogo</button>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
 
 <script>
+let game = new Chess();
+let board = null;
+let gameOver = false;
 
-// ---------------- TABULEIRO ----------------
-let board = [
-["r","n","b","q","k","b","n","r"],
-["p","p","p","p","p","p","p","p"],
-["","","","","","","",""],
-["","","","","","","",""],
-["","","","","","","",""],
-["","","","","","","",""],
-["P","P","P","P","P","P","P","P"],
-["R","N","B","Q","K","B","N","R"]
-];
+// ===== IA VOV (material evaluation simples) =====
+function evaluateBoard(game) {
+    const values = { p:10, n:30, b:30, r:50, q:90, k:900 };
 
-let turn = "w";
-let selected = null;
+    let score = 0;
+    const boardState = game.board();
 
-// ---------------- PEÇAS ----------------
-function simbolo(p){
-  const pecas = {
-    P:"♙", R:"♖", N:"♘", B:"♗", Q:"♕", K:"♔",
-    p:"♟", r:"♜", n:"♞", b:"♝", q:"♛", k:"♚"
-  };
-  return pecas[p] || "";
-}
-
-function isWhite(p){ return p === p.toUpperCase(); }
-
-// ---------------- DESENHAR ----------------
-function draw(){
-  let el = document.getElementById("board");
-  el.innerHTML="";
-
-  for(let i=0;i<8;i++){
-    for(let j=0;j<8;j++){
-
-      let sq = document.createElement("div");
-      sq.className = "square " + ((i+j)%2==0?"light":"dark");
-
-      let piece = board[i][j];
-      sq.innerText = simbolo(piece);
-
-      if(selected && selected[0]==i && selected[1]==j){
-        sq.classList.add("selected");
-      }
-
-      sq.onclick = ()=>clickSquare(i,j);
-
-      el.appendChild(sq);
-    }
-  }
-
-  document.getElementById("turn").innerText =
-    turn==="w"?"Brancas":"Pretas";
-}
-
-// ---------------- REGRAS ----------------
-function validMove(i,j,ti,tj){
-
-  let piece = board[i][j];
-  if(!piece) return false;
-
-  let dx = tj - j;
-  let dy = ti - i;
-
-  if(piece.toLowerCase() === "p"){
-    let dir = isWhite(piece) ? -1 : 1;
-
-    if(dx===0 && dy===dir && board[ti][tj]==="") return true;
-    if(Math.abs(dx)===1 && dy===dir && board[ti][tj] !== "") return true;
-  }
-
-  if(piece.toLowerCase() === "r"){
-    if(i===ti || j===tj) return true;
-  }
-
-  if(piece.toLowerCase() === "b"){
-    if(Math.abs(dx) === Math.abs(dy)) return true;
-  }
-
-  if(piece.toLowerCase() === "q"){
-    if(i===ti || j===tj || Math.abs(dx)===Math.abs(dy)) return true;
-  }
-
-  if(piece.toLowerCase() === "k"){
-    if(Math.abs(dx)<=1 && Math.abs(dy)<=1) return true;
-  }
-
-  if(piece.toLowerCase() === "n"){
-    if((Math.abs(dx)===2 && Math.abs(dy)===1) ||
-       (Math.abs(dx)===1 && Math.abs(dy)===2)) return true;
-  }
-
-  return false;
-}
-
-// ---------------- CLIQUE ----------------
-function clickSquare(i,j){
-
-  if(turn !== "w") return;
-
-  let piece = board[i][j];
-
-  if(!selected){
-    if(piece==="") return;
-    if(!isWhite(piece)) return;
-
-    selected = [i,j];
-    draw();
-    return;
-  }
-
-  let [si,sj] = selected;
-
-  if(validMove(si,sj,i,j)){
-
-    if(board[i][j] !== "" &&
-       isWhite(board[i][j]) === isWhite(board[si][sj])){
-      selected = null;
-      draw();
-      return;
-    }
-
-    board[i][j] = board[si][sj];
-    board[si][sj] = "";
-
-    turn = "b";
-    selected = null;
-    draw();
-
-    setTimeout(jogadaIA, 500);
-    return;
-  }
-
-  selected = null;
-  draw();
-}
-
-// ---------------- IA ----------------
-function jogadaIA(){
-
-  let moves = [];
-
-  for(let i=0;i<8;i++){
-    for(let j=0;j<8;j++){
-
-      let p = board[i][j];
-      if(!p || isWhite(p)) continue;
-
-      for(let ti=0;ti<8;ti++){
-        for(let tj=0;tj<8;tj++){
-
-          if(validMove(i,j,ti,tj)){
-            moves.push([i,j,ti,tj]);
-          }
+    for (let row of boardState) {
+        for (let piece of row) {
+            if (piece) {
+                let value = values[piece.type];
+                score += piece.color === 'b' ? value : -value;
+            }
         }
-      }
     }
-  }
-
-  if(moves.length === 0) return;
-
-  let m = moves[Math.floor(Math.random()*moves.length)];
-
-  board[m[2]][m[3]] = board[m[0]][m[1]];
-  board[m[0]][m[1]] = "";
-
-  turn = "w";
-  draw();
-
-  comentarIA();
+    return score;
 }
 
-// ---------------- COMENTÁRIO ----------------
-function comentarIA(){
-  let frases = [
-    "IA VOV: movimento em fluxo.",
-    "IA VOV: leitura posicional.",
-    "IA VOV: avanço consciente.",
-    "IA VOV: jogada simples e eficaz."
-  ];
+// ===== STATUS =====
+function updateStatus() {
+    let text = "";
 
-  document.getElementById("comentario").innerText =
-    frases[Math.floor(Math.random()*frases.length)];
+    if (game.in_checkmate()) {
+        gameOver = true;
+        let winner = game.turn() === 'w' ? "Pretas (IA VOV)" : "Brancas (Você)";
+        text = "XEQUE-MATE! Vitória de " + winner;
+        showVictory(winner);
+    }
+    else if (game.in_draw()) {
+        gameOver = true;
+        text = "Empate!";
+    }
+    else {
+        text = "Turno: " + (game.turn() === 'w' ? "Brancas (Você)" : "IA VOV");
+        if (game.in_check()) text += " - XEQUE!";
+    }
+
+    document.getElementById("status").innerText = text;
 }
 
-// ---------------- NOVO ----------------
-function novo(){
-  location.reload();
+// ===== VITÓRIA VISUAL =====
+function showVictory(winner) {
+    const div = document.createElement("div");
+    div.innerHTML = `
+    <div style="
+        position:fixed;top:0;left:0;width:100%;height:100%;
+        background:rgba(0,0,0,0.92);
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+        align-items:center;
+        font-size:34px;
+        z-index:9999;">
+        ♔ XEQUE-MATE ♔
+        <div style="font-size:22px;margin-top:10px;">
+            Vitória de ${winner}
+        </div>
+    </div>`;
+    document.body.appendChild(div);
 }
 
-// INIT
-draw();
+// ===== MOVIMENTO IA VOV =====
+function makeAIMove() {
+    if (gameOver) return;
 
+    const moves = game.moves({ verbose:true });
+    if (moves.length === 0) return;
+
+    let bestMove = null;
+    let bestValue = -9999;
+
+    for (let move of moves) {
+        let gameCopy = new Chess(game.fen());
+        gameCopy.move(move);
+
+        let value = evaluateBoard(gameCopy);
+
+        if (value > bestValue) {
+            bestValue = value;
+            bestMove = move;
+        }
+    }
+
+    if (bestMove) {
+        game.move(bestMove);
+        board.position(game.fen());
+        updateStatus();
+    }
+}
+
+// ===== MOVIMENTO DO JOGADOR =====
+function onDrop(source, target) {
+    if (gameOver) return 'snapback';
+
+    let move = game.move({
+        from: source,
+        to: target,
+        promotion: 'q'
+    });
+
+    if (move === null) return 'snapback';
+
+    board.position(game.fen());
+    updateStatus();
+
+    setTimeout(makeAIMove, 350);
+}
+
+// ===== REINICIAR =====
+function restartGame() {
+    game = new Chess();
+    gameOver = false;
+    board.start();
+    updateStatus();
+}
+
+// ===== TABULEIRO =====
+board = Chessboard('board', {
+    draggable:true,
+    position:'start',
+    onDrop:onDrop,
+
+    // peças pretas consistentes (VOV clean)
+    pieceTheme: function(piece) {
+        const color = piece.charAt(0);
+        const type = piece.charAt(1);
+
+        return `https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/cburnett/${color}${type}.svg`;
+    }
+});
+
+updateStatus();
 </script>
 
 </body>
