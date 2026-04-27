@@ -2,14 +2,9 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>Xadrez VOV</title>
-
-<!-- TABULEIRO PRONTO -->
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard.min.css">
+<title>Xadrez Simples</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.13.4/chess.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard.min.js"></script>
 
 <style>
 body{
@@ -20,75 +15,134 @@ body{
 }
 
 #board{
-  width:350px;
+  display:grid;
+  grid-template-columns:repeat(8,60px);
+  width:480px;
   margin:20px auto;
 }
 
-.panel{
-  background:#111;
-  padding:15px;
-  border-radius:10px;
-  max-width:350px;
-  margin:auto;
+.square{
+  width:60px;
+  height:60px;
+  line-height:60px;
+  font-size:32px;
+  cursor:pointer;
+}
+
+.light{ background:#eee; color:#000; }
+.dark{ background:#444; }
+
+.selected{
+  outline:3px solid yellow;
+}
+
+.move{
+  background:#6a6 !important;
 }
 </style>
 </head>
 
 <body>
 
-<h1>♟️ Xadrez VOV</h1>
+<h2>♟️ Xadrez Simples</h2>
 
 <div id="board"></div>
 
-<div class="panel">
-<div>Turno: <span id="turno"></span></div>
-<div>FEN: <span id="fen"></span></div>
-</div>
+<p>Turno: <span id="turn"></span></p>
 
-<button onclick="novoJogo()">Novo</button>
+<button onclick="novo()">Novo Jogo</button>
 
 <script>
 
-// MOTOR
-var game = new Chess();
+let game = new Chess();
+let selected = null;
+let moves = [];
 
-// TABULEIRO
-var board = Chessboard('board', {
-  draggable: true,
-  position: 'start',
-  onDrop: onDrop
-});
+function draw(){
 
-// MOVIMENTO
-function onDrop(source, target) {
+  const board = document.getElementById("board");
+  board.innerHTML = "";
 
-  var move = game.move({
-    from: source,
-    to: target,
-    promotion: 'q'
-  });
+  let b = game.board();
 
-  if (move === null) return 'snapback';
+  for(let i=0;i<8;i++){
+    for(let j=0;j<8;j++){
 
-  atualizar();
-}
+      let sq = document.createElement("div");
 
-// ATUALIZA
-function atualizar(){
-  document.getElementById("fen").innerText = game.fen();
-  document.getElementById("turno").innerText =
+      let color = (i+j)%2==0 ? "light" : "dark";
+      sq.className = "square " + color;
+
+      let coord = String.fromCharCode(97+j) + (8-i);
+
+      let piece = b[i][j];
+      if(piece){
+        sq.innerText = symbol(piece);
+      }
+
+      if(coord === selected){
+        sq.classList.add("selected");
+      }
+
+      if(moves.includes(coord)){
+        sq.classList.add("move");
+      }
+
+      sq.onclick = () => clickSquare(coord);
+
+      board.appendChild(sq);
+    }
+  }
+
+  document.getElementById("turn").innerText =
     game.turn() === "w" ? "Brancas" : "Pretas";
 }
 
-// NOVO JOGO
-function novoJogo(){
-  game.reset();
-  board.start();
-  atualizar();
+function symbol(p){
+  const map = {
+    p:"♟", r:"♜", n:"♞", b:"♝", q:"♛", k:"♚"
+  };
+  let s = map[p.type];
+  return p.color === "w" ? s.toUpperCase() : s;
 }
 
-// INIT
-atualizar();
+function clickSquare(c){
+
+  if(!selected){
+    let m = game.moves({square:c, verbose:true});
+    if(m.length === 0) return;
+
+    selected = c;
+    moves = m.map(x=>x.to);
+    draw();
+    return;
+  }
+
+  let move = game.move({
+    from:selected,
+    to:c,
+    promotion:'q'
+  });
+
+  selected = null;
+  moves = [];
+
+  if(move){
+    draw();
+    return;
+  }
+
+  draw();
+}
+
+function novo(){
+  game = new Chess();
+  selected = null;
+  moves = [];
+  draw();
+}
+
+draw();
 
 </script>
 
