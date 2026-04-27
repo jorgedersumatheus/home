@@ -2,9 +2,7 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>Xadrez Simples</title>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.13.4/chess.min.js"></script>
+<title>Xadrez Funcional</title>
 
 <style>
 body{
@@ -32,25 +30,22 @@ body{
 .light{ background:#eee; color:#000; }
 .dark{ background:#444; }
 
-.selected{
-  outline:3px solid yellow;
-}
-
-.move{
-  background:#6a6 !important;
-}
+.selected{ outline:3px solid yellow; }
+.move{ background:#6a6 !important; }
 </style>
 </head>
 
 <body>
 
-<h2>♟️ Xadrez Simples</h2>
+<h2>♟️ Xadrez</h2>
 
 <div id="board"></div>
 
 <p>Turno: <span id="turn"></span></p>
 
 <button onclick="novo()">Novo Jogo</button>
+
+<script src="chess.min.js"></script>
 
 <script>
 
@@ -77,7 +72,7 @@ function draw(){
 
       let piece = b[i][j];
       if(piece){
-        sq.innerText = symbol(piece);
+        sq.innerText = piece.type.toUpperCase();
       }
 
       if(coord === selected){
@@ -96,14 +91,6 @@ function draw(){
 
   document.getElementById("turn").innerText =
     game.turn() === "w" ? "Brancas" : "Pretas";
-}
-
-function symbol(p){
-  const map = {
-    p:"♟", r:"♜", n:"♞", b:"♝", q:"♛", k:"♚"
-  };
-  let s = map[p.type];
-  return p.color === "w" ? s.toUpperCase() : s;
 }
 
 function clickSquare(c){
@@ -145,8 +132,6 @@ function novo(){
 draw();
 
 </script>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.13.4/chess.min.js"></script>
 
 </body>
 </html>
