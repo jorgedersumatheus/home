@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
 <meta charset="UTF-8">
 <title>Biblioteca VOV</title>
@@ -9,87 +9,96 @@ body{
   font-family:Arial;
   background:#000;
   color:#fff;
-  padding:20px;
-}
-
-h1{
   text-align:center;
 }
 
-textarea{
-  width:100%;
-  height:150px;
-  margin-top:10px;
-}
-
-button{
-  margin-top:10px;
-  padding:10px;
-  cursor:pointer;
+h1{
+  margin-top:20px;
 }
 
 .card{
   background:#111;
+  margin:15px auto;
   padding:15px;
-  margin-top:15px;
-  border-radius:10px;
+  border-radius:12px;
+  max-width:520px;
+  text-align:left;
+  box-shadow:0 0 10px rgba(255,255,255,0.05);
 }
 
-small{
-  opacity:0.6;
+button{
+  margin:5px;
+  padding:8px 10px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+.log{
+  background:#000;
+  padding:10px;
+  border-radius:8px;
+  margin-top:10px;
+  font-size:12px;
+  max-height:120px;
+  overflow:auto;
+}
+
+.topo{
+  margin-bottom:20px;
+}
+
+a{
+  color:#0af;
 }
 </style>
 </head>
 
 <body>
 
-<h1>📚 Biblioteca de Consultas VOV</h1>
+<h1>📚 Biblioteca VOV</h1>
 
-<textarea id="entrada" placeholder="Cole aqui a consulta completa..."></textarea>
-
-<br>
-
-<button onclick="salvar()">Salvar na Biblioteca</button>
-<button onclick="limpar()">Limpar Tudo</button>
+<div class="topo">
+<a href="index.html">🏠 Portal</a> |
+<a href="xadrez-vov-mestre.html">♟️ Xadrez Mestre</a>
+</div>
 
 <div id="lista"></div>
 
 <script>
 
-// carregar histórico
-let dados = JSON.parse(localStorage.getItem("vov_consultas") || "[]");
+// ===== CARREGAR =====
+function carregar(){
 
-render();
+  let banco = JSON.parse(localStorage.getItem("vov_partidas")) || [];
 
-// salvar nova consulta
-function salvar(){
-  let texto = document.getElementById("entrada").value.trim();
-  if(!texto) return alert("Cole uma consulta.");
+  if(banco.length === 0){
+    document.getElementById("lista").innerHTML = "<p><small>Nenhuma partida salva ainda.</small></p>";
+    return;
+  }
 
-  let registro = {
-    data: new Date().toLocaleString(),
-    texto: texto
-  };
-
-  dados.unshift(registro);
-  localStorage.setItem("vov_consultas", JSON.stringify(dados));
-
-  document.getElementById("entrada").value="";
-  render();
-}
-
-// renderizar lista
-function render(){
   let html = "";
 
-  dados.forEach((item, i)=>{
+  banco.slice().reverse().forEach(p=>{
+
     html += `
     <div class="card">
-      <small>${item.data}</small><br><br>
-      <div style="white-space:pre-wrap">${item.texto}</div><br>
 
-      <button onclick="baixar(${i})">📄 PDF</button>
-      <button onclick="remover(${i})">🗑️ Excluir</button>
+    <strong>📅 Data:</strong> ${p.data || "--"}<br>
+    <strong>🔮 Hexagrama:</strong> ${p.hex || "--"}<br>
+    <strong>📜 Leitura:</strong> ${p.leitura || "--"}<br>
+    <strong>🧠 Avaliação:</strong> ${p.avaliacao || "--"}<br>
+
+    <div class="log">
+    ${ (p.movimentos || []).join(" ") }
+    </div>
+
+    <br>
+
+    <button onclick="ver(${p.id})">👁 Ver</button>
+    <button onclick="baixar(${p.id})">📄 PDF</button>
+    <button onclick="excluir(${p.id})">🗑 Excluir</button>
+
     </div>
     `;
   });
@@ -97,27 +106,88 @@ function render(){
   document.getElementById("lista").innerHTML = html;
 }
 
-// excluir
-function remover(i){
-  if(!confirm("Excluir consulta?")) return;
-  dados.splice(i,1);
-  localStorage.setItem("vov_consultas", JSON.stringify(dados));
-  render();
+// ===== VER DETALHE =====
+function ver(id){
+
+  let banco = JSON.parse(localStorage.getItem("vov_partidas")) || [];
+  let p = banco.find(x=>x.id===id);
+
+  if(!p){
+    alert("Partida não encontrada.");
+    return;
+  }
+
+  let texto = `
+PARTIDA VOV
+
+Data: ${p.data}
+Hexagrama: ${p.hex}
+Leitura: ${p.leitura}
+Avaliação: ${p.avaliacao}
+
+Movimentos:
+${(p.movimentos || []).join(" ")}
+
+FEN:
+${p.fen || "--"}
+  `;
+
+  alert(texto);
 }
 
-// baixar PDF (usa print)
-function baixar(i){
-  let w = window.open("", "_blank");
-  w.document.write("<pre style='font-family:serif'>" + dados[i].texto + "</pre>");
-  w.print();
+// ===== BAIXAR =====
+function baixar(id){
+
+  let banco = JSON.parse(localStorage.getItem("vov_partidas")) || [];
+  let p = banco.find(x=>x.id===id);
+
+  if(!p){
+    alert("Partida não encontrada.");
+    return;
+  }
+
+  let texto = `
+PARTIDA VOV
+
+Data: ${p.data}
+Hexagrama: ${p.hex}
+Leitura: ${p.leitura}
+Avaliação: ${p.avaliacao}
+
+Movimentos:
+${(p.movimentos || []).join(" ")}
+
+FEN:
+${p.fen || "--"}
+
+Portal:
+https://jorgematheus.mus.br
+  `;
+
+  let blob = new Blob([texto], {type: "text/plain"});
+
+  let a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "partida-vov.txt";
+  a.click();
 }
 
-function limpar(){
-  if(!confirm("Apagar toda biblioteca?")) return;
-  localStorage.removeItem("vov_consultas");
-  dados=[];
-  render();
+// ===== EXCLUIR =====
+function excluir(id){
+
+  if(!confirm("Excluir esta partida?")) return;
+
+  let banco = JSON.parse(localStorage.getItem("vov_partidas")) || [];
+
+  banco = banco.filter(x=>x.id !== id);
+
+  localStorage.setItem("vov_partidas", JSON.stringify(banco));
+
+  carregar();
 }
+
+// ===== INIT =====
+carregar();
 
 </script>
 
