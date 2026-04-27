@@ -3,7 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <title>Teste Xadrez</title>
+
 <script src="chess.min.js"></script>
+
+<script>
+alert("script carregou");
+</script>
+
 </head>
 <body>
 
@@ -11,6 +17,7 @@
 
 <script>
 function testar(){
+  alert(typeof Chess);
   let game = new Chess();
   alert(game.fen());
 }
