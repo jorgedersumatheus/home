@@ -1,54 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Xadrez VOV</title>
+
+<script src="chess.min.js"></script>
+
+<style>
+body{
+  font-family:Arial;
+  background:#000;
+  color:#fff;
+  text-align:center;
+}
+
+#tabuleiro{
+  display:grid;
+  grid-template-columns:repeat(8,50px);
+  width:400px;
+  margin:20px auto;
+}
+
+.casa{
+  width:50px;
+  height:50px;
+  line-height:50px;
+  font-size:24px;
+  cursor:pointer;
+}
+
+.branca{ background:#eee; color:#000; }
+.preta{ background:#444; }
+
+.panel{
+  background:#111;
+  padding:15px;
+  border-radius:10px;
+  max-width:400px;
+  margin:auto;
+}
+</style>
+</head>
+
+<body>
+
+<h1>♟️ Xadrez VOV</h1>
+
+<div id="tabuleiro"></div>
+
+<div class="panel">
+<div><strong>FEN:</strong> <span id="fen"></span></div>
+<div><strong>IA:</strong> <span id="ia">--</span></div>
+<div><strong>Hexagrama:</strong> <span id="hex">--</span></div>
+</div>
+
+<button onclick="novoJogo()">Novo</button>
+
+<script>
+
+// ===== MOTOR =====
 let game = new Chess();
+let selecionada = null;
 
-function novoJogo() {
-  game = new Chess();
-  atualizar();
-}
+// ===== DESENHO =====
+function desenhar(){
 
-function fazerJogada(origem, destino) {
-  const move = game.move({
-    from: origem,
-    to: destino,
-    promotion: 'q'
-  });
+  let tab = document.getElementById("tabuleiro");
+  tab.innerHTML = "";
 
-  if (move === null) return false;
+  let casas = game.board();
 
-  comentarJogada(move);
-  atualizar();
-  return true;
-}
+  for(let i=0;i<8;i++){
+    for(let j=0;j<8;j++){
 
-function atualizar() {
+      let casa = document.createElement("div");
+
+      let cor = (i+j)%2==0 ? "branca" : "preta";
+      casa.className = "casa " + cor;
+
+      let p = casas[i][j];
+
+      if(p){
+        casa.innerText = p.type.toUpperCase();
+      }
+
+      let coord = String.fromCharCode(97+j) + (8-i);
+
+      casa.onclick = function(){
+        clique(coord);
+      };
+
+      tab.appendChild(casa);
+    }
+  }
+
   document.getElementById("fen").innerText = game.fen();
 }
 
-function comentarJogada(move) {
-  const comentarios = [
-    "Movimento sólido.",
-    "Aqui há intenção estratégica.",
-    "Cuidado com a exposição.",
-    "Avanço com energia.",
-    "Momento de leitura do jogo.",
-    "A posição se transforma."
+// ===== CLIQUE =====
+function clique(c){
+
+  if(!selecionada){
+    selecionada = c;
+    return;
+  }
+
+  let move = game.move({
+    from: selecionada,
+    to: c,
+    promotion:'q'
+  });
+
+  selecionada = null;
+
+  if(move){
+    comentar();
+    desenhar();
+  }
+}
+
+// ===== COMENTÁRIO VOV =====
+function comentar(){
+
+  let frases = [
+    "Fluxo em movimento.",
+    "Energia se reorganiza.",
+    "Decisão em transformação.",
+    "Momento de atenção.",
+    "Caminho se abre."
   ];
 
-  const hexagramas = [
+  let hex = [
     "1 — Criativo",
     "2 — Receptivo",
-    "11 — Paz",
     "35 — Progresso",
-    "63 — Após a Conclusão",
     "19 — Aproximação"
   ];
 
-  const comentario = comentarios[Math.floor(Math.random() * comentarios.length)];
-  const hex = hexagramas[Math.floor(Math.random() * hexagramas.length)];
+  document.getElementById("ia").innerText =
+    frases[Math.floor(Math.random()*frases.length)];
 
-  document.getElementById("ia").innerText = comentario;
-  document.getElementById("hex").innerText = hex;
+  document.getElementById("hex").innerText =
+    hex[Math.floor(Math.random()*hex.length)];
 }
 
-function gerarPDF() {
-  window.print();
-}
+// ===== NOV
