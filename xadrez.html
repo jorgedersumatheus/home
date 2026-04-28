@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>Xadrez VOV IA</title>
+<title>Xadrez VOV Mestre</title>
 
 <link rel="stylesheet"
 href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css"/>
@@ -16,8 +16,17 @@ body{
 }
 
 #board{
-    width:420px;
+    width:92vw;
+    max-width:420px;
     margin:20px auto;
+}
+
+.square-55d63 {
+    transition:background 0.2s;
+}
+
+.highlight {
+    background: radial-gradient(circle, #00ff88 30%, transparent 30%);
 }
 
 #status{
@@ -29,7 +38,6 @@ body{
 button{
     margin-top:10px;
     padding:10px 14px;
-    cursor:pointer;
     font-size:16px;
 }
 </style>
@@ -37,10 +45,10 @@ button{
 
 <body>
 
-<h2>♟️ Xadrez VOV IA Avançada</h2>
+<h2>♟️ Xadrez VOV IA Mestre</h2>
 
 <div id="board"></div>
-<div id="status">Carregando...</div>
+<div id="status"></div>
 <button onclick="restartGame()">Reiniciar</button>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -49,85 +57,75 @@ button{
 
 <script>
 let game = new Chess();
-let board = null;
+let board;
 let gameOver = false;
+let selectedSquare = null;
 
-// ===== IA VOV (material evaluation simples) =====
+// ===== IA MESTRE (minimax + alpha-beta leve) =====
 function evaluateBoard(game) {
     const values = { p:10, n:30, b:30, r:50, q:90, k:900 };
+    let total = 0;
 
-    let score = 0;
-    const boardState = game.board();
-
-    for (let row of boardState) {
-        for (let piece of row) {
+    game.board().forEach(row => {
+        row.forEach(piece => {
             if (piece) {
-                let value = values[piece.type];
-                score += piece.color === 'b' ? value : -value;
+                total += piece.color === 'b' ? values[piece.type] : -values[piece.type];
             }
-        }
-    }
-    return score;
+        });
+    });
+
+    return total;
 }
 
-// ===== STATUS =====
-function updateStatus() {
-    let text = "";
-
-    if (game.in_checkmate()) {
-        gameOver = true;
-        let winner = game.turn() === 'w' ? "Pretas (IA VOV)" : "Brancas (Você)";
-        text = "XEQUE-MATE! Vitória de " + winner;
-        showVictory(winner);
+function minimax(game, depth, alpha, beta, isMaximizing) {
+    if (depth === 0 || game.game_over()) {
+        return evaluateBoard(game);
     }
-    else if (game.in_draw()) {
-        gameOver = true;
-        text = "Empate!";
-    }
-    else {
-        text = "Turno: " + (game.turn() === 'w' ? "Brancas (Você)" : "IA VOV");
-        if (game.in_check()) text += " - XEQUE!";
-    }
-
-    document.getElementById("status").innerText = text;
-}
-
-// ===== VITÓRIA VISUAL =====
-function showVictory(winner) {
-    const div = document.createElement("div");
-    div.innerHTML = `
-    <div style="
-        position:fixed;top:0;left:0;width:100%;height:100%;
-        background:rgba(0,0,0,0.92);
-        display:flex;
-        flex-direction:column;
-        justify-content:center;
-        align-items:center;
-        font-size:34px;
-        z-index:9999;">
-        ♔ XEQUE-MATE ♔
-        <div style="font-size:22px;margin-top:10px;">
-            Vitória de ${winner}
-        </div>
-    </div>`;
-    document.body.appendChild(div);
-}
-
-// ===== MOVIMENTO IA VOV =====
-function makeAIMove() {
-    if (gameOver) return;
 
     const moves = game.moves({ verbose:true });
-    if (moves.length === 0) return;
+
+    if (isMaximizing) {
+        let maxEval = -9999;
+        for (let move of moves) {
+            let copy = new Chess(game.fen());
+            copy.move(move);
+
+            let eval = minimax(copy, depth-1, alpha, beta, false);
+            maxEval = Math.max(maxEval, eval);
+            alpha = Math.max(alpha, eval);
+
+            if (beta <= alpha) break;
+        }
+        return maxEval;
+    } else {
+        let minEval = 9999;
+        for (let move of moves) {
+            let copy = new Chess(game.fen());
+            copy.move(move);
+
+            let eval = minimax(copy, depth-1, alpha, beta, true);
+            minEval = Math.min(minEval, eval);
+            beta = Math.min(beta, eval);
+
+            if (beta <= alpha) break;
+        }
+        return minEval;
+    }
+}
+
+function makeAIMove() {
+    if (gameOver) return;
 
     let bestMove = null;
     let bestValue = -9999;
 
-    for (let move of moves) {
-        let gameCopy = new Chess(game.fen());
-        gameCopy.move(move);
+    let moves = game.moves({ verbose:true });
 
-        let value = evaluateBoard(gameCopy);
+    for (let move of moves) {
+        let copy = new Chess(game.fen());
+        copy.move(move);
+
+        let value = minimax(copy, 2, -10000, 10000, false);
 
         if (value > bestValue) {
             bestValue = value;
@@ -142,53 +140,101 @@ function makeAIMove() {
     }
 }
 
-// ===== MOVIMENTO DO JOGADOR =====
-function onDrop(source, target) {
-    if (gameOver) return 'snapback';
+// ===== CLIQUE AO INVÉS DE ARRASTAR =====
+function onSquareClick(square) {
+    if (gameOver) return;
 
-    let move = game.move({
-        from: source,
-        to: target,
-        promotion: 'q'
-    });
+    removeHighlights();
 
-    if (move === null) return 'snapback';
+    if (!selectedSquare) {
+        let piece = game.get(square);
 
-    board.position(game.fen());
-    updateStatus();
+        if (piece && piece.color === 'w') {
+            selectedSquare = square;
+            highlightMoves(square);
+        }
+    } else {
+        let move = game.move({
+            from: selectedSquare,
+            to: square,
+            promotion: 'q'
+        });
 
-    setTimeout(makeAIMove, 350);
+        selectedSquare = null;
+        removeHighlights();
+
+        if (move === null) return;
+
+        board.position(game.fen());
+        updateStatus();
+
+        setTimeout(makeAIMove, 300);
+    }
 }
 
-// ===== REINICIAR =====
+// ===== HIGHLIGHT =====
+function highlightMoves(square) {
+    let moves = game.moves({ square: square, verbose: true });
+
+    moves.forEach(m => {
+        document.querySelector('.square-' + m.to)
+            .classList.add('highlight');
+    });
+}
+
+function removeHighlights() {
+    document.querySelectorAll('.highlight').forEach(el => {
+        el.classList.remove('highlight');
+    });
+}
+
+// ===== STATUS =====
+function updateStatus() {
+    let text = "";
+
+    if (game.in_checkmate()) {
+        gameOver = true;
+        let winner = game.turn() === 'w' ? "Pretas (IA)" : "Você";
+        text = "XEQUE-MATE! Vitória: " + winner;
+    }
+    else if (game.in_draw()) {
+        gameOver = true;
+        text = "Empate";
+    }
+    else {
+        text = game.turn() === 'w' ? "Seu turno" : "IA pensando...";
+    }
+
+    document.getElementById("status").innerText = text;
+}
+
+// ===== RESET =====
 function restartGame() {
     game = new Chess();
     gameOver = false;
+    selectedSquare = null;
     board.start();
     updateStatus();
 }
 
 // ===== TABULEIRO =====
 board = Chessboard('board', {
-    draggable:true,
+    draggable:false, // chave do mobile fix
     position:'start',
-    onDrop:onDrop,
+    pieceTheme: (piece) =>
+        `https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/cburnett/${piece}.svg`
+});
 
-    // peças pretas consistentes (VOV clean)
-    pieceTheme: function(piece) {
-        const color = piece.charAt(0);
-        const type = piece.charAt(1);
-
-        return `https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/cburnett/${color}${type}.svg`;
+// capturar clique
+document.getElementById('board').addEventListener('click', function(e) {
+    const square = e.target.closest('[data-square]');
+    if (square) {
+        onSquareClick(square.getAttribute('data-square'));
     }
 });
 
 updateStatus();
 </script>
-
-    <br>
-
-<a class="btn" href="index.html">🏠 Voltar ao Portal</a>
 
 </body>
 </html>
