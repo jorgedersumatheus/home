@@ -13,32 +13,34 @@ body{
     color:#fff;
     font-family:Arial;
     text-align:center;
+    margin:0;
 }
 
 #board{
-    width:92vw;
+    width:95vw;
     max-width:420px;
     margin:20px auto;
-}
-
-.square-55d63 {
-    transition:background 0.2s;
-}
-
-.highlight {
-    background: radial-gradient(circle, #00ff88 30%, transparent 30%);
 }
 
 #status{
     margin-top:10px;
     font-size:18px;
-    min-height:24px;
 }
 
-button{
-    margin-top:10px;
-    padding:10px 14px;
-    font-size:16px;
+.highlight{
+    background: radial-gradient(circle, #00ff88 30%, transparent 30%);
+}
+
+footer{
+    margin-top:30px;
+    padding:15px;
+    font-size:14px;
+    opacity:0.7;
+}
+
+footer a{
+    color:#00ff88;
+    text-decoration:none;
 }
 </style>
 </head>
@@ -49,191 +51,181 @@ button{
 
 <div id="board"></div>
 <div id="status"></div>
+
 <button onclick="restartGame()">Reiniciar</button>
+
+<footer>
+    <a href="https://www.jorgematheus.mus.br" target="_blank">
+        ← Voltar ao Portal VOV
+    </a>
+</footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
 
 <script>
-let game = new Chess();
-let board;
-let gameOver = false;
-let selectedSquare = null;
+let game, board, selectedSquare = null, gameOver = false;
 
-// ===== IA MESTRE (minimax + alpha-beta leve) =====
+// ===== IA =====
 function evaluateBoard(game) {
-    const values = { p:10, n:30, b:30, r:50, q:90, k:900 };
-    let total = 0;
-
-    game.board().forEach(row => {
-        row.forEach(piece => {
-            if (piece) {
-                total += piece.color === 'b' ? values[piece.type] : -values[piece.type];
-            }
+    const v = {p:10,n:30,b:30,r:50,q:90,k:900};
+    let score = 0;
+    game.board().forEach(r => {
+        r.forEach(p => {
+            if(p) score += p.color==='b'?v[p.type]:-v[p.type];
         });
     });
-
-    return total;
+    return score;
 }
 
-function minimax(game, depth, alpha, beta, isMaximizing) {
-    if (depth === 0 || game.game_over()) {
-        return evaluateBoard(game);
-    }
+function minimax(game, depth, alpha, beta, max) {
+    if(depth===0 || game.game_over()) return evaluateBoard(game);
 
-    const moves = game.moves({ verbose:true });
+    let moves = game.moves({verbose:true});
 
-    if (isMaximizing) {
+    if(max){
         let maxEval = -9999;
-        for (let move of moves) {
-            let copy = new Chess(game.fen());
-            copy.move(move);
-
-            let eval = minimax(copy, depth-1, alpha, beta, false);
+        for(let m of moves){
+            let g = new Chess(game.fen());
+            g.move(m);
+            let eval = minimax(g, depth-1, alpha, beta, false);
             maxEval = Math.max(maxEval, eval);
             alpha = Math.max(alpha, eval);
-
-            if (beta <= alpha) break;
+            if(beta<=alpha) break;
         }
         return maxEval;
     } else {
         let minEval = 9999;
-        for (let move of moves) {
-            let copy = new Chess(game.fen());
-            copy.move(move);
-
-            let eval = minimax(copy, depth-1, alpha, beta, true);
+        for(let m of moves){
+            let g = new Chess(game.fen());
+            g.move(m);
+            let eval = minimax(g, depth-1, alpha, beta, true);
             minEval = Math.min(minEval, eval);
             beta = Math.min(beta, eval);
-
-            if (beta <= alpha) break;
+            if(beta<=alpha) break;
         }
         return minEval;
     }
 }
 
-function makeAIMove() {
-    if (gameOver) return;
+function makeAIMove(){
+    if(gameOver) return;
 
-    let bestMove = null;
-    let bestValue = -9999;
+    let moves = game.moves({verbose:true});
+    let bestMove=null, bestValue=-9999;
 
-    let moves = game.moves({ verbose:true });
+    for(let m of moves){
+        let g = new Chess(game.fen());
+        g.move(m);
+        let val = minimax(g, 2, -10000, 10000, false);
 
-    for (let move of moves) {
-        let copy = new Chess(game.fen());
-        copy.move(move);
-
-        let value = minimax(copy, 2, -10000, 10000, false);
-
-        if (value > bestValue) {
-            bestValue = value;
-            bestMove = move;
+        if(val>bestValue){
+            bestValue = val;
+            bestMove = m;
         }
     }
 
-    if (bestMove) {
+    if(bestMove){
         game.move(bestMove);
         board.position(game.fen());
         updateStatus();
     }
 }
 
-// ===== CLIQUE AO INVÉS DE ARRASTAR =====
-function onSquareClick(square) {
-    if (gameOver) return;
+// ===== CLIQUE =====
+function onSquareClick(square){
+    if(gameOver) return;
 
     removeHighlights();
 
-    if (!selectedSquare) {
+    if(!selectedSquare){
         let piece = game.get(square);
-
-        if (piece && piece.color === 'w') {
+        if(piece && piece.color==='w'){
             selectedSquare = square;
             highlightMoves(square);
         }
     } else {
         let move = game.move({
-            from: selectedSquare,
-            to: square,
-            promotion: 'q'
+            from:selectedSquare,
+            to:square,
+            promotion:'q'
         });
 
-        selectedSquare = null;
+        selectedSquare=null;
         removeHighlights();
 
-        if (move === null) return;
+        if(move===null) return;
 
         board.position(game.fen());
         updateStatus();
 
-        setTimeout(makeAIMove, 300);
+        setTimeout(makeAIMove,300);
     }
 }
 
 // ===== HIGHLIGHT =====
-function highlightMoves(square) {
-    let moves = game.moves({ square: square, verbose: true });
-
-    moves.forEach(m => {
-        document.querySelector('.square-' + m.to)
-            .classList.add('highlight');
+function highlightMoves(square){
+    let moves = game.moves({square:square, verbose:true});
+    moves.forEach(m=>{
+        let el = document.querySelector(`[data-square='${m.to}']`);
+        if(el) el.classList.add("highlight");
     });
 }
 
-function removeHighlights() {
-    document.querySelectorAll('.highlight').forEach(el => {
-        el.classList.remove('highlight');
-    });
+function removeHighlights(){
+    document.querySelectorAll(".highlight").forEach(e=>e.classList.remove("highlight"));
 }
 
 // ===== STATUS =====
-function updateStatus() {
-    let text = "";
+function updateStatus(){
+    let txt="";
 
-    if (game.in_checkmate()) {
-        gameOver = true;
-        let winner = game.turn() === 'w' ? "Pretas (IA)" : "Você";
-        text = "XEQUE-MATE! Vitória: " + winner;
+    if(game.in_checkmate()){
+        gameOver=true;
+        txt = "XEQUE-MATE!";
     }
-    else if (game.in_draw()) {
-        gameOver = true;
-        text = "Empate";
+    else if(game.in_draw()){
+        gameOver=true;
+        txt = "Empate";
     }
-    else {
-        text = game.turn() === 'w' ? "Seu turno" : "IA pensando...";
+    else{
+        txt = game.turn()==='w' ? "Seu turno" : "IA pensando...";
     }
 
-    document.getElementById("status").innerText = text;
+    document.getElementById("status").innerText = txt;
 }
 
 // ===== RESET =====
-function restartGame() {
+function restartGame(){
     game = new Chess();
-    gameOver = false;
-    selectedSquare = null;
+    selectedSquare=null;
+    gameOver=false;
     board.start();
     updateStatus();
 }
 
-// ===== TABULEIRO =====
-board = Chessboard('board', {
-    draggable:false, // chave do mobile fix
-    position:'start',
-    pieceTheme: (piece) =>
-        `https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/cburnett/${piece}.svg`
-});
+// ===== INIT (ANTI-BUG) =====
+window.onload = function(){
+    game = new Chess();
 
-// capturar clique
-document.getElementById('board').addEventListener('click', function(e) {
-    const square = e.target.closest('[data-square]');
-    if (square) {
-        onSquareClick(square.getAttribute('data-square'));
-    }
-});
+    board = Chessboard('board',{
+        draggable:false,
+        position:'start',
+        pieceTheme:(p)=>
+        `https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/cburnett/${p}.svg`
+    });
 
-updateStatus();
+    // clique confiável
+    document.getElementById("board").addEventListener("click", function(e){
+        let el = e.target.closest("[data-square]");
+        if(el){
+            onSquareClick(el.getAttribute("data-square"));
+        }
+    });
+
+    updateStatus();
+};
 </script>
 
 </body>
