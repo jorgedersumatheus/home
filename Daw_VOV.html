@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAW VOV</title>
+
+<style>
+body{
+    background:#0f0f0f;
+    color:#fff;
+    font-family:Arial;
+    text-align:center;
+}
+
+#timeline{
+    width:100%;
+    height:40px;
+    background:#222;
+    margin-bottom:10px;
+    position:relative;
+}
+
+.playhead{
+    width:2px;
+    height:100%;
+    background:red;
+    position:absolute;
+    left:0;
+}
+
+.track{
+    background:#1c1c1c;
+    margin:10px auto;
+    padding:10px;
+    max-width:800px;
+    border-radius:5px;
+}
+
+button{
+    margin:5px;
+    padding:8px 12px;
+}
+</style>
+</head>
+
+<body>
+
+<h2>🎧 DAW VOV</h2>
+
+<div id="timeline">
+    <div class="playhead" id="playhead"></div>
+</div>
+
+<div>
+    <button onclick="startTransport()">Play</button>
+    <button onclick="stopTransport()">Stop</button>
+    <button onclick="startRecording()">Rec</button>
+    <button onclick="addTrack()">+ Pista</button>
+</div>
+
+<div id="tracks"></div>
+
+<script>
+let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+let tracks = [];
+let isPlaying = false;
+let isRecording = false;
+let startTime = 0;
+let bpm = 90;
+
+let playhead = document.getElementById("playhead");
+
+function secondsPerBeat(){
+    return 60 / bpm;
+}
+
+function startTransport(){
+    startTime = audioCtx.currentTime;
+    isPlaying = true;
+    animatePlayhead();
+    playAll();
+}
+
+function stopTransport(){
+    isPlaying = false;
+    stopAll();
+    playhead.style.left = "0px";
+}
+
+function animatePlayhead(){
+    if(!isPlaying) return;
+
+    let elapsed = audioCtx.currentTime - startTime;
+    let px = elapsed * 100;
+
+    playhead.style.left = px + "px";
+
+    requestAnimationFrame(animatePlayhead);
+}
+
+function addTrack(){
+
+    let track = {
+        buffer:null,
+        source:null
+    };
+
+    let div = document.createElement("div");
+    div.className = "track";
+
+    let recBtn = document.createElement("button");
+    recBtn.innerText = "Gravar";
+
+    let stopBtn = document.createElement("button");
+    stopBtn.innerText = "Parar";
+
+    let playBtn = document.createElement("button");
+    playBtn.innerText = "Play";
+
+    let audioChunks = [];
+    let recorder;
+
+    recBtn.onclick = async ()=>{
+        let stream = await navigator.mediaDevices.getUserMedia({audio:true});
+        recorder = new MediaRecorder(stream);
+
+        recorder.ondataavailable = e => audioChunks.push(e.data);
+
+        recorder.onstop = async ()=>{
+            let blob = new Blob(audioChunks);
+            let arrayBuffer = await blob.arrayBuffer();
+            track.buffer = await audioCtx.decodeAudioData(arrayBuffer);
+            audioChunks = [];
+        };
+
+        recorder.start();
+    };
+
+    stopBtn.onclick = ()=>{
+        if(recorder) recorder.stop();
+    };
+
+    playBtn.onclick = ()=>{
+        if(!track.buffer) return;
+
+        let source = audioCtx.createBufferSource();
+        source.buffer = track.buffer;
+        source.connect(audioCtx.destination);
+        source.start();
+    };
+
+    div.append(recBtn, stopBtn, playBtn);
+    document.getElementById("tracks").appendChild(div);
+
+    tracks.push(track);
+}
+
+function playAll(){
+    tracks.forEach(track=>{
+        if(track.buffer){
+            let source = audioCtx.createBufferSource();
+            source.buffer = track.buffer;
+            source.connect(audioCtx.destination);
+            source.start(0);
+            track.source = source;
+        }
+    });
+}
+
+function stopAll(){
+    tracks.forEach(t=>{
+        if(t.source){
+            try{ t.source.stop(); }catch(e){}
+        }
+    });
+}
+
+// ===== METRÔNOMO =====
+function startRecording(){
+    isRecording = true;
+    metronome();
+}
+
+function metronome(){
+    if(!isRecording) return;
+
+    let osc = audioCtx.createOscillator();
+    let gain = audioCtx.createGain();
+
+    osc.frequency.value = 1000;
+    gain.gain.value = 0.1;
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.05);
+
+    setTimeout(metronome, secondsPerBeat()*1000);
+}
+</script>
+
+</body>
+</html>
