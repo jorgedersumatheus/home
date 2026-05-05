@@ -45,27 +45,30 @@ button{
 
 <button onclick="addTrack()">+ Pista</button>
 
-<script>
 
+<script>
 let tracks = [];
 let currentRecorder = null;
 let currentStream = null;
 
-// PLAY GERAL (HTML5)
+// PLAY GERAL (com controle real)
 function playAll(){
     tracks.forEach(t=>{
         if(t.audio.src){
+            t.audio.pause();
             t.audio.currentTime = 0;
             t.audio.play();
         }
     });
 }
 
-// STOP GERAL
+// STOP GERAL (corrigido)
 function stopAll(){
     tracks.forEach(t=>{
-        t.audio.pause();
-        t.audio.currentTime = 0;
+        if(t.audio){
+            t.audio.pause();
+            t.audio.currentTime = 0;
+        }
     });
 }
 
@@ -83,6 +86,7 @@ function addTrack(){
 
     let audio = document.createElement("audio");
     audio.controls = true;
+    audio.volume = 0.8; // evita distorção
 
     let recorder = null;
     let chunks = [];
@@ -99,7 +103,13 @@ function addTrack(){
         }
 
         try{
-            currentStream = await navigator.mediaDevices.getUserMedia({ audio:true });
+            currentStream = await navigator.mediaDevices.getUserMedia({
+                audio:{
+                    echoCancellation: true,
+                    noiseSuppression: true,
+                    autoGainControl: false // 🔥 chave para evitar volume louco
+                }
+            });
 
             recorder = new MediaRecorder(currentStream);
             currentRecorder = recorder;
@@ -109,11 +119,15 @@ function addTrack(){
             recorder.ondataavailable = e => chunks.push(e.data);
 
             recorder.onstop = () => {
+
                 const blob = new Blob(chunks, { type:"audio/webm" });
                 const url = URL.createObjectURL(blob);
+
                 audio.src = url;
 
+                // encerra microfone
                 currentStream.getTracks().forEach(t => t.stop());
+
                 currentRecorder = null;
 
                 recBtn.style.background = "#1e1e1e";
@@ -127,9 +141,9 @@ function addTrack(){
         }
     };
 
-    // PARAR
+    // PARAR GRAVAÇÃO
     stopBtn.onclick = () => {
-        if(recorder){
+        if(recorder && recorder.state === "recording"){
             recorder.stop();
         }
     };
@@ -137,8 +151,6 @@ function addTrack(){
     div.append(recBtn, stopBtn, audio);
     document.getElementById("tracks").appendChild(div);
 }
-
 </script>
-
 </body>
 </html>
