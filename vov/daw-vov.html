@@ -42,15 +42,18 @@ input[type=range]{
 
 <button onclick="playAll()">▶ Play</button>
 <button onclick="stopAll()">■ Stop</button>
+<button onclick="exportMP3()">💾 Exportar MP3</button>
 
 <div id="tracks"></div>
 
 <button onclick="addTrack()">+ Pista</button>
 
+<!-- encoder MP3 -->
+<script src="https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js"></script>
+
 <script>
 let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 let tracks = [];
-
 let currentRecorder = null;
 let currentStream = null;
 
@@ -60,10 +63,8 @@ function playAll(){
         if(t.buffer){
             let src = audioCtx.createBufferSource();
             src.buffer = t.buffer;
-
             src.connect(t.gainNode);
             t.gainNode.connect(audioCtx.destination);
-
             src.start();
             t.src = src;
         }
@@ -79,121 +80,170 @@ function stopAll(){
     });
 }
 
-// CRIAR PISTA
-function addTrack(){
+// REMOVER PISTA
+function removeTrack(index){
+    tracks.splice(index,1);
+    renderTracks();
+}
 
-    let div = document.createElement("div");
-    div.className = "track";
+// RENDER UI
+function renderTracks(){
+    let container = document.getElementById("tracks");
+    container.innerHTML = "";
 
-    let recBtn = document.createElement("button");
-    recBtn.innerText = "Rec";
+    tracks.forEach((track, index)=>{
 
-    let stopBtn = document.createElement("button");
-    stopBtn.innerText = "Stop";
+        let div = document.createElement("div");
+        div.className = "track";
 
-    let muteBtn = document.createElement("button");
-    muteBtn.innerText = "Mute";
+        let recBtn = document.createElement("button");
+        recBtn.innerText = "Rec";
 
-    let soloBtn = document.createElement("button");
-    soloBtn.innerText = "Solo";
+        let stopBtn = document.createElement("button");
+        stopBtn.innerText = "Stop";
 
-    let volume = document.createElement("input");
-    volume.type = "range";
-    volume.min = 0;
-    volume.max = 1;
-    volume.step = 0.01;
-    volume.value = 0.8;
+        let muteBtn = document.createElement("button");
+        muteBtn.innerText = "Mute";
 
-    let recorder = null;
-    let chunks = [];
+        let soloBtn = document.createElement("button");
+        soloBtn.innerText = "Solo";
 
-    let gainNode = audioCtx.createGain();
-    gainNode.gain.value = volume.value;
+        let delBtn = document.createElement("button");
+        delBtn.innerText = "Remover";
 
-    let track = {
-        buffer:null,
-        gainNode:gainNode,
-        muted:false,
-        solo:false
-    };
+        let volume = document.createElement("input");
+        volume.type = "range";
+        volume.min = 0;
+        volume.max = 1;
+        volume.step = 0.01;
+        volume.value = track.volume;
 
-    tracks.push(track);
-
-    // VOLUME
-    volume.oninput = () => {
-        gainNode.gain.value = volume.value;
-    };
-
-    // MUTE
-    muteBtn.onclick = () => {
-        track.muted = !track.muted;
-        gainNode.gain.value = track.muted ? 0 : volume.value;
-        muteBtn.style.background = track.muted ? "red" : "#1e1e1e";
-    };
-
-    // SOLO
-    soloBtn.onclick = () => {
-        track.solo = !track.solo;
-
-        tracks.forEach(t=>{
-            if(track.solo){
-                t.gainNode.gain.value = (t === track) ? volume.value : 0;
-            }else{
-                t.gainNode.gain.value = t.muted ? 0 : volume.value;
-            }
-        });
-
-        soloBtn.style.background = track.solo ? "yellow" : "#1e1e1e";
-    };
-
-    // GRAVAR
-    recBtn.onclick = async () => {
-
-        if(currentRecorder){
-            alert("Já está gravando");
-            return;
-        }
-
-        currentStream = await navigator.mediaDevices.getUserMedia({
-            audio:{
-                echoCancellation:true,
-                noiseSuppression:true,
-                autoGainControl:false
-            }
-        });
-
-        recorder = new MediaRecorder(currentStream);
-        currentRecorder = recorder;
-
-        chunks = [];
-
-        recorder.ondataavailable = e => chunks.push(e.data);
-
-        recorder.onstop = async () => {
-
-            let blob = new Blob(chunks);
-            let arrayBuffer = await blob.arrayBuffer();
-
-            track.buffer = await audioCtx.decodeAudioData(arrayBuffer);
-
-            currentStream.getTracks().forEach(t=>t.stop());
-            currentRecorder = null;
-
-            recBtn.style.background = "#1e1e1e";
+        volume.oninput = ()=>{
+            track.volume = volume.value;
+            track.gainNode.gain.value = track.muted ? 0 : track.volume;
         };
 
-        recorder.start();
-        recBtn.style.background = "red";
-    };
+        muteBtn.onclick = ()=>{
+            track.muted = !track.muted;
+            track.gainNode.gain.value = track.muted ? 0 : track.volume;
+        };
 
-    stopBtn.onclick = () => {
-        if(recorder){
-            recorder.stop();
+        soloBtn.onclick = ()=>{
+            track.solo = !track.solo;
+
+            tracks.forEach(t=>{
+                if(track.solo){
+                    t.gainNode.gain.value = (t===track)?t.volume:0;
+                }else{
+                    t.gainNode.gain.value = t.muted?0:t.volume;
+                }
+            });
+        };
+
+        delBtn.onclick = ()=> removeTrack(index);
+
+        // GRAVAÇÃO
+        recBtn.onclick = async ()=>{
+            if(currentRecorder){
+                alert("Já gravando");
+                return;
+            }
+
+            currentStream = await navigator.mediaDevices.getUserMedia({
+                audio:{autoGainControl:false}
+            });
+
+            let recorder = new MediaRecorder(currentStream);
+            currentRecorder = recorder;
+
+            let chunks=[];
+
+            recorder.ondataavailable=e=>chunks.push(e.data);
+
+            recorder.onstop = async ()=>{
+                let blob = new Blob(chunks);
+                let arrayBuffer = await blob.arrayBuffer();
+                track.buffer = await audioCtx.decodeAudioData(arrayBuffer);
+
+                currentStream.getTracks().forEach(t=>t.stop());
+                currentRecorder=null;
+            };
+
+            recorder.start();
+        };
+
+        stopBtn.onclick = ()=>{
+            if(currentRecorder) currentRecorder.stop();
+        };
+
+        div.append(recBtn, stopBtn, muteBtn, soloBtn, volume, delBtn);
+        container.appendChild(div);
+    });
+}
+
+// NOVA PISTA
+function addTrack(){
+    let gainNode = audioCtx.createGain();
+    gainNode.gain.value = 0.8;
+
+    tracks.push({
+        buffer:null,
+        gainNode:gainNode,
+        volume:0.8,
+        muted:false,
+        solo:false
+    });
+
+    renderTracks();
+}
+
+// EXPORTAR MP3 (MIX FINAL)
+async function exportMP3(){
+
+    let length = 0;
+
+    tracks.forEach(t=>{
+        if(t.buffer){
+            length = Math.max(length, t.buffer.length);
         }
-    };
+    });
 
-    div.append(recBtn, stopBtn, muteBtn, soloBtn, volume);
-    document.getElementById("tracks").appendChild(div);
+    let offlineCtx = new OfflineAudioContext(1, length, 44100);
+
+    tracks.forEach(t=>{
+        if(t.buffer){
+            let src = offlineCtx.createBufferSource();
+            src.buffer = t.buffer;
+
+            let gain = offlineCtx.createGain();
+            gain.gain.value = t.muted ? 0 : t.volume;
+
+            src.connect(gain);
+            gain.connect(offlineCtx.destination);
+
+            src.start();
+        }
+    });
+
+    let rendered = await offlineCtx.startRendering();
+    let data = rendered.getChannelData(0);
+
+    let mp3encoder = new lamejs.Mp3Encoder(1, 44100, 128);
+
+    let samples = new Int16Array(data.length);
+    for(let i=0;i<data.length;i++){
+        samples[i]=data[i]*32767;
+    }
+
+    let mp3Data = mp3encoder.encodeBuffer(samples);
+    let blob = new Blob(mp3Data, {type:"audio/mp3"});
+
+    let url = URL.createObjectURL(blob);
+
+    let a = document.createElement("a");
+    a.href = url;
+    a.download = "mix_vov.mp3";
+    a.click();
 }
 </script>
 
