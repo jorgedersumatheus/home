@@ -60,18 +60,15 @@ button:hover{
 
 <h2>🎧 DAW VOV</h2>
 
-<!-- TRANSPORTE -->
 <div>
     <button onclick="playAll()">▶ Play</button>
     <button onclick="stopAll()">■ Stop</button>
 </div>
 
-<!-- TIMELINE -->
 <div id="timeline">
     <div id="playhead"></div>
 </div>
 
-<!-- TRACKS -->
 <div id="tracks"></div>
 
 <button onclick="addTrack()">+ Pista</button>
@@ -83,7 +80,11 @@ let tracks = [];
 let isPlaying = false;
 let startTime = 0;
 
-// ===== TIMELINE =====
+// CONTROLE GLOBAL
+let currentRecorder = null;
+let currentStream = null;
+
+// TIMELINE
 function animate(){
     if(!isPlaying) return;
 
@@ -93,7 +94,7 @@ function animate(){
     requestAnimationFrame(animate);
 }
 
-// ===== PLAY =====
+// PLAY GERAL
 function playAll(){
     isPlaying = true;
     startTime = audioCtx.currentTime;
@@ -111,7 +112,7 @@ function playAll(){
     animate();
 }
 
-// ===== STOP =====
+// STOP GERAL
 function stopAll(){
     isPlaying = false;
 
@@ -124,7 +125,7 @@ function stopAll(){
     document.getElementById("playhead").style.left = "0px";
 }
 
-// ===== ADD TRACK =====
+// CRIAR PISTA
 function addTrack(){
 
     let div = document.createElement("div");
@@ -152,28 +153,45 @@ function addTrack(){
 
     // GRAVAR
     recBtn.onclick = async () => {
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
-            recorder = new MediaRecorder(stream);
+        if(currentRecorder && currentRecorder.state === "recording"){
+            alert("Já existe uma gravação em andamento");
+            return;
+        }
+
+        try{
+            currentStream = await navigator.mediaDevices.getUserMedia({ audio:true });
+
+            recorder = new MediaRecorder(currentStream);
+            currentRecorder = recorder;
+
             chunks = [];
 
             recorder.ondataavailable = e => chunks.push(e.data);
 
             recorder.onstop = async () => {
-                const blob = new Blob(chunks, { type: "audio/webm" });
+
+                const blob = new Blob(chunks, { type:"audio/webm" });
                 const url = URL.createObjectURL(blob);
                 audio.src = url;
 
                 const arrayBuffer = await blob.arrayBuffer();
                 track.buffer = await audioCtx.decodeAudioData(arrayBuffer);
 
-                chunks = [];
+                // libera microfone
+                currentStream.getTracks().forEach(t => t.stop());
+
+                currentRecorder = null;
+                currentStream = null;
+
+                recBtn.style.background = "#1e1e1e";
             };
 
             recorder.start();
 
-        } catch (err) {
+            recBtn.style.background = "red";
+
+        }catch(err){
             alert("Erro ao acessar microfone: " + err.message);
             console.error(err);
         }
@@ -181,7 +199,7 @@ function addTrack(){
 
     // PARAR
     stopBtn.onclick = () => {
-        if(recorder && recorder.state !== "inactive"){
+        if(recorder && recorder.state === "recording"){
             recorder.stop();
         }
     };
