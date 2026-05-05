@@ -17,17 +17,19 @@ body{
 button{
     margin:5px;
     padding:10px;
-    background:#1e1e1e;
+    background:#2a2a2a;
     color:#fff;
-    border:1px solid #444;
-    border-radius:6px;
+    border:1px solid #555;
+    border-radius:10px;
+    box-shadow: inset 0 0 5px #000, 0 2px 5px #000;
 }
 
 .track{
-    background:#1c1c1c;
+    background:linear-gradient(145deg,#1a1a1a,#2a2a2a);
     margin:10px;
     padding:10px;
-    border-radius:6px;
+    border-radius:12px;
+    box-shadow: inset 0 0 10px #000;
 }
 
 input[type=range]{
@@ -38,10 +40,11 @@ input[type=range]{
 
 <body>
 
-<h2>🎧 DAW VOV — Overdub</h2>
+<h2>🎧 DAW VOV — Export PRO</h2>
 
 <button onclick="playAll()">▶ Play Geral</button>
 <button onclick="stopAll()">■ Stop</button>
+<button onclick="exportTracks()">⬇ Exportar Faixas</button>
 
 <div id="tracks"></div>
 
@@ -53,7 +56,7 @@ let tracks = [];
 let currentRecorder = null;
 let currentStream = null;
 
-// ▶ PLAY GERAL
+// PLAY GERAL
 function playAll(){
     tracks.forEach(t=>{
         if(t.audio.src){
@@ -63,7 +66,7 @@ function playAll(){
     });
 }
 
-// ▶ PLAY PARA GRAVAÇÃO (OVERDUB)
+// PLAY PARA GRAVAÇÃO
 function playForRecording(){
     tracks.forEach(t=>{
         if(t.audio.src){
@@ -73,9 +76,8 @@ function playForRecording(){
     });
 }
 
-// ⛔ STOP GERAL
+// STOP
 function stopAll(){
-
     tracks.forEach(t=>{
         t.audio.pause();
         t.audio.currentTime = 0;
@@ -86,15 +88,35 @@ function stopAll(){
     }
 }
 
-// ❌ REMOVER
+// REMOVER
 function removeTrack(index){
-    let t = tracks[index];
-    t.audio.pause();
+    tracks[index].audio.pause();
     tracks.splice(index,1);
     render();
 }
 
-// 🔁 RENDER (não recria áudio)
+// EXPORTAR TODAS AS FAIXAS
+function exportTracks(){
+
+    tracks.forEach((t, i)=>{
+
+        if(!t.audio.src) return;
+
+        let a = document.createElement("a");
+        a.href = t.audio.src;
+
+        // nomes organizados
+        a.download = "VOV_track_" + (i+1) + ".webm";
+
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    });
+
+    alert("Faixas exportadas! Importe no REAPER.");
+}
+
+// RENDER
 function render(){
 
     const container = document.getElementById("tracks");
@@ -124,13 +146,13 @@ function render(){
         volume.step = 0.01;
         volume.value = track.volume;
 
-        // 🔊 VOLUME
+        // VOLUME
         volume.oninput = ()=>{
             track.volume = volume.value;
             track.audio.volume = track.volume;
         };
 
-        // ▶ PLAY INDIVIDUAL
+        // PLAY INDIVIDUAL
         play.onclick = ()=>{
             if(track.audio.src){
                 track.audio.currentTime = 0;
@@ -138,15 +160,14 @@ function render(){
             }
         };
 
-        // 🎤 GRAVAR COM OVERDUB
+        // GRAVAÇÃO COM OVERDUB
         rec.onclick = async ()=>{
 
             if(currentRecorder){
-                alert("Já existe uma gravação em andamento");
+                alert("Já gravando");
                 return;
             }
 
-            // 🔥 toca as outras pistas
             playForRecording();
 
             try{
@@ -181,11 +202,11 @@ function render(){
             }
         };
 
-        // ⛔ PARAR GRAVAÇÃO
+        // PARAR
         stop.onclick = ()=>{
             if(currentRecorder){
                 currentRecorder.stop();
-                rec.style.background="#1e1e1e";
+                rec.style.background="#2a2a2a";
             }
         };
 
@@ -204,7 +225,7 @@ function render(){
     });
 }
 
-// ➕ NOVA PISTA
+// NOVA PISTA
 function addTrack(){
 
     let audio = document.createElement("audio");
