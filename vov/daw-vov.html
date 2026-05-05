@@ -1,1 +1,208 @@
-<!DOCTYPE html><html lang="pt-br"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>DAW VOV</title><style>body{    margin:0;    font-family:Arial;    background:#0f0f0f;    color:#fff;    text-align:center;}button{    margin:5px;    padding:10px;    background:#1e1e1e;    color:#fff;    border:1px solid #444;    border-radius:6px;}#timeline{    height:60px;    background:#1a1a1a;    position:relative;}#playhead{    width:2px;    height:100%;    background:red;    position:absolute;    left:0;}.track{    background:#1c1c1c;    margin:10px;    padding:10px;}</style></head><body><h2>🎧 DAW VOV</h2><button onclick="play()">Play</button><button onclick="stop()">Stop</button><button onclick="rec()">Rec</button><div id="timeline">    <div id="playhead"></div></div><div id="tracks"></div><button onclick="addTrack()">+ Pista</button><script>let audioCtx = new (window.AudioContext || window.webkitAudioContext)();let tracks = [];let isPlaying=false;let startTime=0;function play(){    isPlaying=true;    startTime=audioCtx.currentTime;    animate();    tracks.forEach(t=>{        if(t.buffer){            let src=audioCtx.createBufferSource();            src.buffer=t.buffer;            src.connect(audioCtx.destination);            src.start();            t.src=src;        }    });}function stop(){    isPlaying=false;    tracks.forEach(t=>{        if(t.src){            try{t.src.stop();}catch(e){}        }    });    document.getElementById("playhead").style.left="0px";}function animate(){    if(!isPlaying) return;    let t=audioCtx.currentTime-startTime;    document.getElementById("playhead").style.left=(t*100)+"px";    requestAnimationFrame(animate);}function addTrack(){    let div=document.createElement("div");    div.className="track";    let recBtn=document.createElement("button");    recBtn.innerText="Gravar";    let stopBtn=document.createElement("button");    stopBtn.innerText="Parar";    let chunks=[];    let recorder;    recBtn.onclick=async ()=>{        let stream=await navigator.mediaDevices.getUserMedia({audio:true});        recorder=new MediaRecorder(stream);        recorder.ondataavailable=e=>chunks.push(e.data);        recorder.onstop=async ()=>{            let blob=new Blob(chunks);            let arr=await blob.arrayBuffer();            let buffer=await audioCtx.decodeAudioData(arr);            track.buffer=buffer;            chunks=[];        };        recorder.start();    };    stopBtn.onclick=()=>{        if(recorder) recorder.stop();    };    div.append(recBtn,stopBtn);    document.getElementById("tracks").appendChild(div);    let track={buffer:null};    tracks.push(track);}function rec(){    alert("Use o botão de cada pista para gravar");}</script></body></html>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAW VOV</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial;
+    background:#0f0f0f;
+    color:#fff;
+    text-align:center;
+}
+
+h2{
+    margin-top:20px;
+}
+
+button{
+    margin:5px;
+    padding:10px 15px;
+    background:#1e1e1e;
+    color:#fff;
+    border:1px solid #444;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#333;
+}
+
+#timeline{
+    height:60px;
+    background:#1a1a1a;
+    margin:20px 0;
+    position:relative;
+}
+
+#playhead{
+    width:2px;
+    height:100%;
+    background:red;
+    position:absolute;
+    left:0;
+}
+
+.track{
+    background:#1c1c1c;
+    margin:10px;
+    padding:10px;
+    border-radius:6px;
+}
+</style>
+</head>
+
+<body>
+
+<h2>🎧 DAW VOV</h2>
+
+<!-- TRANSPORTE -->
+<div>
+    <button onclick="playAll()">▶ Play</button>
+    <button onclick="stopAll()">■ Stop</button>
+</div>
+
+<!-- TIMELINE -->
+<div id="timeline">
+    <div id="playhead"></div>
+</div>
+
+<!-- TRACKS -->
+<div id="tracks"></div>
+
+<button onclick="addTrack()">+ Pista</button>
+
+<script>
+let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+let tracks = [];
+let isPlaying = false;
+let startTime = 0;
+
+// ===== TIMELINE =====
+function animate(){
+    if(!isPlaying) return;
+
+    let t = audioCtx.currentTime - startTime;
+    document.getElementById("playhead").style.left = (t * 100) + "px";
+
+    requestAnimationFrame(animate);
+}
+
+// ===== PLAY =====
+function playAll(){
+    isPlaying = true;
+    startTime = audioCtx.currentTime;
+
+    tracks.forEach(t=>{
+        if(t.buffer){
+            let src = audioCtx.createBufferSource();
+            src.buffer = t.buffer;
+            src.connect(audioCtx.destination);
+            src.start();
+            t.src = src;
+        }
+    });
+
+    animate();
+}
+
+// ===== STOP =====
+function stopAll(){
+    isPlaying = false;
+
+    tracks.forEach(t=>{
+        if(t.src){
+            try{ t.src.stop(); }catch(e){}
+        }
+    });
+
+    document.getElementById("playhead").style.left = "0px";
+}
+
+// ===== ADD TRACK =====
+function addTrack(){
+
+    let div = document.createElement("div");
+    div.className = "track";
+
+    let recBtn = document.createElement("button");
+    recBtn.innerText = "Gravar";
+
+    let stopBtn = document.createElement("button");
+    stopBtn.innerText = "Parar";
+
+    let playBtn = document.createElement("button");
+    playBtn.innerText = "Ouvir";
+
+    let audio = document.createElement("audio");
+    audio.controls = true;
+
+    let recorder = null;
+    let chunks = [];
+
+    let track = {
+        buffer: null,
+        src: null
+    };
+
+    // GRAVAR
+    recBtn.onclick = async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+            recorder = new MediaRecorder(stream);
+            chunks = [];
+
+            recorder.ondataavailable = e => chunks.push(e.data);
+
+            recorder.onstop = async () => {
+                const blob = new Blob(chunks, { type: "audio/webm" });
+                const url = URL.createObjectURL(blob);
+                audio.src = url;
+
+                const arrayBuffer = await blob.arrayBuffer();
+                track.buffer = await audioCtx.decodeAudioData(arrayBuffer);
+
+                chunks = [];
+            };
+
+            recorder.start();
+
+        } catch (err) {
+            alert("Erro ao acessar microfone: " + err.message);
+            console.error(err);
+        }
+    };
+
+    // PARAR
+    stopBtn.onclick = () => {
+        if(recorder && recorder.state !== "inactive"){
+            recorder.stop();
+        }
+    };
+
+    // OUVIR
+    playBtn.onclick = () => {
+        if(track.buffer){
+            let src = audioCtx.createBufferSource();
+            src.buffer = track.buffer;
+            src.connect(audioCtx.destination);
+            src.start();
+        }
+    };
+
+    div.append(recBtn, stopBtn, playBtn, audio);
+
+    document.getElementById("tracks").appendChild(div);
+
+    tracks.push(track);
+}
+</script>
+
+</body>
+</html>
