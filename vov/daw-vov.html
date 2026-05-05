@@ -38,7 +38,7 @@ input[type=range]{
 
 <body>
 
-<h2>🎧 DAW VOV</h2>
+<h2>🎧 DAW VOV — Overdub</h2>
 
 <button onclick="playAll()">▶ Play Geral</button>
 <button onclick="stopAll()">■ Stop</button>
@@ -53,7 +53,7 @@ let tracks = [];
 let currentRecorder = null;
 let currentStream = null;
 
-// PLAY GERAL
+// ▶ PLAY GERAL
 function playAll(){
     tracks.forEach(t=>{
         if(t.audio.src){
@@ -63,27 +63,38 @@ function playAll(){
     });
 }
 
-// STOP GERAL
+// ▶ PLAY PARA GRAVAÇÃO (OVERDUB)
+function playForRecording(){
+    tracks.forEach(t=>{
+        if(t.audio.src){
+            t.audio.currentTime = 0;
+            t.audio.play();
+        }
+    });
+}
+
+// ⛔ STOP GERAL
 function stopAll(){
+
     tracks.forEach(t=>{
         t.audio.pause();
         t.audio.currentTime = 0;
     });
+
+    if(currentRecorder){
+        currentRecorder.stop();
+    }
 }
 
-// REMOVER
+// ❌ REMOVER
 function removeTrack(index){
     let t = tracks[index];
-
-    if(t.audio){
-        t.audio.pause();
-    }
-
+    t.audio.pause();
     tracks.splice(index,1);
     render();
 }
 
-// RENDER (SEM recriar áudio!)
+// 🔁 RENDER (não recria áudio)
 function render(){
 
     const container = document.getElementById("tracks");
@@ -127,42 +138,50 @@ function render(){
             }
         };
 
-        // 🎤 GRAVAR
+        // 🎤 GRAVAR COM OVERDUB
         rec.onclick = async ()=>{
 
             if(currentRecorder){
-                alert("Já gravando");
+                alert("Já existe uma gravação em andamento");
                 return;
             }
 
-            currentStream = await navigator.mediaDevices.getUserMedia({
-                audio:{
-                    echoCancellation:true,
-                    noiseSuppression:true,
-                    autoGainControl:false
-                }
-            });
+            // 🔥 toca as outras pistas
+            playForRecording();
 
-            let recorder = new MediaRecorder(currentStream);
-            currentRecorder = recorder;
+            try{
+                currentStream = await navigator.mediaDevices.getUserMedia({
+                    audio:{
+                        echoCancellation:true,
+                        noiseSuppression:true,
+                        autoGainControl:false
+                    }
+                });
 
-            let chunks = [];
+                let recorder = new MediaRecorder(currentStream);
+                currentRecorder = recorder;
 
-            recorder.ondataavailable = e => chunks.push(e.data);
+                let chunks = [];
 
-            recorder.onstop = ()=>{
-                let blob = new Blob(chunks,{type:"audio/webm"});
-                track.audio.src = URL.createObjectURL(blob);
+                recorder.ondataavailable = e => chunks.push(e.data);
 
-                currentStream.getTracks().forEach(t=>t.stop());
-                currentRecorder = null;
-            };
+                recorder.onstop = ()=>{
+                    let blob = new Blob(chunks,{type:"audio/webm"});
+                    track.audio.src = URL.createObjectURL(blob);
 
-            recorder.start();
-            rec.style.background="red";
+                    currentStream.getTracks().forEach(t=>t.stop());
+                    currentRecorder = null;
+                };
+
+                recorder.start();
+                rec.style.background="red";
+
+            }catch(err){
+                alert("Erro no microfone: " + err.message);
+            }
         };
 
-        // ⛔ PARAR
+        // ⛔ PARAR GRAVAÇÃO
         stop.onclick = ()=>{
             if(currentRecorder){
                 currentRecorder.stop();
@@ -172,7 +191,6 @@ function render(){
 
         del.onclick = ()=> removeTrack(index);
 
-        // mantém o MESMO elemento audio
         div.append(
             rec,
             stop,
@@ -186,7 +204,7 @@ function render(){
     });
 }
 
-// NOVA PISTA (CRIA AUDIO UMA VEZ)
+// ➕ NOVA PISTA
 function addTrack(){
 
     let audio = document.createElement("audio");
