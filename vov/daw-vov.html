@@ -38,7 +38,7 @@ input[type=range]{
 
 <body>
 
-<h2>🎧 DAW VOV PRO</h2>
+<h2>🎧 DAW VOV PRO — Estúdio</h2>
 
 <button onclick="playAll()">▶ Play</button>
 <button onclick="stopAll()">■ Stop</button>
@@ -48,30 +48,45 @@ input[type=range]{
 
 <button onclick="addTrack()">+ Pista</button>
 
-<!-- encoder MP3 -->
 <script src="https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js"></script>
 
 <script>
 let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+// 🎚 MASTER BUS (ESSENCIAL)
+let masterGain = audioCtx.createGain();
+masterGain.gain.value = 0.7;
+masterGain.connect(audioCtx.destination);
+
 let tracks = [];
 let currentRecorder = null;
 let currentStream = null;
 
-// PLAY
+// ▶ PLAY SINCRONIZADO
 function playAll(){
+
+    const now = audioCtx.currentTime + 0.1;
+
     tracks.forEach(t=>{
         if(t.buffer){
+
             let src = audioCtx.createBufferSource();
             src.buffer = t.buffer;
-            src.connect(t.gainNode);
-            t.gainNode.connect(audioCtx.destination);
-            src.start();
+
+            let gain = audioCtx.createGain();
+            gain.gain.value = t.muted ? 0 : t.volume;
+
+            src.connect(gain);
+            gain.connect(masterGain);
+
+            src.start(now);
+
             t.src = src;
         }
     });
 }
 
-// STOP
+// ■ STOP
 function stopAll(){
     tracks.forEach(t=>{
         if(t.src){
@@ -80,14 +95,15 @@ function stopAll(){
     });
 }
 
-// REMOVER PISTA
+// ❌ REMOVER
 function removeTrack(index){
     tracks.splice(index,1);
     renderTracks();
 }
 
-// RENDER UI
+// 🔁 UI
 function renderTracks(){
+
     let container = document.getElementById("tracks");
     container.innerHTML = "";
 
@@ -120,12 +136,10 @@ function renderTracks(){
 
         volume.oninput = ()=>{
             track.volume = volume.value;
-            track.gainNode.gain.value = track.muted ? 0 : track.volume;
         };
 
         muteBtn.onclick = ()=>{
             track.muted = !track.muted;
-            track.gainNode.gain.value = track.muted ? 0 : track.volume;
         };
 
         soloBtn.onclick = ()=>{
@@ -133,24 +147,27 @@ function renderTracks(){
 
             tracks.forEach(t=>{
                 if(track.solo){
-                    t.gainNode.gain.value = (t===track)?t.volume:0;
-                }else{
-                    t.gainNode.gain.value = t.muted?0:t.volume;
+                    t.volume = (t===track)?volume.value:0;
                 }
             });
         };
 
         delBtn.onclick = ()=> removeTrack(index);
 
-        // GRAVAÇÃO
+        // 🎤 GRAVAÇÃO
         recBtn.onclick = async ()=>{
+
             if(currentRecorder){
                 alert("Já gravando");
                 return;
             }
 
             currentStream = await navigator.mediaDevices.getUserMedia({
-                audio:{autoGainControl:false}
+                audio:{
+                    echoCancellation:true,
+                    noiseSuppression:true,
+                    autoGainControl:false
+                }
             });
 
             let recorder = new MediaRecorder(currentStream);
@@ -163,6 +180,7 @@ function renderTracks(){
             recorder.onstop = async ()=>{
                 let blob = new Blob(chunks);
                 let arrayBuffer = await blob.arrayBuffer();
+
                 track.buffer = await audioCtx.decodeAudioData(arrayBuffer);
 
                 currentStream.getTracks().forEach(t=>t.stop());
@@ -181,15 +199,12 @@ function renderTracks(){
     });
 }
 
-// NOVA PISTA
+// ➕ NOVA PISTA
 function addTrack(){
-    let gainNode = audioCtx.createGain();
-    gainNode.gain.value = 0.8;
 
     tracks.push({
         buffer:null,
-        gainNode:gainNode,
-        volume:0.8,
+        volume:0.7,
         muted:false,
         solo:false
     });
@@ -197,7 +212,7 @@ function addTrack(){
     renderTracks();
 }
 
-// EXPORTAR MP3 (MIX FINAL)
+// 💾 EXPORTAR MP3
 async function exportMP3(){
 
     let length = 0;
@@ -210,8 +225,13 @@ async function exportMP3(){
 
     let offlineCtx = new OfflineAudioContext(1, length, 44100);
 
+    let master = offlineCtx.createGain();
+    master.gain.value = 0.7;
+    master.connect(offlineCtx.destination);
+
     tracks.forEach(t=>{
         if(t.buffer){
+
             let src = offlineCtx.createBufferSource();
             src.buffer = t.buffer;
 
@@ -219,30 +239,29 @@ async function exportMP3(){
             gain.gain.value = t.muted ? 0 : t.volume;
 
             src.connect(gain);
-            gain.connect(offlineCtx.destination);
+            gain.connect(master);
 
-            src.start();
+            src.start(0);
         }
     });
 
     let rendered = await offlineCtx.startRendering();
     let data = rendered.getChannelData(0);
 
-    let mp3encoder = new lamejs.Mp3Encoder(1, 44100, 128);
-
     let samples = new Int16Array(data.length);
     for(let i=0;i<data.length;i++){
         samples[i]=data[i]*32767;
     }
 
+    let mp3encoder = new lamejs.Mp3Encoder(1,44100,128);
     let mp3Data = mp3encoder.encodeBuffer(samples);
-    let blob = new Blob(mp3Data, {type:"audio/mp3"});
 
+    let blob = new Blob(mp3Data,{type:"audio/mp3"});
     let url = URL.createObjectURL(blob);
 
     let a = document.createElement("a");
-    a.href = url;
-    a.download = "mix_vov.mp3";
+    a.href=url;
+    a.download="mix_vov.mp3";
     a.click();
 }
 </script>
