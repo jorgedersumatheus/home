@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DAW VOV Estável</title>
+<title>DAW VOV</title>
 
 <style>
 body{
@@ -29,12 +29,16 @@ button{
     padding:10px;
     border-radius:6px;
 }
+
+input[type=range]{
+    width:150px;
+}
 </style>
 </head>
 
 <body>
 
-<h2>🎧 DAW VOV (Estável)</h2>
+<h2>🎧 DAW VOV</h2>
 
 <button onclick="playAll()">▶ Play Geral</button>
 <button onclick="stopAll()">■ Stop</button>
@@ -49,18 +53,17 @@ let tracks = [];
 let currentRecorder = null;
 let currentStream = null;
 
-// PLAY
+// PLAY GERAL
 function playAll(){
     tracks.forEach(t=>{
         if(t.audio.src){
-            t.audio.pause();
             t.audio.currentTime = 0;
             t.audio.play();
         }
     });
 }
 
-// STOP
+// STOP GERAL
 function stopAll(){
     tracks.forEach(t=>{
         t.audio.pause();
@@ -70,12 +73,19 @@ function stopAll(){
 
 // REMOVER
 function removeTrack(index){
+    let t = tracks[index];
+
+    if(t.audio){
+        t.audio.pause();
+    }
+
     tracks.splice(index,1);
     render();
 }
 
-// UI
+// RENDER (SEM recriar áudio!)
 function render(){
+
     const container = document.getElementById("tracks");
     container.innerHTML = "";
 
@@ -90,15 +100,34 @@ function render(){
         let stop = document.createElement("button");
         stop.innerText = "Parar";
 
+        let play = document.createElement("button");
+        play.innerText = "▶";
+
         let del = document.createElement("button");
         del.innerText = "Remover";
 
-        let audio = document.createElement("audio");
-        audio.controls = true;
+        let volume = document.createElement("input");
+        volume.type = "range";
+        volume.min = 0;
+        volume.max = 1;
+        volume.step = 0.01;
+        volume.value = track.volume;
 
-        track.audio = audio;
+        // 🔊 VOLUME
+        volume.oninput = ()=>{
+            track.volume = volume.value;
+            track.audio.volume = track.volume;
+        };
 
-        // GRAVAR
+        // ▶ PLAY INDIVIDUAL
+        play.onclick = ()=>{
+            if(track.audio.src){
+                track.audio.currentTime = 0;
+                track.audio.play();
+            }
+        };
+
+        // 🎤 GRAVAR
         rec.onclick = async ()=>{
 
             if(currentRecorder){
@@ -106,39 +135,34 @@ function render(){
                 return;
             }
 
-            try{
-                currentStream = await navigator.mediaDevices.getUserMedia({
-                    audio:{
-                        echoCancellation:true,
-                        noiseSuppression:true,
-                        autoGainControl:false
-                    }
-                });
+            currentStream = await navigator.mediaDevices.getUserMedia({
+                audio:{
+                    echoCancellation:true,
+                    noiseSuppression:true,
+                    autoGainControl:false
+                }
+            });
 
-                let recorder = new MediaRecorder(currentStream);
-                currentRecorder = recorder;
+            let recorder = new MediaRecorder(currentStream);
+            currentRecorder = recorder;
 
-                let chunks = [];
+            let chunks = [];
 
-                recorder.ondataavailable = e => chunks.push(e.data);
+            recorder.ondataavailable = e => chunks.push(e.data);
 
-                recorder.onstop = ()=>{
-                    let blob = new Blob(chunks,{type:"audio/webm"});
-                    audio.src = URL.createObjectURL(blob);
+            recorder.onstop = ()=>{
+                let blob = new Blob(chunks,{type:"audio/webm"});
+                track.audio.src = URL.createObjectURL(blob);
 
-                    currentStream.getTracks().forEach(t=>t.stop());
-                    currentRecorder = null;
-                };
+                currentStream.getTracks().forEach(t=>t.stop());
+                currentRecorder = null;
+            };
 
-                recorder.start();
-                rec.style.background="red";
-
-            }catch(err){
-                alert("Erro microfone: " + err.message);
-            }
+            recorder.start();
+            rec.style.background="red";
         };
 
-        // PARAR
+        // ⛔ PARAR
         stop.onclick = ()=>{
             if(currentRecorder){
                 currentRecorder.stop();
@@ -148,14 +172,32 @@ function render(){
 
         del.onclick = ()=> removeTrack(index);
 
-        div.append(rec, stop, del, audio);
+        // mantém o MESMO elemento audio
+        div.append(
+            rec,
+            stop,
+            play,
+            volume,
+            del,
+            track.audio
+        );
+
         container.appendChild(div);
     });
 }
 
-// NOVA PISTA
+// NOVA PISTA (CRIA AUDIO UMA VEZ)
 function addTrack(){
-    tracks.push({});
+
+    let audio = document.createElement("audio");
+    audio.controls = true;
+    audio.volume = 0.8;
+
+    tracks.push({
+        audio: audio,
+        volume: 0.8
+    });
+
     render();
 }
 
