@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DAW VOV PRO</title>
+<title>DAW VOV Estável</title>
 
 <style>
 body{
@@ -29,82 +29,54 @@ button{
     padding:10px;
     border-radius:6px;
 }
-
-input[type=range]{
-    width:120px;
-}
 </style>
 </head>
 
 <body>
 
-<h2>🎧 DAW VOV PRO — Estúdio</h2>
+<h2>🎧 DAW VOV (Estável)</h2>
 
-<button onclick="playAll()">▶ Play</button>
+<button onclick="playAll()">▶ Play Geral</button>
 <button onclick="stopAll()">■ Stop</button>
-<button onclick="exportMP3()">💾 Exportar MP3</button>
 
 <div id="tracks"></div>
 
 <button onclick="addTrack()">+ Pista</button>
 
-<script src="https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js"></script>
-
 <script>
-let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-// 🎚 MASTER BUS (ESSENCIAL)
-let masterGain = audioCtx.createGain();
-masterGain.gain.value = 0.7;
-masterGain.connect(audioCtx.destination);
 
 let tracks = [];
 let currentRecorder = null;
 let currentStream = null;
 
-// ▶ PLAY SINCRONIZADO
+// PLAY
 function playAll(){
-
-    const now = audioCtx.currentTime + 0.1;
-
     tracks.forEach(t=>{
-        if(t.buffer){
-
-            let src = audioCtx.createBufferSource();
-            src.buffer = t.buffer;
-
-            let gain = audioCtx.createGain();
-            gain.gain.value = t.muted ? 0 : t.volume;
-
-            src.connect(gain);
-            gain.connect(masterGain);
-
-            src.start(now);
-
-            t.src = src;
+        if(t.audio.src){
+            t.audio.pause();
+            t.audio.currentTime = 0;
+            t.audio.play();
         }
     });
 }
 
-// ■ STOP
+// STOP
 function stopAll(){
     tracks.forEach(t=>{
-        if(t.src){
-            try{ t.src.stop(); }catch(e){}
-        }
+        t.audio.pause();
+        t.audio.currentTime = 0;
     });
 }
 
-// ❌ REMOVER
+// REMOVER
 function removeTrack(index){
     tracks.splice(index,1);
-    renderTracks();
+    render();
 }
 
-// 🔁 UI
-function renderTracks(){
-
-    let container = document.getElementById("tracks");
+// UI
+function render(){
+    const container = document.getElementById("tracks");
     container.innerHTML = "";
 
     tracks.forEach((track, index)=>{
@@ -112,158 +84,81 @@ function renderTracks(){
         let div = document.createElement("div");
         div.className = "track";
 
-        let recBtn = document.createElement("button");
-        recBtn.innerText = "Rec";
+        let rec = document.createElement("button");
+        rec.innerText = "Gravar";
 
-        let stopBtn = document.createElement("button");
-        stopBtn.innerText = "Stop";
+        let stop = document.createElement("button");
+        stop.innerText = "Parar";
 
-        let muteBtn = document.createElement("button");
-        muteBtn.innerText = "Mute";
+        let del = document.createElement("button");
+        del.innerText = "Remover";
 
-        let soloBtn = document.createElement("button");
-        soloBtn.innerText = "Solo";
+        let audio = document.createElement("audio");
+        audio.controls = true;
 
-        let delBtn = document.createElement("button");
-        delBtn.innerText = "Remover";
+        track.audio = audio;
 
-        let volume = document.createElement("input");
-        volume.type = "range";
-        volume.min = 0;
-        volume.max = 1;
-        volume.step = 0.01;
-        volume.value = track.volume;
-
-        volume.oninput = ()=>{
-            track.volume = volume.value;
-        };
-
-        muteBtn.onclick = ()=>{
-            track.muted = !track.muted;
-        };
-
-        soloBtn.onclick = ()=>{
-            track.solo = !track.solo;
-
-            tracks.forEach(t=>{
-                if(track.solo){
-                    t.volume = (t===track)?volume.value:0;
-                }
-            });
-        };
-
-        delBtn.onclick = ()=> removeTrack(index);
-
-        // 🎤 GRAVAÇÃO
-        recBtn.onclick = async ()=>{
+        // GRAVAR
+        rec.onclick = async ()=>{
 
             if(currentRecorder){
                 alert("Já gravando");
                 return;
             }
 
-            currentStream = await navigator.mediaDevices.getUserMedia({
-                audio:{
-                    echoCancellation:true,
-                    noiseSuppression:true,
-                    autoGainControl:false
-                }
-            });
+            try{
+                currentStream = await navigator.mediaDevices.getUserMedia({
+                    audio:{
+                        echoCancellation:true,
+                        noiseSuppression:true,
+                        autoGainControl:false
+                    }
+                });
 
-            let recorder = new MediaRecorder(currentStream);
-            currentRecorder = recorder;
+                let recorder = new MediaRecorder(currentStream);
+                currentRecorder = recorder;
 
-            let chunks=[];
+                let chunks = [];
 
-            recorder.ondataavailable=e=>chunks.push(e.data);
+                recorder.ondataavailable = e => chunks.push(e.data);
 
-            recorder.onstop = async ()=>{
-                let blob = new Blob(chunks);
-                let arrayBuffer = await blob.arrayBuffer();
+                recorder.onstop = ()=>{
+                    let blob = new Blob(chunks,{type:"audio/webm"});
+                    audio.src = URL.createObjectURL(blob);
 
-                track.buffer = await audioCtx.decodeAudioData(arrayBuffer);
+                    currentStream.getTracks().forEach(t=>t.stop());
+                    currentRecorder = null;
+                };
 
-                currentStream.getTracks().forEach(t=>t.stop());
-                currentRecorder=null;
-            };
+                recorder.start();
+                rec.style.background="red";
 
-            recorder.start();
+            }catch(err){
+                alert("Erro microfone: " + err.message);
+            }
         };
 
-        stopBtn.onclick = ()=>{
-            if(currentRecorder) currentRecorder.stop();
+        // PARAR
+        stop.onclick = ()=>{
+            if(currentRecorder){
+                currentRecorder.stop();
+                rec.style.background="#1e1e1e";
+            }
         };
 
-        div.append(recBtn, stopBtn, muteBtn, soloBtn, volume, delBtn);
+        del.onclick = ()=> removeTrack(index);
+
+        div.append(rec, stop, del, audio);
         container.appendChild(div);
     });
 }
 
-// ➕ NOVA PISTA
+// NOVA PISTA
 function addTrack(){
-
-    tracks.push({
-        buffer:null,
-        volume:0.7,
-        muted:false,
-        solo:false
-    });
-
-    renderTracks();
+    tracks.push({});
+    render();
 }
 
-// 💾 EXPORTAR MP3
-async function exportMP3(){
-
-    let length = 0;
-
-    tracks.forEach(t=>{
-        if(t.buffer){
-            length = Math.max(length, t.buffer.length);
-        }
-    });
-
-    let offlineCtx = new OfflineAudioContext(1, length, 44100);
-
-    let master = offlineCtx.createGain();
-    master.gain.value = 0.7;
-    master.connect(offlineCtx.destination);
-
-    tracks.forEach(t=>{
-        if(t.buffer){
-
-            let src = offlineCtx.createBufferSource();
-            src.buffer = t.buffer;
-
-            let gain = offlineCtx.createGain();
-            gain.gain.value = t.muted ? 0 : t.volume;
-
-            src.connect(gain);
-            gain.connect(master);
-
-            src.start(0);
-        }
-    });
-
-    let rendered = await offlineCtx.startRendering();
-    let data = rendered.getChannelData(0);
-
-    let samples = new Int16Array(data.length);
-    for(let i=0;i<data.length;i++){
-        samples[i]=data[i]*32767;
-    }
-
-    let mp3encoder = new lamejs.Mp3Encoder(1,44100,128);
-    let mp3Data = mp3encoder.encodeBuffer(samples);
-
-    let blob = new Blob(mp3Data,{type:"audio/mp3"});
-    let url = URL.createObjectURL(blob);
-
-    let a = document.createElement("a");
-    a.href=url;
-    a.download="mix_vov.mp3";
-    a.click();
-}
 </script>
 
 </body>
