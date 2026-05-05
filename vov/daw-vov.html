@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DAW VOV</title>
+<title>DAW VOV PRO</title>
 
 <style>
 body{
@@ -16,7 +16,7 @@ body{
 
 button{
     margin:5px;
-    padding:10px 15px;
+    padding:10px;
     background:#1e1e1e;
     color:#fff;
     border:1px solid #444;
@@ -29,45 +29,52 @@ button{
     padding:10px;
     border-radius:6px;
 }
+
+input[type=range]{
+    width:120px;
+}
 </style>
 </head>
 
 <body>
 
-<h2>🎧 DAW VOV</h2>
+<h2>🎧 DAW VOV PRO</h2>
 
-<div>
-    <button onclick="playAll()">▶ Play Geral</button>
-    <button onclick="stopAll()">■ Stop</button>
-</div>
+<button onclick="playAll()">▶ Play</button>
+<button onclick="stopAll()">■ Stop</button>
 
 <div id="tracks"></div>
 
 <button onclick="addTrack()">+ Pista</button>
 
-
 <script>
+let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 let tracks = [];
+
 let currentRecorder = null;
 let currentStream = null;
 
-// PLAY GERAL (com controle real)
+// PLAY
 function playAll(){
     tracks.forEach(t=>{
-        if(t.audio.src){
-            t.audio.pause();
-            t.audio.currentTime = 0;
-            t.audio.play();
+        if(t.buffer){
+            let src = audioCtx.createBufferSource();
+            src.buffer = t.buffer;
+
+            src.connect(t.gainNode);
+            t.gainNode.connect(audioCtx.destination);
+
+            src.start();
+            t.src = src;
         }
     });
 }
 
-// STOP GERAL (corrigido)
+// STOP
 function stopAll(){
     tracks.forEach(t=>{
-        if(t.audio){
-            t.audio.pause();
-            t.audio.currentTime = 0;
+        if(t.src){
+            try{ t.src.stop(); }catch(e){}
         }
     });
 }
@@ -79,78 +86,116 @@ function addTrack(){
     div.className = "track";
 
     let recBtn = document.createElement("button");
-    recBtn.innerText = "Gravar";
+    recBtn.innerText = "Rec";
 
     let stopBtn = document.createElement("button");
-    stopBtn.innerText = "Parar";
+    stopBtn.innerText = "Stop";
 
-    let audio = document.createElement("audio");
-    audio.controls = true;
-    audio.volume = 0.8; // evita distorção
+    let muteBtn = document.createElement("button");
+    muteBtn.innerText = "Mute";
+
+    let soloBtn = document.createElement("button");
+    soloBtn.innerText = "Solo";
+
+    let volume = document.createElement("input");
+    volume.type = "range";
+    volume.min = 0;
+    volume.max = 1;
+    volume.step = 0.01;
+    volume.value = 0.8;
 
     let recorder = null;
     let chunks = [];
 
-    let track = { audio };
+    let gainNode = audioCtx.createGain();
+    gainNode.gain.value = volume.value;
+
+    let track = {
+        buffer:null,
+        gainNode:gainNode,
+        muted:false,
+        solo:false
+    };
+
     tracks.push(track);
+
+    // VOLUME
+    volume.oninput = () => {
+        gainNode.gain.value = volume.value;
+    };
+
+    // MUTE
+    muteBtn.onclick = () => {
+        track.muted = !track.muted;
+        gainNode.gain.value = track.muted ? 0 : volume.value;
+        muteBtn.style.background = track.muted ? "red" : "#1e1e1e";
+    };
+
+    // SOLO
+    soloBtn.onclick = () => {
+        track.solo = !track.solo;
+
+        tracks.forEach(t=>{
+            if(track.solo){
+                t.gainNode.gain.value = (t === track) ? volume.value : 0;
+            }else{
+                t.gainNode.gain.value = t.muted ? 0 : volume.value;
+            }
+        });
+
+        soloBtn.style.background = track.solo ? "yellow" : "#1e1e1e";
+    };
 
     // GRAVAR
     recBtn.onclick = async () => {
 
         if(currentRecorder){
-            alert("Já está gravando outra pista");
+            alert("Já está gravando");
             return;
         }
 
-        try{
-            currentStream = await navigator.mediaDevices.getUserMedia({
-                audio:{
-                    echoCancellation: true,
-                    noiseSuppression: true,
-                    autoGainControl: false // 🔥 chave para evitar volume louco
-                }
-            });
+        currentStream = await navigator.mediaDevices.getUserMedia({
+            audio:{
+                echoCancellation:true,
+                noiseSuppression:true,
+                autoGainControl:false
+            }
+        });
 
-            recorder = new MediaRecorder(currentStream);
-            currentRecorder = recorder;
+        recorder = new MediaRecorder(currentStream);
+        currentRecorder = recorder;
 
-            chunks = [];
+        chunks = [];
 
-            recorder.ondataavailable = e => chunks.push(e.data);
+        recorder.ondataavailable = e => chunks.push(e.data);
 
-            recorder.onstop = () => {
+        recorder.onstop = async () => {
 
-                const blob = new Blob(chunks, { type:"audio/webm" });
-                const url = URL.createObjectURL(blob);
+            let blob = new Blob(chunks);
+            let arrayBuffer = await blob.arrayBuffer();
 
-                audio.src = url;
+            track.buffer = await audioCtx.decodeAudioData(arrayBuffer);
 
-                // encerra microfone
-                currentStream.getTracks().forEach(t => t.stop());
+            currentStream.getTracks().forEach(t=>t.stop());
+            currentRecorder = null;
 
-                currentRecorder = null;
+            recBtn.style.background = "#1e1e1e";
+        };
 
-                recBtn.style.background = "#1e1e1e";
-            };
-
-            recorder.start();
-            recBtn.style.background = "red";
-
-        }catch(err){
-            alert("Erro: " + err.message);
-        }
+        recorder.start();
+        recBtn.style.background = "red";
     };
 
-    // PARAR GRAVAÇÃO
     stopBtn.onclick = () => {
-        if(recorder && recorder.state === "recording"){
+        if(recorder){
             recorder.stop();
         }
     };
 
-    div.append(recBtn, stopBtn, audio);
+    div.append(recBtn, stopBtn, muteBtn, soloBtn, volume);
     document.getElementById("tracks").appendChild(div);
 }
 </script>
+
 </body>
 </html>
