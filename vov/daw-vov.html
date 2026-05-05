@@ -14,10 +14,6 @@ body{
     text-align:center;
 }
 
-h2{
-    margin-top:20px;
-}
-
 button{
     margin:5px;
     padding:10px 15px;
@@ -25,26 +21,6 @@ button{
     color:#fff;
     border:1px solid #444;
     border-radius:6px;
-    cursor:pointer;
-}
-
-button:hover{
-    background:#333;
-}
-
-#timeline{
-    height:60px;
-    background:#1a1a1a;
-    margin:20px 0;
-    position:relative;
-}
-
-#playhead{
-    width:2px;
-    height:100%;
-    background:red;
-    position:absolute;
-    left:0;
 }
 
 .track{
@@ -61,12 +37,8 @@ button:hover{
 <h2>🎧 DAW VOV</h2>
 
 <div>
-    <button onclick="playAll()">▶ Play</button>
+    <button onclick="playAll()">▶ Play Geral</button>
     <button onclick="stopAll()">■ Stop</button>
-</div>
-
-<div id="timeline">
-    <div id="playhead"></div>
 </div>
 
 <div id="tracks"></div>
@@ -74,55 +46,27 @@ button:hover{
 <button onclick="addTrack()">+ Pista</button>
 
 <script>
-let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
 let tracks = [];
-let isPlaying = false;
-let startTime = 0;
-
-// CONTROLE GLOBAL
 let currentRecorder = null;
 let currentStream = null;
 
-// TIMELINE
-function animate(){
-    if(!isPlaying) return;
-
-    let t = audioCtx.currentTime - startTime;
-    document.getElementById("playhead").style.left = (t * 100) + "px";
-
-    requestAnimationFrame(animate);
-}
-
-// PLAY GERAL
+// PLAY GERAL (HTML5)
 function playAll(){
-    isPlaying = true;
-    startTime = audioCtx.currentTime;
-
     tracks.forEach(t=>{
-        if(t.buffer){
-            let src = audioCtx.createBufferSource();
-            src.buffer = t.buffer;
-            src.connect(audioCtx.destination);
-            src.start();
-            t.src = src;
+        if(t.audio.src){
+            t.audio.currentTime = 0;
+            t.audio.play();
         }
     });
-
-    animate();
 }
 
 // STOP GERAL
 function stopAll(){
-    isPlaying = false;
-
     tracks.forEach(t=>{
-        if(t.src){
-            try{ t.src.stop(); }catch(e){}
-        }
+        t.audio.pause();
+        t.audio.currentTime = 0;
     });
-
-    document.getElementById("playhead").style.left = "0px";
 }
 
 // CRIAR PISTA
@@ -137,25 +81,20 @@ function addTrack(){
     let stopBtn = document.createElement("button");
     stopBtn.innerText = "Parar";
 
-    let playBtn = document.createElement("button");
-    playBtn.innerText = "Ouvir";
-
     let audio = document.createElement("audio");
     audio.controls = true;
 
     let recorder = null;
     let chunks = [];
 
-    let track = {
-        buffer: null,
-        src: null
-    };
+    let track = { audio };
+    tracks.push(track);
 
     // GRAVAR
     recBtn.onclick = async () => {
 
-        if(currentRecorder && currentRecorder.state === "recording"){
-            alert("Já existe uma gravação em andamento");
+        if(currentRecorder){
+            alert("Já está gravando outra pista");
             return;
         }
 
@@ -169,57 +108,36 @@ function addTrack(){
 
             recorder.ondataavailable = e => chunks.push(e.data);
 
-            recorder.onstop = async () => {
-
+            recorder.onstop = () => {
                 const blob = new Blob(chunks, { type:"audio/webm" });
                 const url = URL.createObjectURL(blob);
                 audio.src = url;
 
-                const arrayBuffer = await blob.arrayBuffer();
-                track.buffer = await audioCtx.decodeAudioData(arrayBuffer);
-
-                // libera microfone
                 currentStream.getTracks().forEach(t => t.stop());
-
                 currentRecorder = null;
-                currentStream = null;
 
                 recBtn.style.background = "#1e1e1e";
             };
 
             recorder.start();
-
             recBtn.style.background = "red";
 
         }catch(err){
-            alert("Erro ao acessar microfone: " + err.message);
-            console.error(err);
+            alert("Erro: " + err.message);
         }
     };
 
     // PARAR
     stopBtn.onclick = () => {
-        if(recorder && recorder.state === "recording"){
+        if(recorder){
             recorder.stop();
         }
     };
 
-    // OUVIR
-    playBtn.onclick = () => {
-        if(track.buffer){
-            let src = audioCtx.createBufferSource();
-            src.buffer = track.buffer;
-            src.connect(audioCtx.destination);
-            src.start();
-        }
-    };
-
-    div.append(recBtn, stopBtn, playBtn, audio);
-
+    div.append(recBtn, stopBtn, audio);
     document.getElementById("tracks").appendChild(div);
-
-    tracks.push(track);
 }
+
 </script>
 
 </body>
