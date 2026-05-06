@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DAW VOV</title>
+<title>DAW VOV PRO</title>
 
 <style>
 body{
@@ -40,11 +40,13 @@ input[type=range]{
 
 <body>
 
-<h2>🎧 DAW VOV — Export PRO</h2>
+<h2>🎧 DAW VOV — WAV PRO</h2>
 
 <button onclick="playAll()">▶ Play Geral</button>
 <button onclick="stopAll()">■ Stop</button>
 <button onclick="exportTracks()">⬇ Exportar Faixas</button>
+<button onclick="exportWAVTracks()">🎧 WAV Faixas</button>
+<button onclick="exportWAVMix()">🎚 WAV Mix</button>
 
 <div id="tracks"></div>
 
@@ -56,7 +58,7 @@ let tracks = [];
 let currentRecorder = null;
 let currentStream = null;
 
-// PLAY GERAL
+// PLAY
 function playAll(){
     tracks.forEach(t=>{
         if(t.audio.src){
@@ -95,73 +97,60 @@ function removeTrack(index){
     render();
 }
 
-// EXPORTAR TODAS AS FAIXAS
+// EXPORTAR WEBM
 function exportTracks(){
-
-    tracks.forEach((t, i)=>{
-
+    tracks.forEach((t,i)=>{
         if(!t.audio.src) return;
-
-        let a = document.createElement("a");
-        a.href = t.audio.src;
-
-        // nomes organizados
-        a.download = "VOV_track_" + (i+1) + ".webm";
-
-        document.body.appendChild(a);
+        let a=document.createElement("a");
+        a.href=t.audio.src;
+        a.download="VOV_track_"+(i+1)+".webm";
         a.click();
-        document.body.removeChild(a);
     });
-
-    alert("Faixas exportadas! Importe no REAPER.");
 }
 
 // RENDER
 function render(){
 
     const container = document.getElementById("tracks");
-    container.innerHTML = "";
+    container.innerHTML="";
 
-    tracks.forEach((track, index)=>{
+    tracks.forEach((track,index)=>{
 
-        let div = document.createElement("div");
-        div.className = "track";
+        let div=document.createElement("div");
+        div.className="track";
 
-        let rec = document.createElement("button");
-        rec.innerText = "Gravar";
+        let rec=document.createElement("button");
+        rec.innerText="Gravar";
 
-        let stop = document.createElement("button");
-        stop.innerText = "Parar";
+        let stop=document.createElement("button");
+        stop.innerText="Parar";
 
-        let play = document.createElement("button");
-        play.innerText = "▶";
+        let play=document.createElement("button");
+        play.innerText="▶";
 
-        let del = document.createElement("button");
-        del.innerText = "Remover";
+        let del=document.createElement("button");
+        del.innerText="Remover";
 
-        let volume = document.createElement("input");
-        volume.type = "range";
-        volume.min = 0;
-        volume.max = 1;
-        volume.step = 0.01;
-        volume.value = track.volume;
+        let volume=document.createElement("input");
+        volume.type="range";
+        volume.min=0;
+        volume.max=1;
+        volume.step=0.01;
+        volume.value=track.volume;
 
-        // VOLUME
-        volume.oninput = ()=>{
-            track.volume = volume.value;
-            track.audio.volume = track.volume;
+        volume.oninput=()=>{
+            track.volume=volume.value;
+            track.audio.volume=track.volume;
         };
 
-        // PLAY INDIVIDUAL
-        play.onclick = ()=>{
+        play.onclick=()=>{
             if(track.audio.src){
-                track.audio.currentTime = 0;
+                track.audio.currentTime=0;
                 track.audio.play();
             }
         };
 
-        // GRAVAÇÃO COM OVERDUB
-        rec.onclick = async ()=>{
+        rec.onclick=async ()=>{
 
             if(currentRecorder){
                 alert("Já gravando");
@@ -179,65 +168,181 @@ function render(){
                     }
                 });
 
-                let recorder = new MediaRecorder(currentStream);
-                currentRecorder = recorder;
+                let recorder=new MediaRecorder(currentStream);
+                currentRecorder=recorder;
 
-                let chunks = [];
+                let chunks=[];
 
-                recorder.ondataavailable = e => chunks.push(e.data);
+                recorder.ondataavailable=e=>chunks.push(e.data);
 
-                recorder.onstop = ()=>{
-                    let blob = new Blob(chunks,{type:"audio/webm"});
-                    track.audio.src = URL.createObjectURL(blob);
+                recorder.onstop=()=>{
+                    let blob=new Blob(chunks,{type:"audio/webm"});
+                    track.audio.src=URL.createObjectURL(blob);
 
                     currentStream.getTracks().forEach(t=>t.stop());
-                    currentRecorder = null;
+                    currentRecorder=null;
                 };
 
                 recorder.start();
                 rec.style.background="red";
 
             }catch(err){
-                alert("Erro no microfone: " + err.message);
+                alert("Erro mic: "+err.message);
             }
         };
 
-        // PARAR
-        stop.onclick = ()=>{
+        stop.onclick=()=>{
             if(currentRecorder){
                 currentRecorder.stop();
                 rec.style.background="#2a2a2a";
             }
         };
 
-        del.onclick = ()=> removeTrack(index);
+        del.onclick=()=>removeTrack(index);
 
-        div.append(
-            rec,
-            stop,
-            play,
-            volume,
-            del,
-            track.audio
-        );
-
+        div.append(rec,stop,play,volume,del,track.audio);
         container.appendChild(div);
     });
 }
 
 // NOVA PISTA
 function addTrack(){
-
-    let audio = document.createElement("audio");
-    audio.controls = true;
-    audio.volume = 0.8;
+    let audio=document.createElement("audio");
+    audio.controls=true;
+    audio.volume=0.8;
 
     tracks.push({
-        audio: audio,
-        volume: 0.8
+        audio:audio,
+        volume:0.8
     });
 
     render();
+}
+
+//////////////////////////////////////
+// WAV CORE
+//////////////////////////////////////
+
+function audioBufferToWav(buffer){
+
+    let numOfChan = buffer.numberOfChannels,
+    length = buffer.length * numOfChan * 2 + 44,
+    bufferArray = new ArrayBuffer(length),
+    view = new DataView(bufferArray),
+    channels=[],i,sample,offset=0,pos=0;
+
+    function writeString(view,offset,string){
+        for(let i=0;i<string.length;i++){
+            view.setUint8(offset+i,string.charCodeAt(i));
+        }
+    }
+
+    writeString(view,0,'RIFF');
+    view.setUint32(4,36 + buffer.length*2,true);
+    writeString(view,8,'WAVE');
+    writeString(view,12,'fmt ');
+    view.setUint32(16,16,true);
+    view.setUint16(20,1,true);
+    view.setUint16(22,numOfChan,true);
+    view.setUint32(24,buffer.sampleRate,true);
+    view.setUint32(28,buffer.sampleRate*2,true);
+    view.setUint16(32,numOfChan*2,true);
+    view.setUint16(34,16,true);
+    writeString(view,36,'data');
+    view.setUint32(40,buffer.length*2,true);
+
+    for(i=0;i<buffer.numberOfChannels;i++){
+        channels.push(buffer.getChannelData(i));
+    }
+
+    while(pos<buffer.length){
+        for(i=0;i<numOfChan;i++){
+            sample=Math.max(-1,Math.min(1,channels[i][pos]));
+            sample=sample<0?sample*0x8000:sample*0x7FFF;
+            view.setInt16(offset,sample,true);
+            offset+=2;
+        }
+        pos++;
+    }
+
+    return new Blob([view],{type:'audio/wav'});
+}
+
+//////////////////////////////////////
+// WAV TRACKS
+//////////////////////////////////////
+
+async function exportWAVTracks(){
+
+    let ctx=new (window.AudioContext||window.webkitAudioContext)();
+
+    for(let i=0;i<tracks.length;i++){
+
+        let t=tracks[i];
+        if(!t.audio.src) continue;
+
+        let res=await fetch(t.audio.src);
+        let arr=await res.arrayBuffer();
+        let buf=await ctx.decodeAudioData(arr);
+
+        let wav=audioBufferToWav(buf);
+
+        let a=document.createElement("a");
+        a.href=URL.createObjectURL(wav);
+        a.download="VOV_track_"+(i+1)+".wav";
+        a.click();
+    }
+
+    alert("WAV das faixas exportado!");
+}
+
+//////////////////////////////////////
+// WAV MIX
+//////////////////////////////////////
+
+async function exportWAVMix(){
+
+    let ctx=new (window.AudioContext||window.webkitAudioContext)();
+
+    let buffers=[];
+
+    for(let t of tracks){
+        if(!t.audio.src) continue;
+
+        let res=await fetch(t.audio.src);
+        let arr=await res.arrayBuffer();
+        let buf=await ctx.decodeAudioData(arr);
+
+        buffers.push({buffer:buf,volume:t.volume});
+    }
+
+    let length=Math.max(...buffers.map(b=>b.buffer.length));
+
+    let offline=new OfflineAudioContext(1,length,44100);
+
+    buffers.forEach(b=>{
+        let src=offline.createBufferSource();
+        src.buffer=b.buffer;
+
+        let gain=offline.createGain();
+        gain.gain.value=b.volume;
+
+        src.connect(gain);
+        gain.connect(offline.destination);
+
+        src.start(0);
+    });
+
+    let rendered=await offline.startRendering();
+
+    let wav=audioBufferToWav(rendered);
+
+    let a=document.createElement("a");
+    a.href=URL.createObjectURL(wav);
+    a.download="VOV_mix.wav";
+    a.click();
+
+    alert("Mix final WAV exportado!");
 }
 
 </script>
