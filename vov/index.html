@@ -1,98 +1,41 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portal V O V</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f9f9f9;
-      color: #222;
-    }
-    header {
-      background: #111;
-      color: #fff;
-      padding: 20px;
-      text-align: center;
-    }
-    header h1 {
-      margin: 0;
-      font-size: 28px;
-      letter-spacing: 2px;
-    }
-    header p {
-      margin: 5px 0 0;
-      font-size: 14px;
-      opacity: 0.8;
-    }
-    nav {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      background: #333;
-      padding: 10px 0;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-    }
-    nav a {
-      color: #fff;
-      text-decoration: none;
-      font-size: 15px;
-      font-weight: bold;
-    }
-    nav a:hover {
-      color: #ffd700;
-    }
-    main {
-      padding: 20px;
-      text-align: center;
-    }
-    main h2 {
-      margin-top: 0;
-    }
-    footer {
-      background: #111;
-      color: #fff;
-      padding: 15px;
-      text-align: center;
-      margin-top: 40px;
-      font-size: 14px;
-    }
-    footer span {
-      color: #ffd700;
-      font-weight: bold;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAW VOV</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <h1>V O V – Ver, Ouvir, Vender, Viver</h1>
-    <p>Plataforma Criativa de Notícias, Cultura e Inteligência Vital</p>
-  </header>
 
-  <nav>
-    <a href="/index.html">Início</a>
-    <a href="/vov/index.html">Portal VOV</a>
-    <a href="/vov/edicoes.html">Edições</a>
-    <a href="/vov/blackvox/index.html">BLACKVOX</a>
-    <a href="/vov/contato.html">Contato</a>
-  </nav>
+<header>
+    <h1>🎧 DAW VOV</h1>
 
-  <main>
-    <h2>Bem-vindo ao Portal V O V</h2>
-    <p>Aqui você encontra o <strong>JOR NEWS V O V</strong>, nossa plataforma criativa e revolucionária.<br>
-       Leia edições completas, explore o <strong>BLACKVOX</strong> e participe com sua voz.</p>
+    <div class="transport">
+        <button id="playBtn">▶</button>
+        <button id="stopBtn">■</button>
+        <button id="addTrackBtn">＋ Pista</button>
+        <span id="timeDisplay">0.0</span>
+    </div>
+</header>
 
-    <p><a href="/vov/edicoes.html">📖 Ler edições do JOR NEWS V O V</a></p>
-    <p><a href="/vov/blackvox/index.html">🎵 Acessar BLACKVOX Playlists</a></p>
-    <p><a href="/vov/contato.html">✉️ Entrar em contato</a></p>
-  </main>
+<main id="workspace">
 
-  <footer>
-    <p>Por <span>Jorge LA Matheus</span> & <span>AxéBit</span> · V O V © 2025</p>
-  </footer>
+    <aside id="mixer"></aside>
+
+    <section id="timeline-container">
+
+        <div id="timeline-ruler"></div>
+
+        <div id="timeline">
+            <div id="playhead"></div>
+            <div id="tracks"></div>
+        </div>
+
+    </section>
+
+</main>
+
+<script src="app.js"></script>
 </body>
 </html>
