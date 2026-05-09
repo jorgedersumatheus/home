@@ -2,204 +2,236 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>DAW VOV</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAW VOV PRO</title>
 
 <style>
 
 *{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    -webkit-tap-highlight-color:transparent;
+margin:0;
+padding:0;
+box-sizing:border-box;
+-webkit-tap-highlight-color:transparent;
 }
 
 body{
-    background:#050505;
-    color:#fff;
-    font-family:Arial,Helvetica,sans-serif;
-    overflow-x:hidden;
+background:#080808;
+color:white;
+font-family:Arial,Helvetica,sans-serif;
+overflow-x:hidden;
 }
 
 header{
-    height:100px;
-    background:linear-gradient(#1a1a1a,#050505);
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:15px;
-    border-bottom:1px solid #333;
-    position:sticky;
-    top:0;
-    z-index:999;
+position:sticky;
+top:0;
+z-index:999;
+background:linear-gradient(#1c1c1c,#090909);
+padding:14px;
+border-bottom:1px solid #333;
+}
+
+.topbar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:10px;
 }
 
 .logo{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    font-size:22px;
-    font-weight:bold;
+font-size:24px;
+font-weight:bold;
 }
 
 .transport{
-    display:flex;
-    gap:10px;
-    align-items:center;
+display:flex;
+align-items:center;
+gap:10px;
 }
 
-.transport button,
-.track-controls button{
-    width:62px;
-    height:62px;
-    border:none;
-    border-radius:18px;
-    background:linear-gradient(#3a3a3a,#111);
-    color:white;
-    font-size:18px;
-    box-shadow:
-    0 4px 10px rgba(0,0,0,.7),
-    inset 0 1px 1px rgba(255,255,255,.1);
+.transport button{
+width:58px;
+height:58px;
+border:none;
+border-radius:16px;
+background:linear-gradient(#444,#111);
+color:white;
+font-size:18px;
+box-shadow:
+0 4px 10px rgba(0,0,0,.7),
+inset 0 1px 1px rgba(255,255,255,.1);
 }
 
-.transport button:active,
-.track-controls button:active{
-    transform:scale(.96);
+.transport button:active{
+transform:scale(.95);
 }
 
-#time{
-    font-size:28px;
-    width:80px;
-    text-align:right;
+#counter{
+font-size:24px;
+min-width:80px;
+text-align:right;
 }
 
 .timeline{
-    position:relative;
-    overflow-x:auto;
-    height:70px;
-    background:#111;
-    border-bottom:1px solid #222;
-    white-space:nowrap;
+position:relative;
+overflow-x:auto;
+height:60px;
+background:#111;
+border-bottom:1px solid #222;
+white-space:nowrap;
 }
 
 .grid{
-    display:flex;
-    width:2400px;
-    height:70px;
+display:flex;
+width:4000px;
+height:60px;
 }
 
 .cell{
-    width:80px;
-    border-right:1px solid #2b2b2b;
-    color:#777;
-    padding-top:8px;
-    text-align:center;
-    font-size:20px;
+width:100px;
+border-right:1px solid #2a2a2a;
+padding-top:10px;
+text-align:center;
+color:#666;
 }
 
 .playhead{
-    position:absolute;
-    left:0;
-    top:0;
-    width:3px;
-    height:100%;
-    background:red;
-    z-index:50;
+position:absolute;
+top:0;
+left:0;
+width:3px;
+height:100%;
+background:red;
+z-index:20;
+box-shadow:0 0 10px red;
 }
 
 #tracks{
-    padding:14px;
+padding:12px;
 }
 
 .track{
-    background:#121212;
-    border-radius:24px;
-    margin-bottom:20px;
-    overflow:hidden;
-    border:1px solid #242424;
-    box-shadow:0 0 20px rgba(0,0,0,.5);
+background:#131313;
+border:1px solid #252525;
+border-radius:24px;
+overflow:hidden;
+margin-bottom:20px;
+box-shadow:0 0 20px rgba(0,0,0,.5);
 }
 
 .track-top{
-    padding:14px;
+padding:14px;
 }
 
 .track-title{
-    font-size:22px;
-    margin-bottom:14px;
+font-size:20px;
+margin-bottom:10px;
 }
 
-.track-controls{
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-    margin-bottom:14px;
+.controls{
+display:flex;
+flex-wrap:wrap;
+gap:8px;
+margin-bottom:10px;
 }
 
-.track audio{
-    width:100%;
-    margin-top:10px;
+.controls button{
+width:58px;
+height:58px;
+border:none;
+border-radius:16px;
+background:linear-gradient(#3d3d3d,#111);
+color:white;
+font-size:16px;
 }
 
-.meter{
-    height:10px;
-    background:#222;
-    border-radius:10px;
-    overflow:hidden;
-    margin-top:12px;
+.controls button.active{
+background:linear-gradient(#00aa55,#004422);
 }
 
-.meter-fill{
-    height:100%;
-    width:0%;
-    background:linear-gradient(to right,#00ff88,#ffee00,#ff0000);
-    transition:.05s;
+.controls button.rec{
+background:linear-gradient(#aa0000,#440000);
 }
 
-.wave{
-    height:90px;
-    background:
-    repeating-linear-gradient(
-        to right,
-        #1e1e1e,
-        #1e1e1e 2px,
-        #111 2px,
-        #111 8px
-    );
-    position:relative;
-    overflow:hidden;
+.controls button.solo{
+background:linear-gradient(#996600,#332200);
 }
 
-.clip{
-    position:absolute;
-    top:10px;
-    left:0;
-    height:70px;
-    background:linear-gradient(#444,#222);
-    border:1px solid #666;
-    border-radius:16px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    color:#0f9;
-    font-size:18px;
-    min-width:140px;
+.controls button.mute{
+background:linear-gradient(#444,#111);
+}
+
+.controls button:active{
+transform:scale(.95);
 }
 
 .slider{
-    width:100%;
-    margin-top:12px;
+width:100%;
+margin-top:12px;
+}
+
+.wave{
+height:90px;
+position:relative;
+background:
+repeating-linear-gradient(
+to right,
+#171717,
+#171717 2px,
+#101010 2px,
+#101010 8px
+);
+overflow:hidden;
+}
+
+.clip{
+position:absolute;
+left:0;
+top:10px;
+height:70px;
+min-width:160px;
+padding:10px;
+border-radius:16px;
+background:linear-gradient(#444,#222);
+border:1px solid #666;
+display:flex;
+align-items:center;
+justify-content:center;
+color:#00ff99;
+font-size:18px;
+}
+
+audio{
+width:100%;
+margin-top:12px;
+}
+
+.meter{
+height:10px;
+background:#222;
+border-radius:10px;
+overflow:hidden;
+margin-top:10px;
+}
+
+.fill{
+height:100%;
+width:0%;
+background:
+linear-gradient(to right,
+#00ff88,
+#ffee00,
+#ff0000);
 }
 
 .footer{
-    padding:40px 20px;
-    text-align:center;
-    color:#888;
+padding:40px 20px;
+text-align:center;
+color:#777;
 }
 
 a{
-    color:#00ff99;
-    text-decoration:none;
+color:#00ff99;
+text-decoration:none;
 }
 
 </style>
@@ -209,14 +241,21 @@ a{
 
 <header>
 
+<div class="topbar">
+
 <div class="logo">
-🎧 <div>DAW VOV</div>
+🎧 DAW VOV PRO
 </div>
 
 <div class="transport">
+
 <button id="playAll">▶</button>
 <button id="stopAll">■</button>
-<div id="time">0.0</div>
+
+<div id="counter">0.0</div>
+
+</div>
+
 </div>
 
 </header>
@@ -229,20 +268,21 @@ a{
 
 </div>
 
-<div style="padding:15px;">
+<div style="padding:12px;">
+
 <button id="addTrack"
 style="
 width:100%;
 height:70px;
 border:none;
 border-radius:24px;
-font-size:24px;
-background:linear-gradient(#3a3a3a,#111);
+background:linear-gradient(#444,#111);
 color:white;
-box-shadow:0 4px 10px rgba(0,0,0,.7);
+font-size:24px;
 ">
 + Pista
 </button>
+
 </div>
 
 <div id="tracks"></div>
@@ -255,246 +295,454 @@ VOV — Ver • Ouvir • Vender
 
 <script>
 
-const tracksDiv = document.getElementById("tracks");
-const playhead = document.getElementById("playhead");
-const timeDisplay = document.getElementById("time");
+//////////////////////////////////////////////////////
+// GRID
+//////////////////////////////////////////////////////
 
-let allTracks = [];
+for(let i=1;i<=64;i++){
 
-for(let i=1;i<=40;i++){
-    const c = document.createElement("div");
-    c.className="cell";
-    c.innerText=i;
-    document.getElementById("grid").appendChild(c);
+const cell=document.createElement("div");
+cell.className="cell";
+cell.innerText=i;
+
+document.getElementById("grid").appendChild(cell);
+
 }
 
-document.getElementById("addTrack").onclick = createTrack;
+//////////////////////////////////////////////////////
+// AUDIO ENGINE
+//////////////////////////////////////////////////////
+
+const audioContext = new (
+window.AudioContext ||
+window.webkitAudioContext
+)();
+
+let tracks=[];
+
+let playing=false;
+let startTime=0;
+let animationFrame;
+
+//////////////////////////////////////////////////////
+// PLAYHEAD
+//////////////////////////////////////////////////////
+
+const playhead=document.getElementById("playhead");
+const counter=document.getElementById("counter");
+
+function animate(){
+
+if(!playing) return;
+
+const now=audioContext.currentTime-startTime;
+
+counter.innerText=now.toFixed(1);
+
+playhead.style.left=(now*80)+"px";
+
+animationFrame=requestAnimationFrame(animate);
+
+}
+
+//////////////////////////////////////////////////////
+// PLAY ALL
+//////////////////////////////////////////////////////
+
+document.getElementById("playAll").onclick=()=>{
+
+if(playing) return;
+
+audioContext.resume();
+
+playing=true;
+
+startTime=audioContext.currentTime;
+
+tracks.forEach(track=>{
+
+if(track.audio.src){
+
+track.audio.currentTime=0;
+
+if(!track.muted){
+
+if(track.hasSolo){
+
+track.audio.play();
+
+}else{
+
+const someSolo = tracks.some(t=>t.solo);
+
+if(!someSolo || track.solo){
+
+track.audio.play();
+
+}
+
+}
+
+}
+
+}
+
+});
+
+animate();
+
+};
+
+//////////////////////////////////////////////////////
+// STOP ALL
+//////////////////////////////////////////////////////
+
+document.getElementById("stopAll").onclick=()=>{
+
+playing=false;
+
+cancelAnimationFrame(animationFrame);
+
+counter.innerText="0.0";
+
+playhead.style.left="0px";
+
+tracks.forEach(track=>{
+
+track.audio.pause();
+track.audio.currentTime=0;
+
+});
+
+};
+
+//////////////////////////////////////////////////////
+// CREATE TRACK
+//////////////////////////////////////////////////////
+
+document.getElementById("addTrack").onclick=createTrack;
 
 function createTrack(){
 
-    let mediaRecorder;
-    let chunks = [];
-    let audioBlob = null;
-    let audioURL = null;
-    let isRecording = false;
+let mediaRecorder;
+let chunks=[];
+let audioBlob=null;
 
-    const track = document.createElement("div");
-    track.className="track";
+const track=document.createElement("div");
+track.className="track";
 
-    track.innerHTML = `
-    
-    <div class="track-top">
+track.innerHTML=`
 
-        <div class="track-title">
-        Track ${allTracks.length + 1}
-        </div>
+<div class="track-top">
 
-        <div class="track-controls">
+<div class="track-title">
+Track ${tracks.length+1}
+</div>
 
-            <button class="recBtn">REC</button>
-            <button class="playBtn">▶</button>
-            <button class="stopBtn">■</button>
-            <button class="saveBtn">WAV</button>
-            <button class="removeBtn">X</button>
+<div class="controls">
 
-        </div>
+<button class="rec">REC</button>
+<button class="play">▶</button>
+<button class="stop">■</button>
+<button class="mute">M</button>
+<button class="solo">S</button>
+<button class="save">WAV</button>
+<button class="remove">X</button>
 
-        <input class="slider" type="range" min="0" max="1" step="0.01" value="1">
+</div>
 
-        <div class="meter">
-            <div class="meter-fill"></div>
-        </div>
+<input class="slider"
+type="range"
+min="0"
+max="1"
+step="0.01"
+value="1">
 
-        <audio controls></audio>
+<div class="meter">
+<div class="fill"></div>
+</div>
 
-    </div>
+<audio controls></audio>
 
-    <div class="wave">
-        <div class="clip">VOV</div>
-    </div>
+</div>
 
-    `;
+<div class="wave">
+<div class="clip">
+VOV Track
+</div>
+</div>
 
-    tracksDiv.appendChild(track);
+`;
 
-    const recBtn = track.querySelector(".recBtn");
-    const playBtn = track.querySelector(".playBtn");
-    const stopBtn = track.querySelector(".stopBtn");
-    const saveBtn = track.querySelector(".saveBtn");
-    const removeBtn = track.querySelector(".removeBtn");
-    const audio = track.querySelector("audio");
-    const slider = track.querySelector(".slider");
-    const meterFill = track.querySelector(".meter-fill");
+document.getElementById("tracks")
+.appendChild(track);
 
-    slider.oninput = ()=>{
-        audio.volume = slider.value;
-    };
+//////////////////////////////////////////////////////
+// ELEMENTS
+//////////////////////////////////////////////////////
 
-    recBtn.onclick = async ()=>{
+const recBtn=track.querySelector(".rec");
+const playBtn=track.querySelector(".play");
+const stopBtn=track.querySelector(".stop");
+const muteBtn=track.querySelector(".mute");
+const soloBtn=track.querySelector(".solo");
+const saveBtn=track.querySelector(".save");
+const removeBtn=track.querySelector(".remove");
 
-        if(isRecording) return;
+const slider=track.querySelector(".slider");
+const fill=track.querySelector(".fill");
 
-        try{
+const audio=track.querySelector("audio");
 
-            const stream = await navigator.mediaDevices.getUserMedia({
-                audio:{
-                    echoCancellation:false,
-                    noiseSuppression:false,
-                    autoGainControl:false
-                }
-            });
+//////////////////////////////////////////////////////
+// TRACK OBJECT
+//////////////////////////////////////////////////////
 
-            chunks = [];
+const trackObj={
 
-            mediaRecorder = new MediaRecorder(stream);
+audio,
+muted:false,
+solo:false
 
-            mediaRecorder.start();
+};
 
-            isRecording = true;
+tracks.push(trackObj);
 
-            recBtn.style.background = "red";
+//////////////////////////////////////////////////////
+// VOLUME
+//////////////////////////////////////////////////////
 
-            const audioContext = new AudioContext();
-            const source = audioContext.createMediaStreamSource(stream);
-            const analyser = audioContext.createAnalyser();
+slider.oninput=()=>{
 
-            source.connect(analyser);
+audio.volume=slider.value;
 
-            const data = new Uint8Array(analyser.frequencyBinCount);
+};
 
-            function meter(){
+//////////////////////////////////////////////////////
+// REC
+//////////////////////////////////////////////////////
 
-                if(!isRecording) return;
+recBtn.onclick=async()=>{
 
-                analyser.getByteFrequencyData(data);
+try{
 
-                let avg = data.reduce((a,b)=>a+b,0)/data.length;
+const stream =
+await navigator.mediaDevices
+.getUserMedia({
 
-                meterFill.style.width = Math.min(avg,100)+"%";
+audio:{
+echoCancellation:false,
+noiseSuppression:false,
+autoGainControl:false
+}
 
-                requestAnimationFrame(meter);
+});
 
-            }
+chunks=[];
 
-            meter();
+mediaRecorder=
+new MediaRecorder(stream);
 
-            mediaRecorder.ondataavailable = e=>{
-                chunks.push(e.data);
-            };
+mediaRecorder.start(200);
 
-            mediaRecorder.onstop = ()=>{
+recBtn.classList.add("active");
 
-                audioBlob = new Blob(chunks,{type:"audio/webm"});
-                audioURL = URL.createObjectURL(audioBlob);
+//////////////////////////////////////////////////////
+// METER
+//////////////////////////////////////////////////////
 
-                audio.src = audioURL;
+const source =
+audioContext.createMediaStreamSource(stream);
 
-                recBtn.style.background = "";
-                isRecording = false;
+const analyser =
+audioContext.createAnalyser();
 
-                meterFill.style.width = "0%";
+source.connect(analyser);
 
-            };
+const data=
+new Uint8Array(
+analyser.frequencyBinCount
+);
 
-        }catch(err){
+function meter(){
 
-            alert("Microfone bloqueado.");
+if(
+mediaRecorder.state!=="recording"
+) return;
 
-        }
+analyser.getByteFrequencyData(data);
 
-    };
+const avg=
+data.reduce((a,b)=>a+b,0)
+/
+data.length;
 
-    stopBtn.onclick = ()=>{
+fill.style.width=
+Math.min(avg,100)+"%";
 
-        if(mediaRecorder && isRecording){
-
-            mediaRecorder.stop();
-
-        }
-
-        audio.pause();
-        audio.currentTime = 0;
-
-    };
-
-    playBtn.onclick = ()=>{
-
-        if(audio.src){
-
-            audio.play();
-
-        }
-
-    };
-
-    saveBtn.onclick = ()=>{
-
-        if(!audioBlob){
-
-            alert("Nada gravado.");
-            return;
-
-        }
-
-        const a = document.createElement("a");
-
-        a.href = audioURL;
-        a.download = "VOV_TRACK.wav";
-
-        a.click();
-
-    };
-
-    removeBtn.onclick = ()=>{
-
-        audio.pause();
-        track.remove();
-
-    };
-
-    allTracks.push(audio);
+requestAnimationFrame(meter);
 
 }
 
-document.getElementById("playAll").onclick = ()=>{
+meter();
 
-    allTracks.forEach(a=>{
+//////////////////////////////////////////////////////
+// DATA
+//////////////////////////////////////////////////////
 
-        if(a.src){
+mediaRecorder.ondataavailable=e=>{
 
-            a.currentTime = 0;
-            a.play();
+if(e.data.size>0){
 
-        }
+chunks.push(e.data);
 
-    });
-
-};
-
-document.getElementById("stopAll").onclick = ()=>{
-
-    allTracks.forEach(a=>{
-
-        a.pause();
-        a.currentTime = 0;
-
-    });
+}
 
 };
 
-let t=0;
+//////////////////////////////////////////////////////
+// STOP REC
+//////////////////////////////////////////////////////
 
-setInterval(()=>{
+mediaRecorder.onstop=()=>{
 
-    t += 0.1;
+audioBlob=
+new Blob(chunks,{
+type:"audio/webm"
+});
 
-    timeDisplay.innerText = t.toFixed(1);
+audio.src=
+URL.createObjectURL(audioBlob);
 
-    let pos = (t * 8) % 2400;
+fill.style.width="0%";
 
-    playhead.style.left = pos + "px";
+recBtn.classList.remove("active");
 
-},100);
+stream.getTracks()
+.forEach(t=>t.stop());
+
+};
+
+}catch(err){
+
+alert(
+"Erro microfone: "
++
+err.message
+);
+
+}
+
+};
+
+//////////////////////////////////////////////////////
+// STOP
+//////////////////////////////////////////////////////
+
+stopBtn.onclick=()=>{
+
+if(
+mediaRecorder &&
+mediaRecorder.state!=="inactive"
+){
+
+mediaRecorder.stop();
+
+}
+
+audio.pause();
+audio.currentTime=0;
+
+};
+
+//////////////////////////////////////////////////////
+// PLAY INDIVIDUAL
+//////////////////////////////////////////////////////
+
+playBtn.onclick=()=>{
+
+if(audio.src){
+
+audio.currentTime=0;
+
+audio.play();
+
+}
+
+};
+
+//////////////////////////////////////////////////////
+// MUTE
+//////////////////////////////////////////////////////
+
+muteBtn.onclick=()=>{
+
+trackObj.muted=!trackObj.muted;
+
+audio.muted=trackObj.muted;
+
+muteBtn.classList.toggle(
+"active"
+);
+
+};
+
+//////////////////////////////////////////////////////
+// SOLO
+//////////////////////////////////////////////////////
+
+soloBtn.onclick=()=>{
+
+trackObj.solo=!trackObj.solo;
+
+soloBtn.classList.toggle(
+"active"
+);
+
+};
+
+//////////////////////////////////////////////////////
+// EXPORT
+//////////////////////////////////////////////////////
+
+saveBtn.onclick=()=>{
+
+if(!audio.src){
+
+alert("Nada gravado.");
+
+return;
+
+}
+
+const a=document.createElement("a");
+
+a.href=audio.src;
+
+a.download=
+"VOV_TRACK.wav";
+
+a.click();
+
+};
+
+//////////////////////////////////////////////////////
+// REMOVE
+//////////////////////////////////////////////////////
+
+removeBtn.onclick=()=>{
+
+audio.pause();
+
+track.remove();
+
+tracks=tracks.filter(
+t=>t!==trackObj
+);
+
+};
+
+}
 
 </script>
 
