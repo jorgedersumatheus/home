@@ -1,41 +1,502 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>DAW VOV</title>
-<link rel="stylesheet" href="style.css">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
+}
+
+body{
+    background:#050505;
+    color:#fff;
+    font-family:Arial,Helvetica,sans-serif;
+    overflow-x:hidden;
+}
+
+header{
+    height:100px;
+    background:linear-gradient(#1a1a1a,#050505);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:15px;
+    border-bottom:1px solid #333;
+    position:sticky;
+    top:0;
+    z-index:999;
+}
+
+.logo{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size:22px;
+    font-weight:bold;
+}
+
+.transport{
+    display:flex;
+    gap:10px;
+    align-items:center;
+}
+
+.transport button,
+.track-controls button{
+    width:62px;
+    height:62px;
+    border:none;
+    border-radius:18px;
+    background:linear-gradient(#3a3a3a,#111);
+    color:white;
+    font-size:18px;
+    box-shadow:
+    0 4px 10px rgba(0,0,0,.7),
+    inset 0 1px 1px rgba(255,255,255,.1);
+}
+
+.transport button:active,
+.track-controls button:active{
+    transform:scale(.96);
+}
+
+#time{
+    font-size:28px;
+    width:80px;
+    text-align:right;
+}
+
+.timeline{
+    position:relative;
+    overflow-x:auto;
+    height:70px;
+    background:#111;
+    border-bottom:1px solid #222;
+    white-space:nowrap;
+}
+
+.grid{
+    display:flex;
+    width:2400px;
+    height:70px;
+}
+
+.cell{
+    width:80px;
+    border-right:1px solid #2b2b2b;
+    color:#777;
+    padding-top:8px;
+    text-align:center;
+    font-size:20px;
+}
+
+.playhead{
+    position:absolute;
+    left:0;
+    top:0;
+    width:3px;
+    height:100%;
+    background:red;
+    z-index:50;
+}
+
+#tracks{
+    padding:14px;
+}
+
+.track{
+    background:#121212;
+    border-radius:24px;
+    margin-bottom:20px;
+    overflow:hidden;
+    border:1px solid #242424;
+    box-shadow:0 0 20px rgba(0,0,0,.5);
+}
+
+.track-top{
+    padding:14px;
+}
+
+.track-title{
+    font-size:22px;
+    margin-bottom:14px;
+}
+
+.track-controls{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:14px;
+}
+
+.track audio{
+    width:100%;
+    margin-top:10px;
+}
+
+.meter{
+    height:10px;
+    background:#222;
+    border-radius:10px;
+    overflow:hidden;
+    margin-top:12px;
+}
+
+.meter-fill{
+    height:100%;
+    width:0%;
+    background:linear-gradient(to right,#00ff88,#ffee00,#ff0000);
+    transition:.05s;
+}
+
+.wave{
+    height:90px;
+    background:
+    repeating-linear-gradient(
+        to right,
+        #1e1e1e,
+        #1e1e1e 2px,
+        #111 2px,
+        #111 8px
+    );
+    position:relative;
+    overflow:hidden;
+}
+
+.clip{
+    position:absolute;
+    top:10px;
+    left:0;
+    height:70px;
+    background:linear-gradient(#444,#222);
+    border:1px solid #666;
+    border-radius:16px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#0f9;
+    font-size:18px;
+    min-width:140px;
+}
+
+.slider{
+    width:100%;
+    margin-top:12px;
+}
+
+.footer{
+    padding:40px 20px;
+    text-align:center;
+    color:#888;
+}
+
+a{
+    color:#00ff99;
+    text-decoration:none;
+}
+
+</style>
 </head>
+
 <body>
 
 <header>
-    <h1>🎧 DAW VOV</h1>
 
-    <div class="transport">
-        <button id="playBtn">▶</button>
-        <button id="stopBtn">■</button>
-        <button id="addTrackBtn">＋ Pista</button>
-        <span id="timeDisplay">0.0</span>
-    </div>
+<div class="logo">
+🎧 <div>DAW VOV</div>
+</div>
+
+<div class="transport">
+<button id="playAll">▶</button>
+<button id="stopAll">■</button>
+<div id="time">0.0</div>
+</div>
+
 </header>
 
-<main id="workspace">
+<div class="timeline">
 
-    <aside id="mixer"></aside>
+<div class="playhead" id="playhead"></div>
 
-    <section id="timeline-container">
+<div class="grid" id="grid"></div>
 
-        <div id="timeline-ruler"></div>
+</div>
 
-        <div id="timeline">
-            <div id="playhead"></div>
-            <div id="tracks"></div>
+<div style="padding:15px;">
+<button id="addTrack"
+style="
+width:100%;
+height:70px;
+border:none;
+border-radius:24px;
+font-size:24px;
+background:linear-gradient(#3a3a3a,#111);
+color:white;
+box-shadow:0 4px 10px rgba(0,0,0,.7);
+">
++ Pista
+</button>
+</div>
+
+<div id="tracks"></div>
+
+<div class="footer">
+VOV — Ver • Ouvir • Vender
+<br><br>
+<a href="/">← Portal VOV</a>
+</div>
+
+<script>
+
+const tracksDiv = document.getElementById("tracks");
+const playhead = document.getElementById("playhead");
+const timeDisplay = document.getElementById("time");
+
+let allTracks = [];
+
+for(let i=1;i<=40;i++){
+    const c = document.createElement("div");
+    c.className="cell";
+    c.innerText=i;
+    document.getElementById("grid").appendChild(c);
+}
+
+document.getElementById("addTrack").onclick = createTrack;
+
+function createTrack(){
+
+    let mediaRecorder;
+    let chunks = [];
+    let audioBlob = null;
+    let audioURL = null;
+    let isRecording = false;
+
+    const track = document.createElement("div");
+    track.className="track";
+
+    track.innerHTML = `
+    
+    <div class="track-top">
+
+        <div class="track-title">
+        Track ${allTracks.length + 1}
         </div>
 
-    </section>
+        <div class="track-controls">
 
-</main>
+            <button class="recBtn">REC</button>
+            <button class="playBtn">▶</button>
+            <button class="stopBtn">■</button>
+            <button class="saveBtn">WAV</button>
+            <button class="removeBtn">X</button>
 
-<script src="app.js"></script>
+        </div>
+
+        <input class="slider" type="range" min="0" max="1" step="0.01" value="1">
+
+        <div class="meter">
+            <div class="meter-fill"></div>
+        </div>
+
+        <audio controls></audio>
+
+    </div>
+
+    <div class="wave">
+        <div class="clip">VOV</div>
+    </div>
+
+    `;
+
+    tracksDiv.appendChild(track);
+
+    const recBtn = track.querySelector(".recBtn");
+    const playBtn = track.querySelector(".playBtn");
+    const stopBtn = track.querySelector(".stopBtn");
+    const saveBtn = track.querySelector(".saveBtn");
+    const removeBtn = track.querySelector(".removeBtn");
+    const audio = track.querySelector("audio");
+    const slider = track.querySelector(".slider");
+    const meterFill = track.querySelector(".meter-fill");
+
+    slider.oninput = ()=>{
+        audio.volume = slider.value;
+    };
+
+    recBtn.onclick = async ()=>{
+
+        if(isRecording) return;
+
+        try{
+
+            const stream = await navigator.mediaDevices.getUserMedia({
+                audio:{
+                    echoCancellation:false,
+                    noiseSuppression:false,
+                    autoGainControl:false
+                }
+            });
+
+            chunks = [];
+
+            mediaRecorder = new MediaRecorder(stream);
+
+            mediaRecorder.start();
+
+            isRecording = true;
+
+            recBtn.style.background = "red";
+
+            const audioContext = new AudioContext();
+            const source = audioContext.createMediaStreamSource(stream);
+            const analyser = audioContext.createAnalyser();
+
+            source.connect(analyser);
+
+            const data = new Uint8Array(analyser.frequencyBinCount);
+
+            function meter(){
+
+                if(!isRecording) return;
+
+                analyser.getByteFrequencyData(data);
+
+                let avg = data.reduce((a,b)=>a+b,0)/data.length;
+
+                meterFill.style.width = Math.min(avg,100)+"%";
+
+                requestAnimationFrame(meter);
+
+            }
+
+            meter();
+
+            mediaRecorder.ondataavailable = e=>{
+                chunks.push(e.data);
+            };
+
+            mediaRecorder.onstop = ()=>{
+
+                audioBlob = new Blob(chunks,{type:"audio/webm"});
+                audioURL = URL.createObjectURL(audioBlob);
+
+                audio.src = audioURL;
+
+                recBtn.style.background = "";
+                isRecording = false;
+
+                meterFill.style.width = "0%";
+
+            };
+
+        }catch(err){
+
+            alert("Microfone bloqueado.");
+
+        }
+
+    };
+
+    stopBtn.onclick = ()=>{
+
+        if(mediaRecorder && isRecording){
+
+            mediaRecorder.stop();
+
+        }
+
+        audio.pause();
+        audio.currentTime = 0;
+
+    };
+
+    playBtn.onclick = ()=>{
+
+        if(audio.src){
+
+            audio.play();
+
+        }
+
+    };
+
+    saveBtn.onclick = ()=>{
+
+        if(!audioBlob){
+
+            alert("Nada gravado.");
+            return;
+
+        }
+
+        const a = document.createElement("a");
+
+        a.href = audioURL;
+        a.download = "VOV_TRACK.wav";
+
+        a.click();
+
+    };
+
+    removeBtn.onclick = ()=>{
+
+        audio.pause();
+        track.remove();
+
+    };
+
+    allTracks.push(audio);
+
+}
+
+document.getElementById("playAll").onclick = ()=>{
+
+    allTracks.forEach(a=>{
+
+        if(a.src){
+
+            a.currentTime = 0;
+            a.play();
+
+        }
+
+    });
+
+};
+
+document.getElementById("stopAll").onclick = ()=>{
+
+    allTracks.forEach(a=>{
+
+        a.pause();
+        a.currentTime = 0;
+
+    });
+
+};
+
+let t=0;
+
+setInterval(()=>{
+
+    t += 0.1;
+
+    timeDisplay.innerText = t.toFixed(1);
+
+    let pos = (t * 8) % 2400;
+
+    playhead.style.left = pos + "px";
+
+},100);
+
+</script>
+
 </body>
 </html>
