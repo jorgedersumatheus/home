@@ -1,1 +1,160 @@
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();let tracks = [];let isPlaying = false;let isRecording = false;let startTime = 0;let bpm = 90;const playBtn = document.getElementById("play");const stopBtn = document.getElementById("stop");const recBtn = document.getElementById("rec");const playhead = document.getElementById("playhead");const timeDisplay = document.getElementById("time");// ===== TEMPO =====function secondsPerBeat(){    return 60 / bpm;}// ===== TRANSPORT =====playBtn.onclick = ()=>{    startTime = audioCtx.currentTime;    isPlaying = true;    playAll();    animate();};stopBtn.onclick = ()=>{    isPlaying = false;    stopAll();    playhead.style.left = "0px";};recBtn.onclick = ()=>{    isRecording = !isRecording;    if(isRecording) startMetronome();};// ===== PLAYHEAD =====function animate(){    if(!isPlaying) return;    let t = audioCtx.currentTime - startTime;    playhead.style.left = (t * 100) + "px";    timeDisplay.innerText = t.toFixed(2);    requestAnimationFrame(animate);}// ===== TRACK =====document.getElementById("addTrack").onclick = addTrack;function addTrack(){    let gain = audioCtx.createGain();    gain.connect(audioCtx.destination);    let track = {        buffer:null,        gain:gain,        muted:false    };    let div = document.createElement("div");    div.className = "track";    let rec = document.createElement("button");    rec.innerText = "Rec";    let stop = document.createElement("button");    stop.innerText = "Stop";    let mute = document.createElement("button");    mute.innerText = "Mute";    let vol = document.createElement("input");    vol.type = "range";    vol.min = 0;    vol.max = 1;    vol.step = 0.01;    vol.value = 1;    let chunks = [];    let recorder;    rec.onclick = async ()=>{        let stream = await navigator.mediaDevices.getUserMedia({audio:true});        recorder = new MediaRecorder(stream);        recorder.ondataavailable = e => chunks.push(e.data);        recorder.onstop = async ()=>{            let blob = new Blob(chunks);            let array = await blob.arrayBuffer();            track.buffer = await audioCtx.decodeAudioData(array);            chunks = [];        };        recorder.start();    };    stop.onclick = ()=>{        if(recorder) recorder.stop();    };    mute.onclick = ()=>{        track.muted = !track.muted;        track.gain.gain.value = track.muted ? 0 : vol.value;    };    vol.oninput = ()=>{        if(!track.muted){            track.gain.gain.value = vol.value;        }    };    div.append(rec, stop, mute, vol);    document.getElementById("tracks").appendChild(div);    tracks.push(track);}// ===== PLAY =====function playAll(){    tracks.forEach(t=>{        if(t.buffer){            let src = audioCtx.createBufferSource();            src.buffer = t.buffer;            src.connect(t.gain);            src.start(0);            t.source = src;        }    });}function stopAll(){    tracks.forEach(t=>{        if(t.source){            try{ t.source.stop(); }catch(e){}        }    });}// ===== METRÔNOMO =====function startMetronome(){    function tick(){        if(!isRecording) return;        let osc = audioCtx.createOscillator();        let gain = audioCtx.createGain();        osc.frequency.value = 1000;        gain.gain.value = 0.1;        osc.connect(gain);        gain.connect(audioCtx.destination);        osc.start();        osc.stop(audioCtx.currentTime + 0.05);        setTimeout(tick, secondsPerBeat()*1000);    }    tick();}
+const tracksContainer = document.getElementById("tracks");
+const mixer = document.getElementById("mixer");
+const playhead = document.getElementById("playhead");
+const timelineRuler = document.getElementById("timeline-ruler");
+const addTrackBtn = document.getElementById("addTrackBtn");
+const playBtn = document.getElementById("playBtn");
+const stopBtn = document.getElementById("stopBtn");
+const timeDisplay = document.getElementById("timeDisplay");
+
+let tracks = [];
+let playing = false;
+let playheadX = 0;
+let animation;
+
+// TIMELINE
+for(let i=1;i<=32;i++){
+
+    const mark = document.createElement("div");
+    mark.className = "ruler-mark";
+    mark.innerText = i;
+
+    timelineRuler.appendChild(mark);
+}
+
+// NOVA PISTA
+addTrackBtn.onclick = ()=>{
+
+    const index = tracks.length + 1;
+
+    // TRACK
+    const track = document.createElement("div");
+    track.className = "track";
+
+    // CLIP
+    const clip = document.createElement("div");
+    clip.className = "clip";
+    clip.style.left = "100px";
+
+    const title = document.createElement("div");
+    title.className = "clip-title";
+    title.innerText = "Track " + index;
+
+    const waveform = document.createElement("div");
+    waveform.className = "waveform";
+
+    clip.appendChild(title);
+    clip.appendChild(waveform);
+
+    track.appendChild(clip);
+    tracksContainer.appendChild(track);
+
+    // MIXER CHANNEL
+    const channel = document.createElement("div");
+    channel.className = "channel-strip";
+
+    channel.innerHTML = `
+        <h3>Track ${index}</h3>
+
+        <label>Volume</label>
+        <input type="range" min="0" max="1" step="0.01" value="0.8">
+
+        <br><br>
+
+        <button>M</button>
+        <button>S</button>
+    `;
+
+    mixer.appendChild(channel);
+
+    makeDraggable(clip);
+
+    tracks.push({
+        track,
+        clip,
+        channel
+    });
+};
+
+// DRAG CLIPS
+function makeDraggable(element){
+
+    let offsetX = 0;
+    let dragging = false;
+
+    element.addEventListener("mousedown", e=>{
+        dragging = true;
+        offsetX = e.clientX - element.offsetLeft;
+    });
+
+    document.addEventListener("mousemove", e=>{
+
+        if(!dragging) return;
+
+        let x = e.clientX - offsetX;
+
+        if(x < 0) x = 0;
+
+        element.style.left = x + "px";
+    });
+
+    document.addEventListener("mouseup", ()=>{
+        dragging = false;
+    });
+
+    // TOUCH MOBILE
+    element.addEventListener("touchstart", e=>{
+        dragging = true;
+        offsetX = e.touches[0].clientX - element.offsetLeft;
+    });
+
+    document.addEventListener("touchmove", e=>{
+
+        if(!dragging) return;
+
+        let x = e.touches[0].clientX - offsetX;
+
+        if(x < 0) x = 0;
+
+        element.style.left = x + "px";
+    });
+
+    document.addEventListener("touchend", ()=>{
+        dragging = false;
+    });
+}
+
+// PLAYHEAD
+playBtn.onclick = ()=>{
+
+    if(playing) return;
+
+    playing = true;
+
+    animatePlayhead();
+};
+
+stopBtn.onclick = ()=>{
+
+    playing = false;
+
+    cancelAnimationFrame(animation);
+
+    playheadX = 0;
+    playhead.style.left = "0px";
+
+    timeDisplay.innerText = "0.0";
+};
+
+function animatePlayhead(){
+
+    if(!playing) return;
+
+    playheadX += 1;
+
+    playhead.style.left = playheadX + "px";
+
+    timeDisplay.innerText = (playheadX / 100).toFixed(1);
+
+    animation = requestAnimationFrame(animatePlayhead);
+}
