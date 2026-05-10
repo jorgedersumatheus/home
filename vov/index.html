@@ -1,753 +1,150 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DAW VOV PRO</title>
+<meta charset="UTF-8" />
+<title>VOV Audio Core — Fluxo Vivo</title>
 
 <style>
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
--webkit-tap-highlight-color:transparent;
+body {
+    margin: 0;
+    background: #0a0a0a;
+    color: white;
+    font-family: Arial;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
 }
 
-body{
-background:#080808;
-color:white;
-font-family:Arial,Helvetica,sans-serif;
-overflow-x:hidden;
+#core {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: #222;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.2s;
+    user-select: none;
 }
 
-header{
-position:sticky;
-top:0;
-z-index:999;
-background:linear-gradient(#1c1c1c,#090909);
-padding:14px;
-border-bottom:1px solid #333;
+#core.flowing {
+    background: radial-gradient(circle, red, darkred);
+    box-shadow: 0 0 40px red;
+    transform: scale(1.05);
 }
 
-.topbar{
-display:flex;
-justify-content:space-between;
-align-items:center;
-gap:10px;
+#vu {
+    width: 300px;
+    height: 12px;
+    background: #222;
+    margin-top: 30px;
+    border-radius: 10px;
+    overflow: hidden;
 }
 
-.logo{
-font-size:24px;
-font-weight:bold;
+#vuBar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, green, yellow, red);
 }
-
-.transport{
-display:flex;
-align-items:center;
-gap:10px;
-}
-
-.transport button{
-width:58px;
-height:58px;
-border:none;
-border-radius:16px;
-background:linear-gradient(#444,#111);
-color:white;
-font-size:18px;
-box-shadow:
-0 4px 10px rgba(0,0,0,.7),
-inset 0 1px 1px rgba(255,255,255,.1);
-}
-
-.transport button:active{
-transform:scale(.95);
-}
-
-#counter{
-font-size:24px;
-min-width:80px;
-text-align:right;
-}
-
-.timeline{
-position:relative;
-overflow-x:auto;
-height:60px;
-background:#111;
-border-bottom:1px solid #222;
-white-space:nowrap;
-}
-
-.grid{
-display:flex;
-width:4000px;
-height:60px;
-}
-
-.cell{
-width:100px;
-border-right:1px solid #2a2a2a;
-padding-top:10px;
-text-align:center;
-color:#666;
-}
-
-.playhead{
-position:absolute;
-top:0;
-left:0;
-width:3px;
-height:100%;
-background:red;
-z-index:20;
-box-shadow:0 0 10px red;
-}
-
-#tracks{
-padding:12px;
-}
-
-.track{
-background:#131313;
-border:1px solid #252525;
-border-radius:24px;
-overflow:hidden;
-margin-bottom:20px;
-box-shadow:0 0 20px rgba(0,0,0,.5);
-}
-
-.track-top{
-padding:14px;
-}
-
-.track-title{
-font-size:20px;
-margin-bottom:10px;
-}
-
-.controls{
-display:flex;
-flex-wrap:wrap;
-gap:8px;
-margin-bottom:10px;
-}
-
-.controls button{
-width:58px;
-height:58px;
-border:none;
-border-radius:16px;
-background:linear-gradient(#3d3d3d,#111);
-color:white;
-font-size:16px;
-}
-
-.controls button.active{
-background:linear-gradient(#00aa55,#004422);
-}
-
-.controls button.rec{
-background:linear-gradient(#aa0000,#440000);
-}
-
-.controls button.solo{
-background:linear-gradient(#996600,#332200);
-}
-
-.controls button:active{
-transform:scale(.95);
-}
-
-.slider{
-width:100%;
-margin-top:12px;
-}
-
-.wave{
-height:90px;
-position:relative;
-background:
-repeating-linear-gradient(
-to right,
-#171717,
-#171717 2px,
-#101010 2px,
-#101010 8px
-);
-overflow:hidden;
-}
-
-.clip{
-position:absolute;
-left:0;
-top:10px;
-height:70px;
-min-width:160px;
-padding:10px;
-border-radius:16px;
-background:linear-gradient(#444,#222);
-border:1px solid #666;
-display:flex;
-align-items:center;
-justify-content:center;
-color:#00ff99;
-font-size:18px;
-}
-
-audio{
-width:100%;
-margin-top:12px;
-}
-
-.meter{
-height:10px;
-background:#222;
-border-radius:10px;
-overflow:hidden;
-margin-top:10px;
-}
-
-.fill{
-height:100%;
-width:0%;
-background:
-linear-gradient(to right,
-#00ff88,
-#ffee00,
-#ff0000);
-}
-
-.footer{
-padding:40px 20px;
-text-align:center;
-color:#777;
-}
-
-a{
-color:#00ff99;
-text-decoration:none;
-}
-
 </style>
 </head>
 
 <body>
 
-<header>
-
-<div class="topbar">
-
-<div class="logo">
-🎧 DAW VOV PRO
-</div>
-
-<div class="transport">
-
-<button id="playAll">▶</button>
-<button id="stopAll">■</button>
-
-<div id="counter">0.0</div>
-
-</div>
-
-</div>
-
-</header>
-
-<div class="timeline">
-
-<div class="playhead" id="playhead"></div>
-
-<div class="grid" id="grid"></div>
-
-</div>
-
-<div style="padding:12px;">
-
-<button id="addTrack"
-style="
-width:100%;
-height:70px;
-border:none;
-border-radius:24px;
-background:linear-gradient(#444,#111);
-color:white;
-font-size:24px;
-">
-+ Pista
-</button>
-
-</div>
-
-<div id="tracks"></div>
-
-<div class="footer">
-VOV — Ver • Ouvir • Vender
-<br><br>
-<a href="/">← Portal VOV</a>
-</div>
+<div id="core">VOV</div>
+<div id="vu"><div id="vuBar"></div></div>
 
 <script>
+let audioContext;
+let analyser;
+let gainNode;
+let stream;
 
-//////////////////////////////////////////////////////
-// GRID
-//////////////////////////////////////////////////////
+let isFlowing = false;
 
-for(let i=1;i<=64;i++){
+const core = document.getElementById("core");
+const vuBar = document.getElementById("vuBar");
 
-const cell=document.createElement("div");
-cell.className="cell";
-cell.innerText=i;
-
-document.getElementById("grid").appendChild(cell);
-
-}
-
-//////////////////////////////////////////////////////
-// AUDIO ENGINE
-//////////////////////////////////////////////////////
-
-const audioContext = new (
-window.AudioContext ||
-window.webkitAudioContext
-)();
-
-let tracks=[];
-
-let playing=false;
-let startTime=0;
-let animationFrame;
-
-//////////////////////////////////////////////////////
-// PLAYHEAD
-//////////////////////////////////////////////////////
-
-const playhead=document.getElementById("playhead");
-const counter=document.getElementById("counter");
-
-function animate(){
-
-if(!playing) return;
-
-const now=audioContext.currentTime-startTime;
-
-counter.innerText=now.toFixed(1);
-
-playhead.style.left=(now*80)+"px";
-
-animationFrame=requestAnimationFrame(animate);
-
-}
-
-//////////////////////////////////////////////////////
-// PLAY ALL
-//////////////////////////////////////////////////////
-
-document.getElementById("playAll").onclick=()=>{
-
-if(playing) return;
-
-audioContext.resume();
-
-playing=true;
-
-startTime=audioContext.currentTime;
-
-tracks.forEach(track=>{
-
-if(track.audio.src){
-
-const someSolo =
-tracks.some(t=>t.solo);
-
-if(track.solo){
-
-track.audio.currentTime=0;
-track.audio.play();
-
-}else if(!someSolo && !track.muted){
-
-track.audio.currentTime=0;
-track.audio.play();
-
-}
-
-}
-
-});
-
-animate();
-
+core.onclick = async () => {
+    if (!isFlowing) {
+        await startFlow();
+    } else {
+        stopFlow();
+    }
 };
 
-//////////////////////////////////////////////////////
-// STOP ALL
-//////////////////////////////////////////////////////
+/* =========================
+   START FLOW (estado vivo)
+========================= */
+async function startFlow() {
+    stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
-document.getElementById("stopAll").onclick=()=>{
+    audioContext = new AudioContext();
 
-playing=false;
+    const source = audioContext.createMediaStreamSource(stream);
 
-cancelAnimationFrame(animationFrame);
+    analyser = audioContext.createAnalyser();
+    analyser.fftSize = 512;
 
-counter.innerText="0.0";
+    gainNode = audioContext.createGain();
+    gainNode.gain.value = 2.0;
 
-playhead.style.left="0px";
+    source.connect(gainNode);
+    gainNode.connect(analyser);
 
-tracks.forEach(track=>{
+    isFlowing = true;
 
-track.audio.pause();
-track.audio.currentTime=0;
+    core.classList.add("flowing");
 
-});
+    startVU();
 
-};
-
-//////////////////////////////////////////////////////
-// CREATE TRACK
-//////////////////////////////////////////////////////
-
-document.getElementById("addTrack").onclick=createTrack;
-
-function createTrack(){
-
-let mediaRecorder;
-let chunks=[];
-let audioBlob=null;
-
-const track=document.createElement("div");
-track.className="track";
-
-track.innerHTML=`
-
-<div class="track-top">
-
-<div class="track-title">
-Track ${tracks.length+1}
-</div>
-
-<div class="controls">
-
-<button class="rec">REC</button>
-<button class="play">▶</button>
-<button class="stop">■</button>
-<button class="mute">M</button>
-<button class="solo">S</button>
-<button class="save">WAV</button>
-<button class="remove">X</button>
-
-</div>
-
-<input class="slider"
-type="range"
-min="0"
-max="1"
-step="0.01"
-value="1">
-
-<div class="meter">
-<div class="fill"></div>
-</div>
-
-<audio controls></audio>
-
-</div>
-
-<div class="wave">
-<div class="clip">
-VOV Track
-</div>
-</div>
-
-`;
-
-document.getElementById("tracks")
-.appendChild(track);
-
-//////////////////////////////////////////////////////
-// ELEMENTS
-//////////////////////////////////////////////////////
-
-const recBtn=track.querySelector(".rec");
-const playBtn=track.querySelector(".play");
-const stopBtn=track.querySelector(".stop");
-const muteBtn=track.querySelector(".mute");
-const soloBtn=track.querySelector(".solo");
-const saveBtn=track.querySelector(".save");
-const removeBtn=track.querySelector(".remove");
-
-const slider=track.querySelector(".slider");
-const fill=track.querySelector(".fill");
-
-const audio=track.querySelector("audio");
-
-//////////////////////////////////////////////////////
-// TRACK OBJECT
-//////////////////////////////////////////////////////
-
-const trackObj={
-
-audio,
-muted:false,
-solo:false
-
-};
-
-tracks.push(trackObj);
-
-//////////////////////////////////////////////////////
-// VOLUME
-//////////////////////////////////////////////////////
-
-slider.oninput=()=>{
-
-audio.volume=slider.value;
-
-};
-
-//////////////////////////////////////////////////////
-// REC
-//////////////////////////////////////////////////////
-
-recBtn.onclick = async () => {
-
-try {
-
-const stream =
-await navigator.mediaDevices
-.getUserMedia({
-
-audio:{
-echoCancellation:false,
-noiseSuppression:false,
-autoGainControl:false
+    console.log("VOV FLOW STARTED");
 }
 
-});
+/* =========================
+   STOP FLOW (memória fecha)
+========================= */
+function stopFlow() {
+    isFlowing = false;
 
-chunks=[];
+    core.classList.remove("flowing");
 
-mediaRecorder =
-new MediaRecorder(stream);
+    vuBar.style.width = "0%";
 
-//////////////////////////////////////////////////////
-// METER
-//////////////////////////////////////////////////////
+    if (stream) stream.getTracks().forEach(t => t.stop());
+    if (audioContext) audioContext.close();
 
-const source =
-audioContext.createMediaStreamSource(stream);
-
-const analyser =
-audioContext.createAnalyser();
-
-source.connect(analyser);
-
-const data =
-new Uint8Array(
-analyser.frequencyBinCount
-);
-
-function meter(){
-
-if(
-!mediaRecorder ||
-mediaRecorder.state !== "recording"
-) return;
-
-analyser.getByteFrequencyData(data);
-
-const avg =
-data.reduce((a,b)=>a+b,0)
-/ data.length;
-
-fill.style.width =
-Math.min(avg,100)+"%";
-
-requestAnimationFrame(meter);
-
+    console.log("VOV FLOW STOPPED");
 }
 
-//////////////////////////////////////////////////////
-// START
-//////////////////////////////////////////////////////
+/* =========================
+   VU LÓGICA (fluxo vivo)
+========================= */
+function startVU() {
+    const data = new Uint8Array(analyser.frequencyBinCount);
 
-mediaRecorder.start();
+    function loop() {
+        if (!isFlowing) return;
 
-recBtn.classList.add("active");
+        analyser.getByteFrequencyData(data);
 
-meter();
+        let sum = 0;
+        for (let i = 0; i < data.length; i++) sum += data[i];
 
-//////////////////////////////////////////////////////
-// DATA
-//////////////////////////////////////////////////////
+        let avg = sum / data.length;
+        let percent = Math.min(100, (avg / 128) * 100);
 
-mediaRecorder.ondataavailable = e => {
+        vuBar.style.width = percent + "%";
 
-if(e.data && e.data.size > 0){
+        requestAnimationFrame(loop);
+    }
 
-chunks.push(e.data);
-
+    loop();
 }
-
-};
-
-//////////////////////////////////////////////////////
-// STOP REC
-//////////////////////////////////////////////////////
-
-mediaRecorder.onstop = () => {
-
-if(chunks.length===0){
-
-alert("Nenhum áudio gravado.");
-
-return;
-
-}
-
-audioBlob =
-new Blob(chunks,{
-type:"audio/webm"
-});
-
-const url =
-URL.createObjectURL(audioBlob);
-
-audio.src = url;
-
-audio.load();
-
-fill.style.width="0%";
-
-recBtn.classList.remove("active");
-
-stream.getTracks()
-.forEach(t=>t.stop());
-
-};
-
-}catch(err){
-
-alert(
-"Erro microfone: " +
-err.message
-);
-
-}
-
-};
-
-//////////////////////////////////////////////////////
-// STOP
-//////////////////////////////////////////////////////
-
-stopBtn.onclick=()=>{
-
-if(
-mediaRecorder &&
-mediaRecorder.state!=="inactive"
-){
-
-mediaRecorder.stop();
-
-}
-
-audio.pause();
-audio.currentTime=0;
-
-};
-
-//////////////////////////////////////////////////////
-// PLAY INDIVIDUAL
-//////////////////////////////////////////////////////
-
-playBtn.onclick=()=>{
-
-if(audio.src){
-
-audio.currentTime=0;
-
-audio.play();
-
-}
-
-};
-
-//////////////////////////////////////////////////////
-// MUTE
-//////////////////////////////////////////////////////
-
-muteBtn.onclick=()=>{
-
-trackObj.muted=!trackObj.muted;
-
-audio.muted=trackObj.muted;
-
-muteBtn.classList.toggle(
-"active"
-);
-
-};
-
-//////////////////////////////////////////////////////
-// SOLO
-//////////////////////////////////////////////////////
-
-soloBtn.onclick=()=>{
-
-trackObj.solo=!trackObj.solo;
-
-soloBtn.classList.toggle(
-"active"
-);
-
-};
-
-//////////////////////////////////////////////////////
-// EXPORT
-//////////////////////////////////////////////////////
-
-saveBtn.onclick=()=>{
-
-if(!audio.src){
-
-alert("Nada gravado.");
-
-return;
-
-}
-
-const a=document.createElement("a");
-
-a.href=audio.src;
-
-a.download=
-"VOV_TRACK.wav";
-
-a.click();
-
-};
-
-//////////////////////////////////////////////////////
-// REMOVE
-//////////////////////////////////////////////////////
-
-removeBtn.onclick=()=>{
-
-audio.pause();
-
-track.remove();
-
-tracks=tracks.filter(
-t=>t!==trackObj
-);
-
-};
-
-}
-
 </script>
 
 </body>
