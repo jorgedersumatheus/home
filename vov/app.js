@@ -1,6 +1,6 @@
 // ======================================
-// DAW VOV PRO
-// ENGINE ESTÁVEL MULTITRACK
+// DAW VOV
+// FASE 1 — RECORDER ESTÁVEL
 // ======================================
 
 const tracksDiv =
@@ -9,12 +9,6 @@ document.getElementById("tracks");
 const addTrackBtn =
 document.getElementById("addTrack");
 
-const playBtn =
-document.getElementById("play");
-
-const stopBtn =
-document.getElementById("stop");
-
 const timeDisplay =
 document.getElementById("time");
 
@@ -22,52 +16,11 @@ document.getElementById("time");
 // GLOBAL
 // ======================================
 
-let tracks = [];
-
-let micStream = null;
-
-let seconds = 0;
+let trackCount = 0;
 
 let timer = null;
 
-// ======================================
-// INIT MIC
-// ======================================
-
-async function initMic(){
-
-    if(micStream) return;
-
-    try{
-
-        micStream =
-        await navigator
-        .mediaDevices
-        .getUserMedia({
-
-            audio:{
-
-                echoCancellation:false,
-                noiseSuppression:false,
-                autoGainControl:false
-
-            }
-
-        });
-
-        console.log("MIC READY");
-
-    }catch(err){
-
-        alert(
-        "Erro microfone"
-        );
-
-        console.log(err);
-
-    }
-
-}
+let seconds = 0;
 
 // ======================================
 // CLOCK
@@ -76,6 +29,8 @@ async function initMic(){
 function startClock(){
 
     clearInterval(timer);
+
+    seconds = 0;
 
     timer = setInterval(()=>{
 
@@ -100,18 +55,11 @@ function stopClock(){
 
 function createTrack(){
 
-    const track = {
+    trackCount++;
 
-        recorder:null,
-        chunks:[],
-        blob:null,
-        url:null,
-        audio:null,
-        muted:false,
-        solo:false,
-        volume:1
-
-    };
+    //////////////////////////////////////////////////////
+    // HTML
+    //////////////////////////////////////////////////////
 
     const div =
     document.createElement("div");
@@ -121,7 +69,7 @@ function createTrack(){
     div.innerHTML = `
 
     <div class="track-title">
-    Track ${tracks.length+1}
+    Track ${trackCount}
     </div>
 
     <div class="track-buttons">
@@ -130,23 +78,15 @@ function createTrack(){
         REC
         </button>
 
-        <button class="playtrack">
-        ▶
+        <button class="stop">
+        STOP
         </button>
 
-        <button class="stoptrack">
-        ■
+        <button class="play">
+        PLAY
         </button>
 
-        <button class="mute">
-        M
-        </button>
-
-        <button class="solo">
-        S
-        </button>
-
-        <button class="wav">
+        <button class="download">
         WAV
         </button>
 
@@ -156,173 +96,205 @@ function createTrack(){
 
     </div>
 
-    <input
-    type="range"
-    class="volume"
-    min="0"
-    max="1"
-    step="0.01"
-    value="1">
-
     <audio controls></audio>
 
     `;
 
     tracksDiv.appendChild(div);
 
+    //////////////////////////////////////////////////////
+    // ELEMENTS
+    //////////////////////////////////////////////////////
+
     const recBtn =
     div.querySelector(".rec");
 
-    const playTrackBtn =
-    div.querySelector(".playtrack");
+    const stopBtn =
+    div.querySelector(".stop");
 
-    const stopTrackBtn =
-    div.querySelector(".stoptrack");
+    const playBtn =
+    div.querySelector(".play");
 
-    const muteBtn =
-    div.querySelector(".mute");
-
-    const soloBtn =
-    div.querySelector(".solo");
-
-    const wavBtn =
-    div.querySelector(".wav");
+    const downloadBtn =
+    div.querySelector(".download");
 
     const removeBtn =
     div.querySelector(".remove");
 
-    const volumeSlider =
-    div.querySelector(".volume");
-
     const audioEl =
     div.querySelector("audio");
 
-    // ======================================
+    //////////////////////////////////////////////////////
+    // AUDIO
+    //////////////////////////////////////////////////////
+
+    let recorder = null;
+
+    let chunks = [];
+
+    let blob = null;
+
+    let url = null;
+
+    let stream = null;
+
+    //////////////////////////////////////////////////////
     // REC
-    // ======================================
+    //////////////////////////////////////////////////////
 
     recBtn.onclick =
     async ()=>{
 
-        await initMic();
+        try{
 
-        if(!micStream){
+            //////////////////////////////////////////////////////
+            // RESET
+            //////////////////////////////////////////////////////
 
-            alert(
-            "Microfone não disponível"
+            chunks = [];
+
+            //////////////////////////////////////////////////////
+            // MIC
+            //////////////////////////////////////////////////////
+
+            stream =
+            await navigator
+            .mediaDevices
+            .getUserMedia({
+
+                audio:true
+
+            });
+
+            //////////////////////////////////////////////////////
+            // RECORDER
+            //////////////////////////////////////////////////////
+
+            recorder =
+            new MediaRecorder(
+                stream
             );
 
-            return;
+            //////////////////////////////////////////////////////
+            // DATA
+            //////////////////////////////////////////////////////
 
-        }
+            recorder.ondataavailable =
+            e=>{
 
-        if(
-            track.recorder &&
-            track.recorder.state ===
-            "recording"
-        ){
+                if(e.data.size>0){
 
-            return;
-
-        }
-
-        track.chunks = [];
-
-        const recorder =
-        new MediaRecorder(
-            micStream
-        );
-
-        track.recorder =
-        recorder;
-
-        recorder.ondataavailable =
-        e=>{
-
-            if(e.data.size > 0){
-
-                track.chunks.push(
-                    e.data
-                );
-
-            }
-
-        };
-
-        recorder.onstop = ()=>{
-
-            const blob =
-            new Blob(
-                track.chunks,
-                {
-
-                    type:"audio/webm"
+                    chunks.push(
+                        e.data
+                    );
 
                 }
-            );
 
-            track.blob = blob;
+            };
 
-            const url =
-            URL.createObjectURL(
-                blob
-            );
+            //////////////////////////////////////////////////////
+            // STOP EVENT
+            //////////////////////////////////////////////////////
 
-            track.url = url;
+            recorder.onstop =
+            ()=>{
 
-            audioEl.src = url;
+                //////////////////////////////////////////////////////
+                // BLOB
+                //////////////////////////////////////////////////////
 
-            track.audio =
-            audioEl;
+                blob =
+                new Blob(
+                    chunks,
+                    {
 
-            track.audio.volume =
-            track.volume;
+                        type:"audio/webm"
+
+                    }
+                );
+
+                //////////////////////////////////////////////////////
+                // URL
+                //////////////////////////////////////////////////////
+
+                url =
+                URL.createObjectURL(
+                    blob
+                );
+
+                //////////////////////////////////////////////////////
+                // PLAYER
+                //////////////////////////////////////////////////////
+
+                audioEl.src =
+                url;
+
+                audioEl.load();
+
+                //////////////////////////////////////////////////////
+                // STOP MIC
+                //////////////////////////////////////////////////////
+
+                stream
+                .getTracks()
+                .forEach(
+                    t=>t.stop()
+                );
+
+                //////////////////////////////////////////////////////
+                // VISUAL
+                //////////////////////////////////////////////////////
+
+                recBtn.style.background =
+                "";
+
+                console.log(
+                "TRACK READY"
+                );
+
+            };
+
+            //////////////////////////////////////////////////////
+            // START
+            //////////////////////////////////////////////////////
+
+            recorder.start();
 
             recBtn.style.background =
-            "";
+            "red";
+
+            startClock();
 
             console.log(
-            "TRACK READY"
+            "REC START"
             );
 
-        };
+        }catch(err){
 
-        recorder.start();
+            alert(
+            "Erro microfone"
+            );
 
-        recBtn.style.background =
-        "red";
+            console.log(err);
 
-        startClock();
-
-        console.log(
-        "REC START"
-        );
+        }
 
     };
 
-    // ======================================
-    // STOP TRACK
-    // ======================================
+    //////////////////////////////////////////////////////
+    // STOP
+    //////////////////////////////////////////////////////
 
-    stopTrackBtn.onclick =
+    stopBtn.onclick =
     ()=>{
 
         if(
-            track.recorder &&
-            track.recorder.state ===
+            recorder &&
+            recorder.state ===
             "recording"
         ){
 
-            track.recorder.stop();
-
-        }
-
-        if(track.audio){
-
-            track.audio.pause();
-
-            track.audio.currentTime =
-            0;
+            recorder.stop();
 
         }
 
@@ -330,29 +302,28 @@ function createTrack(){
 
     };
 
-    // ======================================
-    // PLAY TRACK
-    // ======================================
+    //////////////////////////////////////////////////////
+    // PLAY
+    //////////////////////////////////////////////////////
 
-    playTrackBtn.onclick =
+    playBtn.onclick =
     async ()=>{
-
-        if(!track.audio){
-
-            alert(
-            "Nada gravado"
-            );
-
-            return;
-
-        }
 
         try{
 
-            track.audio.currentTime =
-            0;
+            if(!audioEl.src){
 
-            await track.audio.play();
+                alert(
+                "Nada gravado"
+                );
+
+                return;
+
+            }
+
+            audioEl.currentTime = 0;
+
+            await audioEl.play();
 
         }catch(err){
 
@@ -362,128 +333,14 @@ function createTrack(){
 
     };
 
-    // ======================================
-    // VOLUME
-    // ======================================
+    //////////////////////////////////////////////////////
+    // DOWNLOAD
+    //////////////////////////////////////////////////////
 
-    volumeSlider.oninput =
-    e=>{
-
-        track.volume =
-        parseFloat(
-            e.target.value
-        );
-
-        if(track.audio){
-
-            track.audio.volume =
-            track.volume;
-
-        }
-
-    };
-
-    // ======================================
-    // MUTE
-    // ======================================
-
-    muteBtn.onclick =
+    downloadBtn.onclick =
     ()=>{
 
-        track.muted =
-        !track.muted;
-
-        muteBtn.style.background =
-        track.muted
-        ? "#900"
-        : "";
-
-        if(track.audio){
-
-            track.audio.muted =
-            track.muted;
-
-        }
-
-    };
-
-    // ======================================
-    // SOLO
-    // ======================================
-
-    soloBtn.onclick =
-    ()=>{
-
-        track.solo =
-        !track.solo;
-
-        soloBtn.style.background =
-        track.solo
-        ? "#aa7700"
-        : "";
-
-        updateSolo();
-
-    };
-
-    // ======================================
-    // SOLO ENGINE
-    // ======================================
-
-    function updateSolo(){
-
-        const soloTracks =
-        tracks.filter(
-            t=>t.solo
-        );
-
-        if(
-            soloTracks.length===0
-        ){
-
-            tracks.forEach(t=>{
-
-                if(t.audio){
-
-                    t.audio.muted =
-                    t.muted;
-
-                }
-
-            });
-
-            return;
-
-        }
-
-        tracks.forEach(t=>{
-
-            if(!t.audio) return;
-
-            if(t.solo){
-
-                t.audio.muted =
-                false;
-
-            }else{
-
-                t.audio.muted =
-                true;
-
-            }
-
-        });
-
-    }
-
-    // ======================================
-    // EXPORT
-    // ======================================
-
-    wavBtn.onclick =
-    ()=>{
-
-        if(!track.blob){
+        if(!blob){
 
             alert(
             "Nada gravado"
@@ -498,104 +355,29 @@ function createTrack(){
         .createElement("a");
 
         a.href =
-        track.url;
+        url;
 
         a.download =
-        `VOV_TRACK_${Date.now()}.webm`;
+        `VOV_TRACK_${trackCount}.webm`;
 
         a.click();
 
     };
 
-    // ======================================
+    //////////////////////////////////////////////////////
     // REMOVE
-    // ======================================
+    //////////////////////////////////////////////////////
 
     removeBtn.onclick =
     ()=>{
 
-        if(track.audio){
-
-            track.audio.pause();
-
-        }
+        audioEl.pause();
 
         div.remove();
 
     };
 
-    tracks.push(track);
-
 }
-
-// ======================================
-// PLAY ALL
-// ======================================
-
-playBtn.onclick =
-async ()=>{
-
-    for(const track of tracks){
-
-        if(track.audio){
-
-            try{
-
-                track.audio.currentTime =
-                0;
-
-                await track.audio.play();
-
-            }catch(err){
-
-                console.log(err);
-
-            }
-
-        }
-
-    }
-
-};
-
-// ======================================
-// STOP ALL
-// ======================================
-
-stopBtn.onclick =
-()=>{
-
-    tracks.forEach(track=>{
-
-        if(track.audio){
-
-            track.audio.pause();
-
-            track.audio.currentTime =
-            0;
-
-        }
-
-        if(
-            track.recorder &&
-            track.recorder.state ===
-            "recording"
-        ){
-
-            track.recorder.stop();
-
-        }
-
-    });
-
-    stopClock();
-
-    seconds = 0;
-
-    timeDisplay.innerText =
-    "0.0";
-
-};
 
 // ======================================
 // ADD TRACK
