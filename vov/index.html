@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8" />
-<title>VOV Flow Memory v1</title>
+<title>VOV Multi-Track Core</title>
 
 <style>
 body {
@@ -13,218 +13,163 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    height: 100vh;
+    padding-top: 40px;
 }
 
-/* CORE BUTTON */
-#core {
-    width: 180px;
-    height: 180px;
-    border-radius: 50%;
-    background: #222;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+h2 { opacity: 0.8; }
+
+/* TRACK BLOCK */
+.track {
+    width: 320px;
+    padding: 10px;
+    margin: 10px;
+    background: #111;
+    border-radius: 10px;
+}
+
+button {
+    margin: 5px;
+    padding: 8px 12px;
     cursor: pointer;
-    user-select: none;
-    transition: 0.2s;
-}
-
-#core.active {
-    background: radial-gradient(circle, red, darkred);
-    box-shadow: 0 0 40px red;
-    transform: scale(1.05);
-}
-
-/* MEMORY BUTTON */
-#memoryBtn {
-    margin-top: 20px;
-    padding: 10px 18px;
     border: none;
-    border-radius: 8px;
-    cursor: pointer;
+    border-radius: 6px;
+}
+
+/* REC */
+.rec {
     background: #333;
     color: white;
 }
 
-/* VU */
-#vu {
-    width: 320px;
-    height: 12px;
-    background: #222;
-    margin-top: 30px;
-    border-radius: 10px;
-    overflow: hidden;
+.rec.active {
+    background: red;
 }
 
-#vuBar {
-    height: 100%;
-    width: 0%;
-    background: linear-gradient(90deg, green, yellow, red);
+/* PLAY */
+#play {
+    margin-top: 20px;
+    background: green;
+    color: white;
 }
 
-/* MEMORY LIST */
-#memoryList {
-    margin-top: 25px;
-    width: 320px;
-    max-height: 200px;
-    overflow-y: auto;
-    font-size: 12px;
-    opacity: 0.8;
-}
-
-.memory-item {
-    padding: 6px;
-    border-bottom: 1px solid #222;
-    cursor: pointer;
+/* STATUS */
+#status {
+    margin-top: 10px;
+    opacity: 0.7;
 }
 </style>
 </head>
 
 <body>
 
-<div id="core">VOV</div>
-<button id="memoryBtn">CAPTURAR MEMÓRIA</button>
+<h2>VOV Multi-Track Core</h2>
 
-<div id="vu"><div id="vuBar"></div></div>
+<div class="track">
+    <h3>Voz</h3>
+    <button class="rec" id="rec1">REC</button>
+</div>
 
-<div id="memoryList"></div>
+<div class="track">
+    <h3>Cavaquinho</h3>
+    <button class="rec" id="rec2">REC</button>
+</div>
+
+<div class="track">
+    <h3>Extra</h3>
+    <button class="rec" id="rec3">REC</button>
+</div>
+
+<button id="play">PLAY ALL</button>
+<div id="status">IDLE</div>
 
 <script>
-let audioContext;
-let analyser;
-let stream;
+let audioContext = new AudioContext();
 
-let isFlowing = false;
-let startTime = 0;
-
-let memories = [];
-
-const core = document.getElementById("core");
-const vuBar = document.getElementById("vuBar");
-const memoryBtn = document.getElementById("memoryBtn");
-const memoryList = document.getElementById("memoryList");
-
-/* =========================
-   START FLOW (áudio vivo)
-========================= */
-core.onclick = async () => {
-    if (!isFlowing) {
-        await startFlow();
-    } else {
-        stopFlow();
-    }
+let tracks = {
+    1: [],
+    2: [],
+    3: []
 };
 
-async function startFlow() {
-    stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+let mediaRecorders = {};
+let streams = {};
+let chunks = {};
 
-    audioContext = new AudioContext();
+function setupTrack(id, buttonId) {
+    const btn = document.getElementById(buttonId);
 
-    const source = audioContext.createMediaStreamSource(stream);
+    btn.onclick = async () => {
 
-    analyser = audioContext.createAnalyser();
-    analyser.fftSize = 512;
-
-    source.connect(analyser);
-
-    isFlowing = true;
-    startTime = audioContext.currentTime;
-
-    core.classList.add("active");
-
-    vuLoop();
-
-    console.log("FLOW STARTED");
+        if (!mediaRecorders[id]) {
+            startRec(id, btn);
+        } else {
+            stopRec(id, btn);
+        }
+    };
 }
 
 /* =========================
-   STOP FLOW
+   START REC
 ========================= */
-function stopFlow() {
-    isFlowing = false;
+async function startRec(id, btn) {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
-    core.classList.remove("active");
+    streams[id] = stream;
 
-    vuBar.style.width = "0%";
+    const recorder = new MediaRecorder(stream);
 
-    if (stream) stream.getTracks().forEach(t => t.stop());
-    if (audioContext) audioContext.close();
+    chunks[id] = [];
 
-    console.log("FLOW STOPPED");
-}
+    recorder.ondataavailable = e => chunks[id].push(e.data);
 
-/* =========================
-   VU METER
-========================= */
-function vuLoop() {
-    if (!isFlowing) return;
+    recorder.onstop = () => {
+        const blob = new Blob(chunks[id], { type: "audio/webm" });
+        const url = URL.createObjectURL(blob);
 
-    const data = new Uint8Array(analyser.frequencyBinCount);
+        tracks[id].push(url);
 
-    analyser.getByteFrequencyData(data);
-
-    let sum = 0;
-    for (let i = 0; i < data.length; i++) sum += data[i];
-
-    let avg = sum / data.length;
-    let percent = Math.min(100, (avg / 128) * 100);
-
-    vuBar.style.width = percent + "%";
-
-    requestAnimationFrame(vuLoop);
-}
-
-/* =========================
-   MEMORY CAPTURE (ESSÊNCIA VOV)
-========================= */
-memoryBtn.onclick = () => {
-    if (!isFlowing) return;
-
-    const now = audioContext.currentTime;
-
-    const memory = {
-        id: Date.now(),
-        timestamp: now,
-        label: "MEM " + memories.length
+        console.log("Track " + id + " recorded");
     };
 
-    memories.push(memory);
+    recorder.start();
 
-    renderMemory();
+    mediaRecorders[id] = recorder;
 
-    console.log("MEMORY CAPTURED", memory);
+    btn.classList.add("active");
+}
+
+/* =========================
+   STOP REC
+========================= */
+function stopRec(id, btn) {
+    mediaRecorders[id].stop();
+
+    streams[id].getTracks().forEach(t => t.stop());
+
+    mediaRecorders[id] = null;
+
+    btn.classList.remove("active");
+}
+
+/* =========================
+   PLAY ALL (simples e funcional)
+========================= */
+document.getElementById("play").onclick = () => {
+
+    document.getElementById("status").innerText = "PLAYING";
+
+    Object.keys(tracks).forEach(id => {
+        tracks[id].forEach(url => {
+            const audio = new Audio(url);
+            audio.play();
+        });
+    });
 };
 
-/* =========================
-   MEMORY UI
-========================= */
-function renderMemory() {
-    memoryList.innerHTML = "";
-
-    memories.forEach(m => {
-        const div = document.createElement("div");
-        div.className = "memory-item";
-
-        div.innerText = m.label + " @ " + m.timestamp.toFixed(2);
-
-        div.onclick = () => replayMemory(m);
-
-        memoryList.appendChild(div);
-    });
-}
-
-/* =========================
-   REPLAY (conceitual base)
-========================= */
-function replayMemory(memory) {
-    console.log("REPLAY MEMORY", memory);
-
-    // versão v1: apenas marcador conceitual
-    // futura versão: buffer real de áudio
-    alert("Replay conceitual: " + memory.label);
-}
+/* INIT */
+setupTrack(1, "rec1");
+setupTrack(2, "rec2");
+setupTrack(3, "rec3");
 </script>
 
 </body>
