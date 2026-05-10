@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////
-// DAW VOV
+// DAW VOV PRO
 // ENGINE PCM + WAV REAL
 //////////////////////////////////////////////////////
 
@@ -54,12 +54,20 @@ function createTrack(){
             REC
             </button>
 
-            <button class="stop">
-            STOP
+            <button class="play">
+            ▶
             </button>
 
-            <button class="play">
-            PLAY
+            <button class="stop">
+            ■
+            </button>
+
+            <button class="mute">
+            M
+            </button>
+
+            <button class="solo">
+            S
             </button>
 
             <button class="save">
@@ -86,6 +94,10 @@ function createTrack(){
 
         <audio controls></audio>
 
+        <div class="clip">
+            VOV Track
+        </div>
+
     </div>
 
     `;
@@ -100,11 +112,17 @@ function createTrack(){
     const recBtn =
     track.querySelector(".rec");
 
+    const playBtn =
+    track.querySelector(".play");
+
     const stopBtn =
     track.querySelector(".stop");
 
-    const playBtn =
-    track.querySelector(".play");
+    const muteBtn =
+    track.querySelector(".mute");
+
+    const soloBtn =
+    track.querySelector(".solo");
 
     const saveBtn =
     track.querySelector(".save");
@@ -127,15 +145,17 @@ function createTrack(){
 
     let stream;
 
-    let processor;
-
     let input;
+
+    let processor;
 
     let recording = false;
 
     let buffers = [];
 
     let wavBlob = null;
+
+    let muted = false;
 
     //////////////////////////////////////////////////////
     // VOLUME
@@ -157,7 +177,20 @@ function createTrack(){
         try {
 
             //////////////////////////////////////////////////////
-            // MIC
+            // RESUME CONTEXT
+            //////////////////////////////////////////////////////
+
+            if(
+                audioContext.state ===
+                "suspended"
+            ){
+
+                await audioContext.resume();
+
+            }
+
+            //////////////////////////////////////////////////////
+            // GET MIC
             //////////////////////////////////////////////////////
 
             stream =
@@ -176,7 +209,7 @@ function createTrack(){
             });
 
             //////////////////////////////////////////////////////
-            // INPUT
+            // SOURCE
             //////////////////////////////////////////////////////
 
             input =
@@ -192,7 +225,7 @@ function createTrack(){
             processor =
             audioContext
             .createScriptProcessor(
-                4096,
+                2048,
                 1,
                 1
             );
@@ -209,54 +242,6 @@ function createTrack(){
             "red";
 
             //////////////////////////////////////////////////////
-            // PROCESS AUDIO
-            //////////////////////////////////////////////////////
-
-            processor.onaudioprocess =
-            e => {
-
-                if(!recording) return;
-
-                const data =
-                e.inputBuffer
-                .getChannelData(0);
-
-                //////////////////////////////////////////////////////
-                // COPY PCM
-                //////////////////////////////////////////////////////
-
-                buffers.push(
-                    new Float32Array(data)
-                );
-
-                //////////////////////////////////////////////////////
-                // METER
-                //////////////////////////////////////////////////////
-
-                let peak = 0;
-
-                for(
-                    let i=0;
-                    i<data.length;
-                    i++
-                ){
-
-                    const v =
-                    Math.abs(data[i]);
-
-                    if(v > peak){
-
-                        peak = v;
-
-                    }
-                }
-
-                fill.style.width =
-                (peak * 100) + "%";
-
-            };
-
-            //////////////////////////////////////////////////////
             // CONNECT
             //////////////////////////////////////////////////////
 
@@ -266,8 +251,62 @@ function createTrack(){
                 audioContext.destination
             );
 
+            //////////////////////////////////////////////////////
+            // PROCESS AUDIO
+            //////////////////////////////////////////////////////
+
+            processor.onaudioprocess =
+            (e) => {
+
+                if(!recording) return;
+
+                const inputData =
+                e.inputBuffer
+                .getChannelData(0);
+
+                //////////////////////////////////////////////////////
+                // COPY BUFFER
+                //////////////////////////////////////////////////////
+
+                const copy =
+                new Float32Array(
+                    inputData.length
+                );
+
+                copy.set(inputData);
+
+                buffers.push(copy);
+
+                //////////////////////////////////////////////////////
+                // METER
+                //////////////////////////////////////////////////////
+
+                let peak = 0;
+
+                for(
+                    let i=0;
+                    i<inputData.length;
+                    i++
+                ){
+
+                    const v =
+                    Math.abs(inputData[i]);
+
+                    if(v > peak){
+
+                        peak = v;
+
+                    }
+
+                }
+
+                fill.style.width =
+                (peak * 100) + "%";
+
+            };
+
             console.log(
-            "PCM REC START"
+            "REC START OK"
             );
 
         } catch(err){
@@ -275,8 +314,7 @@ function createTrack(){
             console.log(err);
 
             alert(
-            "Erro microfone: "
-            + err.message
+            "Erro: " + err.message
             );
 
         }
@@ -288,6 +326,18 @@ function createTrack(){
     //////////////////////////////////////////////////////
 
     stopBtn.onclick = () => {
+
+        //////////////////////////////////////////////////////
+        // STOP PLAYBACK
+        //////////////////////////////////////////////////////
+
+        audio.pause();
+
+        audio.currentTime = 0;
+
+        //////////////////////////////////////////////////////
+        // STOP REC
+        //////////////////////////////////////////////////////
 
         if(!recording) return;
 
@@ -387,7 +437,49 @@ function createTrack(){
     };
 
     //////////////////////////////////////////////////////
-    // EXPORT
+    // MUTE
+    //////////////////////////////////////////////////////
+
+    muteBtn.onclick = () => {
+
+        muted = !muted;
+
+        audio.muted = muted;
+
+        muteBtn.style.background =
+        muted
+        ? "#aa0000"
+        : "";
+
+    };
+
+    //////////////////////////////////////////////////////
+    // SOLO
+    //////////////////////////////////////////////////////
+
+    soloBtn.onclick = () => {
+
+        tracks.forEach(t=>{
+
+            if(
+                t.audio !== audio
+            ){
+
+                t.audio.muted = true;
+
+            }
+
+        });
+
+        audio.muted = false;
+
+        soloBtn.style.background =
+        "#cc8800";
+
+    };
+
+    //////////////////////////////////////////////////////
+    // EXPORT WAV
     //////////////////////////////////////////////////////
 
     saveBtn.onclick = () => {
@@ -430,13 +522,12 @@ function createTrack(){
     };
 
     //////////////////////////////////////////////////////
-    // TRACK SAVE
+    // SAVE TRACK
     //////////////////////////////////////////////////////
 
     tracks.push({
 
-        audio,
-        wavBlob
+        audio
 
     });
 
@@ -519,6 +610,7 @@ sampleRate
         [view],
         {type:"audio/wav"}
     );
+
 }
 
 //////////////////////////////////////////////////////
