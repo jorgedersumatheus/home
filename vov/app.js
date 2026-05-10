@@ -1,8 +1,27 @@
+//////////////////////////////////////////////////////
+// DAW VOV
+// ENGINE PCM + WAV REAL
+//////////////////////////////////////////////////////
+
 const tracksContainer =
 document.getElementById("tracks");
 
 const addTrackBtn =
 document.getElementById("addTrack");
+
+//////////////////////////////////////////////////////
+// AUDIO CONTEXT
+//////////////////////////////////////////////////////
+
+const audioContext =
+new (
+window.AudioContext ||
+window.webkitAudioContext
+)();
+
+//////////////////////////////////////////////////////
+// TRACKS
+//////////////////////////////////////////////////////
 
 let tracks = [];
 
@@ -11,6 +30,10 @@ let tracks = [];
 //////////////////////////////////////////////////////
 
 function createTrack(){
+
+    //////////////////////////////////////////////////////
+    // HTML
+    //////////////////////////////////////////////////////
 
     const track =
     document.createElement("div");
@@ -39,6 +62,26 @@ function createTrack(){
             PLAY
             </button>
 
+            <button class="save">
+            WAV
+            </button>
+
+            <button class="remove">
+            X
+            </button>
+
+        </div>
+
+        <input
+        class="slider"
+        type="range"
+        min="0"
+        max="1"
+        step="0.01"
+        value="1">
+
+        <div class="meter">
+            <div class="fill"></div>
         </div>
 
         <audio controls></audio>
@@ -47,7 +90,8 @@ function createTrack(){
 
     `;
 
-    tracksContainer.appendChild(track);
+    tracksContainer
+    .appendChild(track);
 
     //////////////////////////////////////////////////////
     // ELEMENTS
@@ -62,18 +106,47 @@ function createTrack(){
     const playBtn =
     track.querySelector(".play");
 
+    const saveBtn =
+    track.querySelector(".save");
+
+    const removeBtn =
+    track.querySelector(".remove");
+
+    const slider =
+    track.querySelector(".slider");
+
+    const fill =
+    track.querySelector(".fill");
+
     const audio =
     track.querySelector("audio");
 
     //////////////////////////////////////////////////////
-    // RECORDER
+    // AUDIO DATA
     //////////////////////////////////////////////////////
 
-    let mediaRecorder;
-
-    let chunks = [];
-
     let stream;
+
+    let processor;
+
+    let input;
+
+    let recording = false;
+
+    let buffers = [];
+
+    let wavBlob = null;
+
+    //////////////////////////////////////////////////////
+    // VOLUME
+    //////////////////////////////////////////////////////
+
+    slider.oninput = () => {
+
+        audio.volume =
+        slider.value;
+
+    };
 
     //////////////////////////////////////////////////////
     // REC
@@ -84,7 +157,7 @@ function createTrack(){
         try {
 
             //////////////////////////////////////////////////////
-            // GET MIC
+            // MIC
             //////////////////////////////////////////////////////
 
             stream =
@@ -92,163 +165,204 @@ function createTrack(){
             .mediaDevices
             .getUserMedia({
 
-                audio:true
+                audio:{
+
+                    echoCancellation:false,
+                    noiseSuppression:false,
+                    autoGainControl:false
+
+                }
 
             });
 
-            console.log(
-            "MIC OK"
+            //////////////////////////////////////////////////////
+            // INPUT
+            //////////////////////////////////////////////////////
+
+            input =
+            audioContext
+            .createMediaStreamSource(
+                stream
             );
 
             //////////////////////////////////////////////////////
-            // MIME
+            // PROCESSOR
             //////////////////////////////////////////////////////
 
-            let mimeType =
-            "audio/webm";
-
-            if(
-
-                MediaRecorder
-                .isTypeSupported(
-                    "audio/webm;codecs=opus"
-                )
-
-            ){
-
-                mimeType =
-                "audio/webm;codecs=opus";
-
-            }
-
-            //////////////////////////////////////////////////////
-            // RECORDER
-            //////////////////////////////////////////////////////
-
-            mediaRecorder =
-            new MediaRecorder(
-                stream,
-                {
-                    mimeType
-                }
+            processor =
+            audioContext
+            .createScriptProcessor(
+                4096,
+                1,
+                1
             );
 
-            chunks = [];
-
             //////////////////////////////////////////////////////
-            // START
+            // RESET
             //////////////////////////////////////////////////////
 
-            mediaRecorder.start();
+            buffers = [];
 
-            console.log(
-            "REC START"
-            );
+            recording = true;
 
             recBtn.style.background =
             "red";
 
             //////////////////////////////////////////////////////
-            // DATA
+            // PROCESS AUDIO
             //////////////////////////////////////////////////////
 
-            mediaRecorder.ondataavailable =
+            processor.onaudioprocess =
             e => {
 
-                console.log(
-                "DATA",
-                e.data.size
+                if(!recording) return;
+
+                const data =
+                e.inputBuffer
+                .getChannelData(0);
+
+                //////////////////////////////////////////////////////
+                // COPY PCM
+                //////////////////////////////////////////////////////
+
+                buffers.push(
+                    new Float32Array(data)
                 );
 
-                if(
-                    e.data.size > 0
+                //////////////////////////////////////////////////////
+                // METER
+                //////////////////////////////////////////////////////
+
+                let peak = 0;
+
+                for(
+                    let i=0;
+                    i<data.length;
+                    i++
                 ){
 
-                    chunks.push(
-                        e.data
-                    );
+                    const v =
+                    Math.abs(data[i]);
 
+                    if(v > peak){
+
+                        peak = v;
+
+                    }
                 }
 
+                fill.style.width =
+                (peak * 100) + "%";
+
             };
 
             //////////////////////////////////////////////////////
-            // STOP
+            // CONNECT
             //////////////////////////////////////////////////////
 
-            mediaRecorder.onstop =
-            () => {
+            input.connect(processor);
 
-                console.log(
-                "STOP OK"
-                );
+            processor.connect(
+                audioContext.destination
+            );
 
-                const blob =
-                new Blob(
-                    chunks,
-                    {
-                        type:mimeType
-                    }
-                );
-
-                const url =
-                URL.createObjectURL(
-                    blob
-                );
-
-                audio.src = url;
-
-                audio.load();
-
-                //////////////////////////////////////////////////////
-                // STOP MIC
-                //////////////////////////////////////////////////////
-
-                stream
-                .getTracks()
-                .forEach(
-                    t=>t.stop()
-                );
-
-                recBtn.style.background =
-                "";
-
-                console.log(
-                "AUDIO READY"
-                );
-
-            };
+            console.log(
+            "PCM REC START"
+            );
 
         } catch(err){
 
             console.log(err);
 
             alert(
-            "Erro: " +
-            err.message
+            "Erro microfone: "
+            + err.message
             );
+
         }
+
     };
 
     //////////////////////////////////////////////////////
-    // STOP BUTTON
+    // STOP
     //////////////////////////////////////////////////////
 
     stopBtn.onclick = () => {
 
-        if(
-            mediaRecorder &&
-            mediaRecorder.state ===
-            "recording"
-        ){
+        if(!recording) return;
 
-            mediaRecorder.stop();
+        recording = false;
 
-            console.log(
-            "STOP CLICK"
+        recBtn.style.background = "";
+
+        fill.style.width = "0%";
+
+        //////////////////////////////////////////////////////
+        // DISCONNECT
+        //////////////////////////////////////////////////////
+
+        processor.disconnect();
+
+        input.disconnect();
+
+        stream
+        .getTracks()
+        .forEach(
+            t=>t.stop()
+        );
+
+        //////////////////////////////////////////////////////
+        // MERGE PCM
+        //////////////////////////////////////////////////////
+
+        let length = 0;
+
+        buffers.forEach(
+            b=>length += b.length
+        );
+
+        const merged =
+        new Float32Array(length);
+
+        let offset = 0;
+
+        buffers.forEach(buffer=>{
+
+            merged.set(
+                buffer,
+                offset
             );
 
-        }
+            offset += buffer.length;
+
+        });
+
+        //////////////////////////////////////////////////////
+        // WAV
+        //////////////////////////////////////////////////////
+
+        wavBlob =
+        encodeWAV(
+            merged,
+            audioContext.sampleRate
+        );
+
+        //////////////////////////////////////////////////////
+        // URL
+        //////////////////////////////////////////////////////
+
+        const url =
+        URL.createObjectURL(
+            wavBlob
+        );
+
+        audio.src = url;
+
+        audio.load();
+
+        console.log(
+        "WAV READY"
+        );
 
     };
 
@@ -272,9 +386,201 @@ function createTrack(){
 
     };
 
+    //////////////////////////////////////////////////////
+    // EXPORT
+    //////////////////////////////////////////////////////
+
+    saveBtn.onclick = () => {
+
+        if(!wavBlob){
+
+            alert(
+            "Nada gravado."
+            );
+
+            return;
+        }
+
+        const a =
+        document
+        .createElement("a");
+
+        a.href =
+        URL.createObjectURL(
+            wavBlob
+        );
+
+        a.download =
+        "VOV_TRACK.wav";
+
+        a.click();
+
+    };
+
+    //////////////////////////////////////////////////////
+    // REMOVE
+    //////////////////////////////////////////////////////
+
+    removeBtn.onclick = () => {
+
+        audio.pause();
+
+        track.remove();
+
+    };
+
+    //////////////////////////////////////////////////////
+    // TRACK SAVE
+    //////////////////////////////////////////////////////
+
     tracks.push({
-        audio
+
+        audio,
+        wavBlob
+
     });
+
+}
+
+//////////////////////////////////////////////////////
+// WAV ENCODER
+//////////////////////////////////////////////////////
+
+function encodeWAV(
+samples,
+sampleRate
+){
+
+    const buffer =
+    new ArrayBuffer(
+        44 + samples.length * 2
+    );
+
+    const view =
+    new DataView(buffer);
+
+    //////////////////////////////////////////////////////
+    // HEADER
+    //////////////////////////////////////////////////////
+
+    writeString(view,0,"RIFF");
+
+    view.setUint32(
+        4,
+        36 + samples.length * 2,
+        true
+    );
+
+    writeString(view,8,"WAVE");
+
+    writeString(view,12,"fmt ");
+
+    view.setUint32(16,16,true);
+
+    view.setUint16(20,1,true);
+
+    view.setUint16(22,1,true);
+
+    view.setUint32(
+        24,
+        sampleRate,
+        true
+    );
+
+    view.setUint32(
+        28,
+        sampleRate * 2,
+        true
+    );
+
+    view.setUint16(32,2,true);
+
+    view.setUint16(34,16,true);
+
+    writeString(view,36,"data");
+
+    view.setUint32(
+        40,
+        samples.length * 2,
+        true
+    );
+
+    //////////////////////////////////////////////////////
+    // PCM
+    //////////////////////////////////////////////////////
+
+    floatTo16BitPCM(
+        view,
+        44,
+        samples
+    );
+
+    return new Blob(
+        [view],
+        {type:"audio/wav"}
+    );
+}
+
+//////////////////////////////////////////////////////
+// STRING
+//////////////////////////////////////////////////////
+
+function writeString(
+view,
+offset,
+string
+){
+
+    for(
+        let i=0;
+        i<string.length;
+        i++
+    ){
+
+        view.setUint8(
+            offset + i,
+            string.charCodeAt(i)
+        );
+
+    }
+
+}
+
+//////////////////////////////////////////////////////
+// PCM
+//////////////////////////////////////////////////////
+
+function floatTo16BitPCM(
+output,
+offset,
+input
+){
+
+    for(
+        let i=0;
+        i<input.length;
+        i++,
+        offset += 2
+    ){
+
+        let s =
+        Math.max(
+            -1,
+            Math.min(
+                1,
+                input[i]
+            )
+        );
+
+        output.setInt16(
+            offset,
+            s < 0
+            ? s * 0x8000
+            : s * 0x7FFF,
+            true
+        );
+
+    }
 
 }
 
