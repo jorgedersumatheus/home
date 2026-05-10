@@ -1,351 +1,194 @@
-// DAW VOV PRO — app.js // gravação estável por faixa // playback independente // mute / solo / WAV
+// DAW VOV PRO — app.js // versão mínima estável Android Chrome
 
-const tracksContainer = document.getElementById('tracks'); const addTrackBtn = document.getElementById('addTrack'); const playAllBtn = document.getElementById('play'); const stopAllBtn = document.getElementById('stop'); const timeDisplay = document.getElementById('time');
+const tracksContainer = document.getElementById('tracks'); const addTrackBtn = document.getElementById('addTrack'); const playBtn = document.getElementById('play'); const stopBtn = document.getElementById('stop'); const timeDisplay = document.getElementById('time');
 
-let tracks = []; let globalTimer = null; let currentTime = 0;
+let tracks = []; let timer = null; let seconds = 0;
 
-function startClock() { clearInterval(globalTimer);
+function clockStart() { clearInterval(timer);
 
-globalTimer = setInterval(() => {
-    currentTime += 0.1;
-    timeDisplay.innerText = currentTime.toFixed(1);
-}, 100);
+timer = setInterval(() => { seconds += 0.1; timeDisplay.innerText = seconds.toFixed(1); }, 100); }
 
-}
-
-function stopClock() { clearInterval(globalTimer); }
-
-function resetClock() { stopClock(); currentTime = 0; timeDisplay.innerText = '0.0'; }
+function clockStop() { clearInterval(timer); }
 
 function createTrack() {
 
-const trackId = tracks.length + 1;
+const track = { recorder: null, chunks: [], audio: null, blob: null, stream: null };
 
-const track = {
-    id: trackId,
-    mediaRecorder: null,
-    audioChunks: [],
-    audioBlob: null,
-    audioUrl: null,
-    audio: null,
-    stream: null,
-    muted: false,
-    solo: false,
-    volume: 1
-};
+const div = document.createElement('div'); div.className = 'track';
 
-const trackDiv = document.createElement('div');
-trackDiv.className = 'track';
+div.innerHTML = ` <div class="track-title">Track ${tracks.length + 1}</div>
 
-trackDiv.innerHTML = `
+<div class="track-buttons">
+  <button class="rec">REC</button>
+  <button class="playtrack">▶</button>
+  <button class="stoptrack">■</button>
+  <button class="remove">X</button>
+</div>
 
-    <div class="track-title">Track ${trackId}</div>
-
-    <div class="track-buttons">
-        <button class="rec-btn">REC</button>
-        <button class="play-btn">▶</button>
-        <button class="stop-btn">■</button>
-        <button class="mute-btn">M</button>
-        <button class="solo-btn">S</button>
-        <button class="wav-btn">WAV</button>
-        <button class="remove-btn">X</button>
-    </div>
-
-    <input type="range"
-           class="volume"
-           min="0"
-           max="1"
-           step="0.01"
-           value="1">
-
-    <audio controls class="audio-player"></audio>
+<audio controls></audio>
 
 `;
 
-tracksContainer.appendChild(trackDiv);
+tracksContainer.appendChild(div);
 
-const recBtn = trackDiv.querySelector('.rec-btn');
-const playBtn = trackDiv.querySelector('.play-btn');
-const stopBtn = trackDiv.querySelector('.stop-btn');
-const muteBtn = trackDiv.querySelector('.mute-btn');
-const soloBtn = trackDiv.querySelector('.solo-btn');
-const wavBtn = trackDiv.querySelector('.wav-btn');
-const removeBtn = trackDiv.querySelector('.remove-btn');
-const volumeSlider = trackDiv.querySelector('.volume');
-const audioPlayer = trackDiv.querySelector('.audio-player');
+const recBtn = div.querySelector('.rec'); const playTrackBtn = div.querySelector('.playtrack'); const stopTrackBtn = div.querySelector('.stoptrack'); const removeBtn = div.querySelector('.remove'); const audioEl = div.querySelector('audio');
 
-// =========================
-// REC
-// =========================
+// ===================== // REC // =====================
 
 recBtn.onclick = async () => {
 
-    try {
+try {
 
-        // se já estiver gravando
-        if (track.mediaRecorder && track.mediaRecorder.state === 'recording') {
-            return;
-        }
+  // limpa anterior
+  track.chunks = [];
 
-        track.audioChunks = [];
+  // microfone
+  const stream = await navigator.mediaDevices.getUserMedia({
+    audio: true
+  });
 
-        const stream = await navigator.mediaDevices.getUserMedia({
-            audio: {
-                echoCancellation: true,
-                noiseSuppression: true,
-                autoGainControl: false
-            }
-        });
+  track.stream = stream;
 
-        track.stream = stream;
+  // recorder
+  const recorder = new MediaRecorder(stream);
 
-        const mediaRecorder = new MediaRecorder(stream);
-        track.mediaRecorder = mediaRecorder;
+  track.recorder = recorder;
 
-        mediaRecorder.ondataavailable = e => {
-            if (e.data.size > 0) {
-                track.audioChunks.push(e.data);
-            }
-        };
-
-        mediaRecorder.onstop = () => {
-
-            const blob = new Blob(track.audioChunks, {
-                type: 'audio/webm'
-            });
-
-            track.audioBlob = blob;
-
-            const url = URL.createObjectURL(blob);
-            track.audioUrl = url;
-
-            audioPlayer.src = url;
-
-            const audio = new Audio(url);
-            audio.volume = track.volume;
-            track.audio = audio;
-
-            // encerra microfone
-            if (track.stream) {
-                track.stream.getTracks().forEach(t => t.stop());
-            }
-
-            recBtn.style.background = '';
-        };
-
-        mediaRecorder.start();
-
-        recBtn.style.background = 'red';
-
-        startClock();
-
-    } catch (err) {
-        alert('Erro ao acessar microfone');
-        console.error(err);
+  recorder.ondataavailable = (e) => {
+    if (e.data.size > 0) {
+      track.chunks.push(e.data);
     }
+  };
+
+  recorder.onstop = () => {
+
+    const blob = new Blob(track.chunks, {
+      type: 'audio/webm'
+    });
+
+    track.blob = blob;
+
+    const url = URL.createObjectURL(blob);
+
+    audioEl.src = url;
+
+    track.audio = new Audio(url);
+
+    // encerra microfone
+    stream.getTracks().forEach(t => t.stop());
+
+    recBtn.style.background = '';
+  };
+
+  recorder.start();
+
+  recBtn.style.background = 'red';
+
+  clockStart();
+
+  console.log('gravando');
+
+} catch (err) {
+
+  alert('Falha no microfone');
+  console.error(err);
+}
+
 };
 
-// =========================
-// STOP
-// =========================
+// ===================== // STOP TRACK // =====================
 
-stopBtn.onclick = () => {
+stopTrackBtn.onclick = () => {
 
-    if (track.mediaRecorder && track.mediaRecorder.state === 'recording') {
-        track.mediaRecorder.stop();
-    }
+if (track.recorder && track.recorder.state === 'recording') {
+  track.recorder.stop();
+}
 
-    if (track.audio) {
-        track.audio.pause();
-        track.audio.currentTime = 0;
-    }
+if (track.audio) {
+  track.audio.pause();
+  track.audio.currentTime = 0;
+}
 
-    stopClock();
+clockStop();
+
 };
 
-// =========================
-// PLAY TRACK
-// =========================
+// ===================== // PLAY TRACK // =====================
 
-playBtn.onclick = () => {
+playTrackBtn.onclick = async () => {
 
-    if (!track.audio) {
-        return;
-    }
+try {
 
-    track.audio.volume = track.muted ? 0 : track.volume;
+  if (!track.audio) {
+    alert('Nada gravado');
+    return;
+  }
 
-    track.audio.play();
+  track.audio.currentTime = 0;
 
-    startClock();
+  await track.audio.play();
+
+} catch (err) {
+  console.error(err);
+}
+
 };
 
-// =========================
-// VOLUME
-// =========================
-
-volumeSlider.oninput = e => {
-
-    track.volume = parseFloat(e.target.value);
-
-    if (track.audio && !track.muted) {
-        track.audio.volume = track.volume;
-    }
-};
-
-// =========================
-// MUTE
-// =========================
-
-muteBtn.onclick = () => {
-
-    track.muted = !track.muted;
-
-    muteBtn.style.background = track.muted
-        ? '#900'
-        : '';
-
-    if (track.audio) {
-        track.audio.volume = track.muted
-            ? 0
-            : track.volume;
-    }
-};
-
-// =========================
-// SOLO
-// =========================
-
-soloBtn.onclick = () => {
-
-    track.solo = !track.solo;
-
-    soloBtn.style.background = track.solo
-        ? '#aa7700'
-        : '';
-
-    updateSolo();
-};
-
-// =========================
-// EXPORT WAV
-// =========================
-
-wavBtn.onclick = () => {
-
-    if (!track.audioBlob) {
-        alert('Nada gravado');
-        return;
-    }
-
-    const link = document.createElement('a');
-
-    link.href = track.audioUrl;
-    link.download = `VOV_Track_${track.id}.webm`;
-
-    link.click();
-};
-
-// =========================
-// REMOVE
-// =========================
+// ===================== // REMOVE // =====================
 
 removeBtn.onclick = () => {
 
-    if (track.audio) {
-        track.audio.pause();
-    }
+if (track.audio) {
+  track.audio.pause();
+}
 
-    trackDiv.remove();
+div.remove();
 
-    tracks = tracks.filter(t => t !== track);
 };
 
-tracks.push(track);
+tracks.push(track); }
 
-}
+// ===================== // PLAY ALL // =====================
 
-// ========================= // SOLO SYSTEM // =========================
+playBtn.onclick = async () => {
 
-function updateSolo() {
+for (const track of tracks) {
 
-const soloTracks = tracks.filter(t => t.solo);
+if (track.audio) {
 
-if (soloTracks.length === 0) {
-
-    tracks.forEach(track => {
-        if (track.audio) {
-            track.audio.volume = track.muted
-                ? 0
-                : track.volume;
-        }
-    });
-
-    return;
-}
-
-tracks.forEach(track => {
-
-    if (!track.audio) {
-        return;
-    }
-
-    if (track.solo) {
-        track.audio.volume = track.volume;
-    } else {
-        track.audio.volume = 0;
-    }
-});
-
-}
-
-// ========================= // PLAY ALL // =========================
-
-playAllBtn.onclick = () => {
-
-tracks.forEach(track => {
-
-    if (!track.audio) {
-        return;
-    }
-
+  try {
     track.audio.currentTime = 0;
+    await track.audio.play();
+  } catch(e) {
+    console.log(e);
+  }
+}
 
-    if (track.muted) {
-        track.audio.volume = 0;
-    } else {
-        track.audio.volume = track.volume;
-    }
+} };
 
-    track.audio.play();
-});
+// ===================== // STOP ALL // =====================
 
-startClock();
-
-};
-
-// ========================= // STOP ALL // =========================
-
-stopAllBtn.onclick = () => {
+stopBtn.onclick = () => {
 
 tracks.forEach(track => {
 
-    if (track.audio) {
-        track.audio.pause();
-        track.audio.currentTime = 0;
-    }
+if (track.audio) {
+  track.audio.pause();
+  track.audio.currentTime = 0;
+}
 
-    if (track.mediaRecorder && track.mediaRecorder.state === 'recording') {
-        track.mediaRecorder.stop();
-    }
+if (track.recorder && track.recorder.state === 'recording') {
+  track.recorder.stop();
+}
+
 });
 
-resetClock();
+seconds = 0; timeDisplay.innerText = '0.0';
 
-};
+clockStop(); };
 
-// ========================= // ADD TRACK // =========================
+// ===================== // NOVA TRACK // =====================
 
 addTrackBtn.onclick = () => { createTrack(); };
 
-// primeira pista createTrack();
+// inicia createTrack();
