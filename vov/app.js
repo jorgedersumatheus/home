@@ -1,192 +1,155 @@
 const tracksContainer = document.getElementById("tracks");
-const mixer = document.getElementById("mixer");
-const playhead = document.getElementById("playhead");
-const timelineRuler = document.getElementById("timeline-ruler");
-const addTrackBtn = document.getElementById("addTrackBtn");
-const playBtn = document.getElementById("playBtn");
-const stopBtn = document.getElementById("stopBtn");
-const timeDisplay = document.getElementById("timeDisplay");
+const playBtn = document.getElementById("play");
+const stopBtn = document.getElementById("stop");
+const timeDisplay = document.getElementById("time");
 
 let tracks = [];
 let playing = false;
-let playheadX = 0;
-let animation;
+let startTime = 0;
+let animationFrame;
 
-//////////////////////////////////////
-// TIMELINE
-//////////////////////////////////////
+function updateClock() {
+    if (!playing) return;
 
-for(let i=1;i<=64;i++){
+    let current = (Date.now() - startTime) / 1000;
+    timeDisplay.innerText = current.toFixed(1);
 
-    const mark=document.createElement("div");
-    mark.className="ruler-mark";
-    mark.innerText=i;
-
-    timelineRuler.appendChild(mark);
+    animationFrame = requestAnimationFrame(updateClock);
 }
 
-//////////////////////////////////////
-// PLAYHEAD
-//////////////////////////////////////
+playBtn.onclick = () => {
+    playing = true;
+    startTime = Date.now();
 
-playBtn.onclick=()=>{
-
-    if(playing) return;
-
-    playing=true;
-
-    tracks.forEach(t=>{
-        if(t.audio.src){
-            t.audio.play();
+    tracks.forEach(track => {
+        if (track.audio.src && !track.muted) {
+            track.audio.volume = track.soloMode ? 1 : track.volume.value;
+            track.audio.play();
         }
     });
 
-    animatePlayhead();
+    updateClock();
 };
 
-stopBtn.onclick=()=>{
+stopBtn.onclick = () => {
+    playing = false;
 
-    playing=false;
+    cancelAnimationFrame(animationFrame);
 
-    cancelAnimationFrame(animation);
-
-    playheadX=0;
-
-    playhead.style.left="0px";
-
-    timeDisplay.innerText="0.0";
-
-    tracks.forEach(t=>{
-        t.audio.pause();
-        t.audio.currentTime=0;
+    tracks.forEach(track => {
+        track.audio.pause();
+        track.audio.currentTime = 0;
     });
+
+    timeDisplay.innerText = "0.0";
 };
 
-function animatePlayhead(){
+function createTrack() {
 
-    if(!playing) return;
+    const trackEl = document.createElement("div");
+    trackEl.className = "track";
 
-    playheadX += 1;
+    const title = document.createElement("h3");
+    title.innerText = `Track ${tracks.length + 1}`;
 
-    playhead.style.left = playheadX + "px";
+    const recBtn = document.createElement("button");
+    recBtn.innerText = "REC";
+    recBtn.className = "rec";
 
-    timeDisplay.innerText=(playheadX/100).toFixed(1);
+    const playTrack = document.createElement("button");
+    playTrack.innerText = "▶";
 
-    animation=requestAnimationFrame(animatePlayhead);
-}
+    const stopTrack = document.createElement("button");
+    stopTrack.innerText = "■";
 
-//////////////////////////////////////
-// NOVA PISTA
-//////////////////////////////////////
+    const muteBtn = document.createElement("button");
+    muteBtn.innerText = "M";
 
-addTrackBtn.onclick=()=>{
+    const soloBtn = document.createElement("button");
+    soloBtn.innerText = "S";
 
-    createTrack();
-};
+    const exportBtn = document.createElement("button");
+    exportBtn.innerText = "WAV";
 
-//////////////////////////////////////
-// CREATE TRACK
-//////////////////////////////////////
+    const removeBtn = document.createElement("button");
+    removeBtn.innerText = "X";
 
-function createTrack(){
+    const volume = document.createElement("input");
+    volume.type = "range";
+    volume.min = 0;
+    volume.max = 1;
+    volume.step = 0.01;
+    volume.value = 1;
 
-    const index = tracks.length + 1;
+    const meter = document.createElement("div");
+    meter.className = "meter";
 
-    //////////////////////////////////////
-    // TRACK
-    //////////////////////////////////////
+    const meterFill = document.createElement("div");
+    meterFill.className = "meterFill";
 
-    const track=document.createElement("div");
-    track.className="track";
+    meter.appendChild(meterFill);
 
-    //////////////////////////////////////
-    // CLIP
-    //////////////////////////////////////
+    const audio = document.createElement("audio");
+    audio.controls = true;
 
-    const clip=document.createElement("div");
-    clip.className="clip";
+    const clip = document.createElement("div");
+    clip.className = "clip";
+    clip.innerText = "VOV Track";
 
-    const title=document.createElement("div");
-    title.className="clip-title";
-    title.innerText="Track "+index;
+    trackEl.appendChild(title);
+    trackEl.appendChild(recBtn);
+    trackEl.appendChild(playTrack);
+    trackEl.appendChild(stopTrack);
+    trackEl.appendChild(muteBtn);
+    trackEl.appendChild(soloBtn);
+    trackEl.appendChild(exportBtn);
+    trackEl.appendChild(removeBtn);
+    trackEl.appendChild(volume);
+    trackEl.appendChild(meter);
+    trackEl.appendChild(audio);
+    trackEl.appendChild(clip);
 
-    const waveform=document.createElement("div");
-    waveform.className="waveform";
+    tracksContainer.appendChild(trackEl);
 
-    clip.appendChild(title);
-    clip.appendChild(waveform);
-
-    track.appendChild(clip);
-
-    tracksContainer.appendChild(track);
-
-    //////////////////////////////////////
-    // AUDIO
-    //////////////////////////////////////
-
-    const audio = new Audio();
-
-    //////////////////////////////////////
-    // MIXER
-    //////////////////////////////////////
-
-    const channel=document.createElement("div");
-    channel.className="channel-strip";
-
-    const recBtn=document.createElement("button");
-    recBtn.innerText="REC";
-
-    const playBtn=document.createElement("button");
-    playBtn.innerText="▶";
-
-    const stopBtn=document.createElement("button");
-    stopBtn.innerText="■";
-
-    const removeBtn=document.createElement("button");
-    removeBtn.innerText="X";
-
-    const volume=document.createElement("input");
-
-    volume.type="range";
-    volume.min=0;
-    volume.max=1;
-    volume.step=0.01;
-    volume.value=0.8;
-
-    audio.volume=0.8;
-
-    volume.oninput=()=>{
-        audio.volume=volume.value;
-    };
-
-    //////////////////////////////////////
-    // REC
-    //////////////////////////////////////
-
-    let recorder;
-    let chunks=[];
+    let mediaRecorder;
+    let chunks = [];
     let stream;
 
-    recBtn.onclick=async()=>{
+    const trackData = {
+        audio,
+        volume,
+        muted: false,
+        soloMode: false
+    };
 
-        try{
+    tracks.push(trackData);
+
+    recBtn.onclick = async () => {
+
+        try {
 
             stream = await navigator.mediaDevices.getUserMedia({
-                audio:true
+                audio: {
+                    echoCancellation: false,
+                    noiseSuppression: false,
+                    autoGainControl: false
+                }
             });
 
-            recorder = new MediaRecorder(stream);
+            chunks = [];
 
-            chunks=[];
+            mediaRecorder = new MediaRecorder(stream);
 
-            recorder.ondataavailable=e=>{
-                chunks.push(e.data);
+            mediaRecorder.ondataavailable = e => {
+                if (e.data.size > 0) {
+                    chunks.push(e.data);
+                }
             };
 
-            recorder.onstop=()=>{
+            mediaRecorder.onstop = () => {
 
-                const blob = new Blob(chunks,{
-                    type:"audio/webm"
+                const blob = new Blob(chunks, {
+                    type: "audio/webm"
                 });
 
                 const url = URL.createObjectURL(blob);
@@ -194,156 +157,96 @@ function createTrack(){
                 audio.src = url;
 
                 clip.style.width =
-                    (200 + audio.duration * 20)+"px";
+                    Math.max(audio.duration * 20, 120) + "px";
 
-                stream.getTracks().forEach(t=>t.stop());
+                stream.getTracks().forEach(track => track.stop());
 
-                waveform.style.background =
-                "repeating-linear-gradient(to right,#00ff99,#00ff99 2px,transparent 2px,transparent 6px)";
+                recBtn.style.background = "";
             };
 
-            recorder.start();
+            mediaRecorder.start();
 
-            recBtn.style.background="red";
+            recBtn.style.background = "red";
 
-        }catch(err){
+        } catch (err) {
 
-            alert("Erro mic: "+err.message);
+            alert("Erro no microfone: " + err);
+
+            console.log(err);
         }
     };
 
-    //////////////////////////////////////
-    // STOP REC
-    //////////////////////////////////////
+    stopTrack.onclick = () => {
 
-    stopBtn.onclick=()=>{
-
-        if(recorder){
-
-            recorder.stop();
-
-            recBtn.style.background="";
+        if (mediaRecorder && mediaRecorder.state !== "inactive") {
+            mediaRecorder.stop();
         }
 
         audio.pause();
+        audio.currentTime = 0;
     };
 
-    //////////////////////////////////////
-    // PLAY INDIVIDUAL
-    //////////////////////////////////////
-
-    playBtn.onclick=()=>{
-
-        if(audio.src){
-
-            audio.currentTime=0;
-
-            audio.play();
-        }
+    playTrack.onclick = () => {
+        audio.play();
     };
 
-    //////////////////////////////////////
-    // REMOVE
-    //////////////////////////////////////
+    volume.oninput = () => {
+        audio.volume = volume.value;
 
-    removeBtn.onclick=()=>{
-
-        audio.pause();
-
-        track.remove();
-
-        channel.remove();
+        meterFill.style.width =
+            (volume.value * 100) + "%";
     };
 
-    //////////////////////////////////////
-    // MIXER UI
-    //////////////////////////////////////
+    muteBtn.onclick = () => {
 
-    channel.appendChild(recBtn);
-    channel.appendChild(playBtn);
-    channel.appendChild(stopBtn);
-    channel.appendChild(removeBtn);
+        trackData.muted = !trackData.muted;
 
-    channel.innerHTML += "<br><br>Volume<br>";
+        audio.muted = trackData.muted;
 
-    channel.appendChild(volume);
+        muteBtn.style.background =
+            trackData.muted ? "#aa0000" : "";
+    };
 
-    mixer.appendChild(channel);
+    soloBtn.onclick = () => {
 
-    //////////////////////////////////////
-    // DRAG
-    //////////////////////////////////////
+        tracks.forEach(t => {
+            t.soloMode = false;
+        });
 
-    makeDraggable(clip);
+        trackData.soloMode = true;
 
-    //////////////////////////////////////
-    // SAVE
-    //////////////////////////////////////
+        tracks.forEach(t => {
 
-    tracks.push({
-        audio,
-        clip,
-        track,
-        channel
-    });
+            if (t !== trackData) {
+                t.audio.muted = true;
+            } else {
+                t.audio.muted = false;
+            }
+        });
+
+        soloBtn.style.background = "#aa7700";
+    };
+
+    exportBtn.onclick = () => {
+
+        if (!audio.src) return;
+
+        const a = document.createElement("a");
+
+        a.href = audio.src;
+        a.download = `VOV_TRACK_${Date.now()}.webm`;
+
+        a.click();
+    };
+
+    removeBtn.onclick = () => {
+
+        trackEl.remove();
+
+        tracks = tracks.filter(t => t !== trackData);
+    };
 }
 
-//////////////////////////////////////
-// DRAG CLIPS
-//////////////////////////////////////
+document.getElementById("addTrack").onclick = createTrack;
 
-function makeDraggable(element){
-
-    let dragging=false;
-    let offsetX=0;
-
-    element.addEventListener("mousedown",e=>{
-
-        dragging=true;
-
-        offsetX=e.clientX-element.offsetLeft;
-    });
-
-    document.addEventListener("mousemove",e=>{
-
-        if(!dragging) return;
-
-        let x=e.clientX-offsetX;
-
-        if(x<0) x=0;
-
-        element.style.left=x+"px";
-    });
-
-    document.addEventListener("mouseup",()=>{
-
-        dragging=false;
-    });
-
-    //////////////////////////////////////
-    // TOUCH MOBILE
-    //////////////////////////////////////
-
-    element.addEventListener("touchstart",e=>{
-
-        dragging=true;
-
-        offsetX=e.touches[0].clientX-element.offsetLeft;
-    });
-
-    document.addEventListener("touchmove",e=>{
-
-        if(!dragging) return;
-
-        let x=e.touches[0].clientX-offsetX;
-
-        if(x<0) x=0;
-
-        element.style.left=x+"px";
-    });
-
-    document.addEventListener("touchend",()=>{
-
-        dragging=false;
-    });
-}
+createTrack();
