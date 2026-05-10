@@ -1,690 +1,351 @@
-//////////////////////////////////////////////////////
-// DAW VOV PRO
-// ENGINE PCM + WAV REAL
-//////////////////////////////////////////////////////
+// DAW VOV PRO — app.js // gravação estável por faixa // playback independente // mute / solo / WAV
 
-const tracksContainer =
-document.getElementById("tracks");
+const tracksContainer = document.getElementById('tracks'); const addTrackBtn = document.getElementById('addTrack'); const playAllBtn = document.getElementById('play'); const stopAllBtn = document.getElementById('stop'); const timeDisplay = document.getElementById('time');
 
-const addTrackBtn =
-document.getElementById("addTrack");
+let tracks = []; let globalTimer = null; let currentTime = 0;
 
-//////////////////////////////////////////////////////
-// AUDIO CONTEXT
-//////////////////////////////////////////////////////
+function startClock() { clearInterval(globalTimer);
 
-const audioContext =
-new (
-window.AudioContext ||
-window.webkitAudioContext
-)();
+globalTimer = setInterval(() => {
+    currentTime += 0.1;
+    timeDisplay.innerText = currentTime.toFixed(1);
+}, 100);
 
-//////////////////////////////////////////////////////
-// TRACKS
-//////////////////////////////////////////////////////
+}
 
-let tracks = [];
+function stopClock() { clearInterval(globalTimer); }
 
-//////////////////////////////////////////////////////
-// CREATE TRACK
-//////////////////////////////////////////////////////
+function resetClock() { stopClock(); currentTime = 0; timeDisplay.innerText = '0.0'; }
 
-function createTrack(){
+function createTrack() {
 
-    //////////////////////////////////////////////////////
-    // HTML
-    //////////////////////////////////////////////////////
+const trackId = tracks.length + 1;
 
-    const track =
-    document.createElement("div");
+const track = {
+    id: trackId,
+    mediaRecorder: null,
+    audioChunks: [],
+    audioBlob: null,
+    audioUrl: null,
+    audio: null,
+    stream: null,
+    muted: false,
+    solo: false,
+    volume: 1
+};
 
-    track.className = "track";
+const trackDiv = document.createElement('div');
+trackDiv.className = 'track';
 
-    track.innerHTML = `
+trackDiv.innerHTML = `
 
-    <div class="track-top">
+    <div class="track-title">Track ${trackId}</div>
 
-        <div class="track-title">
-        Track ${tracks.length + 1}
-        </div>
-
-        <div class="controls">
-
-            <button class="rec">
-            REC
-            </button>
-
-            <button class="play">
-            ▶
-            </button>
-
-            <button class="stop">
-            ■
-            </button>
-
-            <button class="mute">
-            M
-            </button>
-
-            <button class="solo">
-            S
-            </button>
-
-            <button class="save">
-            WAV
-            </button>
-
-            <button class="remove">
-            X
-            </button>
-
-        </div>
-
-        <input
-        class="slider"
-        type="range"
-        min="0"
-        max="1"
-        step="0.01"
-        value="1">
-
-        <div class="meter">
-            <div class="fill"></div>
-        </div>
-
-        <audio controls></audio>
-
-        <div class="clip">
-            VOV Track
-        </div>
-
+    <div class="track-buttons">
+        <button class="rec-btn">REC</button>
+        <button class="play-btn">▶</button>
+        <button class="stop-btn">■</button>
+        <button class="mute-btn">M</button>
+        <button class="solo-btn">S</button>
+        <button class="wav-btn">WAV</button>
+        <button class="remove-btn">X</button>
     </div>
 
-    `;
-
-    tracksContainer
-    .appendChild(track);
-
-    //////////////////////////////////////////////////////
-    // ELEMENTS
-    //////////////////////////////////////////////////////
-
-    const recBtn =
-    track.querySelector(".rec");
-
-    const playBtn =
-    track.querySelector(".play");
-
-    const stopBtn =
-    track.querySelector(".stop");
-
-    const muteBtn =
-    track.querySelector(".mute");
-
-    const soloBtn =
-    track.querySelector(".solo");
-
-    const saveBtn =
-    track.querySelector(".save");
-
-    const removeBtn =
-    track.querySelector(".remove");
-
-    const slider =
-    track.querySelector(".slider");
-
-    const fill =
-    track.querySelector(".fill");
-
-    const audio =
-    track.querySelector("audio");
-
-    //////////////////////////////////////////////////////
-    // AUDIO DATA
-    //////////////////////////////////////////////////////
-
-    let stream;
-
-    let input;
-
-    let processor;
-
-    let recording = false;
-
-    let buffers = [];
-
-    let wavBlob = null;
-
-    let muted = false;
-
-    //////////////////////////////////////////////////////
-    // VOLUME
-    //////////////////////////////////////////////////////
-
-    slider.oninput = () => {
-
-        audio.volume =
-        slider.value;
-
-    };
-
-    //////////////////////////////////////////////////////
-    // REC
-    //////////////////////////////////////////////////////
-
-    recBtn.onclick = async () => {
-
-        try {
-
-            //////////////////////////////////////////////////////
-            // RESUME CONTEXT
-            //////////////////////////////////////////////////////
-
-            if(
-                audioContext.state ===
-                "suspended"
-            ){
-
-                await audioContext.resume();
-
-            }
-
-            //////////////////////////////////////////////////////
-            // GET MIC
-            //////////////////////////////////////////////////////
-
-            stream =
-            await navigator
-            .mediaDevices
-            .getUserMedia({
-
-                audio:{
-
-                    echoCancellation:false,
-                    noiseSuppression:false,
-                    autoGainControl:false
-
-                }
-
-            });
-
-            //////////////////////////////////////////////////////
-            // SOURCE
-            //////////////////////////////////////////////////////
-
-            input =
-            audioContext
-            .createMediaStreamSource(
-                stream
-            );
-
-            //////////////////////////////////////////////////////
-            // PROCESSOR
-            //////////////////////////////////////////////////////
-
-            processor =
-            audioContext
-            .createScriptProcessor(
-                2048,
-                1,
-                1
-            );
-
-            //////////////////////////////////////////////////////
-            // RESET
-            //////////////////////////////////////////////////////
-
-            buffers = [];
-
-            recording = true;
-
-            recBtn.style.background =
-            "red";
-
-            //////////////////////////////////////////////////////
-            // CONNECT
-            //////////////////////////////////////////////////////
-
-            input.connect(processor);
-
-            processor.connect(
-                audioContext.destination
-            );
-
-            //////////////////////////////////////////////////////
-            // PROCESS AUDIO
-            //////////////////////////////////////////////////////
-
-            processor.onaudioprocess =
-            (e) => {
-
-                if(!recording) return;
-
-                const inputData =
-                e.inputBuffer
-                .getChannelData(0);
-
-                //////////////////////////////////////////////////////
-                // COPY BUFFER
-                //////////////////////////////////////////////////////
-
-                const copy =
-                new Float32Array(
-                    inputData.length
-                );
-
-                copy.set(inputData);
-
-                buffers.push(copy);
-
-                //////////////////////////////////////////////////////
-                // METER
-                //////////////////////////////////////////////////////
-
-                let peak = 0;
-
-                for(
-                    let i=0;
-                    i<inputData.length;
-                    i++
-                ){
-
-                    const v =
-                    Math.abs(inputData[i]);
-
-                    if(v > peak){
-
-                        peak = v;
-
-                    }
-
-                }
-
-                fill.style.width =
-                (peak * 100) + "%";
-
-            };
-
-            console.log(
-            "REC START OK"
-            );
-
-        } catch(err){
-
-            console.log(err);
-
-            alert(
-            "Erro: " + err.message
-            );
-
-        }
-
-    };
-
-    //////////////////////////////////////////////////////
-    // STOP
-    //////////////////////////////////////////////////////
-
-    stopBtn.onclick = () => {
-
-        //////////////////////////////////////////////////////
-        // STOP PLAYBACK
-        //////////////////////////////////////////////////////
-
-        audio.pause();
-
-        audio.currentTime = 0;
-
-        //////////////////////////////////////////////////////
-        // STOP REC
-        //////////////////////////////////////////////////////
-
-        if(!recording) return;
-
-        recording = false;
-
-        recBtn.style.background = "";
-
-        fill.style.width = "0%";
-
-        //////////////////////////////////////////////////////
-        // DISCONNECT
-        //////////////////////////////////////////////////////
-
-        processor.disconnect();
-
-        input.disconnect();
-
-        stream
-        .getTracks()
-        .forEach(
-            t=>t.stop()
-        );
-
-        //////////////////////////////////////////////////////
-        // MERGE PCM
-        //////////////////////////////////////////////////////
-
-        let length = 0;
-
-        buffers.forEach(
-            b=>length += b.length
-        );
-
-        const merged =
-        new Float32Array(length);
-
-        let offset = 0;
-
-        buffers.forEach(buffer=>{
-
-            merged.set(
-                buffer,
-                offset
-            );
-
-            offset += buffer.length;
-
-        });
-
-        //////////////////////////////////////////////////////
-        // WAV
-        //////////////////////////////////////////////////////
-
-        wavBlob =
-        encodeWAV(
-            merged,
-            audioContext.sampleRate
-        );
-
-        //////////////////////////////////////////////////////
-        // URL
-        //////////////////////////////////////////////////////
-
-        const url =
-        URL.createObjectURL(
-            wavBlob
-        );
-
-        audio.src = url;
-
-        audio.load();
-
-        console.log(
-        "WAV READY"
-        );
-
-    };
-
-    //////////////////////////////////////////////////////
-    // PLAY
-    //////////////////////////////////////////////////////
-
-    playBtn.onclick = () => {
-
-        if(audio.src){
-
-            audio.play();
-
-        }else{
-
-            alert(
-            "Nada gravado."
-            );
-
-        }
-
-    };
-
-    //////////////////////////////////////////////////////
-    // MUTE
-    //////////////////////////////////////////////////////
-
-    muteBtn.onclick = () => {
-
-        muted = !muted;
-
-        audio.muted = muted;
-
-        muteBtn.style.background =
-        muted
-        ? "#aa0000"
-        : "";
-
-    };
-
-    //////////////////////////////////////////////////////
-    // SOLO
-    //////////////////////////////////////////////////////
-
-    soloBtn.onclick = () => {
-
-        tracks.forEach(t=>{
-
-            if(
-                t.audio !== audio
-            ){
-
-                t.audio.muted = true;
-
-            }
-
-        });
-
-        audio.muted = false;
-
-        soloBtn.style.background =
-        "#cc8800";
-
-    };
-
-    //////////////////////////////////////////////////////
-    // EXPORT WAV
-    //////////////////////////////////////////////////////
-
-    saveBtn.onclick = () => {
-
-        if(!wavBlob){
-
-            alert(
-            "Nada gravado."
-            );
-
+    <input type="range"
+           class="volume"
+           min="0"
+           max="1"
+           step="0.01"
+           value="1">
+
+    <audio controls class="audio-player"></audio>
+
+`;
+
+tracksContainer.appendChild(trackDiv);
+
+const recBtn = trackDiv.querySelector('.rec-btn');
+const playBtn = trackDiv.querySelector('.play-btn');
+const stopBtn = trackDiv.querySelector('.stop-btn');
+const muteBtn = trackDiv.querySelector('.mute-btn');
+const soloBtn = trackDiv.querySelector('.solo-btn');
+const wavBtn = trackDiv.querySelector('.wav-btn');
+const removeBtn = trackDiv.querySelector('.remove-btn');
+const volumeSlider = trackDiv.querySelector('.volume');
+const audioPlayer = trackDiv.querySelector('.audio-player');
+
+// =========================
+// REC
+// =========================
+
+recBtn.onclick = async () => {
+
+    try {
+
+        // se já estiver gravando
+        if (track.mediaRecorder && track.mediaRecorder.state === 'recording') {
             return;
         }
 
-        const a =
-        document
-        .createElement("a");
+        track.audioChunks = [];
 
-        a.href =
-        URL.createObjectURL(
-            wavBlob
-        );
+        const stream = await navigator.mediaDevices.getUserMedia({
+            audio: {
+                echoCancellation: true,
+                noiseSuppression: true,
+                autoGainControl: false
+            }
+        });
 
-        a.download =
-        "VOV_TRACK.wav";
+        track.stream = stream;
 
-        a.click();
+        const mediaRecorder = new MediaRecorder(stream);
+        track.mediaRecorder = mediaRecorder;
 
-    };
+        mediaRecorder.ondataavailable = e => {
+            if (e.data.size > 0) {
+                track.audioChunks.push(e.data);
+            }
+        };
 
-    //////////////////////////////////////////////////////
-    // REMOVE
-    //////////////////////////////////////////////////////
+        mediaRecorder.onstop = () => {
 
-    removeBtn.onclick = () => {
+            const blob = new Blob(track.audioChunks, {
+                type: 'audio/webm'
+            });
 
-        audio.pause();
+            track.audioBlob = blob;
 
-        track.remove();
+            const url = URL.createObjectURL(blob);
+            track.audioUrl = url;
 
-    };
+            audioPlayer.src = url;
 
-    //////////////////////////////////////////////////////
-    // SAVE TRACK
-    //////////////////////////////////////////////////////
+            const audio = new Audio(url);
+            audio.volume = track.volume;
+            track.audio = audio;
 
-    tracks.push({
+            // encerra microfone
+            if (track.stream) {
+                track.stream.getTracks().forEach(t => t.stop());
+            }
 
-        audio
+            recBtn.style.background = '';
+        };
 
+        mediaRecorder.start();
+
+        recBtn.style.background = 'red';
+
+        startClock();
+
+    } catch (err) {
+        alert('Erro ao acessar microfone');
+        console.error(err);
+    }
+};
+
+// =========================
+// STOP
+// =========================
+
+stopBtn.onclick = () => {
+
+    if (track.mediaRecorder && track.mediaRecorder.state === 'recording') {
+        track.mediaRecorder.stop();
+    }
+
+    if (track.audio) {
+        track.audio.pause();
+        track.audio.currentTime = 0;
+    }
+
+    stopClock();
+};
+
+// =========================
+// PLAY TRACK
+// =========================
+
+playBtn.onclick = () => {
+
+    if (!track.audio) {
+        return;
+    }
+
+    track.audio.volume = track.muted ? 0 : track.volume;
+
+    track.audio.play();
+
+    startClock();
+};
+
+// =========================
+// VOLUME
+// =========================
+
+volumeSlider.oninput = e => {
+
+    track.volume = parseFloat(e.target.value);
+
+    if (track.audio && !track.muted) {
+        track.audio.volume = track.volume;
+    }
+};
+
+// =========================
+// MUTE
+// =========================
+
+muteBtn.onclick = () => {
+
+    track.muted = !track.muted;
+
+    muteBtn.style.background = track.muted
+        ? '#900'
+        : '';
+
+    if (track.audio) {
+        track.audio.volume = track.muted
+            ? 0
+            : track.volume;
+    }
+};
+
+// =========================
+// SOLO
+// =========================
+
+soloBtn.onclick = () => {
+
+    track.solo = !track.solo;
+
+    soloBtn.style.background = track.solo
+        ? '#aa7700'
+        : '';
+
+    updateSolo();
+};
+
+// =========================
+// EXPORT WAV
+// =========================
+
+wavBtn.onclick = () => {
+
+    if (!track.audioBlob) {
+        alert('Nada gravado');
+        return;
+    }
+
+    const link = document.createElement('a');
+
+    link.href = track.audioUrl;
+    link.download = `VOV_Track_${track.id}.webm`;
+
+    link.click();
+};
+
+// =========================
+// REMOVE
+// =========================
+
+removeBtn.onclick = () => {
+
+    if (track.audio) {
+        track.audio.pause();
+    }
+
+    trackDiv.remove();
+
+    tracks = tracks.filter(t => t !== track);
+};
+
+tracks.push(track);
+
+}
+
+// ========================= // SOLO SYSTEM // =========================
+
+function updateSolo() {
+
+const soloTracks = tracks.filter(t => t.solo);
+
+if (soloTracks.length === 0) {
+
+    tracks.forEach(track => {
+        if (track.audio) {
+            track.audio.volume = track.muted
+                ? 0
+                : track.volume;
+        }
     });
 
+    return;
 }
 
-//////////////////////////////////////////////////////
-// WAV ENCODER
-//////////////////////////////////////////////////////
+tracks.forEach(track => {
 
-function encodeWAV(
-samples,
-sampleRate
-){
-
-    const buffer =
-    new ArrayBuffer(
-        44 + samples.length * 2
-    );
-
-    const view =
-    new DataView(buffer);
-
-    //////////////////////////////////////////////////////
-    // HEADER
-    //////////////////////////////////////////////////////
-
-    writeString(view,0,"RIFF");
-
-    view.setUint32(
-        4,
-        36 + samples.length * 2,
-        true
-    );
-
-    writeString(view,8,"WAVE");
-
-    writeString(view,12,"fmt ");
-
-    view.setUint32(16,16,true);
-
-    view.setUint16(20,1,true);
-
-    view.setUint16(22,1,true);
-
-    view.setUint32(
-        24,
-        sampleRate,
-        true
-    );
-
-    view.setUint32(
-        28,
-        sampleRate * 2,
-        true
-    );
-
-    view.setUint16(32,2,true);
-
-    view.setUint16(34,16,true);
-
-    writeString(view,36,"data");
-
-    view.setUint32(
-        40,
-        samples.length * 2,
-        true
-    );
-
-    //////////////////////////////////////////////////////
-    // PCM
-    //////////////////////////////////////////////////////
-
-    floatTo16BitPCM(
-        view,
-        44,
-        samples
-    );
-
-    return new Blob(
-        [view],
-        {type:"audio/wav"}
-    );
-
-}
-
-//////////////////////////////////////////////////////
-// STRING
-//////////////////////////////////////////////////////
-
-function writeString(
-view,
-offset,
-string
-){
-
-    for(
-        let i=0;
-        i<string.length;
-        i++
-    ){
-
-        view.setUint8(
-            offset + i,
-            string.charCodeAt(i)
-        );
-
+    if (!track.audio) {
+        return;
     }
 
+    if (track.solo) {
+        track.audio.volume = track.volume;
+    } else {
+        track.audio.volume = 0;
+    }
+});
+
 }
 
-//////////////////////////////////////////////////////
-// PCM
-//////////////////////////////////////////////////////
+// ========================= // PLAY ALL // =========================
 
-function floatTo16BitPCM(
-output,
-offset,
-input
-){
+playAllBtn.onclick = () => {
 
-    for(
-        let i=0;
-        i<input.length;
-        i++,
-        offset += 2
-    ){
+tracks.forEach(track => {
 
-        let s =
-        Math.max(
-            -1,
-            Math.min(
-                1,
-                input[i]
-            )
-        );
-
-        output.setInt16(
-            offset,
-            s < 0
-            ? s * 0x8000
-            : s * 0x7FFF,
-            true
-        );
-
+    if (!track.audio) {
+        return;
     }
 
-}
+    track.audio.currentTime = 0;
 
-//////////////////////////////////////////////////////
-// ADD TRACK
-//////////////////////////////////////////////////////
+    if (track.muted) {
+        track.audio.volume = 0;
+    } else {
+        track.audio.volume = track.volume;
+    }
 
-addTrackBtn.onclick =
-createTrack;
+    track.audio.play();
+});
 
-//////////////////////////////////////////////////////
-// START
-//////////////////////////////////////////////////////
+startClock();
 
-createTrack();
+};
+
+// ========================= // STOP ALL // =========================
+
+stopAllBtn.onclick = () => {
+
+tracks.forEach(track => {
+
+    if (track.audio) {
+        track.audio.pause();
+        track.audio.currentTime = 0;
+    }
+
+    if (track.mediaRecorder && track.mediaRecorder.state === 'recording') {
+        track.mediaRecorder.stop();
+    }
+});
+
+resetClock();
+
+};
+
+// ========================= // ADD TRACK // =========================
+
+addTrackBtn.onclick = () => { createTrack(); };
+
+// primeira pista createTrack();
