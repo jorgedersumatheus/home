@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8" />
+<title>VOV DAW - REAPER Core</title>
+
+<style>
+body {
+    margin: 0;
+    background: #0a0a0a;
+    color: white;
+    font-family: Arial;
+    overflow: hidden;
+}
+
+/* TOP BAR */
+#topbar {
+    height: 60px;
+    background: #111;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    gap: 10px;
+}
+
+button {
+    padding: 10px 15px;
+    border: none;
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+#rec {
+    background: #333;
+    color: white;
+}
+
+#rec.recording {
+    background: red;
+}
+
+/* TIMELINE */
+#timeline {
+    position: relative;
+    height: calc(100vh - 60px);
+    background: #0b0b0b;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+/* GRID */
+.grid-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: #1f1f1f;
+}
+
+/* TRACK */
+.track {
+    position: relative;
+    height: 120px;
+    border-bottom: 1px solid #222;
+}
+
+/* CLIP */
+.clip {
+    position: absolute;
+    height: 80px;
+    top: 20px;
+    background: #3a3a3a;
+    border: 1px solid #666;
+    border-radius: 6px;
+}
+
+/* PLAYHEAD */
+#playhead {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: red;
+}
+</style>
+</head>
+
+<body>
+
+<div id="topbar">
+    <button id="rec">REC</button>
+    <button id="play">PLAY</button>
+    <span id="status">IDLE</span>
+</div>
+
+<div id="timeline">
+    <div id="playhead"></div>
+</div>
+
+<script>
+/* =========================
+   CORE STATE (DAW ENGINE)
+========================= */
+const timeline = document.getElementById("timeline");
+const playhead = document.getElementById("playhead");
+const status = document.getElementById("status");
+
+let audioContext = new AudioContext();
+let isRecording = false;
+let startTime = 0;
+let playOffset = 0;
+
+let tracks = [
+    { id: 1, clips: [] }
+];
+
+/* =========================
+   GRID (visual timing)
+========================= */
+function drawGrid() {
+    for (let i = 0; i < 200; i++) {
+        const line = document.createElement("div");
+        line.className = "grid-line";
+        line.style.left = (i * 100) + "px";
+        timeline.appendChild(line);
+    }
+}
+drawGrid();
+
+/* =========================
+   TRACK UI
+========================= */
+function createTrack() {
+    const t = document.createElement("div");
+    t.className = "track";
+    timeline.appendChild(t);
+    return t;
+}
+
+const trackEl = createTrack();
+
+/* =========================
+   REC (capture audio clip)
+========================= */
+let mediaRecorder;
+let chunks = [];
+let stream;
+
+document.getElementById("rec").onclick = async () => {
+    if (!isRecording) {
+        await startRec();
+    } else {
+        stopRec();
+    }
+};
+
+async function startRec() {
+    stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+    mediaRecorder = new MediaRecorder(stream);
+    chunks = [];
+
+    mediaRecorder.ondataavailable = e => chunks.push(e.data);
+
+    mediaRecorder.onstop = () => {
+        const blob = new Blob(chunks, { type: "audio/webm" });
+        const url = URL.createObjectURL(blob);
+
+        const clip = {
+            url,
+            start: playOffset,
+            duration: 3 // simplificação inicial
+        };
+
+        tracks[0].clips.push(clip);
+        renderClips();
+    };
+
+    mediaRecorder.start();
+
+    isRecording = true;
+    startTime = audioContext.currentTime;
+
+    document.getElementById("rec").classList.add("recording");
+    status.innerText = "RECORDING";
+}
+
+function stopRec() {
+    mediaRecorder.stop();
+    isRecording = false;
+
+    document.getElementById("rec").classList.remove("recording");
+    status.innerText = "STOPPED";
+
+    stream.getTracks().forEach(t => t.stop());
+}
+
+/* =========================
+   RENDER CLIPS (timeline)
+========================= */
+function renderClips() {
+    trackEl.innerHTML = "";
+
+    tracks[0].clips.forEach(c => {
+        const div = document.createElement("div");
+        div.className = "clip";
+        div.style.left = (c.start * 100) + "px";
+        div.style.width = (c.duration * 100) + "px";
+
+        trackEl.appendChild(div);
+    });
+}
+
+/* =========================
+   PLAY ENGINE (REAPER CORE IDEA)
+========================= */
+let isPlaying = false;
+
+document.getElementById("play").onclick = () => {
+    isPlaying = !isPlaying;
+
+    if (isPlaying) {
+        startPlay();
+    }
+};
+
+function startPlay() {
+    const start = audioContext.currentTime;
+
+    function tick() {
+        if (!isPlaying) return;
+
+        playOffset = audioContext.currentTime - start;
+
+        playhead.style.left = (playOffset * 100) + "px";
+
+        requestAnimationFrame(tick);
+    }
+
+    tick();
+}
+</script>
+
+</body>
+</html>
