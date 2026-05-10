@@ -156,10 +156,6 @@ background:linear-gradient(#aa0000,#440000);
 background:linear-gradient(#996600,#332200);
 }
 
-.controls button.mute{
-background:linear-gradient(#444,#111);
-}
-
 .controls button:active{
 transform:scale(.95);
 }
@@ -363,25 +359,18 @@ tracks.forEach(track=>{
 
 if(track.audio.src){
 
+const someSolo =
+tracks.some(t=>t.solo);
+
+if(track.solo){
+
 track.audio.currentTime=0;
-
-if(!track.muted){
-
-if(track.hasSolo){
-
 track.audio.play();
 
-}else{
+}else if(!someSolo && !track.muted){
 
-const someSolo = tracks.some(t=>t.solo);
-
-if(!someSolo || track.solo){
-
+track.audio.currentTime=0;
 track.audio.play();
-
-}
-
-}
 
 }
 
@@ -522,9 +511,9 @@ audio.volume=slider.value;
 // REC
 //////////////////////////////////////////////////////
 
-recBtn.onclick=async()=>{
+recBtn.onclick = async () => {
 
-try{
+try {
 
 const stream =
 await navigator.mediaDevices
@@ -540,12 +529,8 @@ autoGainControl:false
 
 chunks=[];
 
-mediaRecorder=
+mediaRecorder =
 new MediaRecorder(stream);
-
-mediaRecorder.start(200);
-
-recBtn.classList.add("active");
 
 //////////////////////////////////////////////////////
 // METER
@@ -559,7 +544,7 @@ audioContext.createAnalyser();
 
 source.connect(analyser);
 
-const data=
+const data =
 new Uint8Array(
 analyser.frequencyBinCount
 );
@@ -567,22 +552,30 @@ analyser.frequencyBinCount
 function meter(){
 
 if(
-mediaRecorder.state!=="recording"
+!mediaRecorder ||
+mediaRecorder.state !== "recording"
 ) return;
 
 analyser.getByteFrequencyData(data);
 
-const avg=
+const avg =
 data.reduce((a,b)=>a+b,0)
-/
-data.length;
+/ data.length;
 
-fill.style.width=
+fill.style.width =
 Math.min(avg,100)+"%";
 
 requestAnimationFrame(meter);
 
 }
+
+//////////////////////////////////////////////////////
+// START
+//////////////////////////////////////////////////////
+
+mediaRecorder.start();
+
+recBtn.classList.add("active");
 
 meter();
 
@@ -590,9 +583,9 @@ meter();
 // DATA
 //////////////////////////////////////////////////////
 
-mediaRecorder.ondataavailable=e=>{
+mediaRecorder.ondataavailable = e => {
 
-if(e.data.size>0){
+if(e.data && e.data.size > 0){
 
 chunks.push(e.data);
 
@@ -604,15 +597,27 @@ chunks.push(e.data);
 // STOP REC
 //////////////////////////////////////////////////////
 
-mediaRecorder.onstop=()=>{
+mediaRecorder.onstop = () => {
 
-audioBlob=
+if(chunks.length===0){
+
+alert("Nenhum áudio gravado.");
+
+return;
+
+}
+
+audioBlob =
 new Blob(chunks,{
 type:"audio/webm"
 });
 
-audio.src=
+const url =
 URL.createObjectURL(audioBlob);
+
+audio.src = url;
+
+audio.load();
 
 fill.style.width="0%";
 
@@ -626,8 +631,7 @@ stream.getTracks()
 }catch(err){
 
 alert(
-"Erro microfone: "
-+
+"Erro microfone: " +
 err.message
 );
 
