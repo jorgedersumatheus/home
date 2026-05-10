@@ -1,252 +1,579 @@
 const tracksContainer = document.getElementById("tracks");
-const playBtn = document.getElementById("play");
-const stopBtn = document.getElementById("stop");
-const timeDisplay = document.getElementById("time");
+const addTrackBtn = document.getElementById("addTrack");
 
-let tracks = [];
-let playing = false;
-let startTime = 0;
-let animationFrame;
+const playAllBtn = document.getElementById("playAll");
+const stopAllBtn = document.getElementById("stopAll");
 
-function updateClock() {
-    if (!playing) return;
+const counter = document.getElementById("counter");
+const playhead = document.getElementById("playhead");
 
-    let current = (Date.now() - startTime) / 1000;
-    timeDisplay.innerText = current.toFixed(1);
+//////////////////////////////////////////////////////
+// AUDIO ENGINE
+//////////////////////////////////////////////////////
 
-    animationFrame = requestAnimationFrame(updateClock);
+const audioContext = new (
+window.AudioContext ||
+window.webkitAudioContext
+)();
+
+//////////////////////////////////////////////////////
+// GRID
+//////////////////////////////////////////////////////
+
+for(let i=1;i<=64;i++){
+
+    const cell=document.createElement("div");
+
+    cell.className="cell";
+
+    cell.innerText=i;
+
+    document.getElementById("grid")
+    .appendChild(cell);
 }
 
-playBtn.onclick = () => {
-    playing = true;
-    startTime = Date.now();
+//////////////////////////////////////////////////////
+// GLOBAL
+//////////////////////////////////////////////////////
 
-    tracks.forEach(track => {
-        if (track.audio.src && !track.muted) {
-            track.audio.volume = track.soloMode ? 1 : track.volume.value;
-            track.audio.play();
+let tracks=[];
+
+let playing=false;
+
+let startTime=0;
+
+let animationFrame;
+
+//////////////////////////////////////////////////////
+// PLAYHEAD
+//////////////////////////////////////////////////////
+
+function animate(){
+
+    if(!playing) return;
+
+    const now =
+    audioContext.currentTime - startTime;
+
+    counter.innerText =
+    now.toFixed(1);
+
+    playhead.style.left =
+    (now * 80) + "px";
+
+    animationFrame =
+    requestAnimationFrame(animate);
+}
+
+//////////////////////////////////////////////////////
+// PLAY ALL
+//////////////////////////////////////////////////////
+
+playAllBtn.onclick=()=>{
+
+    audioContext.resume();
+
+    if(playing) return;
+
+    playing=true;
+
+    startTime=audioContext.currentTime;
+
+    const soloTracks =
+    tracks.filter(t=>t.solo);
+
+    tracks.forEach(track=>{
+
+        if(!track.audio.src) return;
+
+        track.audio.pause();
+
+        track.audio.currentTime=0;
+
+        //////////////////////////////////////////////////////
+        // SOLO
+        //////////////////////////////////////////////////////
+
+        if(soloTracks.length>0){
+
+            if(track.solo){
+
+                track.audio.play();
+
+            }
+
+        }else{
+
+            //////////////////////////////////////////////////////
+            // NORMAL
+            //////////////////////////////////////////////////////
+
+            if(!track.muted){
+
+                track.audio.play();
+
+            }
+
         }
+
     });
 
-    updateClock();
+    animate();
 };
 
-stopBtn.onclick = () => {
-    playing = false;
+//////////////////////////////////////////////////////
+// STOP ALL
+//////////////////////////////////////////////////////
+
+stopAllBtn.onclick=()=>{
+
+    playing=false;
 
     cancelAnimationFrame(animationFrame);
 
-    tracks.forEach(track => {
-        track.audio.pause();
-        track.audio.currentTime = 0;
-    });
+    counter.innerText="0.0";
 
-    timeDisplay.innerText = "0.0";
+    playhead.style.left="0px";
+
+    tracks.forEach(track=>{
+
+        track.audio.pause();
+
+        track.audio.currentTime=0;
+
+    });
 };
 
-function createTrack() {
+//////////////////////////////////////////////////////
+// CREATE TRACK
+//////////////////////////////////////////////////////
 
-    const trackEl = document.createElement("div");
-    trackEl.className = "track";
+addTrackBtn.onclick=createTrack;
 
-    const title = document.createElement("h3");
-    title.innerText = `Track ${tracks.length + 1}`;
+function createTrack(){
 
-    const recBtn = document.createElement("button");
-    recBtn.innerText = "REC";
-    recBtn.className = "rec";
+    //////////////////////////////////////////////////////
+    // TRACK HTML
+    //////////////////////////////////////////////////////
 
-    const playTrack = document.createElement("button");
-    playTrack.innerText = "▶";
+    const track=document.createElement("div");
 
-    const stopTrack = document.createElement("button");
-    stopTrack.innerText = "■";
+    track.className="track";
 
-    const muteBtn = document.createElement("button");
-    muteBtn.innerText = "M";
+    track.innerHTML=`
 
-    const soloBtn = document.createElement("button");
-    soloBtn.innerText = "S";
+    <div class="track-top">
 
-    const exportBtn = document.createElement("button");
-    exportBtn.innerText = "WAV";
+        <div class="track-title">
+        Track ${tracks.length+1}
+        </div>
 
-    const removeBtn = document.createElement("button");
-    removeBtn.innerText = "X";
+        <div class="controls">
 
-    const volume = document.createElement("input");
-    volume.type = "range";
-    volume.min = 0;
-    volume.max = 1;
-    volume.step = 0.01;
-    volume.value = 1;
+            <button class="rec">REC</button>
 
-    const meter = document.createElement("div");
-    meter.className = "meter";
+            <button class="play">▶</button>
 
-    const meterFill = document.createElement("div");
-    meterFill.className = "meterFill";
+            <button class="stop">■</button>
 
-    meter.appendChild(meterFill);
+            <button class="mute">M</button>
 
-    const audio = document.createElement("audio");
-    audio.controls = true;
+            <button class="solo">S</button>
 
-    const clip = document.createElement("div");
-    clip.className = "clip";
-    clip.innerText = "VOV Track";
+            <button class="save">WAV</button>
 
-    trackEl.appendChild(title);
-    trackEl.appendChild(recBtn);
-    trackEl.appendChild(playTrack);
-    trackEl.appendChild(stopTrack);
-    trackEl.appendChild(muteBtn);
-    trackEl.appendChild(soloBtn);
-    trackEl.appendChild(exportBtn);
-    trackEl.appendChild(removeBtn);
-    trackEl.appendChild(volume);
-    trackEl.appendChild(meter);
-    trackEl.appendChild(audio);
-    trackEl.appendChild(clip);
+            <button class="remove">X</button>
 
-    tracksContainer.appendChild(trackEl);
+        </div>
 
-    let mediaRecorder;
-    let chunks = [];
-    let stream;
+        <input class="slider"
+        type="range"
+        min="0"
+        max="1"
+        step="0.01"
+        value="1">
 
-    const trackData = {
+        <div class="meter">
+            <div class="fill"></div>
+        </div>
+
+        <audio controls></audio>
+
+    </div>
+
+    <div class="wave">
+
+        <div class="clip">
+        VOV Track
+        </div>
+
+    </div>
+
+    `;
+
+    tracksContainer.appendChild(track);
+
+    //////////////////////////////////////////////////////
+    // ELEMENTS
+    //////////////////////////////////////////////////////
+
+    const recBtn=
+    track.querySelector(".rec");
+
+    const playBtn=
+    track.querySelector(".play");
+
+    const stopBtn=
+    track.querySelector(".stop");
+
+    const muteBtn=
+    track.querySelector(".mute");
+
+    const soloBtn=
+    track.querySelector(".solo");
+
+    const saveBtn=
+    track.querySelector(".save");
+
+    const removeBtn=
+    track.querySelector(".remove");
+
+    const slider=
+    track.querySelector(".slider");
+
+    const fill=
+    track.querySelector(".fill");
+
+    const audio=
+    track.querySelector("audio");
+
+    //////////////////////////////////////////////////////
+    // TRACK DATA
+    //////////////////////////////////////////////////////
+
+    const trackData={
+
         audio,
-        volume,
-        muted: false,
-        soloMode: false
+        muted:false,
+        solo:false
+
     };
 
     tracks.push(trackData);
+
+    //////////////////////////////////////////////////////
+    // VOLUME
+    //////////////////////////////////////////////////////
+
+    slider.oninput=()=>{
+
+        audio.volume=
+        slider.value;
+
+    };
+
+    //////////////////////////////////////////////////////
+    // RECORDER
+    //////////////////////////////////////////////////////
+
+    let mediaRecorder;
+
+    let chunks=[];
+
+    let currentStream;
+
+    //////////////////////////////////////////////////////
+    // REC
+    //////////////////////////////////////////////////////
 
     recBtn.onclick = async () => {
 
         try {
 
-            stream = await navigator.mediaDevices.getUserMedia({
-                audio: {
-                    echoCancellation: false,
-                    noiseSuppression: false,
-                    autoGainControl: false
-                }
+            //////////////////////////////////////////////////////
+            // MICROPHONE
+            //////////////////////////////////////////////////////
+
+            currentStream =
+            await navigator.mediaDevices
+            .getUserMedia({
+
+                audio:true
+
             });
 
-            chunks = [];
+            //////////////////////////////////////////////////////
+            // RECORDER
+            //////////////////////////////////////////////////////
 
-            mediaRecorder = new MediaRecorder(stream);
+            chunks=[];
 
-            mediaRecorder.ondataavailable = e => {
-                if (e.data.size > 0) {
+            mediaRecorder =
+            new MediaRecorder(currentStream);
+
+            //////////////////////////////////////////////////////
+            // DATA
+            //////////////////////////////////////////////////////
+
+            mediaRecorder.ondataavailable =
+            e => {
+
+                if(
+                    e.data &&
+                    e.data.size > 0
+                ){
+
                     chunks.push(e.data);
+
                 }
             };
 
-            mediaRecorder.onstop = () => {
+            //////////////////////////////////////////////////////
+            // STOP RECORD
+            //////////////////////////////////////////////////////
 
-                const blob = new Blob(chunks, {
-                    type: "audio/webm"
+            mediaRecorder.onstop =
+            () => {
+
+                if(chunks.length===0){
+
+                    alert(
+                    "Nada gravado."
+                    );
+
+                    return;
+                }
+
+                const blob =
+                new Blob(chunks,{
+
+                    type:"audio/webm"
+
                 });
 
-                const url = URL.createObjectURL(blob);
+                const url =
+                URL.createObjectURL(blob);
 
                 audio.src = url;
 
-                clip.style.width =
-                    Math.max(audio.duration * 20, 120) + "px";
+                audio.load();
 
-                stream.getTracks().forEach(track => track.stop());
+                //////////////////////////////////////////////////////
+                // STOP STREAM
+                //////////////////////////////////////////////////////
 
-                recBtn.style.background = "";
+                currentStream
+                .getTracks()
+                .forEach(track=>{
+
+                    track.stop();
+
+                });
+
+                //////////////////////////////////////////////////////
+                // UI
+                //////////////////////////////////////////////////////
+
+                recBtn.classList
+                .remove("active");
+
+                fill.style.width="0%";
+
+                console.log(
+                "GRAVAÇÃO OK"
+                );
+
             };
 
-            mediaRecorder.start();
+            //////////////////////////////////////////////////////
+            // START
+            //////////////////////////////////////////////////////
 
-            recBtn.style.background = "red";
+            mediaRecorder.start(100);
 
-        } catch (err) {
+            recBtn.classList
+            .add("active");
 
-            alert("Erro no microfone: " + err);
+            //////////////////////////////////////////////////////
+            // METER
+            //////////////////////////////////////////////////////
+
+            const source =
+            audioContext
+            .createMediaStreamSource(
+                currentStream
+            );
+
+            const analyser =
+            audioContext
+            .createAnalyser();
+
+            source.connect(analyser);
+
+            const data =
+            new Uint8Array(
+            analyser.frequencyBinCount
+            );
+
+            function meter(){
+
+                if(
+                    !mediaRecorder ||
+                    mediaRecorder.state
+                    !== "recording"
+                ) return;
+
+                analyser
+                .getByteFrequencyData(
+                    data
+                );
+
+                const avg =
+                data.reduce(
+                    (a,b)=>a+b,
+                    0
+                ) / data.length;
+
+                fill.style.width =
+                Math.min(avg,100)
+                + "%";
+
+                requestAnimationFrame(
+                    meter
+                );
+            }
+
+            meter();
+
+        } catch(err){
 
             console.log(err);
+
+            alert(
+            "Erro microfone: "
+            + err.message
+            );
         }
     };
 
-    stopTrack.onclick = () => {
+    //////////////////////////////////////////////////////
+    // STOP
+    //////////////////////////////////////////////////////
 
-        if (mediaRecorder && mediaRecorder.state !== "inactive") {
+    stopBtn.onclick=()=>{
+
+        //////////////////////////////////////////////////////
+        // STOP RECORDER
+        //////////////////////////////////////////////////////
+
+        if(
+            mediaRecorder &&
+            mediaRecorder.state
+            !== "inactive"
+        ){
+
             mediaRecorder.stop();
+
         }
+
+        //////////////////////////////////////////////////////
+        // STOP AUDIO
+        //////////////////////////////////////////////////////
 
         audio.pause();
-        audio.currentTime = 0;
+
+        audio.currentTime=0;
     };
 
-    playTrack.onclick = () => {
-        audio.play();
+    //////////////////////////////////////////////////////
+    // PLAY TRACK
+    //////////////////////////////////////////////////////
+
+    playBtn.onclick=()=>{
+
+        if(audio.src){
+
+            audio.currentTime=0;
+
+            audio.play();
+
+        }
     };
 
-    volume.oninput = () => {
-        audio.volume = volume.value;
+    //////////////////////////////////////////////////////
+    // MUTE
+    //////////////////////////////////////////////////////
 
-        meterFill.style.width =
-            (volume.value * 100) + "%";
+    muteBtn.onclick=()=>{
+
+        trackData.muted =
+        !trackData.muted;
+
+        audio.muted =
+        trackData.muted;
+
+        muteBtn.classList
+        .toggle("active");
     };
 
-    muteBtn.onclick = () => {
+    //////////////////////////////////////////////////////
+    // SOLO
+    //////////////////////////////////////////////////////
 
-        trackData.muted = !trackData.muted;
+    soloBtn.onclick=()=>{
 
-        audio.muted = trackData.muted;
+        trackData.solo =
+        !trackData.solo;
 
-        muteBtn.style.background =
-            trackData.muted ? "#aa0000" : "";
+        soloBtn.classList
+        .toggle("active");
     };
 
-    soloBtn.onclick = () => {
+    //////////////////////////////////////////////////////
+    // EXPORT
+    //////////////////////////////////////////////////////
 
-        tracks.forEach(t => {
-            t.soloMode = false;
-        });
+    saveBtn.onclick=()=>{
 
-        trackData.soloMode = true;
+        if(!audio.src){
 
-        tracks.forEach(t => {
+            alert(
+            "Nada gravado."
+            );
 
-            if (t !== trackData) {
-                t.audio.muted = true;
-            } else {
-                t.audio.muted = false;
-            }
-        });
+            return;
+        }
 
-        soloBtn.style.background = "#aa7700";
-    };
+        const a =
+        document.createElement("a");
 
-    exportBtn.onclick = () => {
+        a.href=audio.src;
 
-        if (!audio.src) return;
-
-        const a = document.createElement("a");
-
-        a.href = audio.src;
-        a.download = `VOV_TRACK_${Date.now()}.webm`;
+        a.download=
+        "VOV_TRACK.webm";
 
         a.click();
     };
 
-    removeBtn.onclick = () => {
+    //////////////////////////////////////////////////////
+    // REMOVE
+    //////////////////////////////////////////////////////
 
-        trackEl.remove();
+    removeBtn.onclick=()=>{
 
-        tracks = tracks.filter(t => t !== trackData);
+        audio.pause();
+
+        track.remove();
+
+        tracks =
+        tracks.filter(
+            t=>t!==trackData
+        );
     };
 }
 
-document.getElementById("addTrack").onclick = createTrack;
+//////////////////////////////////////////////////////
+// START
+//////////////////////////////////////////////////////
 
 createTrack();
