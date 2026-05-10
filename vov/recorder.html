@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8" />
+<title>Recorder VOV</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #111;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+button {
+    padding: 20px 40px;
+    font-size: 18px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+#recBtn {
+    background: #333;
+    color: white;
+}
+
+#recBtn.rec-recording {
+    background: red;
+    box-shadow: 0 0 20px red;
+    transform: scale(1.05);
+}
+
+#status {
+    margin-top: 20px;
+    opacity: 0.8;
+}
+</style>
+</head>
+
+<body>
+
+<button id="recBtn">REC</button>
+<div id="status">Idle</div>
+
+<script>
+let isRecording = false;
+
+let mediaRecorder;
+let audioContext;
+let gainNode;
+let stream;
+
+const recBtn = document.getElementById("recBtn");
+const status = document.getElementById("status");
+
+recBtn.addEventListener("click", async () => {
+    console.log("REC CLICKED");
+
+    if (!isRecording) {
+        await startRecording();
+    } else {
+        stopRecording();
+    }
+});
+
+async function startRecording() {
+    try {
+        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+        audioContext = new AudioContext();
+        const source = audioContext.createMediaStreamSource(stream);
+
+        gainNode = audioContext.createGain();
+        gainNode.gain.value = 2.5; // 🔊 BOOST DE VOLUME
+
+        source.connect(gainNode);
+
+        const destination = audioContext.createMediaStreamDestination();
+        gainNode.connect(destination);
+
+        mediaRecorder = new MediaRecorder(destination.stream);
+
+        mediaRecorder.start();
+
+        isRecording = true;
+
+        recBtn.classList.add("rec-recording");
+        status.textContent = "Recording...";
+
+        console.log("TRACK STARTED");
+
+    } catch (err) {
+        console.error("Erro ao iniciar gravação:", err);
+    }
+}
+
+function stopRecording() {
+    if (!mediaRecorder) return;
+
+    mediaRecorder.stop();
+
+    isRecording = false;
+
+    recBtn.classList.remove("rec-recording");
+    status.textContent = "Stopped";
+
+    console.log("TRACK STOPPED");
+
+    if (stream) {
+        stream.getTracks().forEach(t => t.stop());
+    }
+
+    if (audioContext) {
+        audioContext.close();
+    }
+}
+</script>
+
+</body>
+</html>
