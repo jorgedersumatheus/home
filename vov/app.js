@@ -1,43 +1,86 @@
-// ======================================
-// DAW VOV
-// FASE 1 — RECORDER ESTÁVEL
-// ======================================
-
-const tracksDiv =
+const tracks =
 document.getElementById("tracks");
 
-const addTrackBtn =
-document.getElementById("addTrack");
-
-const timeDisplay =
+const time =
 document.getElementById("time");
 
-// ======================================
-// GLOBAL
-// ======================================
+let recorder;
+let chunks = [];
+let stream;
 
-let trackCount = 0;
+//////////////////////////////////////////////////////
+// TRACK
+//////////////////////////////////////////////////////
 
-let timer = null;
+const div =
+document.createElement("div");
 
-let seconds = 0;
+div.className = "track";
 
-// ======================================
-// CLOCK
-// ======================================
+div.innerHTML = `
+
+<div class="track-title">
+VOV RECORDER
+</div>
+
+<div class="track-buttons">
+
+<button id="rec">
+REC
+</button>
+
+<button id="stop">
+STOP
+</button>
+
+<button id="play">
+PLAY
+</button>
+
+</div>
+
+<audio id="audio" controls></audio>
+
+`;
+
+tracks.appendChild(div);
+
+//////////////////////////////////////////////////////
+// ELEMENTS
+//////////////////////////////////////////////////////
+
+const recBtn =
+document.getElementById("rec");
+
+const stopBtn =
+document.getElementById("stop");
+
+const playBtn =
+document.getElementById("play");
+
+const audio =
+document.getElementById("audio");
+
+//////////////////////////////////////////////////////
+// TIMER
+//////////////////////////////////////////////////////
+
+let sec = 0;
+
+let interval;
 
 function startClock(){
 
-    clearInterval(timer);
+    clearInterval(interval);
 
-    seconds = 0;
+    sec = 0;
 
-    timer = setInterval(()=>{
+    interval = setInterval(()=>{
 
-        seconds += 0.1;
+        sec += 0.1;
 
-        timeDisplay.innerText =
-        seconds.toFixed(1);
+        time.innerText =
+        sec.toFixed(1);
 
     },100);
 
@@ -45,302 +88,167 @@ function startClock(){
 
 function stopClock(){
 
-    clearInterval(timer);
+    clearInterval(interval);
 
 }
 
-// ======================================
-// CREATE TRACK
-// ======================================
+//////////////////////////////////////////////////////
+// REC
+//////////////////////////////////////////////////////
 
-function createTrack(){
+recBtn.onclick =
+async ()=>{
 
-    trackCount++;
+    try{
 
-    //////////////////////////////////////////////////////
-    // HTML
-    //////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
+        // MIC
+        //////////////////////////////////////////////////////
 
-    const div =
-    document.createElement("div");
+        stream =
+        await navigator
+        .mediaDevices
+        .getUserMedia({
 
-    div.className = "track";
+            audio:true
 
-    div.innerHTML = `
+        });
 
-    <div class="track-title">
-    Track ${trackCount}
-    </div>
+        //////////////////////////////////////////////////////
+        // RESET
+        //////////////////////////////////////////////////////
 
-    <div class="track-buttons">
+        chunks = [];
 
-        <button class="rec">
-        REC
-        </button>
+        //////////////////////////////////////////////////////
+        // RECORDER
+        //////////////////////////////////////////////////////
 
-        <button class="stop">
-        STOP
-        </button>
+        recorder =
+        new MediaRecorder(
+            stream
+        );
 
-        <button class="play">
-        PLAY
-        </button>
+        //////////////////////////////////////////////////////
+        // DATA
+        //////////////////////////////////////////////////////
 
-        <button class="download">
-        WAV
-        </button>
+        recorder.ondataavailable =
+        e=>{
 
-        <button class="remove">
-        X
-        </button>
+            if(e.data.size>0){
 
-    </div>
-
-    <audio controls></audio>
-
-    `;
-
-    tracksDiv.appendChild(div);
-
-    //////////////////////////////////////////////////////
-    // ELEMENTS
-    //////////////////////////////////////////////////////
-
-    const recBtn =
-    div.querySelector(".rec");
-
-    const stopBtn =
-    div.querySelector(".stop");
-
-    const playBtn =
-    div.querySelector(".play");
-
-    const downloadBtn =
-    div.querySelector(".download");
-
-    const removeBtn =
-    div.querySelector(".remove");
-
-    const audioEl =
-    div.querySelector("audio");
-
-    //////////////////////////////////////////////////////
-    // AUDIO
-    //////////////////////////////////////////////////////
-
-    let recorder = null;
-
-    let chunks = [];
-
-    let blob = null;
-
-    let url = null;
-
-    let stream = null;
-
-    //////////////////////////////////////////////////////
-    // REC
-    //////////////////////////////////////////////////////
-
-    recBtn.onclick =
-    async ()=>{
-
-        try{
-
-            //////////////////////////////////////////////////////
-            // RESET
-            //////////////////////////////////////////////////////
-
-            chunks = [];
-
-            //////////////////////////////////////////////////////
-            // MIC
-            //////////////////////////////////////////////////////
-
-            stream =
-            await navigator
-            .mediaDevices
-            .getUserMedia({
-
-                audio:true
-
-            });
-
-            //////////////////////////////////////////////////////
-            // RECORDER
-            //////////////////////////////////////////////////////
-
-            recorder =
-            new MediaRecorder(
-                stream
-            );
-
-            //////////////////////////////////////////////////////
-            // DATA
-            //////////////////////////////////////////////////////
-
-            recorder.ondataavailable =
-            e=>{
-
-                if(e.data.size>0){
-
-                    chunks.push(
-                        e.data
-                    );
-
-                }
-
-            };
-
-            //////////////////////////////////////////////////////
-            // STOP EVENT
-            //////////////////////////////////////////////////////
-
-            recorder.onstop =
-            ()=>{
-
-                //////////////////////////////////////////////////////
-                // BLOB
-                //////////////////////////////////////////////////////
-
-                blob =
-                new Blob(
-                    chunks,
-                    {
-
-                        type:"audio/webm"
-
-                    }
+                chunks.push(
+                    e.data
                 );
-
-                //////////////////////////////////////////////////////
-                // URL
-                //////////////////////////////////////////////////////
-
-                url =
-                URL.createObjectURL(
-                    blob
-                );
-
-                //////////////////////////////////////////////////////
-                // PLAYER
-                //////////////////////////////////////////////////////
-
-                audioEl.src =
-                url;
-
-                audioEl.load();
-
-                //////////////////////////////////////////////////////
-                // STOP MIC
-                //////////////////////////////////////////////////////
-
-                stream
-                .getTracks()
-                .forEach(
-                    t=>t.stop()
-                );
-
-                //////////////////////////////////////////////////////
-                // VISUAL
-                //////////////////////////////////////////////////////
-
-                recBtn.style.background =
-                "";
-
-                console.log(
-                "TRACK READY"
-                );
-
-            };
-
-            //////////////////////////////////////////////////////
-            // START
-            //////////////////////////////////////////////////////
-
-            recorder.start();
-
-            recBtn.style.background =
-            "red";
-
-            startClock();
-
-            console.log(
-            "REC START"
-            );
-
-        }catch(err){
-
-            alert(
-            "Erro microfone"
-            );
-
-            console.log(err);
-
-        }
-
-    };
-
-    //////////////////////////////////////////////////////
-    // STOP
-    //////////////////////////////////////////////////////
-
-    stopBtn.onclick =
-    ()=>{
-
-        if(
-            recorder &&
-            recorder.state ===
-            "recording"
-        ){
-
-            recorder.stop();
-
-        }
-
-        stopClock();
-
-    };
-
-    //////////////////////////////////////////////////////
-    // PLAY
-    //////////////////////////////////////////////////////
-
-    playBtn.onclick =
-    async ()=>{
-
-        try{
-
-            if(!audioEl.src){
-
-                alert(
-                "Nada gravado"
-                );
-
-                return;
 
             }
 
-            audioEl.currentTime = 0;
+        };
 
-            await audioEl.play();
+        //////////////////////////////////////////////////////
+        // STOP EVENT
+        //////////////////////////////////////////////////////
 
-        }catch(err){
+        recorder.onstop =
+        ()=>{
 
-            console.log(err);
+            const blob =
+            new Blob(
+                chunks,
+                {
 
-        }
+                    type:"audio/webm"
 
-    };
+                }
+            );
 
-    //////////////////////////////////////////////////////
-    // DOWNLOAD
-    //////////////////////////////////////////////////////
+            const url =
+            URL.createObjectURL(
+                blob
+            );
 
-    downloadBtn.onclick =
-    ()=>{
+            audio.src = url;
 
-        if(!blob){
+            audio.load();
+
+            //////////////////////////////////////////////////////
+            // STOP MIC
+            //////////////////////////////////////////////////////
+
+            stream
+            .getTracks()
+            .forEach(
+                t=>t.stop()
+            );
+
+            console.log(
+            "GRAVADO"
+            );
+
+        };
+
+        //////////////////////////////////////////////////////
+        // START
+        //////////////////////////////////////////////////////
+
+        recorder.start();
+
+        recBtn.style.background =
+        "red";
+
+        startClock();
+
+        console.log(
+        "REC START"
+        );
+
+    }catch(err){
+
+        alert(
+        err.message
+        );
+
+        console.log(err);
+
+    }
+
+};
+
+//////////////////////////////////////////////////////
+// STOP
+//////////////////////////////////////////////////////
+
+stopBtn.onclick =
+()=>{
+
+    if(
+        recorder &&
+        recorder.state ===
+        "recording"
+    ){
+
+        recorder.stop();
+
+    }
+
+    recBtn.style.background =
+    "";
+
+    stopClock();
+
+};
+
+//////////////////////////////////////////////////////
+// PLAY
+//////////////////////////////////////////////////////
+
+playBtn.onclick =
+async ()=>{
+
+    try{
+
+        if(!audio.src){
 
             alert(
             "Nada gravado"
@@ -350,48 +258,14 @@ function createTrack(){
 
         }
 
-        const a =
-        document
-        .createElement("a");
+        audio.currentTime = 0;
 
-        a.href =
-        url;
+        await audio.play();
 
-        a.download =
-        `VOV_TRACK_${trackCount}.webm`;
+    }catch(err){
 
-        a.click();
+        console.log(err);
 
-    };
-
-    //////////////////////////////////////////////////////
-    // REMOVE
-    //////////////////////////////////////////////////////
-
-    removeBtn.onclick =
-    ()=>{
-
-        audioEl.pause();
-
-        div.remove();
-
-    };
-
-}
-
-// ======================================
-// ADD TRACK
-// ======================================
-
-addTrackBtn.onclick =
-()=>{
-
-    createTrack();
+    }
 
 };
-
-// ======================================
-// START
-// ======================================
-
-createTrack();
