@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Teste Mic VOV</title>
+
+<style>
+
+body{
+
+    background:#111;
+    color:white;
+    font-family:Arial;
+    text-align:center;
+    padding:40px;
+
+}
+
+button{
+
+    padding:20px;
+    font-size:20px;
+    margin:10px;
+
+}
+
+audio{
+
+    width:100%;
+    margin-top:30px;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>TESTE MICROFONE VOV</h1>
+
+<button id="rec">
+REC
+</button>
+
+<button id="stop">
+STOP
+</button>
+
+<br>
+
+<audio id="audio" controls></audio>
+
+<script>
+
+let recorder;
+
+let chunks=[];
+
+let stream;
+
+const rec =
+document.getElementById("rec");
+
+const stop =
+document.getElementById("stop");
+
+const audio =
+document.getElementById("audio");
+
+rec.onclick = async ()=>{
+
+    try{
+
+        stream =
+        await navigator
+        .mediaDevices
+        .getUserMedia({
+
+            audio:true
+
+        });
+
+        recorder =
+        new MediaRecorder(stream);
+
+        chunks=[];
+
+        recorder.ondataavailable =
+        e=>{
+
+            chunks.push(e.data);
+
+        };
+
+        recorder.onstop = ()=>{
+
+            const blob =
+            new Blob(chunks,{
+
+                type:"audio/webm"
+
+            });
+
+            const url =
+            URL.createObjectURL(blob);
+
+            audio.src = url;
+
+            stream
+            .getTracks()
+            .forEach(
+                t=>t.stop()
+            );
+
+            alert("GRAVADO");
+
+        };
+
+        recorder.start();
+
+        rec.style.background =
+        "red";
+
+    }catch(err){
+
+        alert(err.message);
+
+        console.log(err);
+
+    }
+
+};
+
+stop.onclick = ()=>{
+
+    recorder.stop();
+
+    rec.style.background = "";
+
+};
+
+</script>
+
+</body>
+</html>
