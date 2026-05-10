@@ -8,7 +8,7 @@ const counter = document.getElementById("counter");
 const playhead = document.getElementById("playhead");
 
 //////////////////////////////////////////////////////
-// AUDIO ENGINE
+// AUDIO CONTEXT
 //////////////////////////////////////////////////////
 
 const audioContext = new (
@@ -28,7 +28,8 @@ for(let i=1;i<=64;i++){
 
     cell.innerText=i;
 
-    document.getElementById("grid")
+    document
+    .getElementById("grid")
     .appendChild(cell);
 }
 
@@ -53,16 +54,19 @@ function animate(){
     if(!playing) return;
 
     const now =
-    audioContext.currentTime - startTime;
+    audioContext.currentTime -
+    startTime;
 
     counter.innerText =
     now.toFixed(1);
 
     playhead.style.left =
-    (now * 80) + "px";
+    (now*80)+"px";
 
     animationFrame =
-    requestAnimationFrame(animate);
+    requestAnimationFrame(
+        animate
+    );
 }
 
 //////////////////////////////////////////////////////
@@ -77,10 +81,13 @@ playAllBtn.onclick=()=>{
 
     playing=true;
 
-    startTime=audioContext.currentTime;
+    startTime=
+    audioContext.currentTime;
 
     const soloTracks =
-    tracks.filter(t=>t.solo);
+    tracks.filter(
+        t=>t.solo
+    );
 
     tracks.forEach(track=>{
 
@@ -129,7 +136,9 @@ stopAllBtn.onclick=()=>{
 
     playing=false;
 
-    cancelAnimationFrame(animationFrame);
+    cancelAnimationFrame(
+        animationFrame
+    );
 
     counter.innerText="0.0";
 
@@ -156,7 +165,8 @@ function createTrack(){
     // TRACK HTML
     //////////////////////////////////////////////////////
 
-    const track=document.createElement("div");
+    const track =
+    document.createElement("div");
 
     track.className="track";
 
@@ -170,23 +180,38 @@ function createTrack(){
 
         <div class="controls">
 
-            <button class="rec">REC</button>
+            <button class="rec">
+            REC
+            </button>
 
-            <button class="play">▶</button>
+            <button class="play">
+            ▶
+            </button>
 
-            <button class="stop">■</button>
+            <button class="stop">
+            ■
+            </button>
 
-            <button class="mute">M</button>
+            <button class="mute">
+            M
+            </button>
 
-            <button class="solo">S</button>
+            <button class="solo">
+            S
+            </button>
 
-            <button class="save">WAV</button>
+            <button class="save">
+            WAV
+            </button>
 
-            <button class="remove">X</button>
+            <button class="remove">
+            X
+            </button>
 
         </div>
 
-        <input class="slider"
+        <input
+        class="slider"
         type="range"
         min="0"
         max="1"
@@ -211,7 +236,8 @@ function createTrack(){
 
     `;
 
-    tracksContainer.appendChild(track);
+    tracksContainer
+    .appendChild(track);
 
     //////////////////////////////////////////////////////
     // ELEMENTS
@@ -295,7 +321,8 @@ function createTrack(){
             //////////////////////////////////////////////////////
 
             currentStream =
-            await navigator.mediaDevices
+            await navigator
+            .mediaDevices
             .getUserMedia({
 
                 audio:true
@@ -303,39 +330,122 @@ function createTrack(){
             });
 
             //////////////////////////////////////////////////////
-            // RECORDER
+            // CLEAR
             //////////////////////////////////////////////////////
 
             chunks=[];
 
+            //////////////////////////////////////////////////////
+            // MIME FIX
+            //////////////////////////////////////////////////////
+
+            let options={};
+
+            if(
+
+                MediaRecorder
+                .isTypeSupported(
+                    "audio/webm;codecs=opus"
+                )
+
+            ){
+
+                options={
+
+                    mimeType:
+                    "audio/webm;codecs=opus"
+
+                };
+
+            }else if(
+
+                MediaRecorder
+                .isTypeSupported(
+                    "audio/webm"
+                )
+
+            ){
+
+                options={
+
+                    mimeType:
+                    "audio/webm"
+
+                };
+
+            }else if(
+
+                MediaRecorder
+                .isTypeSupported(
+                    "audio/mp4"
+                )
+
+            ){
+
+                options={
+
+                    mimeType:
+                    "audio/mp4"
+
+                };
+
+            }
+
+            //////////////////////////////////////////////////////
+            // RECORDER
+            //////////////////////////////////////////////////////
+
             mediaRecorder =
-            new MediaRecorder(currentStream);
+            new MediaRecorder(
+                currentStream,
+                options
+            );
+
+            console.log(
+                "Recorder:",
+                options
+            );
 
             //////////////////////////////////////////////////////
             // DATA
             //////////////////////////////////////////////////////
 
-            mediaRecorder.ondataavailable =
+            mediaRecorder
+            .ondataavailable =
             e => {
+
+                console.log(
+                    "DATA:",
+                    e.data.size
+                );
 
                 if(
                     e.data &&
                     e.data.size > 0
                 ){
 
-                    chunks.push(e.data);
+                    chunks.push(
+                        e.data
+                    );
 
                 }
             };
 
             //////////////////////////////////////////////////////
-            // STOP RECORD
+            // STOP REC
             //////////////////////////////////////////////////////
 
-            mediaRecorder.onstop =
-            () => {
+            mediaRecorder
+            .onstop = () => {
 
-                if(chunks.length===0){
+                console.log(
+                    "STOP",
+                    chunks.length
+                );
+
+                if(
+                    chunks.length===0
+                ){
 
                     alert(
                     "Nada gravado."
@@ -344,15 +454,34 @@ function createTrack(){
                     return;
                 }
 
+                //////////////////////////////////////////////////////
+                // BLOB
+                //////////////////////////////////////////////////////
+
                 const blob =
                 new Blob(chunks,{
 
-                    type:"audio/webm"
+                    type:
+                    mediaRecorder
+                    .mimeType
+                    ||
+                    "audio/webm"
 
                 });
 
+                //////////////////////////////////////////////////////
+                // URL
+                //////////////////////////////////////////////////////
+
                 const url =
-                URL.createObjectURL(blob);
+                URL
+                .createObjectURL(
+                    blob
+                );
+
+                //////////////////////////////////////////////////////
+                // AUDIO
+                //////////////////////////////////////////////////////
 
                 audio.src = url;
 
@@ -389,10 +518,14 @@ function createTrack(){
             // START
             //////////////////////////////////////////////////////
 
-            mediaRecorder.start(100);
+            mediaRecorder.start();
 
             recBtn.classList
             .add("active");
+
+            console.log(
+            "REC START"
+            );
 
             //////////////////////////////////////////////////////
             // METER
@@ -408,18 +541,22 @@ function createTrack(){
             audioContext
             .createAnalyser();
 
-            source.connect(analyser);
+            source.connect(
+                analyser
+            );
 
             const data =
             new Uint8Array(
-            analyser.frequencyBinCount
+            analyser
+            .frequencyBinCount
             );
 
             function meter(){
 
                 if(
                     !mediaRecorder ||
-                    mediaRecorder.state
+                    mediaRecorder
+                    .state
                     !== "recording"
                 ) return;
 
@@ -545,7 +682,8 @@ function createTrack(){
         }
 
         const a =
-        document.createElement("a");
+        document
+        .createElement("a");
 
         a.href=audio.src;
 
