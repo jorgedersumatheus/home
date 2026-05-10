@@ -172,3 +172,50 @@ button:hover{
     z-index:50;
     box-shadow:0 0 10px red;
 }
+/* =========================================
+REC PULSANTE VOV
+========================================= */
+
+.rec-recording{
+
+    background:#ff0000 !important;
+
+    color:white;
+
+    animation:
+    recPulse 1s infinite;
+
+    box-shadow:
+    0 0 10px #ff0000,
+    0 0 20px #ff0000,
+    0 0 40px #ff0000;
+
+}
+
+@keyframes recPulse{
+
+    0%{
+
+        transform:scale(1);
+
+        opacity:1;
+
+    }
+
+    50%{
+
+        transform:scale(1.08);
+
+        opacity:0.7;
+
+    }
+
+    100%{
+
+        transform:scale(1);
+
+        opacity:1;
+
+    }
+
+}
