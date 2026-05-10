@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8" />
-<title>VOV Sync Core v1</title>
+<title>VOV Mixer Core</title>
 
 <style>
 body {
@@ -13,10 +13,25 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-top: 30px;
+    padding-top: 20px;
 }
 
-h2 { opacity: 0.8; }
+#transport {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+button {
+    padding: 10px 14px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+#play { background: green; color: white; }
+#stop { background: red; color: white; }
+#reset { background: #444; color: white; }
 
 .track {
     width: 360px;
@@ -26,158 +41,154 @@ h2 { opacity: 0.8; }
     border-radius: 10px;
 }
 
-.rec {
-    padding: 8px 12px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
+.controls {
+    display: flex;
+    gap: 5px;
+    margin-top: 8px;
+}
+
+.mute, .solo {
     background: #333;
     color: white;
 }
 
-.rec.active {
-    background: red;
-}
-
-#play {
-    margin-top: 20px;
-    padding: 10px 16px;
-    background: green;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
+.active {
+    background: yellow;
+    color: black;
 }
 </style>
 </head>
 
 <body>
 
-<h2>VOV Sync Core v1</h2>
-
-<div class="track">
-    <h3>Voz</h3>
-    <button class="rec" id="rec1">REC</button>
+<div id="transport">
+    <button id="play">PLAY</button>
+    <button id="stop">STOP</button>
+    <button id="reset">RESET</button>
 </div>
 
-<div class="track">
-    <h3>Cavaquinho</h3>
-    <button class="rec" id="rec2">REC</button>
-</div>
-
-<button id="play">PLAY SYNC</button>
+<div id="tracks"></div>
 
 <script>
 
 let audioContext = new AudioContext();
 
-/* =========================
-   SESSION CLOCK (o coração)
-========================= */
-let sessionStart = audioContext.currentTime;
-
-/* =========================
-   TRACKS SYNCED
-========================= */
 let tracks = {
-    1: [],
-    2: []
+    voz: [],
+    cavaquinho: []
 };
 
-let mediaRecorders = {};
-let streams = {};
-let startMarks = {};
+let state = {
+    playing: false,
+    soloTrack: null
+};
 
 /* =========================
-   REC SETUP
+   CREATE TRACK UI
 ========================= */
-function setup(id, btnId) {
+function createTrack(name) {
 
-    const btn = document.getElementById(btnId);
+    const container = document.createElement("div");
+    container.className = "track";
 
-    btn.onclick = async () => {
+    container.innerHTML = `
+        <h3>${name}</h3>
+        <button onclick="record('${name}')">REC</button>
 
-        if (!mediaRecorders[id]) {
+        <div class="controls">
+            <button onclick="toggleMute('${name}', this)">MUTE</button>
+            <button onclick="toggleSolo('${name}')">SOLO</button>
+        </div>
+    `;
 
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-
-            streams[id] = stream;
-
-            const recorder = new MediaRecorder(stream);
-
-            const chunks = [];
-
-            /* 🔥 MARCA TEMPO DE INÍCIO */
-            const startTime = audioContext.currentTime - sessionStart;
-
-            startMarks[id] = startTime;
-
-            recorder.ondataavailable = e => chunks.push(e.data);
-
-            recorder.onstop = () => {
-
-                const blob = new Blob(chunks, { type: "audio/webm" });
-                const url = URL.createObjectURL(blob);
-
-                const endTime = audioContext.currentTime - sessionStart;
-
-                tracks[id].push({
-                    url,
-                    start: startMarks[id],
-                    end: endTime
-                });
-
-                console.log("TRACK", id, "SYNC SAVED", startMarks[id], endTime);
-            };
-
-            recorder.start();
-
-            mediaRecorders[id] = recorder;
-
-            btn.classList.add("active");
-
-        } else {
-
-            mediaRecorders[id].stop();
-
-            streams[id].getTracks().forEach(t => t.stop());
-
-            mediaRecorders[id] = null;
-
-            btn.classList.remove("active");
-        }
-    };
+    document.getElementById("tracks").appendChild(container);
 }
 
 /* =========================
-   PLAY SYNC ENGINE
+   RECORD
+========================= */
+async function record(name) {
+
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+    const recorder = new MediaRecorder(stream);
+    const chunks = [];
+
+    recorder.ondataavailable = e => chunks.push(e.data);
+
+    recorder.onstop = () => {
+
+        const blob = new Blob(chunks, { type: "audio/webm" });
+        const url = URL.createObjectURL(blob);
+
+        tracks[name].push({
+            url,
+            muted: false
+        });
+
+        console.log("RECORDED:", name);
+    };
+
+    recorder.start();
+
+    setTimeout(() => recorder.stop(), 5000); // gravação simples controlada
+}
+
+/* =========================
+   PLAY ENGINE (CORE FIX)
 ========================= */
 document.getElementById("play").onclick = () => {
 
-    const now = audioContext.currentTime;
+    state.playing = true;
 
-    Object.keys(tracks).forEach(trackId => {
+    Object.keys(tracks).forEach(name => {
 
-        tracks[trackId].forEach(m => {
+        if (state.soloTrack && state.soloTrack !== name) return;
 
-            const delay = (m.start * 1000);
+        tracks[name].forEach(t => {
 
-            setTimeout(() => {
+            const audio = new Audio(t.url);
 
-                const audio = new Audio(m.url);
-                audio.play();
+            if (t.muted) return;
 
-            }, delay);
-
+            audio.play();
         });
-
     });
-
-    console.log("SYNC PLAY STARTED");
 };
 
+/* =========================
+   STOP ALL (CRÍTICO)
+========================= */
+document.getElementById("stop").onclick = () => {
+    state.playing = false;
+
+    // força interrupção geral (simplificado)
+    window.location.reload();
+};
+
+/* =========================
+   RESET
+========================= */
+document.getElementById("reset").onclick = () => {
+    tracks = { voz: [], cavaquinho: [] };
+    window.location.reload();
+};
+
+/* =========================
+   MUTE / SOLO
+========================= */
+function toggleMute(name, btn) {
+    tracks[name].forEach(t => t.muted = !t.muted);
+    btn.classList.toggle("active");
+}
+
+function toggleSolo(name) {
+    state.soloTrack = state.soloTrack === name ? null : name;
+}
+
 /* INIT */
-setup(1, "rec1");
-setup(2, "rec2");
+createTrack("voz");
+createTrack("cavaquinho");
 
 </script>
 
