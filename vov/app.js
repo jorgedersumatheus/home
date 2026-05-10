@@ -242,8 +242,9 @@ function createTrack(){
                 // VISUAL
                 /////////////////////////////////////////////
 
-                recBtn.style.background =
-                "";
+                recBtn.classList.remove(
+"rec-recording"
+);
 
                 console.log(
                 "TRACK READY"
@@ -257,8 +258,9 @@ function createTrack(){
 
             mediaRecorder.start();
 
-            recBtn.style.background =
-            "red";
+            recBtn.classList.add(
+"rec-recording"
+);
 
             startClock();
 
