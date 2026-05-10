@@ -2,13 +2,14 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8" />
-<title>Recorder VOV</title>
+<title>VOV Studio Recorder</title>
 
 <style>
 body {
-    font-family: Arial, sans-serif;
-    background: #111;
+    margin: 0;
+    background: #0b0b0b;
     color: #fff;
+    font-family: Arial, sans-serif;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -16,29 +17,48 @@ body {
     height: 100vh;
 }
 
-button {
-    padding: 20px 40px;
-    font-size: 18px;
+/* BOTÃO REC ESTÚDIO */
+#recBtn {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
     border: none;
-    border-radius: 10px;
+    background: #222;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
     cursor: pointer;
     transition: 0.2s;
-}
-
-#recBtn {
-    background: #333;
-    color: white;
+    box-shadow: 0 0 10px #000;
 }
 
 #recBtn.rec-recording {
     background: red;
-    box-shadow: 0 0 20px red;
+    box-shadow: 0 0 30px red;
     transform: scale(1.05);
 }
 
+/* STATUS */
 #status {
     margin-top: 20px;
     opacity: 0.8;
+}
+
+/* VU METER */
+#vuContainer {
+    width: 300px;
+    height: 20px;
+    background: #222;
+    margin-top: 30px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+#vuBar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, green, yellow, red);
+    transition: width 0.05s linear;
 }
 </style>
 </head>
@@ -48,16 +68,23 @@ button {
 <button id="recBtn">REC</button>
 <div id="status">Idle</div>
 
+<div id="vuContainer">
+    <div id="vuBar"></div>
+</div>
+
 <script>
 let isRecording = false;
 
-let mediaRecorder;
 let audioContext;
+let analyser;
 let gainNode;
+let mediaRecorder;
 let stream;
+let chunks = [];
 
 const recBtn = document.getElementById("recBtn");
 const status = document.getElementById("status");
+const vuBar = document.getElementById("vuBar");
 
 recBtn.addEventListener("click", async () => {
     console.log("REC CLICKED");
@@ -69,22 +96,48 @@ recBtn.addEventListener("click", async () => {
     }
 });
 
+/* =========================
+   START RECORDING
+========================= */
 async function startRecording() {
     try {
         stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
         audioContext = new AudioContext();
+
         const source = audioContext.createMediaStreamSource(stream);
 
+        analyser = audioContext.createAnalyser();
+        analyser.fftSize = 512;
+
         gainNode = audioContext.createGain();
-        gainNode.gain.value = 2.5; // 🔊 BOOST DE VOLUME
+        gainNode.gain.value = 2.0; // 🔊 BOOST CONTROLADO
 
         source.connect(gainNode);
+        gainNode.connect(analyser);
 
         const destination = audioContext.createMediaStreamDestination();
         gainNode.connect(destination);
 
         mediaRecorder = new MediaRecorder(destination.stream);
+
+        chunks = [];
+
+        mediaRecorder.ondataavailable = (e) => {
+            chunks.push(e.data);
+        };
+
+        mediaRecorder.onstop = () => {
+            const blob = new Blob(chunks, { type: "audio/webm" });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "vov-recording.webm";
+            a.click();
+
+            URL.revokeObjectURL(url);
+        };
 
         mediaRecorder.start();
 
@@ -95,11 +148,16 @@ async function startRecording() {
 
         console.log("TRACK STARTED");
 
+        visualizeVU();
+
     } catch (err) {
         console.error("Erro ao iniciar gravação:", err);
     }
 }
 
+/* =========================
+   STOP RECORDING
+========================= */
 function stopRecording() {
     if (!mediaRecorder) return;
 
@@ -119,6 +177,38 @@ function stopRecording() {
     if (audioContext) {
         audioContext.close();
     }
+
+    vuBar.style.width = "0%";
+}
+
+/* =========================
+   VU METER (REAL TIME)
+========================= */
+function visualizeVU() {
+    if (!analyser) return;
+
+    const data = new Uint8Array(analyser.frequencyBinCount);
+
+    function update() {
+        if (!isRecording) return;
+
+        analyser.getByteFrequencyData(data);
+
+        let sum = 0;
+        for (let i = 0; i < data.length; i++) {
+            sum += data[i];
+        }
+
+        let avg = sum / data.length;
+
+        let percent = Math.min(100, (avg / 128) * 100);
+
+        vuBar.style.width = percent + "%";
+
+        requestAnimationFrame(update);
+    }
+
+    update();
 }
 </script>
 
