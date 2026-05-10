@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8" />
-<title>VOV Memory Blocks v1</title>
+<title>VOV Sync Core v1</title>
 
 <style>
 body {
@@ -16,24 +16,16 @@ body {
     padding-top: 30px;
 }
 
-h2 {
-    opacity: 0.8;
-}
+h2 { opacity: 0.8; }
 
-/* TRACK AREA */
-#tracks {
-    width: 360px;
-}
-
-/* TRACK */
 .track {
+    width: 360px;
     background: #111;
-    margin: 10px 0;
+    margin: 10px;
     padding: 10px;
     border-radius: 10px;
 }
 
-/* REC BUTTON */
 .rec {
     padding: 8px 12px;
     border: none;
@@ -47,22 +39,7 @@ h2 {
     background: red;
 }
 
-/* MEMORY BLOCK */
-.memory {
-    margin-top: 8px;
-    padding: 8px;
-    background: #222;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 12px;
-}
-
-.memory:hover {
-    background: #333;
-}
-
-/* PLAY ALL */
-#playAll {
+#play {
     margin-top: 20px;
     padding: 10px 16px;
     background: green;
@@ -75,93 +52,96 @@ h2 {
 
 <body>
 
-<h2>VOV Memory Blocks</h2>
+<h2>VOV Sync Core v1</h2>
 
-<div id="tracks"></div>
+<div class="track">
+    <h3>Voz</h3>
+    <button class="rec" id="rec1">REC</button>
+</div>
 
-<button id="playAll">PLAY ALL</button>
+<div class="track">
+    <h3>Cavaquinho</h3>
+    <button class="rec" id="rec2">REC</button>
+</div>
+
+<button id="play">PLAY SYNC</button>
 
 <script>
+
+let audioContext = new AudioContext();
+
+/* =========================
+   SESSION CLOCK (o coração)
+========================= */
+let sessionStart = audioContext.currentTime;
+
+/* =========================
+   TRACKS SYNCED
+========================= */
 let tracks = {
-    voz: [],
-    cavaquinho: [],
-    extra: []
+    1: [],
+    2: []
 };
 
 let mediaRecorders = {};
 let streams = {};
-let chunks = {};
+let startMarks = {};
 
 /* =========================
-   CREATE UI TRACKS
+   REC SETUP
 ========================= */
-function createTrack(name) {
-    const container = document.createElement("div");
-    container.className = "track";
+function setup(id, btnId) {
 
-    const title = document.createElement("div");
-    title.innerText = name.toUpperCase();
-
-    const btn = document.createElement("button");
-    btn.className = "rec";
-    btn.innerText = "REC";
-
-    const memList = document.createElement("div");
-
-    container.appendChild(title);
-    container.appendChild(btn);
-    container.appendChild(memList);
-
-    document.getElementById("tracks").appendChild(container);
-
-    setupRecorder(name, btn, memList);
-}
-
-/* =========================
-   REC SYSTEM
-========================= */
-function setupRecorder(name, btn, memList) {
+    const btn = document.getElementById(btnId);
 
     btn.onclick = async () => {
 
-        if (!mediaRecorders[name]) {
+        if (!mediaRecorders[id]) {
+
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
-            streams[name] = stream;
+            streams[id] = stream;
 
             const recorder = new MediaRecorder(stream);
 
-            chunks[name] = [];
+            const chunks = [];
 
-            recorder.ondataavailable = e => chunks[name].push(e.data);
+            /* 🔥 MARCA TEMPO DE INÍCIO */
+            const startTime = audioContext.currentTime - sessionStart;
+
+            startMarks[id] = startTime;
+
+            recorder.ondataavailable = e => chunks.push(e.data);
 
             recorder.onstop = () => {
 
-                const blob = new Blob(chunks[name], { type: "audio/webm" });
+                const blob = new Blob(chunks, { type: "audio/webm" });
                 const url = URL.createObjectURL(blob);
 
-                const memory = {
+                const endTime = audioContext.currentTime - sessionStart;
+
+                tracks[id].push({
                     url,
-                    time: new Date().toLocaleTimeString()
-                };
+                    start: startMarks[id],
+                    end: endTime
+                });
 
-                tracks[name].push(memory);
-
-                renderMemories(name, memList);
+                console.log("TRACK", id, "SYNC SAVED", startMarks[id], endTime);
             };
 
             recorder.start();
 
-            mediaRecorders[name] = recorder;
+            mediaRecorders[id] = recorder;
 
             btn.classList.add("active");
 
         } else {
-            mediaRecorders[name].stop();
 
-            streams[name].getTracks().forEach(t => t.stop());
+            mediaRecorders[id].stop();
 
-            mediaRecorders[name] = null;
+            streams[id].getTracks().forEach(t => t.stop());
+
+            mediaRecorders[id] = null;
 
             btn.classList.remove("active");
         }
@@ -169,47 +149,36 @@ function setupRecorder(name, btn, memList) {
 }
 
 /* =========================
-   RENDER MEMORIES
+   PLAY SYNC ENGINE
 ========================= */
-function renderMemories(name, memList) {
+document.getElementById("play").onclick = () => {
 
-    memList.innerHTML = "";
+    const now = audioContext.currentTime;
 
-    tracks[name].forEach((m, index) => {
+    Object.keys(tracks).forEach(trackId => {
 
-        const div = document.createElement("div");
-        div.className = "memory";
+        tracks[trackId].forEach(m => {
 
-        div.innerText = "MEM " + (index + 1) + " - " + m.time;
+            const delay = (m.start * 1000);
 
-        div.onclick = () => {
-            const audio = new Audio(m.url);
-            audio.play();
-        };
+            setTimeout(() => {
 
-        memList.appendChild(div);
-    });
-}
+                const audio = new Audio(m.url);
+                audio.play();
 
-/* =========================
-   PLAY ALL (simples mix)
-========================= */
-document.getElementById("playAll").onclick = () => {
+            }, delay);
 
-    Object.keys(tracks).forEach(track => {
-
-        tracks[track].forEach(m => {
-            const audio = new Audio(m.url);
-            audio.play();
         });
 
     });
+
+    console.log("SYNC PLAY STARTED");
 };
 
-/* INIT TRACKS */
-createTrack("voz");
-createTrack("cavaquinho");
-createTrack("extra");
+/* INIT */
+setup(1, "rec1");
+setup(2, "rec2");
+
 </script>
 
 </body>
