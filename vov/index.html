@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8" />
-<title>VOV Audio Core — Fluxo Vivo</title>
+<title>VOV Flow Memory v1</title>
 
 <style>
 body {
@@ -17,27 +17,40 @@ body {
     height: 100vh;
 }
 
+/* CORE BUTTON */
 #core {
-    width: 200px;
-    height: 200px;
+    width: 180px;
+    height: 180px;
     border-radius: 50%;
     background: #222;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: 0.2s;
     user-select: none;
+    transition: 0.2s;
 }
 
-#core.flowing {
+#core.active {
     background: radial-gradient(circle, red, darkred);
     box-shadow: 0 0 40px red;
     transform: scale(1.05);
 }
 
+/* MEMORY BUTTON */
+#memoryBtn {
+    margin-top: 20px;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background: #333;
+    color: white;
+}
+
+/* VU */
 #vu {
-    width: 300px;
+    width: 320px;
     height: 12px;
     background: #222;
     margin-top: 30px;
@@ -50,25 +63,52 @@ body {
     width: 0%;
     background: linear-gradient(90deg, green, yellow, red);
 }
+
+/* MEMORY LIST */
+#memoryList {
+    margin-top: 25px;
+    width: 320px;
+    max-height: 200px;
+    overflow-y: auto;
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+.memory-item {
+    padding: 6px;
+    border-bottom: 1px solid #222;
+    cursor: pointer;
+}
 </style>
 </head>
 
 <body>
 
 <div id="core">VOV</div>
+<button id="memoryBtn">CAPTURAR MEMÓRIA</button>
+
 <div id="vu"><div id="vuBar"></div></div>
+
+<div id="memoryList"></div>
 
 <script>
 let audioContext;
 let analyser;
-let gainNode;
 let stream;
 
 let isFlowing = false;
+let startTime = 0;
+
+let memories = [];
 
 const core = document.getElementById("core");
 const vuBar = document.getElementById("vuBar");
+const memoryBtn = document.getElementById("memoryBtn");
+const memoryList = document.getElementById("memoryList");
 
+/* =========================
+   START FLOW (áudio vivo)
+========================= */
 core.onclick = async () => {
     if (!isFlowing) {
         await startFlow();
@@ -77,9 +117,6 @@ core.onclick = async () => {
     }
 };
 
-/* =========================
-   START FLOW (estado vivo)
-========================= */
 async function startFlow() {
     stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
@@ -90,60 +127,103 @@ async function startFlow() {
     analyser = audioContext.createAnalyser();
     analyser.fftSize = 512;
 
-    gainNode = audioContext.createGain();
-    gainNode.gain.value = 2.0;
-
-    source.connect(gainNode);
-    gainNode.connect(analyser);
+    source.connect(analyser);
 
     isFlowing = true;
+    startTime = audioContext.currentTime;
 
-    core.classList.add("flowing");
+    core.classList.add("active");
 
-    startVU();
+    vuLoop();
 
-    console.log("VOV FLOW STARTED");
+    console.log("FLOW STARTED");
 }
 
 /* =========================
-   STOP FLOW (memória fecha)
+   STOP FLOW
 ========================= */
 function stopFlow() {
     isFlowing = false;
 
-    core.classList.remove("flowing");
+    core.classList.remove("active");
 
     vuBar.style.width = "0%";
 
     if (stream) stream.getTracks().forEach(t => t.stop());
     if (audioContext) audioContext.close();
 
-    console.log("VOV FLOW STOPPED");
+    console.log("FLOW STOPPED");
 }
 
 /* =========================
-   VU LÓGICA (fluxo vivo)
+   VU METER
 ========================= */
-function startVU() {
+function vuLoop() {
+    if (!isFlowing) return;
+
     const data = new Uint8Array(analyser.frequencyBinCount);
 
-    function loop() {
-        if (!isFlowing) return;
+    analyser.getByteFrequencyData(data);
 
-        analyser.getByteFrequencyData(data);
+    let sum = 0;
+    for (let i = 0; i < data.length; i++) sum += data[i];
 
-        let sum = 0;
-        for (let i = 0; i < data.length; i++) sum += data[i];
+    let avg = sum / data.length;
+    let percent = Math.min(100, (avg / 128) * 100);
 
-        let avg = sum / data.length;
-        let percent = Math.min(100, (avg / 128) * 100);
+    vuBar.style.width = percent + "%";
 
-        vuBar.style.width = percent + "%";
+    requestAnimationFrame(vuLoop);
+}
 
-        requestAnimationFrame(loop);
-    }
+/* =========================
+   MEMORY CAPTURE (ESSÊNCIA VOV)
+========================= */
+memoryBtn.onclick = () => {
+    if (!isFlowing) return;
 
-    loop();
+    const now = audioContext.currentTime;
+
+    const memory = {
+        id: Date.now(),
+        timestamp: now,
+        label: "MEM " + memories.length
+    };
+
+    memories.push(memory);
+
+    renderMemory();
+
+    console.log("MEMORY CAPTURED", memory);
+};
+
+/* =========================
+   MEMORY UI
+========================= */
+function renderMemory() {
+    memoryList.innerHTML = "";
+
+    memories.forEach(m => {
+        const div = document.createElement("div");
+        div.className = "memory-item";
+
+        div.innerText = m.label + " @ " + m.timestamp.toFixed(2);
+
+        div.onclick = () => replayMemory(m);
+
+        memoryList.appendChild(div);
+    });
+}
+
+/* =========================
+   REPLAY (conceitual base)
+========================= */
+function replayMemory(memory) {
+    console.log("REPLAY MEMORY", memory);
+
+    // versão v1: apenas marcador conceitual
+    // futura versão: buffer real de áudio
+    alert("Replay conceitual: " + memory.label);
 }
 </script>
 
