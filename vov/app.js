@@ -155,7 +155,11 @@ function createTrack(){
             .mediaDevices
             .getUserMedia({
 
-                audio:true
+                audio:{
+    echoCancellation:false,
+    noiseSuppression:false,
+    autoGainControl:true
+}
 
             });
 
