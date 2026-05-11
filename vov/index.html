@@ -1,15 +1,10 @@
-<!--
-========================================================
-VOV MIX ENGINE v1
-Mute + Solo + Drag Real + Playback sólido
-========================================================
--->
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>VOV MIX ENGINE v1</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>VOV FLOW MEMORY</title>
 
 <style>
 
@@ -42,26 +37,23 @@ button{
     padding:10px 14px;
     cursor:pointer;
     font-weight:bold;
+    color:white;
 }
 
 #addTrack{
     background:#222;
-    color:white;
 }
 
 #playBtn{
     background:green;
-    color:white;
 }
 
 #stopBtn{
     background:#aa0000;
-    color:white;
 }
 
 #exportBtn{
     background:#0055ff;
-    color:white;
 }
 
 /* =========================================
@@ -97,7 +89,6 @@ GRID
 .gridLabel{
     position:absolute;
     top:0;
-    left:0;
     color:#444;
     font-size:10px;
     padding-left:3px;
@@ -163,6 +154,29 @@ AUDIO BLOCK
 
 .audioBlock.selected{
     border:2px solid #00ff99;
+}
+
+/* =========================================
+HANDLES
+========================================= */
+
+.handle{
+    position:absolute;
+    top:0;
+    width:10px;
+    height:100%;
+    background:#00ff99;
+    z-index:10;
+}
+
+.leftHandle{
+    left:0;
+    cursor:ew-resize;
+}
+
+.rightHandle{
+    right:0;
+    cursor:ew-resize;
 }
 
 /* =========================================
@@ -234,12 +248,10 @@ ACTIVE STATES
 
 .recActive{
     background:red !important;
-    color:white;
 }
 
 .muteActive{
     background:#666 !important;
-    color:white;
 }
 
 .soloActive{
@@ -294,9 +306,7 @@ const audioContext =
     new AudioContext();
 
 const timeline =
-    document.getElementById(
-        "timeline"
-    );
+    document.getElementById("timeline");
 
 const timelineWrapper =
     document.getElementById(
@@ -319,11 +329,11 @@ let tracks = [];
 
 let trackCount = 0;
 
+let activeSources = [];
+
 let playing = false;
 
 let playStart = 0;
-
-let activeSources = [];
 
 let selectedTake = null;
 
@@ -467,9 +477,7 @@ function bindTrack(track){
             "del_" + track.id
         );
 
-    /* =========================
-    REC
-    ========================= */
+    /* REC */
 
     recBtn.onclick = async () => {
 
@@ -552,9 +560,7 @@ function bindTrack(track){
         }
     };
 
-    /* =========================
-    MUTE
-    ========================= */
+    /* MUTE */
 
     muteBtn.onclick = () => {
 
@@ -566,9 +572,7 @@ function bindTrack(track){
         );
     };
 
-    /* =========================
-    SOLO
-    ========================= */
+    /* SOLO */
 
     soloBtn.onclick = () => {
 
@@ -580,9 +584,7 @@ function bindTrack(track){
         );
     };
 
-    /* =========================
-    DELETE TRACK
-    ========================= */
+    /* DELETE TRACK */
 
     delBtn.onclick = () => {
 
@@ -600,7 +602,7 @@ function bindTrack(track){
 }
 
 /* =========================================
-TAKE
+RENDER TAKE
 ========================================= */
 
 function renderTake(track, take){
@@ -621,9 +623,24 @@ function renderTake(track, take){
     block.style.width =
         take.width + "px";
 
-    /* =========================
-    WAVEFORM
-    ========================= */
+    /* HANDLES */
+
+    const leftHandle =
+        document.createElement("div");
+
+    leftHandle.className =
+        "handle leftHandle";
+
+    const rightHandle =
+        document.createElement("div");
+
+    rightHandle.className =
+        "handle rightHandle";
+
+    block.appendChild(leftHandle);
+    block.appendChild(rightHandle);
+
+    /* WAVEFORM */
 
     const canvas =
         document.createElement("canvas");
@@ -636,16 +653,18 @@ function renderTake(track, take){
 
     block.appendChild(canvas);
 
-    drawWaveform(canvas, take.buffer);
+    drawWaveform(
+        canvas,
+        take.buffer
+    );
 
-    /* =========================
-    CURSOR
-    ========================= */
+    /* CURSOR */
 
     const cursor =
         document.createElement("div");
 
-    cursor.className = "takeCursor";
+    cursor.className =
+        "takeCursor";
 
     block.appendChild(cursor);
 
@@ -653,57 +672,49 @@ function renderTake(track, take){
 
     lane.appendChild(block);
 
-    /* =========================
-    SELECT
-    ========================= */
+    /* SELECT */
 
-    block.addEventListener(
-        "click",
-        e => {
+    block.onclick = e => {
 
-            e.stopPropagation();
+        e.stopPropagation();
 
-            document
-                .querySelectorAll(
-                    ".audioBlock"
-                )
-                .forEach(b => {
-                    b.classList.remove(
-                        "selected"
-                    );
-                });
+        document
+            .querySelectorAll(
+                ".audioBlock"
+            )
+            .forEach(b => {
+                b.classList.remove(
+                    "selected"
+                );
+            });
 
-            block.classList.add(
-                "selected"
-            );
+        block.classList.add(
+            "selected"
+        );
 
-            selectedTake = take;
-        }
-    );
+        selectedTake = take;
+    };
 
-    /* =========================
-    DRAG REAL
-    ========================= */
+    /* MOVE */
 
     let dragging = false;
 
-    let dragOffsetX = 0;
+    let offsetX = 0;
 
     block.addEventListener(
         "mousedown",
         e => {
 
-            if(e.button !== 0)
-                return;
+            if(
+                e.target === leftHandle ||
+                e.target === rightHandle
+            ) return;
 
             dragging = true;
 
-            dragOffsetX =
+            offsetX =
                 e.clientX -
                 block.offsetLeft;
-
-            block.style.cursor =
-                "grabbing";
         }
     );
 
@@ -718,17 +729,13 @@ function renderTake(track, take){
 
             let x =
                 e.clientX -
-                dragOffsetX;
+                offsetX;
 
             if(x < 0)
                 x = 0;
 
-            /* SNAP */
-
             x =
-                Math.round(
-                    x / 10
-                ) * 10;
+                Math.round(x / 10) * 10;
 
             take.position = x;
 
@@ -742,15 +749,92 @@ function renderTake(track, take){
         () => {
 
             dragging = false;
-
-            block.style.cursor =
-                "grab";
         }
     );
 
-    /* =========================
-    MENU
-    ========================= */
+    /* LEFT TRIM */
+
+    let trimLeft = false;
+
+    leftHandle.onmousedown = e => {
+
+        e.stopPropagation();
+
+        trimLeft = true;
+    };
+
+    /* RIGHT TRIM */
+
+    let trimRight = false;
+
+    rightHandle.onmousedown = e => {
+
+        e.stopPropagation();
+
+        trimRight = true;
+    };
+
+    document.addEventListener(
+        "mousemove",
+        e => {
+
+            if(trimLeft){
+
+                const rect =
+                    block.getBoundingClientRect();
+
+                let delta =
+                    e.clientX - rect.left;
+
+                if(delta < 20)
+                    delta = 20;
+
+                if(delta >
+                   take.width - 20)
+                    delta =
+                    take.width - 20;
+
+                block.style.left =
+                    (
+                        take.position +
+                        delta
+                    ) + "px";
+
+                block.style.width =
+                    (
+                        take.width -
+                        delta
+                    ) + "px";
+            }
+
+            if(trimRight){
+
+                const rect =
+                    block.getBoundingClientRect();
+
+                let width =
+                    e.clientX - rect.left;
+
+                if(width < 20)
+                    width = 20;
+
+                block.style.width =
+                    width + "px";
+            }
+        }
+    );
+
+    document.addEventListener(
+        "mouseup",
+        () => {
+
+            trimLeft = false;
+
+            trimRight = false;
+        }
+    );
+
+    /* MENU */
 
     block.oncontextmenu = e => {
 
@@ -780,11 +864,14 @@ function openMenu(
 
     menu.innerHTML = "";
 
-    menu.style.display = "block";
+    menu.style.display =
+        "block";
 
-    menu.style.left = x + "px";
+    menu.style.left =
+        x + "px";
 
-    menu.style.top = y + "px";
+    menu.style.top =
+        y + "px";
 
     const actions = [
 
@@ -822,9 +909,11 @@ function openMenu(
         const div =
             document.createElement("div");
 
-        div.className = "menuItem";
+        div.className =
+            "menuItem";
 
-        div.innerText = item.label;
+        div.innerText =
+            item.label;
 
         div.onclick = () => {
 
@@ -866,10 +955,6 @@ function playTake(take){
     animateTakeCursor(take);
 }
 
-/* =========================================
-STOP TAKE
-========================================= */
-
 function stopTake(take){
 
     if(take.source){
@@ -889,7 +974,7 @@ function stopTake(take){
 }
 
 /* =========================================
-TAKE CURSOR
+CURSOR
 ========================================= */
 
 function animateTakeCursor(take){
@@ -1007,11 +1092,6 @@ PLAYBACK
 document.getElementById("playBtn")
 .onclick = () => {
 
-    playSession();
-};
-
-function playSession(){
-
     stopSession();
 
     const now =
@@ -1069,10 +1149,10 @@ function playSession(){
     });
 
     animateTimeline();
-}
+};
 
 /* =========================================
-TIMELINE MOTION
+TIMELINE
 ========================================= */
 
 function animateTimeline(){
@@ -1111,10 +1191,7 @@ STOP
 ========================================= */
 
 document.getElementById("stopBtn")
-.onclick = () => {
-
-    stopSession();
-};
+.onclick = stopSession;
 
 function stopSession(){
 
@@ -1154,215 +1231,10 @@ EXPORT
 document.getElementById("exportBtn")
 .onclick = () => {
 
-    exportMix();
+    alert(
+        "EXPORT MIX em evolução."
+    );
 };
-
-async function exportMix(){
-
-    let maxDuration = 0;
-
-    tracks.forEach(track => {
-
-        if(track.muted)
-            return;
-
-        track.takes.forEach(take => {
-
-            const end =
-                take.buffer.duration +
-                (
-                    take.position /
-                    PIXELS_PER_SECOND
-                );
-
-            if(end > maxDuration)
-                maxDuration = end;
-        });
-    });
-
-    const offline =
-        new OfflineAudioContext(
-            2,
-            maxDuration * 44100,
-            44100
-        );
-
-    tracks.forEach(track => {
-
-        if(track.muted)
-            return;
-
-        track.takes.forEach(take => {
-
-            const source =
-                offline
-                .createBufferSource();
-
-            source.buffer =
-                take.buffer;
-
-            source.connect(
-                offline.destination
-            );
-
-            source.start(
-                take.position /
-                PIXELS_PER_SECOND
-            );
-        });
-    });
-
-    const rendered =
-        await offline.startRendering();
-
-    exportWav(
-        rendered,
-        "vov-mix.wav"
-    );
-}
-
-/* =========================================
-WAV
-========================================= */
-
-function exportWav(
-    buffer,
-    filename
-){
-
-    const wav =
-        bufferToWave(
-            buffer,
-            buffer.length
-        );
-
-    const blob =
-        new Blob(
-            [wav],
-            {
-                type:"audio/wav"
-            }
-        );
-
-    const url =
-        URL.createObjectURL(blob);
-
-    const a =
-        document.createElement("a");
-
-    a.href = url;
-
-    a.download = filename;
-
-    a.click();
-}
-
-function bufferToWave(
-    abuffer,
-    len
-){
-
-    const numOfChan =
-        abuffer.numberOfChannels;
-
-    const length =
-        len * numOfChan * 2 + 44;
-
-    const buffer =
-        new ArrayBuffer(length);
-
-    const view =
-        new DataView(buffer);
-
-    let channels = [];
-
-    let offset = 0;
-
-    let pos = 0;
-
-    setUint32(0x46464952);
-    setUint32(length - 8);
-    setUint32(0x45564157);
-
-    setUint32(0x20746d66);
-    setUint32(16);
-    setUint16(1);
-    setUint16(numOfChan);
-    setUint32(abuffer.sampleRate);
-
-    setUint32(
-        abuffer.sampleRate *
-        2 *
-        numOfChan
-    );
-
-    setUint16(numOfChan * 2);
-    setUint16(16);
-
-    setUint32(0x61746164);
-    setUint32(length - pos - 4);
-
-    for(let i=0;i<numOfChan;i++){
-
-        channels.push(
-            abuffer.getChannelData(i)
-        );
-    }
-
-    while(pos < length){
-
-        for(let i=0;i<numOfChan;i++){
-
-            let sample =
-                Math.max(
-                    -1,
-                    Math.min(
-                        1,
-                        channels[i][offset]
-                    )
-                );
-
-            sample =
-                sample < 0
-                ? sample * 0x8000
-                : sample * 0x7FFF;
-
-            view.setInt16(
-                pos,
-                sample,
-                true
-            );
-
-            pos += 2;
-        }
-
-        offset++;
-    }
-
-    return buffer;
-
-    function setUint16(data){
-
-        view.setUint16(
-            pos,
-            data,
-            true
-        );
-
-        pos += 2;
-    }
-
-    function setUint32(data){
-
-        view.setUint32(
-            pos,
-            data,
-            true
-        );
-
-        pos += 4;
-    }
-}
 
 /* =========================================
 INIT
