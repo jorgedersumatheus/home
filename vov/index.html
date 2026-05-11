@@ -1,7 +1,7 @@
 <!--
 ========================================================
-VOV FLOW ENGINE v2
-Timeline viva + edição + export WAV
+VOV EDIT CORE v2
+Split + drag real + trim + edição
 ========================================================
 -->
 
@@ -9,13 +9,13 @@ Timeline viva + edição + export WAV
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>VOV Flow Engine v2</title>
+<title>VOV Edit Core v2</title>
 
 <style>
 
 body{
     margin:0;
-    background:#090909;
+    background:#080808;
     color:white;
     font-family:Arial,sans-serif;
     overflow:hidden;
@@ -55,12 +55,12 @@ button{
 }
 
 #stopAll{
-    background:#a00000;
+    background:#aa0000;
     color:white;
 }
 
 #exportAll{
-    background:#0055ff;
+    background:#004cff;
     color:white;
 }
 
@@ -77,9 +77,8 @@ TIMELINE
 
 #timeline{
     position:relative;
-    width:40000px;
+    width:50000px;
     height:100%;
-    background:#090909;
 }
 
 /* =========================================
@@ -91,7 +90,7 @@ GRID
     top:0;
     width:1px;
     height:100%;
-    background:#181818;
+    background:#161616;
 }
 
 .gridLabel{
@@ -109,7 +108,7 @@ TRACK
 .track{
     position:relative;
     height:120px;
-    border-bottom:1px solid #1a1a1a;
+    border-bottom:1px solid #1b1b1b;
 }
 
 .trackHeader{
@@ -120,9 +119,9 @@ TRACK
     height:100%;
     background:#111;
     border-right:1px solid #222;
-    z-index:20;
-    box-sizing:border-box;
     padding:10px;
+    box-sizing:border-box;
+    z-index:50;
 }
 
 .trackTitle{
@@ -133,8 +132,8 @@ TRACK
 
 .trackControls{
     display:flex;
+    gap:6px;
     flex-wrap:wrap;
-    gap:5px;
 }
 
 .trackLane{
@@ -146,7 +145,7 @@ TRACK
 }
 
 /* =========================================
-AUDIO BLOCK
+TAKE
 ========================================= */
 
 .audioBlock{
@@ -157,7 +156,6 @@ AUDIO BLOCK
     border:1px solid #444;
     border-radius:10px;
     overflow:hidden;
-    cursor:grab;
     user-select:none;
 }
 
@@ -166,7 +164,7 @@ AUDIO BLOCK
 }
 
 /* =========================================
-WAVEFORM
+WAVE
 ========================================= */
 
 .waveCanvas{
@@ -176,7 +174,7 @@ WAVEFORM
 }
 
 /* =========================================
-TAKE CURSOR
+CURSOR
 ========================================= */
 
 .takeCursor{
@@ -212,25 +210,21 @@ MENU
     background:#111;
     border:1px solid #333;
     border-radius:8px;
-    display:none;
-    z-index:99999;
-    min-width:180px;
     overflow:hidden;
+    display:none;
+    z-index:999999;
+    min-width:180px;
 }
 
 .menuItem{
     padding:10px;
-    cursor:pointer;
     border-bottom:1px solid #222;
+    cursor:pointer;
 }
 
 .menuItem:hover{
     background:#222;
 }
-
-/* =========================================
-REC
-========================================= */
 
 .recActive{
     background:red !important;
@@ -257,7 +251,7 @@ REC
     </button>
 
     <button id="exportAll">
-        EXPORT MIX
+        EXPORT
     </button>
 
 </div>
@@ -284,7 +278,9 @@ const audioContext =
     new AudioContext();
 
 const timeline =
-    document.getElementById("timeline");
+    document.getElementById(
+        "timeline"
+    );
 
 const timelineWrapper =
     document.getElementById(
@@ -312,8 +308,6 @@ let activeSources = [];
 let playing = false;
 
 let playStart = 0;
-
-let animationFrame;
 
 /* =========================================
 GRID
@@ -346,7 +340,7 @@ for(let i=0;i<300;i++){
 }
 
 /* =========================================
-ADD TRACK
+TRACK
 ========================================= */
 
 document.getElementById("addTrack")
@@ -374,10 +368,6 @@ function createTrack(){
 
     renderTrack(track);
 }
-
-/* =========================================
-RENDER TRACK
-========================================= */
 
 function renderTrack(track){
 
@@ -422,7 +412,7 @@ function renderTrack(track){
 }
 
 /* =========================================
-BIND TRACK
+BIND
 ========================================= */
 
 function bindTrack(track){
@@ -578,6 +568,8 @@ function renderTake(track, take){
 
     block.appendChild(canvas);
 
+    drawWaveform(canvas, take.buffer);
+
     /* =========================
     CURSOR
     ========================= */
@@ -592,8 +584,6 @@ function renderTake(track, take){
     take.cursor = cursor;
 
     lane.appendChild(block);
-
-    drawWaveform(canvas, take.buffer);
 
     /* =========================
     SELECT
@@ -634,41 +624,63 @@ function renderTake(track, take){
     };
 
     /* =========================
-    DRAG
+    DRAG REAL
     ========================= */
 
     let dragging = false;
 
     let offsetX = 0;
 
-    block.onmousedown = e => {
+    block.addEventListener(
+        "mousedown",
+        e => {
 
-        dragging = true;
+            if(e.button !== 0)
+                return;
 
-        offsetX =
-            e.clientX -
-            block.offsetLeft;
-    };
+            dragging = true;
 
-    document.onmousemove = e => {
+            offsetX =
+                e.clientX -
+                block.offsetLeft;
+        }
+    );
 
-        if(!dragging) return;
+    document.addEventListener(
+        "mousemove",
+        e => {
 
-        let x =
-            e.clientX - offsetX;
+            if(!dragging)
+                return;
 
-        if(x < 0) x = 0;
+            let x =
+                e.clientX -
+                offsetX;
 
-        take.position = x;
+            if(x < 0)
+                x = 0;
 
-        block.style.left =
-            x + "px";
-    };
+            /* SNAP */
 
-    document.onmouseup = () => {
+            x =
+                Math.round(
+                    x / 10
+                ) * 10;
 
-        dragging = false;
-    };
+            take.position = x;
+
+            block.style.left =
+                x + "px";
+        }
+    );
+
+    document.addEventListener(
+        "mouseup",
+        () => {
+
+            dragging = false;
+        }
+    );
 }
 
 /* =========================================
@@ -708,29 +720,20 @@ function openMenu(
         },
 
         {
-            label:"EXPORT TAKE",
+            label:"CUT TAKE",
             action:() => {
-                exportTake(take);
+                splitTake(
+                    track,
+                    take,
+                    block
+                );
             }
         },
 
         {
-            label:"DUPLICATE",
+            label:"EXPORT TAKE",
             action:() => {
-
-                const clone = {
-
-                    ...take,
-
-                    id:Date.now(),
-
-                    position:
-                        take.position + 40
-                };
-
-                track.takes.push(clone);
-
-                renderTake(track, clone);
+                exportTake(take);
             }
         },
 
@@ -770,13 +773,97 @@ function openMenu(
 }
 
 /* =========================================
-CLOSE MENU
+CUT / SPLIT
 ========================================= */
 
-document.body.onclick = () => {
+function splitTake(
+    track,
+    take,
+    block
+){
 
-    menu.style.display = "none";
-};
+    const splitTime =
+        take.buffer.duration / 2;
+
+    const sampleRate =
+        take.buffer.sampleRate;
+
+    const splitIndex =
+        Math.floor(
+            splitTime *
+            sampleRate
+        );
+
+    const ch0 =
+        take.buffer.getChannelData(0);
+
+    const first =
+        audioContext.createBuffer(
+            1,
+            splitIndex,
+            sampleRate
+        );
+
+    const second =
+        audioContext.createBuffer(
+            1,
+            ch0.length - splitIndex,
+            sampleRate
+        );
+
+    first
+        .getChannelData(0)
+        .set(
+            ch0.slice(0, splitIndex)
+        );
+
+    second
+        .getChannelData(0)
+        .set(
+            ch0.slice(splitIndex)
+        );
+
+    const takeA = {
+
+        id:Date.now(),
+
+        buffer:first,
+
+        position:take.position,
+
+        width:
+            first.duration *
+            PIXELS_PER_SECOND
+    };
+
+    const takeB = {
+
+        id:Date.now()+1,
+
+        buffer:second,
+
+        position:
+            take.position +
+            takeA.width,
+
+        width:
+            second.duration *
+            PIXELS_PER_SECOND
+    };
+
+    block.remove();
+
+    track.takes =
+        track.takes.filter(
+            t => t.id !== take.id
+        );
+
+    track.takes.push(takeA);
+    track.takes.push(takeB);
+
+    renderTake(track, takeA);
+    renderTake(track, takeB);
+}
 
 /* =========================================
 PLAY TAKE
@@ -823,7 +910,8 @@ function stopTake(take){
 
     if(take.cursor){
 
-        take.cursor.style.left = "0px";
+        take.cursor.style.left =
+            "0px";
     }
 }
 
@@ -838,7 +926,8 @@ function animateTakeCursor(take){
 
     function loop(){
 
-        if(!take.playing) return;
+        if(!take.playing)
+            return;
 
         const elapsed =
             audioContext.currentTime -
@@ -856,7 +945,8 @@ function animateTakeCursor(take){
 
             take.playing = false;
 
-            take.cursor.style.left = "0px";
+            take.cursor.style.left =
+                "0px";
 
             return;
         }
@@ -868,7 +958,7 @@ function animateTakeCursor(take){
 }
 
 /* =========================================
-DRAW WAVEFORM
+WAVEFORM
 ========================================= */
 
 function drawWaveform(
@@ -986,14 +1076,15 @@ document.getElementById("playAll")
 };
 
 /* =========================================
-TIMELINE MOTION
+TIMELINE
 ========================================= */
 
 function animateTimeline(){
 
     function loop(){
 
-        if(!playing) return;
+        if(!playing)
+            return;
 
         const elapsed =
             audioContext.currentTime -
@@ -1007,10 +1098,12 @@ function animateTimeline(){
             (180 + x) + "px";
 
         timelineWrapper.scrollLeft =
-            Math.max(0, x - 300);
+            Math.max(
+                0,
+                x - 300
+            );
 
-        animationFrame =
-            requestAnimationFrame(loop);
+        requestAnimationFrame(loop);
     }
 
     loop();
@@ -1039,11 +1132,8 @@ function stopAll(){
 
     playing = false;
 
-    cancelAnimationFrame(
-        animationFrame
-    );
-
-    playhead.style.left = "180px";
+    playhead.style.left =
+        "180px";
 
     tracks.forEach(track => {
 
@@ -1053,7 +1143,8 @@ function stopAll(){
 
             if(take.cursor){
 
-                take.cursor.style.left = "0px";
+                take.cursor.style.left =
+                    "0px";
             }
         });
     });
@@ -1104,8 +1195,7 @@ async function exportMix(){
     const offline =
         new OfflineAudioContext(
             2,
-            maxDuration *
-            44100,
+            maxDuration * 44100,
             44100
         );
 
@@ -1141,7 +1231,7 @@ async function exportMix(){
 }
 
 /* =========================================
-WAV EXPORT
+WAV
 ========================================= */
 
 function exportBufferToWav(
@@ -1156,9 +1246,12 @@ function exportBufferToWav(
         );
 
     const blob =
-        new Blob([wav],{
-            type:"audio/wav"
-        });
+        new Blob(
+            [wav],
+            {
+                type:"audio/wav"
+            }
+        );
 
     const url =
         URL.createObjectURL(blob);
@@ -1172,10 +1265,6 @@ function exportBufferToWav(
 
     a.click();
 }
-
-/* =========================================
-BUFFER TO WAV
-========================================= */
 
 function bufferToWave(
     abuffer,
@@ -1221,10 +1310,12 @@ function bufferToWave(
     setUint32(0x61746164);
     setUint32(length - pos - 4);
 
-    for(let i=0;i<abuffer.numberOfChannels;i++)
+    for(let i=0;i<numOfChan;i++){
+
         channels.push(
             abuffer.getChannelData(i)
         );
+    }
 
     while(pos < length){
 
@@ -1260,14 +1351,22 @@ function bufferToWave(
 
     function setUint16(data){
 
-        view.setUint16(pos,data,true);
+        view.setUint16(
+            pos,
+            data,
+            true
+        );
 
         pos += 2;
     }
 
     function setUint32(data){
 
-        view.setUint32(pos,data,true);
+        view.setUint32(
+            pos,
+            data,
+            true
+        );
 
         pos += 4;
     }
