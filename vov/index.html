@@ -1,146 +1,146 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8" />
-<title>VOV Align Core v1</title>
+<meta charset="UTF-8">
+<title>VOV Precision Engine v1</title>
 
 <style>
-body {
-    margin: 0;
-    background: #0a0a0a;
-    color: white;
-    font-family: Arial;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding-top: 20px;
+body{
+    margin:0;
+    background:#0a0a0a;
+    color:white;
+    font-family:Arial;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding-top:20px;
 }
 
-h2 { opacity: 0.8; }
-
-.track {
-    width: 360px;
-    background: #111;
-    margin: 10px;
-    padding: 10px;
-    border-radius: 10px;
+.track{
+    width:360px;
+    background:#111;
+    margin:10px;
+    padding:10px;
+    border-radius:10px;
 }
 
-.rec {
-    padding: 8px 12px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    background: #333;
-    color: white;
+button{
+    padding:8px 12px;
+    margin:4px;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
 }
 
-.rec.active {
-    background: red;
+.rec.active{
+    background:red;
+    color:white;
 }
 
-.slider {
-    width: 100%;
-    margin-top: 8px;
-}
-
-.label {
-    font-size: 12px;
-    opacity: 0.7;
-}
-
-#play {
-    margin-top: 20px;
-    padding: 10px 16px;
-    background: green;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
+.slider{
+    width:100%;
 }
 </style>
 </head>
 
 <body>
 
-<h2>VOV Align Core v1</h2>
+<h2>VOV Precision Engine v1</h2>
 
 <div id="tracks"></div>
 
 <button id="play">PLAY SYNC</button>
+<button id="stop">STOP</button>
 
 <script>
 
-let tracks = {
+const audioContext = new AudioContext();
+
+const tracks = {
     voz: [],
     cavaquinho: []
 };
+
+const activeSources = [];
 
 let mediaRecorders = {};
 let streams = {};
 
 /* =========================
-   CREATE TRACK UI
+   CREATE TRACKS
 ========================= */
-function createTrack(name) {
+function createTrack(name){
 
-    const container = document.createElement("div");
-    container.className = "track";
+    const div = document.createElement("div");
+    div.className = "track";
 
-    container.innerHTML = `
+    div.innerHTML = `
         <h3>${name}</h3>
 
         <button class="rec" id="rec_${name}">REC</button>
 
-        <div class="label">OFFSET (ajuste de sincronização)</div>
-        <input type="range" min="-1" max="1" step="0.01" value="0"
-               class="slider" id="offset_${name}">
-
-        <div id="list_${name}" style="margin-top:10px;font-size:12px;"></div>
+        <div>OFFSET</div>
+        <input type="range"
+               min="-2"
+               max="2"
+               value="0"
+               step="0.01"
+               class="slider"
+               id="offset_${name}">
     `;
 
-    document.getElementById("tracks").appendChild(container);
+    document.getElementById("tracks").appendChild(div);
 
     setupTrack(name);
 }
 
 /* =========================
-   REC SYSTEM
+   RECORD
 ========================= */
-function setupTrack(name) {
+function setupTrack(name){
 
     const btn = document.getElementById("rec_" + name);
     const slider = document.getElementById("offset_" + name);
-    const list = document.getElementById("list_" + name);
 
     let offset = 0;
 
-    slider.oninput = (e) => {
+    slider.oninput = e => {
         offset = parseFloat(e.target.value);
     };
 
     btn.onclick = async () => {
 
-        if (!mediaRecorders[name]) {
+        if(!mediaRecorders[name]){
 
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const stream = await navigator.mediaDevices.getUserMedia({
+                audio:true
+            });
+
             streams[name] = stream;
 
             const recorder = new MediaRecorder(stream);
+
             const chunks = [];
 
-            recorder.ondataavailable = e => chunks.push(e.data);
+            recorder.ondataavailable = e => {
+                chunks.push(e.data);
+            };
 
-            recorder.onstop = () => {
+            recorder.onstop = async () => {
 
-                const blob = new Blob(chunks, { type: "audio/webm" });
-                const url = URL.createObjectURL(blob);
+                const blob = new Blob(chunks);
+
+                const arrayBuffer = await blob.arrayBuffer();
+
+                const audioBuffer =
+                    await audioContext.decodeAudioData(arrayBuffer);
 
                 tracks[name].push({
-                    url,
-                    offset: offset
+                    buffer: audioBuffer,
+                    offset
                 });
 
-                render(name, list);
+                console.log("BUFFER READY", name);
             };
 
             recorder.start();
@@ -149,10 +149,13 @@ function setupTrack(name) {
 
             btn.classList.add("active");
 
-        } else {
+        }else{
 
             mediaRecorders[name].stop();
-            streams[name].getTracks().forEach(t => t.stop());
+
+            streams[name]
+                .getTracks()
+                .forEach(t => t.stop());
 
             mediaRecorders[name] = null;
 
@@ -162,47 +165,52 @@ function setupTrack(name) {
 }
 
 /* =========================
-   RENDER LIST
-========================= */
-function render(name, list) {
-
-    list.innerHTML = "";
-
-    tracks[name].forEach((t, i) => {
-
-        const div = document.createElement("div");
-
-        div.innerText = `take ${i + 1} | offset: ${t.offset}s`;
-
-        list.appendChild(div);
-    });
-}
-
-/* =========================
-   SYNC PLAYBACK ENGINE
+   PLAY SYNC
 ========================= */
 document.getElementById("play").onclick = () => {
 
-    const audioContext = new AudioContext();
-    const start = audioContext.currentTime;
+    const startAt = audioContext.currentTime + 0.2;
 
     Object.keys(tracks).forEach(name => {
 
         tracks[name].forEach(t => {
 
-            const audio = new Audio(t.url);
+            const source =
+                audioContext.createBufferSource();
 
-            const delay = Math.max(0, t.offset) * 1000;
+            source.buffer = t.buffer;
 
-            setTimeout(() => {
-                audio.play();
-            }, delay);
+            const gain =
+                audioContext.createGain();
 
+            source.connect(gain);
+            gain.connect(audioContext.destination);
+
+            source.start(
+                startAt + t.offset
+            );
+
+            activeSources.push(source);
         });
-
     });
 
-    console.log("SYNC PLAY (ALIGN CORE)");
+    console.log("PRECISION PLAY");
+};
+
+/* =========================
+   STOP
+========================= */
+document.getElementById("stop").onclick = () => {
+
+    activeSources.forEach(s => {
+        try{
+            s.stop();
+        }catch(e){}
+    });
+
+    activeSources.length = 0;
+
+    console.log("STOP ALL");
 };
 
 /* INIT */
