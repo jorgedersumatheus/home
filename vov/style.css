@@ -1,10 +1,11 @@
 /* =========================================
 ARQUIVO 2 — style.css
+VOV FLOW MEMORY v5
 ========================================= */
 
 body{
     margin:0;
-    background:#0a0a0a;
+    background:#050505;
     color:white;
     font-family:Arial,sans-serif;
     overflow:hidden;
@@ -27,13 +28,13 @@ TOPBAR
 
 button{
     border:none;
-    border-radius:8px;
-    background:#222;
+    border-radius:10px;
+    background:#333;
     color:#fff;
-    padding:10px 14px;
+    padding:10px 16px;
     font-weight:bold;
-    cursor:pointer;
     font-size:14px;
+    cursor:pointer;
 }
 
 #playBtn{
@@ -44,14 +45,18 @@ button{
     background:#aa0000;
 }
 
-#addTrackBtn{
-    background:#333;
-}
-
 #rewBtn,
 #ffBtn{
     background:#444;
     width:48px;
+}
+
+#exportTrackBtn{
+    background:#0055aa;
+}
+
+#exportMixBtn{
+    background:#8800aa;
 }
 
 .recActive{
@@ -82,7 +87,7 @@ TIMELINE
     position:relative;
     width:50000px;
     min-height:100%;
-    background:#090909;
+    background:#080808;
 }
 
 /* =====================================
@@ -94,7 +99,7 @@ GRID
     top:0;
     width:1px;
     height:100%;
-    background:#151515;
+    background:#161616;
 }
 
 .gridText{
@@ -112,7 +117,7 @@ TRACK
 .track{
     position:relative;
     height:120px;
-    border-bottom:1px solid #1d1d1d;
+    border-bottom:1px solid #1b1b1b;
 }
 
 .trackHeader{
@@ -130,11 +135,11 @@ TRACK
 
 .trackTitle{
     margin-bottom:10px;
+    font-weight:bold;
 }
 
 .trackButtons{
     display:flex;
-    flex-wrap:wrap;
     gap:5px;
 }
 
@@ -200,20 +205,6 @@ WAVEFORM
 }
 
 /* =====================================
-CURSOR
-===================================== */
-
-.takeCursor{
-    position:absolute;
-    top:0;
-    left:0;
-    width:2px;
-    height:100%;
-    background:#00ff99;
-    pointer-events:none;
-}
-
-/* =====================================
 PLAYHEAD
 ===================================== */
 
@@ -224,7 +215,7 @@ PLAYHEAD
     width:2px;
     height:100%;
     background:red;
-    z-index:999;
+    z-index:9999;
 }
 
 /* =====================================
@@ -233,21 +224,5 @@ MENU
 
 #menu{
     position:absolute;
-    background:#111;
-    border:1px solid #333;
-    border-radius:8px;
-    overflow:hidden;
     display:none;
-    z-index:999999;
-    min-width:180px;
-}
-
-.menuItem{
-    padding:10px;
-    border-bottom:1px solid #222;
-    cursor:pointer;
-}
-
-.menuItem:hover{
-    background:#222;
 }
