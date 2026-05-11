@@ -1,6 +1,6 @@
 /* =========================================
 ARQUIVO 3 — app.js
-VOV FLOW MEMORY v5
+VOV FLOW MEMORY v6
 ========================================= */
 
 /* =====================================
@@ -93,7 +93,7 @@ for(let i=0;i<300;i++){
 }
 
 /* =====================================
-TRACK BUTTON
+ADD TRACK
 ===================================== */
 
 document.getElementById(
@@ -123,7 +123,11 @@ function createTrack(){
 
         muted:false,
 
-        solo:false
+        solo:false,
+
+        volume:1,
+
+        pan:0
     };
 
     tracks.push(track);
@@ -167,6 +171,36 @@ function renderTrack(track){
 
             </div>
 
+            <div class="mixer">
+
+                <label>
+                    VOL
+                </label>
+
+                <input
+                    type="range"
+                    min="0"
+                    max="2"
+                    step="0.01"
+                    value="1"
+                    id="vol_${track.id}"
+                >
+
+                <label>
+                    PAN
+                </label>
+
+                <input
+                    type="range"
+                    min="-1"
+                    max="1"
+                    step="0.01"
+                    value="0"
+                    id="pan_${track.id}"
+                >
+
+            </div>
+
         </div>
 
         <div class="trackLane"
@@ -200,6 +234,36 @@ function bindTrack(track){
         document.getElementById(
             "solo_" + track.id
         );
+
+    const volSlider =
+        document.getElementById(
+            "vol_" + track.id
+        );
+
+    const panSlider =
+        document.getElementById(
+            "pan_" + track.id
+        );
+
+    /* =====================================
+    MIXER
+    ===================================== */
+
+    volSlider.oninput = () => {
+
+        track.volume =
+            parseFloat(
+                volSlider.value
+            );
+    };
+
+    panSlider.oninput = () => {
+
+        track.pan =
+            parseFloat(
+                panSlider.value
+            );
+    };
 
     /* =====================================
     REC
@@ -373,10 +437,6 @@ function renderTake(track,take){
         take
     );
 
-    /* =====================================
-    HANDLES
-    ===================================== */
-
     const leftHandle =
         document.createElement("div");
 
@@ -396,10 +456,6 @@ function renderTake(track,take){
     block.appendChild(
         rightHandle
     );
-
-    /* =====================================
-    CANVAS
-    ===================================== */
 
     const canvas =
         document.createElement(
@@ -422,10 +478,6 @@ function renderTake(track,take){
         block
     );
 
-    /* =====================================
-    SELECT
-    ===================================== */
-
     block.onclick = () => {
 
         document
@@ -446,9 +498,7 @@ function renderTake(track,take){
         selectedTake = take;
     };
 
-    /* =====================================
-    MOVE
-    ===================================== */
+    /* MOVE */
 
     let dragging = false;
 
@@ -518,9 +568,7 @@ function renderTake(track,take){
         }
     );
 
-    /* =====================================
-    LEFT TRIM
-    ===================================== */
+    /* LEFT TRIM */
 
     let trimLeft = false;
 
@@ -586,9 +634,7 @@ function renderTake(track,take){
         }
     );
 
-    /* =====================================
-    RIGHT TRIM
-    ===================================== */
+    /* RIGHT TRIM */
 
     let trimRight = false;
 
@@ -802,7 +848,29 @@ document.getElementById(
             source.buffer =
                 take.buffer;
 
+            const gainNode =
+                audioContext
+                .createGain();
+
+            gainNode.gain.value =
+                track.volume;
+
+            const panNode =
+                audioContext
+                .createStereoPanner();
+
+            panNode.pan.value =
+                track.pan;
+
             source.connect(
+                gainNode
+            );
+
+            gainNode.connect(
+                panNode
+            );
+
+            panNode.connect(
                 audioContext.destination
             );
 
@@ -955,7 +1023,29 @@ document.getElementById(
             source.buffer =
                 take.buffer;
 
+            const gainNode =
+                offline
+                .createGain();
+
+            gainNode.gain.value =
+                track.volume;
+
+            const panNode =
+                offline
+                .createStereoPanner();
+
+            panNode.pan.value =
+                track.pan;
+
             source.connect(
+                gainNode
+            );
+
+            gainNode.connect(
+                panNode
+            );
+
+            panNode.connect(
                 offline.destination
             );
 
@@ -985,10 +1075,6 @@ document.getElementById(
         "mix.wav"
     );
 };
-
-/* =====================================
-MAX DURATION
-===================================== */
 
 function getMaxDuration(){
 
@@ -1234,6 +1320,6 @@ window.onload = () => {
     createTrack();
 
     console.log(
-        "VOV FLOW MEMORY READY"
+        "VOV FLOW MEMORY v6 READY"
     );
 };
