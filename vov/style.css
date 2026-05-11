@@ -1,6 +1,6 @@
 /* =========================================
 ARQUIVO 2 — style.css
-VOV FLOW MEMORY v5
+VOV FLOW MEMORY v6
 ========================================= */
 
 body{
@@ -116,7 +116,7 @@ TRACK
 
 .track{
     position:relative;
-    height:120px;
+    height:160px;
     border-bottom:1px solid #1b1b1b;
 }
 
@@ -141,6 +141,7 @@ TRACK
 .trackButtons{
     display:flex;
     gap:5px;
+    margin-bottom:10px;
 }
 
 .trackLane{
@@ -152,12 +153,32 @@ TRACK
 }
 
 /* =====================================
+MIXER
+===================================== */
+
+.mixer{
+    margin-top:10px;
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+}
+
+.mixer label{
+    font-size:10px;
+    color:#888;
+}
+
+.mixer input{
+    width:100%;
+}
+
+/* =====================================
 AUDIO BLOCK
 ===================================== */
 
 .audioBlock{
     position:absolute;
-    top:20px;
+    top:40px;
     height:80px;
     background:#181818;
     border:2px solid #333;
@@ -216,13 +237,4 @@ PLAYHEAD
     height:100%;
     background:red;
     z-index:9999;
-}
-
-/* =====================================
-MENU
-===================================== */
-
-#menu{
-    position:absolute;
-    display:none;
 }
