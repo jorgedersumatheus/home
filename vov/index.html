@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>VOV Wave Engine v1</title>
+<title>VOV Edit Engine v1</title>
 
 <style>
 
@@ -64,22 +64,24 @@ button{
     background:#0b0b0b;
 }
 
-/* GRID */
+/* =========================================
+   GRID
+========================================= */
 
 .gridLine{
     position:absolute;
     top:0;
     width:1px;
     height:100%;
-    background:#1b1b1b;
+    background:#1a1a1a;
 }
 
 .gridLabel{
     position:absolute;
     top:0;
     font-size:10px;
-    color:#444;
-    padding-left:4px;
+    color:#555;
+    padding-left:3px;
 }
 
 /* =========================================
@@ -100,9 +102,9 @@ button{
     height:100%;
     background:#111;
     border-right:1px solid #222;
-    padding:10px;
     box-sizing:border-box;
-    z-index:20;
+    padding:10px;
+    z-index:50;
 }
 
 .trackTitle{
@@ -126,14 +128,14 @@ button{
 }
 
 /* =========================================
-   BLOCK
+   AUDIO BLOCK
 ========================================= */
 
 .audioBlock{
     position:absolute;
     top:20px;
     height:80px;
-    background:#1f1f1f;
+    background:#1b1b1b;
     border:1px solid #444;
     border-radius:10px;
     overflow:hidden;
@@ -141,8 +143,8 @@ button{
     user-select:none;
 }
 
-.audioBlock:active{
-    cursor:grabbing;
+.audioBlock.selected{
+    border:2px solid #00ff99;
 }
 
 .waveCanvas{
@@ -152,7 +154,21 @@ button{
 }
 
 /* =========================================
-   PLAYHEAD
+   TAKE CURSOR
+========================================= */
+
+.takeCursor{
+    position:absolute;
+    top:0;
+    left:0;
+    width:2px;
+    height:100%;
+    background:#00ff99;
+    pointer-events:none;
+}
+
+/* =========================================
+   GLOBAL PLAYHEAD
 ========================================= */
 
 #playhead{
@@ -164,6 +180,31 @@ button{
     background:red;
     z-index:999;
     pointer-events:none;
+}
+
+/* =========================================
+   MENU
+========================================= */
+
+#menu{
+    position:absolute;
+    background:#111;
+    border:1px solid #333;
+    border-radius:8px;
+    display:none;
+    z-index:9999;
+    overflow:hidden;
+    min-width:160px;
+}
+
+.menuItem{
+    padding:10px;
+    cursor:pointer;
+    border-bottom:1px solid #222;
+}
+
+.menuItem:hover{
+    background:#222;
 }
 
 .recActive{
@@ -198,6 +239,8 @@ button{
 
 </div>
 
+<div id="menu"></div>
+
 <script>
 
 /* =========================================
@@ -213,6 +256,9 @@ const timeline =
 const playhead =
     document.getElementById("playhead");
 
+const menu =
+    document.getElementById("menu");
+
 const PIXELS_PER_SECOND = 120;
 
 let tracks = [];
@@ -221,11 +267,11 @@ let trackCount = 0;
 
 let activeSources = [];
 
-let animationFrame;
-
 let playing = false;
 
 let playStart = 0;
+
+let animationFrame;
 
 /* =========================================
    GRID
@@ -239,7 +285,8 @@ for(let i=0;i<300;i++){
     line.className = "gridLine";
 
     line.style.left =
-        (160 + i * PIXELS_PER_SECOND) + "px";
+        (160 + i * PIXELS_PER_SECOND)
+        + "px";
 
     const label =
         document.createElement("div");
@@ -247,7 +294,8 @@ for(let i=0;i<300;i++){
     label.className = "gridLabel";
 
     label.style.left =
-        (163 + i * PIXELS_PER_SECOND) + "px";
+        (163 + i * PIXELS_PER_SECOND)
+        + "px";
 
     label.innerText = i + "s";
 
@@ -261,7 +309,6 @@ for(let i=0;i<300;i++){
 
 document.getElementById("addTrack")
 .onclick = () => {
-
     createTrack();
 };
 
@@ -271,15 +318,13 @@ function createTrack(){
 
     const track = {
 
-        id: trackCount,
+        id:trackCount,
 
-        takes: [],
+        takes:[],
 
         recorder:null,
 
-        stream:null,
-
-        currentSource:null
+        stream:null
     };
 
     tracks.push(track);
@@ -314,14 +359,6 @@ function renderTrack(track){
                     REC
                 </button>
 
-                <button id="play_${track.id}">
-                    PLAY
-                </button>
-
-                <button id="stop_${track.id}">
-                    STOP
-                </button>
-
                 <button id="del_${track.id}">
                     DEL
                 </button>
@@ -352,23 +389,13 @@ function bindTrack(track){
             "rec_" + track.id
         );
 
-    const playBtn =
-        document.getElementById(
-            "play_" + track.id
-        );
-
-    const stopBtn =
-        document.getElementById(
-            "stop_" + track.id
-        );
-
     const delBtn =
         document.getElementById(
             "del_" + track.id
         );
 
     /* =========================
-       RECORD
+       REC
     ========================= */
 
     recBtn.onclick = async () => {
@@ -406,13 +433,23 @@ function bindTrack(track){
 
                 const take = {
 
-                    buffer: audioBuffer,
+                    id:Date.now(),
+
+                    buffer:audioBuffer,
 
                     position:0,
 
                     width:
                         audioBuffer.duration *
-                        PIXELS_PER_SECOND
+                        PIXELS_PER_SECOND,
+
+                    selected:false,
+
+                    source:null,
+
+                    cursor:null,
+
+                    playing:false
                 };
 
                 track.takes.push(take);
@@ -445,85 +482,22 @@ function bindTrack(track){
     };
 
     /* =========================
-       PLAY TRACK
-    ========================= */
-
-    playBtn.onclick = () => {
-
-        stopTrack(track);
-
-        const now =
-            audioContext.currentTime;
-
-        track.takes.forEach(take => {
-
-            const source =
-                audioContext
-                .createBufferSource();
-
-            source.buffer =
-                take.buffer;
-
-            source.connect(
-                audioContext.destination
-            );
-
-            source.start(
-                now +
-                take.position /
-                PIXELS_PER_SECOND
-            );
-
-            activeSources.push(source);
-
-            track.currentSource = source;
-        });
-    };
-
-    /* =========================
-       STOP TRACK
-    ========================= */
-
-    stopBtn.onclick = () => {
-
-        stopTrack(track);
-    };
-
-    /* =========================
        DELETE TRACK
     ========================= */
 
     delBtn.onclick = () => {
-
-        stopTrack(track);
-
-        tracks =
-            tracks.filter(
-                t => t.id !== track.id
-            );
 
         document
             .getElementById(
                 "track_" + track.id
             )
             .remove();
+
+        tracks =
+            tracks.filter(
+                t => t.id !== track.id
+            );
     };
-}
-
-/* =========================================
-   STOP TRACK
-========================================= */
-
-function stopTrack(track){
-
-    if(track.currentSource){
-
-        try{
-            track.currentSource.stop();
-        }catch(e){}
-
-        track.currentSource = null;
-    }
 }
 
 /* =========================================
@@ -549,7 +523,7 @@ function renderTake(track, take){
         take.width + "px";
 
     /* =========================
-       WAVEFORM CANVAS
+       WAVEFORM
     ========================= */
 
     const canvas =
@@ -563,12 +537,60 @@ function renderTake(track, take){
 
     block.appendChild(canvas);
 
+    /* =========================
+       TAKE CURSOR
+    ========================= */
+
+    const cursor =
+        document.createElement("div");
+
+    cursor.className = "takeCursor";
+
+    block.appendChild(cursor);
+
+    take.cursor = cursor;
+
     lane.appendChild(block);
 
-    drawWaveform(
-        canvas,
-        take.buffer
-    );
+    drawWaveform(canvas, take.buffer);
+
+    /* =========================
+       SELECT
+    ========================= */
+
+    block.onclick = e => {
+
+        e.stopPropagation();
+
+        document
+            .querySelectorAll(".audioBlock")
+            .forEach(b => {
+                b.classList.remove(
+                    "selected"
+                );
+            });
+
+        block.classList.add(
+            "selected"
+        );
+    };
+
+    /* =========================
+       CONTEXT MENU
+    ========================= */
+
+    block.oncontextmenu = e => {
+
+        e.preventDefault();
+
+        openMenu(
+            e.clientX,
+            e.clientY,
+            track,
+            take,
+            block
+        );
+    };
 
     /* =========================
        DRAG
@@ -609,7 +631,198 @@ function renderTake(track, take){
 }
 
 /* =========================================
-   DRAW WAVEFORM
+   CONTEXT MENU
+========================================= */
+
+function openMenu(
+    x,
+    y,
+    track,
+    take,
+    block
+){
+
+    menu.innerHTML = "";
+
+    menu.style.display = "block";
+
+    menu.style.left = x + "px";
+
+    menu.style.top = y + "px";
+
+    const items = [
+
+        {
+            label:"PLAY TAKE",
+            action:() => {
+                playTake(take);
+            }
+        },
+
+        {
+            label:"STOP TAKE",
+            action:() => {
+                stopTake(take);
+            }
+        },
+
+        {
+            label:"DUPLICATE",
+            action:() => {
+
+                const clone = {
+
+                    ...take,
+
+                    id:Date.now(),
+
+                    position:
+                        take.position + 40
+                };
+
+                track.takes.push(clone);
+
+                renderTake(track, clone);
+            }
+        },
+
+        {
+            label:"DELETE TAKE",
+            action:() => {
+
+                block.remove();
+
+                track.takes =
+                    track.takes.filter(
+                        t => t.id !== take.id
+                    );
+            }
+        }
+
+    ];
+
+    items.forEach(item => {
+
+        const div =
+            document.createElement("div");
+
+        div.className = "menuItem";
+
+        div.innerText = item.label;
+
+        div.onclick = () => {
+
+            item.action();
+
+            menu.style.display = "none";
+        };
+
+        menu.appendChild(div);
+    });
+}
+
+/* =========================================
+   CLOSE MENU
+========================================= */
+
+document.body.onclick = () => {
+
+    menu.style.display = "none";
+};
+
+/* =========================================
+   PLAY TAKE
+========================================= */
+
+function playTake(take){
+
+    stopTake(take);
+
+    const source =
+        audioContext
+        .createBufferSource();
+
+    source.buffer =
+        take.buffer;
+
+    source.connect(
+        audioContext.destination
+    );
+
+    source.start();
+
+    take.source = source;
+
+    take.playing = true;
+
+    animateTakeCursor(take);
+}
+
+/* =========================================
+   STOP TAKE
+========================================= */
+
+function stopTake(take){
+
+    if(take.source){
+
+        try{
+            take.source.stop();
+        }catch(e){}
+
+        take.source = null;
+    }
+
+    take.playing = false;
+
+    if(take.cursor){
+
+        take.cursor.style.left = "0px";
+    }
+}
+
+/* =========================================
+   TAKE CURSOR
+========================================= */
+
+function animateTakeCursor(take){
+
+    const start =
+        audioContext.currentTime;
+
+    function loop(){
+
+        if(!take.playing) return;
+
+        const elapsed =
+            audioContext.currentTime -
+            start;
+
+        const progress =
+            elapsed /
+            take.buffer.duration;
+
+        take.cursor.style.left =
+            (progress * take.width)
+            + "px";
+
+        if(progress >= 1){
+
+            take.playing = false;
+
+            take.cursor.style.left = "0px";
+
+            return;
+        }
+
+        requestAnimationFrame(loop);
+    }
+
+    loop();
+}
+
+/* =========================================
+   WAVEFORM
 ========================================= */
 
 function drawWaveform(
@@ -632,7 +845,7 @@ function drawWaveform(
     const amp =
         canvas.height / 2;
 
-    ctx.fillStyle = "#1f1f1f";
+    ctx.fillStyle = "#1b1b1b";
 
     ctx.fillRect(
         0,
@@ -650,11 +863,7 @@ function drawWaveform(
         let min = 1.0;
         let max = -1.0;
 
-        for(
-            let j=0;
-            j<step;
-            j++
-        ){
+        for(let j=0;j<step;j++){
 
             const datum =
                 data[(i*step)+j];
@@ -717,18 +926,24 @@ document.getElementById("playAll")
                 PIXELS_PER_SECOND
             );
 
+            take.source = source;
+
+            take.playing = true;
+
+            animateTakeCursor(take);
+
             activeSources.push(source);
         });
     });
 
-    animatePlayhead();
+    animateGlobalPlayhead();
 };
 
 /* =========================================
-   PLAYHEAD
+   GLOBAL PLAYHEAD
 ========================================= */
 
-function animatePlayhead(){
+function animateGlobalPlayhead(){
 
     function loop(){
 
@@ -779,6 +994,19 @@ function stopAll(){
     );
 
     playhead.style.left = "160px";
+
+    tracks.forEach(track => {
+
+        track.takes.forEach(take => {
+
+            take.playing = false;
+
+            if(take.cursor){
+
+                take.cursor.style.left = "0px";
+            }
+        });
+    });
 }
 
 /* =========================================
