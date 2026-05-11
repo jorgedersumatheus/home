@@ -1,365 +1,754 @@
-// ============================================
-// DAW VOV
-// TRACK ENGINE ESTÁVEL
-// ============================================
+/* =========================================
+ARQUIVO 3 — app.js
+========================================= */
 
-const tracksDiv =
-document.getElementById("tracks");
+const audioContext =
+    new AudioContext();
 
-const addTrackBtn =
-document.getElementById("addTrack");
+const PIXELS_PER_SECOND = 120;
 
-const timeDisplay =
-document.getElementById("time");
+const timeline =
+    document.getElementById(
+        "timeline"
+    );
 
-// ============================================
-// TIMER
-// ============================================
+const timelineWrapper =
+    document.getElementById(
+        "timelineWrapper"
+    );
 
-let seconds = 0;
+const playhead =
+    document.getElementById(
+        "playhead"
+    );
 
-let interval = null;
+const menu =
+    document.getElementById(
+        "menu"
+    );
 
-function startClock(){
-
-    clearInterval(interval);
-
-    seconds = 0;
-
-    interval = setInterval(()=>{
-
-        seconds += 0.1;
-
-        timeDisplay.innerText =
-        seconds.toFixed(1);
-
-    },100);
-
-}
-
-function stopClock(){
-
-    clearInterval(interval);
-
-}
-
-// ============================================
-// TRACK COUNT
-// ============================================
+let tracks = [];
 
 let trackCount = 0;
 
-// ============================================
-// CREATE TRACK
-// ============================================
+let selectedTake = null;
+
+let playing = false;
+
+let playStart = 0;
+
+let activeSources = [];
+
+let timelineOffset = 0;
+
+/* =====================================
+GRID
+===================================== */
+
+for(let i=0;i<300;i++){
+
+    const line =
+        document.createElement("div");
+
+    line.className =
+        "gridLine";
+
+    line.style.left =
+        (
+            180 +
+            i *
+            PIXELS_PER_SECOND
+        ) + "px";
+
+    timeline.appendChild(line);
+
+    const text =
+        document.createElement("div");
+
+    text.className =
+        "gridText";
+
+    text.style.left =
+        (
+            183 +
+            i *
+            PIXELS_PER_SECOND
+        ) + "px";
+
+    text.innerText =
+        i + "s";
+
+    timeline.appendChild(text);
+}
+
+/* =====================================
+TRACK
+===================================== */
+
+document.getElementById(
+    "addTrackBtn"
+).onclick = () => {
+
+    createTrack();
+};
 
 function createTrack(){
 
     trackCount++;
 
-    /////////////////////////////////////////////
-    // HTML
-    /////////////////////////////////////////////
+    const track = {
 
-    const track =
-    document.createElement("div");
+        id:trackCount,
 
-    track.className = "track";
+        takes:[],
 
-    track.innerHTML = `
+        recorder:null,
 
-    <div class="track-title">
+        stream:null,
 
-    TRACK ${trackCount}
+        muted:false,
 
-    </div>
+        solo:false
+    };
 
-    <div class="track-buttons">
+    tracks.push(track);
 
-        <button class="rec">
-        REC
-        </button>
+    renderTrack(track);
+}
 
-        <button class="stop">
-        STOP
-        </button>
+function renderTrack(track){
 
-        <button class="play">
-        PLAY
-        </button>
+    const div =
+        document.createElement("div");
 
-        <button class="remove">
-        X
-        </button>
+    div.className =
+        "track";
 
-    </div>
+    div.innerHTML = `
 
-    <audio controls></audio>
+        <div class="trackHeader">
+
+            <div class="trackTitle">
+                TRACK ${track.id}
+            </div>
+
+            <div class="trackButtons">
+
+                <button id="rec_${track.id}">
+                    REC
+                </button>
+
+                <button id="mute_${track.id}">
+                    M
+                </button>
+
+                <button id="solo_${track.id}">
+                    S
+                </button>
+
+            </div>
+
+        </div>
+
+        <div class="trackLane"
+             id="lane_${track.id}">
+        </div>
 
     `;
 
-    tracksDiv.appendChild(track);
+    timeline.appendChild(div);
 
-    /////////////////////////////////////////////
-    // ELEMENTS
-    /////////////////////////////////////////////
+    bindTrack(track);
+}
+
+/* =====================================
+BIND
+===================================== */
+
+function bindTrack(track){
 
     const recBtn =
-    track.querySelector(".rec");
+        document.getElementById(
+            "rec_" + track.id
+        );
 
-    const stopBtn =
-    track.querySelector(".stop");
+    const muteBtn =
+        document.getElementById(
+            "mute_" + track.id
+        );
 
-    const playBtn =
-    track.querySelector(".play");
+    const soloBtn =
+        document.getElementById(
+            "solo_" + track.id
+        );
 
-    const removeBtn =
-    track.querySelector(".remove");
+    recBtn.onclick = async () => {
 
-    const audio =
-    track.querySelector("audio");
+        if(!track.recorder){
 
-    /////////////////////////////////////////////
-    // AUDIO
-    /////////////////////////////////////////////
+            const stream =
+                await navigator
+                .mediaDevices
+                .getUserMedia({
+                    audio:true
+                });
 
-    let mediaRecorder = null;
+            track.stream = stream;
 
-    let chunks = [];
+            const recorder =
+                new MediaRecorder(stream);
 
-    let stream = null;
+            const chunks = [];
 
-    let audioURL = null;
+            recorder.ondataavailable =
+                e => chunks.push(e.data);
 
-    /////////////////////////////////////////////
-    // REC
-    /////////////////////////////////////////////
-
-    recBtn.onclick =
-    async ()=>{
-
-        try{
-
-            /////////////////////////////////////////////
-            // RESET
-            /////////////////////////////////////////////
-
-            chunks = [];
-
-            /////////////////////////////////////////////
-            // MIC
-            /////////////////////////////////////////////
-
-            stream =
-            await navigator
-            .mediaDevices
-            .getUserMedia({
-
-                audio:{
-    echoCancellation:false,
-    noiseSuppression:false,
-    autoGainControl:true
-}
-
-            });
-
-            /////////////////////////////////////////////
-            // RECORDER
-            /////////////////////////////////////////////
-
-            mediaRecorder =
-            new MediaRecorder(
-                stream
-            );
-
-            /////////////////////////////////////////////
-            // DATA
-            /////////////////////////////////////////////
-
-            mediaRecorder.ondataavailable =
-            e=>{
-
-                if(e.data.size>0){
-
-                    chunks.push(
-                        e.data
-                    );
-
-                }
-
-            };
-
-            /////////////////////////////////////////////
-            // STOP EVENT
-            /////////////////////////////////////////////
-
-            mediaRecorder.onstop =
-            ()=>{
-
-                /////////////////////////////////////////////
-                // BLOB
-                /////////////////////////////////////////////
+            recorder.onstop = async () => {
 
                 const blob =
-                new Blob(
-                    chunks,
-                    {
+                    new Blob(chunks);
 
-                        type:"audio/webm"
+                const arrayBuffer =
+                    await blob.arrayBuffer();
 
-                    }
-                );
+                const audioBuffer =
+                    await audioContext
+                    .decodeAudioData(
+                        arrayBuffer
+                    );
 
-                /////////////////////////////////////////////
-                // URL
-                /////////////////////////////////////////////
+                const take = {
 
-                audioURL =
-                URL.createObjectURL(
-                    blob
-                );
+                    id:Date.now(),
 
-                /////////////////////////////////////////////
-                // PLAYER
-                /////////////////////////////////////////////
+                    buffer:audioBuffer,
 
-                audio.src =
-                audioURL;
+                    startOffset:0,
 
-                audio.load();
+                    endOffset:
+                        audioBuffer.duration,
 
-                /////////////////////////////////////////////
-                // STOP MIC
-                /////////////////////////////////////////////
+                    timelinePosition:0,
 
-                stream
-                .getTracks()
-                .forEach(
-                    t=>t.stop()
-                );
+                    source:null,
 
-                /////////////////////////////////////////////
-                // VISUAL
-                /////////////////////////////////////////////
+                    cursor:null,
 
-                recBtn.classList.remove(
-"rec-recording"
-);
+                    playing:false
+                };
 
-                console.log(
-                "TRACK READY"
-                );
+                track.takes.push(take);
 
+                renderTake(track,take);
             };
 
-            /////////////////////////////////////////////
-            // START
-            /////////////////////////////////////////////
+            recorder.start();
 
-            mediaRecorder.start();
+            track.recorder =
+                recorder;
 
             recBtn.classList.add(
-"rec-recording"
-);
-
-            startClock();
-
-            console.log(
-            "REC START"
+                "recActive"
             );
 
-        }catch(err){
+        }else{
 
-            alert(
-            "Erro microfone"
+            track.recorder.stop();
+
+            track.stream
+                .getTracks()
+                .forEach(t => t.stop());
+
+            track.recorder = null;
+
+            recBtn.classList.remove(
+                "recActive"
             );
-
-            console.log(err);
-
         }
-
     };
 
-    /////////////////////////////////////////////
-    // STOP
-    /////////////////////////////////////////////
+    muteBtn.onclick = () => {
 
-    stopBtn.onclick =
-    ()=>{
+        track.muted =
+            !track.muted;
 
-        if(
-            mediaRecorder &&
-            mediaRecorder.state ===
-            "recording"
-        ){
-
-            mediaRecorder.stop();
-
-        }
-
-        stopClock();
-
+        muteBtn.classList.toggle(
+            "muteActive"
+        );
     };
 
-    /////////////////////////////////////////////
-    // PLAY
-    /////////////////////////////////////////////
+    soloBtn.onclick = () => {
 
-    playBtn.onclick =
-    async ()=>{
+        track.solo =
+            !track.solo;
 
-        try{
-
-            if(!audioURL){
-
-                alert(
-                "Nada gravado"
-                );
-
-                return;
-
-            }
-
-            audio.currentTime = 0;
-
-            await audio.play();
-
-        }catch(err){
-
-            console.log(err);
-
-        }
-
+        soloBtn.classList.toggle(
+            "soloActive"
+        );
     };
-
-    /////////////////////////////////////////////
-    // REMOVE
-    /////////////////////////////////////////////
-
-    removeBtn.onclick =
-    ()=>{
-
-        audio.pause();
-
-        track.remove();
-
-    };
-
 }
 
-// ============================================
-// ADD TRACK
-// ============================================
+/* =====================================
+TAKE
+===================================== */
 
-addTrackBtn.onclick =
-()=>{
+function renderTake(track,take){
 
-    createTrack();
+    const lane =
+        document.getElementById(
+            "lane_" + track.id
+        );
 
+    const block =
+        document.createElement("div");
+
+    block.className =
+        "audioBlock";
+
+    updateTakeVisual(
+        block,
+        take
+    );
+
+    const leftHandle =
+        document.createElement("div");
+
+    leftHandle.className =
+        "handle leftHandle";
+
+    const rightHandle =
+        document.createElement("div");
+
+    rightHandle.className =
+        "handle rightHandle";
+
+    block.appendChild(leftHandle);
+    block.appendChild(rightHandle);
+
+    const canvas =
+        document.createElement("canvas");
+
+    canvas.className =
+        "waveCanvas";
+
+    block.appendChild(canvas);
+
+    renderWaveform(
+        canvas,
+        take
+    );
+
+    lane.appendChild(block);
+
+    /* MOVE */
+
+    let dragging = false;
+
+    let startPointerX = 0;
+
+    let startTimelinePosition = 0;
+
+    block.addEventListener(
+        "pointerdown",
+        e => {
+
+            if(
+                e.target === leftHandle ||
+                e.target === rightHandle
+            ) return;
+
+            dragging = true;
+
+            selectedTake = take;
+
+            block.setPointerCapture(
+                e.pointerId
+            );
+
+            startPointerX =
+                e.clientX;
+
+            startTimelinePosition =
+                take.timelinePosition;
+        }
+    );
+
+    block.addEventListener(
+        "pointermove",
+        e => {
+
+            if(!dragging)
+                return;
+
+            const deltaX =
+                e.clientX -
+                startPointerX;
+
+            let newPosition =
+                startTimelinePosition +
+                (
+                    deltaX /
+                    PIXELS_PER_SECOND
+                );
+
+            if(newPosition < 0)
+                newPosition = 0;
+
+            take.timelinePosition =
+                newPosition;
+
+            updateTakeVisual(
+                block,
+                take
+            );
+        }
+    );
+
+    block.addEventListener(
+        "pointerup",
+        () => {
+
+            dragging = false;
+        }
+    );
+
+    /* LEFT TRIM */
+
+    let trimLeft = false;
+
+    leftHandle.addEventListener(
+        "pointerdown",
+        e => {
+
+            trimLeft = true;
+
+            leftHandle.setPointerCapture(
+                e.pointerId
+            );
+        }
+    );
+
+    leftHandle.addEventListener(
+        "pointermove",
+        e => {
+
+            if(!trimLeft)
+                return;
+
+            const delta =
+                e.movementX /
+                PIXELS_PER_SECOND;
+
+            take.startOffset += delta;
+
+            if(take.startOffset < 0)
+                take.startOffset = 0;
+
+            if(
+                take.startOffset >
+                take.endOffset - 0.2
+            ){
+                take.startOffset =
+                take.endOffset - 0.2;
+            }
+
+            updateTakeVisual(
+                block,
+                take
+            );
+
+            renderWaveform(
+                canvas,
+                take
+            );
+        }
+    );
+
+    leftHandle.addEventListener(
+        "pointerup",
+        () => {
+
+            trimLeft = false;
+        }
+    );
+
+    /* RIGHT TRIM */
+
+    let trimRight = false;
+
+    rightHandle.addEventListener(
+        "pointerdown",
+        e => {
+
+            trimRight = true;
+
+            rightHandle.setPointerCapture(
+                e.pointerId
+            );
+        }
+    );
+
+    rightHandle.addEventListener(
+        "pointermove",
+        e => {
+
+            if(!trimRight)
+                return;
+
+            const delta =
+                e.movementX /
+                PIXELS_PER_SECOND;
+
+            take.endOffset += delta;
+
+            if(
+                take.endOffset >
+                take.buffer.duration
+            ){
+                take.endOffset =
+                take.buffer.duration;
+            }
+
+            if(
+                take.endOffset <
+                take.startOffset + 0.2
+            ){
+                take.endOffset =
+                take.startOffset + 0.2;
+            }
+
+            updateTakeVisual(
+                block,
+                take
+            );
+
+            renderWaveform(
+                canvas,
+                take
+            );
+        }
+    );
+
+    rightHandle.addEventListener(
+        "pointerup",
+        () => {
+
+            trimRight = false;
+        }
+    );
+}
+
+/* =====================================
+VISUAL
+===================================== */
+
+function updateTakeVisual(
+    block,
+    take
+){
+
+    const duration =
+        take.endOffset -
+        take.startOffset;
+
+    block.style.left =
+        (
+            take.timelinePosition *
+            PIXELS_PER_SECOND
+        ) + "px";
+
+    block.style.width =
+        (
+            duration *
+            PIXELS_PER_SECOND
+        ) + "px";
+}
+
+/* =====================================
+WAVEFORM
+===================================== */
+
+function renderWaveform(
+    canvas,
+    take
+){
+
+    const duration =
+        take.endOffset -
+        take.startOffset;
+
+    canvas.width =
+        duration *
+        PIXELS_PER_SECOND;
+
+    canvas.height = 80;
+
+    const ctx =
+        canvas.getContext("2d");
+
+    ctx.fillStyle =
+        "#181818";
+
+    ctx.fillRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    ctx.strokeStyle =
+        "#00ff99";
+
+    ctx.beginPath();
+
+    const data =
+        take.buffer.getChannelData(0);
+
+    const step =
+        Math.ceil(
+            data.length /
+            canvas.width
+        );
+
+    const amp =
+        canvas.height / 2;
+
+    for(let i=0;i<canvas.width;i++){
+
+        let min = 1;
+        let max = -1;
+
+        for(let j=0;j<step;j++){
+
+            const datum =
+                data[(i*step)+j];
+
+            if(datum < min)
+                min = datum;
+
+            if(datum > max)
+                max = datum;
+        }
+
+        ctx.moveTo(
+            i,
+            (1+min)*amp
+        );
+
+        ctx.lineTo(
+            i,
+            (1+max)*amp
+        );
+    }
+
+    ctx.stroke();
+}
+
+/* =====================================
+PLAYBACK
+===================================== */
+
+document.getElementById(
+    "playBtn"
+).onclick = () => {
+
+    stopAll();
+
+    const now =
+        audioContext.currentTime;
+
+    tracks.forEach(track => {
+
+        if(track.muted)
+            return;
+
+        track.takes.forEach(take => {
+
+            const source =
+                audioContext
+                .createBufferSource();
+
+            source.buffer =
+                take.buffer;
+
+            source.connect(
+                audioContext.destination
+            );
+
+            const duration =
+                take.endOffset -
+                take.startOffset;
+
+            source.start(
+                now +
+                take.timelinePosition,
+                take.startOffset,
+                duration
+            );
+
+            activeSources.push(source);
+        });
+    });
 };
 
-// ============================================
-// START
-// ============================================
+function stopAll(){
+
+    activeSources.forEach(s => {
+
+        try{
+            s.stop();
+        }catch(e){}
+    });
+
+    activeSources = [];
+}
+
+document.getElementById(
+    "stopBtn"
+).onclick = stopAll;
+
+/* =====================================
+TRANSPORT
+===================================== */
+
+document.getElementById(
+    "rewBtn"
+).onclick = () => {
+
+    timelineOffset -= 5;
+
+    if(timelineOffset < 0)
+        timelineOffset = 0;
+
+    updateTransport();
+};
+
+document.getElementById(
+    "ffBtn"
+).onclick = () => {
+
+    timelineOffset += 5;
+
+    updateTransport();
+};
+
+function updateTransport(){
+
+    const px =
+        timelineOffset *
+        PIXELS_PER_SECOND;
+
+    timelineWrapper.scrollLeft =
+        px;
+
+    playhead.style.left =
+        (
+            180 + px
+        ) + "px";
+}
+
+/* =====================================
+INIT
+===================================== */
 
 createTrack();
