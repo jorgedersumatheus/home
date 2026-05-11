@@ -2,34 +2,76 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>VOV Precision Engine v1</title>
+<title>VOV Monitor Core v1</title>
 
 <style>
+
 body{
     margin:0;
     background:#0a0a0a;
     color:white;
-    font-family:Arial;
+    font-family:Arial, sans-serif;
     display:flex;
     flex-direction:column;
     align-items:center;
-    padding-top:20px;
+    padding:20px;
 }
 
-.track{
-    width:360px;
-    background:#111;
-    margin:10px;
-    padding:10px;
-    border-radius:10px;
+h1{
+    font-size:22px;
+    opacity:0.9;
+    margin-bottom:20px;
+}
+
+#topbar{
+    display:flex;
+    gap:10px;
+    margin-bottom:20px;
 }
 
 button{
-    padding:8px 12px;
-    margin:4px;
     border:none;
-    border-radius:6px;
+    border-radius:8px;
+    padding:10px 14px;
     cursor:pointer;
+    font-weight:bold;
+}
+
+#addTrack{
+    background:#1f1f1f;
+    color:white;
+}
+
+#playAll{
+    background:green;
+    color:white;
+}
+
+#stopAll{
+    background:#aa0000;
+    color:white;
+}
+
+.track{
+    width:380px;
+    background:#111;
+    border-radius:12px;
+    padding:12px;
+    margin-bottom:14px;
+    box-sizing:border-box;
+}
+
+.trackTitle{
+    font-size:14px;
+    opacity:0.8;
+    margin-bottom:10px;
+}
+
+.controls{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-bottom:10px;
 }
 
 .rec.active{
@@ -37,88 +79,243 @@ button{
     color:white;
 }
 
+.monitor.active{
+    background:#ffd000;
+    color:black;
+}
+
+.mute.active{
+    background:#666;
+    color:white;
+}
+
+.solo.active{
+    background:#00aaff;
+    color:white;
+}
+
+.sliderWrap{
+    margin-top:10px;
+}
+
+.sliderWrap label{
+    font-size:12px;
+    opacity:0.7;
+}
+
 .slider{
     width:100%;
 }
+
+.memories{
+    margin-top:10px;
+    font-size:11px;
+    opacity:0.8;
+}
+
+.memoryItem{
+    padding:5px;
+    background:#1b1b1b;
+    border-radius:6px;
+    margin-top:4px;
+}
+
 </style>
 </head>
 
 <body>
 
-<h2>VOV Precision Engine v1</h2>
+<h1>VOV Monitor Core v1</h1>
+
+<div id="topbar">
+    <button id="addTrack">ADD TRACK</button>
+    <button id="playAll">PLAY</button>
+    <button id="stopAll">STOP</button>
+</div>
 
 <div id="tracks"></div>
-
-<button id="play">PLAY SYNC</button>
-<button id="stop">STOP</button>
 
 <script>
 
 const audioContext = new AudioContext();
 
-const tracks = {
-    voz: [],
-    cavaquinho: []
-};
+const tracks = [];
 
 const activeSources = [];
 
-let mediaRecorders = {};
-let streams = {};
+let trackCount = 0;
 
-/* =========================
-   CREATE TRACKS
-========================= */
-function createTrack(name){
+/* =========================================
+   ADD TRACK
+========================================= */
+
+document.getElementById("addTrack").onclick = () => {
+    createTrack();
+};
+
+function createTrack(){
+
+    trackCount++;
+
+    const track = {
+        id: trackCount,
+        takes: [],
+        offset: 0,
+        muted: false,
+        solo: false,
+        monitor: true,
+        recorder: null,
+        stream: null
+    };
+
+    tracks.push(track);
+
+    renderTrack(track);
+}
+
+/* =========================================
+   RENDER TRACK
+========================================= */
+
+function renderTrack(track){
 
     const div = document.createElement("div");
     div.className = "track";
+    div.id = "track_" + track.id;
 
     div.innerHTML = `
-        <h3>${name}</h3>
 
-        <button class="rec" id="rec_${name}">REC</button>
+        <div class="trackTitle">
+            TRACK ${track.id}
+        </div>
 
-        <div>OFFSET</div>
-        <input type="range"
-               min="-2"
-               max="2"
-               value="0"
-               step="0.01"
-               class="slider"
-               id="offset_${name}">
+        <div class="controls">
+
+            <button class="rec"
+                    id="rec_${track.id}">
+                    REC
+            </button>
+
+            <button class="monitor active"
+                    id="monitor_${track.id}">
+                    MONITOR
+            </button>
+
+            <button class="mute"
+                    id="mute_${track.id}">
+                    MUTE
+            </button>
+
+            <button class="solo"
+                    id="solo_${track.id}">
+                    SOLO
+            </button>
+
+        </div>
+
+        <div class="sliderWrap">
+            <label>OFFSET</label>
+
+            <input type="range"
+                   min="-2"
+                   max="2"
+                   value="0"
+                   step="0.01"
+                   class="slider"
+                   id="offset_${track.id}">
+        </div>
+
+        <div class="memories"
+             id="memories_${track.id}">
+        </div>
+
     `;
 
     document.getElementById("tracks").appendChild(div);
 
-    setupTrack(name);
+    bindTrack(track);
 }
 
-/* =========================
-   RECORD
-========================= */
-function setupTrack(name){
+/* =========================================
+   BIND TRACK
+========================================= */
 
-    const btn = document.getElementById("rec_" + name);
-    const slider = document.getElementById("offset_" + name);
+function bindTrack(track){
 
-    let offset = 0;
+    const recBtn =
+        document.getElementById("rec_" + track.id);
 
-    slider.oninput = e => {
-        offset = parseFloat(e.target.value);
+    const muteBtn =
+        document.getElementById("mute_" + track.id);
+
+    const soloBtn =
+        document.getElementById("solo_" + track.id);
+
+    const monitorBtn =
+        document.getElementById("monitor_" + track.id);
+
+    const offsetSlider =
+        document.getElementById("offset_" + track.id);
+
+    /* =========================
+       OFFSET
+    ========================= */
+
+    offsetSlider.oninput = e => {
+        track.offset = parseFloat(e.target.value);
     };
 
-    btn.onclick = async () => {
+    /* =========================
+       MUTE
+    ========================= */
 
-        if(!mediaRecorders[name]){
+    muteBtn.onclick = () => {
 
-            const stream = await navigator.mediaDevices.getUserMedia({
-                audio:true
-            });
+        track.muted = !track.muted;
 
-            streams[name] = stream;
+        muteBtn.classList.toggle("active");
+    };
 
-            const recorder = new MediaRecorder(stream);
+    /* =========================
+       SOLO
+    ========================= */
+
+    soloBtn.onclick = () => {
+
+        track.solo = !track.solo;
+
+        soloBtn.classList.toggle("active");
+    };
+
+    /* =========================
+       MONITOR
+    ========================= */
+
+    monitorBtn.onclick = () => {
+
+        track.monitor = !track.monitor;
+
+        monitorBtn.classList.toggle("active");
+    };
+
+    /* =========================
+       RECORD
+    ========================= */
+
+    recBtn.onclick = async () => {
+
+        if(!track.recorder){
+
+            const stream =
+                await navigator.mediaDevices
+                .getUserMedia({
+                    audio:true
+                });
+
+            track.stream = stream;
+
+            const recorder =
+                new MediaRecorder(stream);
 
             const chunks = [];
 
@@ -128,94 +325,215 @@ function setupTrack(name){
 
             recorder.onstop = async () => {
 
-                const blob = new Blob(chunks);
+                const blob =
+                    new Blob(chunks);
 
-                const arrayBuffer = await blob.arrayBuffer();
+                const arrayBuffer =
+                    await blob.arrayBuffer();
 
                 const audioBuffer =
-                    await audioContext.decodeAudioData(arrayBuffer);
+                    await audioContext
+                    .decodeAudioData(arrayBuffer);
 
-                tracks[name].push({
+                track.takes.push({
                     buffer: audioBuffer,
-                    offset
+                    offset: track.offset
                 });
 
-                console.log("BUFFER READY", name);
+                renderMemories(track);
             };
 
             recorder.start();
 
-            mediaRecorders[name] = recorder;
+            track.recorder = recorder;
 
-            btn.classList.add("active");
+            recBtn.classList.add("active");
+
+            /* =========================
+               MONITOR PLAYBACK
+            ========================= */
+
+            if(track.monitor){
+
+                playSessionForMonitor(track.id);
+            }
 
         }else{
 
-            mediaRecorders[name].stop();
+            track.recorder.stop();
 
-            streams[name]
+            track.stream
                 .getTracks()
                 .forEach(t => t.stop());
 
-            mediaRecorders[name] = null;
+            track.recorder = null;
 
-            btn.classList.remove("active");
+            recBtn.classList.remove("active");
+
+            stopAllSources();
         }
     };
 }
 
-/* =========================
-   PLAY SYNC
-========================= */
-document.getElementById("play").onclick = () => {
+/* =========================================
+   MEMORY UI
+========================================= */
 
-    const startAt = audioContext.currentTime + 0.2;
+function renderMemories(track){
 
-    Object.keys(tracks).forEach(name => {
+    const div =
+        document.getElementById(
+            "memories_" + track.id
+        );
 
-        tracks[name].forEach(t => {
+    div.innerHTML = "";
+
+    track.takes.forEach((take, index) => {
+
+        const mem =
+            document.createElement("div");
+
+        mem.className = "memoryItem";
+
+        mem.innerText =
+            "TAKE " + (index + 1);
+
+        div.appendChild(mem);
+    });
+}
+
+/* =========================================
+   PLAY SESSION
+========================================= */
+
+document.getElementById("playAll")
+.onclick = () => {
+
+    stopAllSources();
+
+    const startAt =
+        audioContext.currentTime + 0.1;
+
+    const soloTracks =
+        tracks.filter(t => t.solo);
+
+    const usingSolo =
+        soloTracks.length > 0;
+
+    tracks.forEach(track => {
+
+        if(track.muted) return;
+
+        if(usingSolo && !track.solo) return;
+
+        track.takes.forEach(take => {
 
             const source =
-                audioContext.createBufferSource();
+                audioContext
+                .createBufferSource();
 
-            source.buffer = t.buffer;
+            source.buffer =
+                take.buffer;
 
             const gain =
-                audioContext.createGain();
+                audioContext
+                .createGain();
 
             source.connect(gain);
-            gain.connect(audioContext.destination);
+
+            gain.connect(
+                audioContext.destination
+            );
 
             source.start(
-                startAt + t.offset
+                startAt + take.offset
             );
 
             activeSources.push(source);
         });
     });
-
-    console.log("PRECISION PLAY");
 };
 
-/* =========================
-   STOP
-========================= */
-document.getElementById("stop").onclick = () => {
+/* =========================================
+   MONITOR PLAYBACK
+========================================= */
 
-    activeSources.forEach(s => {
+function playSessionForMonitor(recordingTrackId){
+
+    const startAt =
+        audioContext.currentTime + 0.05;
+
+    const soloTracks =
+        tracks.filter(t => t.solo);
+
+    const usingSolo =
+        soloTracks.length > 0;
+
+    tracks.forEach(track => {
+
+        if(track.id === recordingTrackId)
+            return;
+
+        if(track.muted) return;
+
+        if(usingSolo && !track.solo)
+            return;
+
+        track.takes.forEach(take => {
+
+            const source =
+                audioContext
+                .createBufferSource();
+
+            source.buffer =
+                take.buffer;
+
+            const gain =
+                audioContext
+                .createGain();
+
+            source.connect(gain);
+
+            gain.connect(
+                audioContext.destination
+            );
+
+            source.start(
+                startAt + take.offset
+            );
+
+            activeSources.push(source);
+        });
+    });
+}
+
+/* =========================================
+   STOP ALL
+========================================= */
+
+document.getElementById("stopAll")
+.onclick = () => {
+    stopAllSources();
+};
+
+function stopAllSources(){
+
+    activeSources.forEach(source => {
+
         try{
-            s.stop();
+            source.stop();
         }catch(e){}
+
     });
 
     activeSources.length = 0;
+}
 
-    console.log("STOP ALL");
-};
+/* =========================================
+   INIT
+========================================= */
 
-/* INIT */
-createTrack("voz");
-createTrack("cavaquinho");
+createTrack();
 
 </script>
 
