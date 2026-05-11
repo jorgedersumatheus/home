@@ -1,11 +1,23 @@
 /* =========================================
-ARQUIVO 3 — app.js
+VOV FLOW MEMORY v4
+ARQUIVO COMPLETO — app.js
 ========================================= */
 
-const audioContext =
-    new AudioContext();
+/* =====================================
+AUDIO
+===================================== */
+
+let audioContext = null;
+
+/* =====================================
+CONFIG
+===================================== */
 
 const PIXELS_PER_SECOND = 120;
+
+/* =====================================
+DOM
+===================================== */
 
 const timeline =
     document.getElementById(
@@ -27,6 +39,10 @@ const menu =
         "menu"
     );
 
+/* =====================================
+STATE
+===================================== */
+
 let tracks = [];
 
 let trackCount = 0;
@@ -34,8 +50,6 @@ let trackCount = 0;
 let selectedTake = null;
 
 let playing = false;
-
-let playStart = 0;
 
 let activeSources = [];
 
@@ -56,8 +70,10 @@ for(let i=0;i<300;i++){
     line.style.left =
         (
             180 +
-            i *
-            PIXELS_PER_SECOND
+            (
+                i *
+                PIXELS_PER_SECOND
+            )
         ) + "px";
 
     timeline.appendChild(line);
@@ -71,8 +87,10 @@ for(let i=0;i<300;i++){
     text.style.left =
         (
             183 +
-            i *
-            PIXELS_PER_SECOND
+            (
+                i *
+                PIXELS_PER_SECOND
+            )
         ) + "px";
 
     text.innerText =
@@ -82,7 +100,7 @@ for(let i=0;i<300;i++){
 }
 
 /* =====================================
-TRACK
+TRACK BUTTON
 ===================================== */
 
 document.getElementById(
@@ -91,6 +109,10 @@ document.getElementById(
 
     createTrack();
 };
+
+/* =====================================
+CREATE TRACK
+===================================== */
 
 function createTrack(){
 
@@ -115,6 +137,10 @@ function createTrack(){
 
     renderTrack(track);
 }
+
+/* =====================================
+RENDER TRACK
+===================================== */
 
 function renderTrack(track){
 
@@ -162,7 +188,7 @@ function renderTrack(track){
 }
 
 /* =====================================
-BIND
+BIND TRACK
 ===================================== */
 
 function bindTrack(track){
@@ -182,90 +208,130 @@ function bindTrack(track){
             "solo_" + track.id
         );
 
+    /* =====================================
+    REC
+    ===================================== */
+
     recBtn.onclick = async () => {
 
-        if(!track.recorder){
+        try{
 
-            const stream =
-                await navigator
-                .mediaDevices
-                .getUserMedia({
-                    audio:true
-                });
+            if(!audioContext){
 
-            track.stream = stream;
+                audioContext =
+                    new AudioContext();
 
-            const recorder =
-                new MediaRecorder(stream);
+                await audioContext.resume();
+            }
 
-            const chunks = [];
+            if(!track.recorder){
 
-            recorder.ondataavailable =
-                e => chunks.push(e.data);
+                const stream =
+                    await navigator
+                    .mediaDevices
+                    .getUserMedia({
+                        audio:true
+                    });
 
-            recorder.onstop = async () => {
+                track.stream =
+                    stream;
 
-                const blob =
-                    new Blob(chunks);
-
-                const arrayBuffer =
-                    await blob.arrayBuffer();
-
-                const audioBuffer =
-                    await audioContext
-                    .decodeAudioData(
-                        arrayBuffer
+                const recorder =
+                    new MediaRecorder(
+                        stream
                     );
 
-                const take = {
+                const chunks = [];
 
-                    id:Date.now(),
+                recorder.ondataavailable =
+                    e => {
 
-                    buffer:audioBuffer,
+                        chunks.push(
+                            e.data
+                        );
+                    };
 
-                    startOffset:0,
+                recorder.onstop =
+                    async () => {
 
-                    endOffset:
-                        audioBuffer.duration,
+                    const blob =
+                        new Blob(chunks);
 
-                    timelinePosition:0,
+                    const arrayBuffer =
+                        await blob
+                        .arrayBuffer();
 
-                    source:null,
+                    const audioBuffer =
+                        await audioContext
+                        .decodeAudioData(
+                            arrayBuffer
+                        );
 
-                    cursor:null,
+                    const take = {
 
-                    playing:false
+                        id:Date.now(),
+
+                        buffer:audioBuffer,
+
+                        startOffset:0,
+
+                        endOffset:
+                            audioBuffer
+                            .duration,
+
+                        timelinePosition:0
+                    };
+
+                    track.takes.push(
+                        take
+                    );
+
+                    renderTake(
+                        track,
+                        take
+                    );
                 };
 
-                track.takes.push(take);
+                recorder.start();
 
-                renderTake(track,take);
-            };
+                track.recorder =
+                    recorder;
 
-            recorder.start();
+                recBtn.classList.add(
+                    "recActive"
+                );
 
-            track.recorder =
-                recorder;
+            }else{
 
-            recBtn.classList.add(
-                "recActive"
-            );
+                track.recorder.stop();
 
-        }else{
+                track.stream
+                    .getTracks()
+                    .forEach(
+                        t => t.stop()
+                    );
 
-            track.recorder.stop();
+                track.recorder =
+                    null;
 
-            track.stream
-                .getTracks()
-                .forEach(t => t.stop());
+                recBtn.classList.remove(
+                    "recActive"
+                );
+            }
 
-            track.recorder = null;
+        }catch(error){
 
-            recBtn.classList.remove(
-                "recActive"
+            console.error(error);
+
+            alert(
+                "Erro no REC"
             );
         }
     };
+
+    /* =====================================
+    MUTE
+    ===================================== */
 
     muteBtn.onclick = () => {
 
@@ -276,6 +342,10 @@ function bindTrack(track){
             "muteActive"
         );
     };
+
+    /* =====================================
+    SOLO
+    ===================================== */
 
     soloBtn.onclick = () => {
 
@@ -289,7 +359,7 @@ function bindTrack(track){
 }
 
 /* =====================================
-TAKE
+RENDER TAKE
 ===================================== */
 
 function renderTake(track,take){
@@ -310,6 +380,10 @@ function renderTake(track,take){
         take
     );
 
+    /* =====================================
+    HANDLES
+    ===================================== */
+
     const leftHandle =
         document.createElement("div");
 
@@ -322,25 +396,42 @@ function renderTake(track,take){
     rightHandle.className =
         "handle rightHandle";
 
-    block.appendChild(leftHandle);
-    block.appendChild(rightHandle);
+    block.appendChild(
+        leftHandle
+    );
+
+    block.appendChild(
+        rightHandle
+    );
+
+    /* =====================================
+    CANVAS
+    ===================================== */
 
     const canvas =
-        document.createElement("canvas");
+        document.createElement(
+            "canvas"
+        );
 
     canvas.className =
         "waveCanvas";
 
-    block.appendChild(canvas);
+    block.appendChild(
+        canvas
+    );
 
     renderWaveform(
         canvas,
         take
     );
 
-    lane.appendChild(block);
+    lane.appendChild(
+        block
+    );
 
-    /* MOVE */
+    /* =====================================
+    MOVE
+    ===================================== */
 
     let dragging = false;
 
@@ -360,6 +451,10 @@ function renderTake(track,take){
             dragging = true;
 
             selectedTake = take;
+
+            block.classList.add(
+                "selected"
+            );
 
             block.setPointerCapture(
                 e.pointerId
@@ -412,13 +507,17 @@ function renderTake(track,take){
         }
     );
 
-    /* LEFT TRIM */
+    /* =====================================
+    LEFT TRIM
+    ===================================== */
 
     let trimLeft = false;
 
     leftHandle.addEventListener(
         "pointerdown",
         e => {
+
+            e.stopPropagation();
 
             trimLeft = true;
 
@@ -439,17 +538,21 @@ function renderTake(track,take){
                 e.movementX /
                 PIXELS_PER_SECOND;
 
-            take.startOffset += delta;
+            take.startOffset +=
+                delta;
 
-            if(take.startOffset < 0)
+            if(
+                take.startOffset < 0
+            ){
                 take.startOffset = 0;
+            }
 
             if(
                 take.startOffset >
                 take.endOffset - 0.2
             ){
                 take.startOffset =
-                take.endOffset - 0.2;
+                    take.endOffset - 0.2;
             }
 
             updateTakeVisual(
@@ -472,13 +575,17 @@ function renderTake(track,take){
         }
     );
 
-    /* RIGHT TRIM */
+    /* =====================================
+    RIGHT TRIM
+    ===================================== */
 
     let trimRight = false;
 
     rightHandle.addEventListener(
         "pointerdown",
         e => {
+
+            e.stopPropagation();
 
             trimRight = true;
 
@@ -499,14 +606,15 @@ function renderTake(track,take){
                 e.movementX /
                 PIXELS_PER_SECOND;
 
-            take.endOffset += delta;
+            take.endOffset +=
+                delta;
 
             if(
                 take.endOffset >
                 take.buffer.duration
             ){
                 take.endOffset =
-                take.buffer.duration;
+                    take.buffer.duration;
             }
 
             if(
@@ -514,7 +622,7 @@ function renderTake(track,take){
                 take.startOffset + 0.2
             ){
                 take.endOffset =
-                take.startOffset + 0.2;
+                    take.startOffset + 0.2;
             }
 
             updateTakeVisual(
@@ -621,7 +729,12 @@ function renderWaveform(
         for(let j=0;j<step;j++){
 
             const datum =
-                data[(i*step)+j];
+                data[
+                    (
+                        i *
+                        step
+                    ) + j
+                ] || 0;
 
             if(datum < min)
                 min = datum;
@@ -632,12 +745,16 @@ function renderWaveform(
 
         ctx.moveTo(
             i,
-            (1+min)*amp
+            (
+                1 + min
+            ) * amp
         );
 
         ctx.lineTo(
             i,
-            (1+max)*amp
+            (
+                1 + max
+            ) * amp
         );
     }
 
@@ -651,6 +768,9 @@ PLAYBACK
 document.getElementById(
     "playBtn"
 ).onclick = () => {
+
+    if(!audioContext)
+        return;
 
     stopAll();
 
@@ -680,20 +800,30 @@ document.getElementById(
                 take.startOffset;
 
             source.start(
+
                 now +
                 take.timelinePosition,
+
                 take.startOffset,
+
                 duration
             );
 
-            activeSources.push(source);
+            activeSources.push(
+                source
+            );
         });
     });
 };
 
+/* =====================================
+STOP
+===================================== */
+
 function stopAll(){
 
-    activeSources.forEach(s => {
+    activeSources.forEach(
+        s => {
 
         try{
             s.stop();
@@ -751,4 +881,11 @@ function updateTransport(){
 INIT
 ===================================== */
 
-createTrack();
+window.onload = () => {
+
+    createTrack();
+
+    console.log(
+        "VOV FLOW MEMORY READY"
+    );
+};
