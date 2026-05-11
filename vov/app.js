@@ -1,6 +1,6 @@
 /* =========================================
-VOV FLOW MEMORY v4
-ARQUIVO COMPLETO — app.js
+ARQUIVO 3 — app.js
+VOV FLOW MEMORY v5
 ========================================= */
 
 /* =====================================
@@ -34,11 +34,6 @@ const playhead =
         "playhead"
     );
 
-const menu =
-    document.getElementById(
-        "menu"
-    );
-
 /* =====================================
 STATE
 ===================================== */
@@ -48,8 +43,6 @@ let tracks = [];
 let trackCount = 0;
 
 let selectedTake = null;
-
-let playing = false;
 
 let activeSources = [];
 
@@ -430,6 +423,30 @@ function renderTake(track,take){
     );
 
     /* =====================================
+    SELECT
+    ===================================== */
+
+    block.onclick = () => {
+
+        document
+            .querySelectorAll(
+                ".audioBlock"
+            )
+            .forEach(
+                b => b.classList
+                .remove(
+                    "selected"
+                )
+            );
+
+        block.classList.add(
+            "selected"
+        );
+
+        selectedTake = take;
+    };
+
+    /* =====================================
     MOVE
     ===================================== */
 
@@ -450,21 +467,15 @@ function renderTake(track,take){
 
             dragging = true;
 
-            selectedTake = take;
-
-            block.classList.add(
-                "selected"
-            );
-
-            block.setPointerCapture(
-                e.pointerId
-            );
-
             startPointerX =
                 e.clientX;
 
             startTimelinePosition =
                 take.timelinePosition;
+
+            block.setPointerCapture(
+                e.pointerId
+            );
         }
     );
 
@@ -800,12 +811,9 @@ document.getElementById(
                 take.startOffset;
 
             source.start(
-
                 now +
                 take.timelinePosition,
-
                 take.startOffset,
-
                 duration
             );
 
@@ -875,6 +883,346 @@ function updateTransport(){
         (
             180 + px
         ) + "px";
+}
+
+/* =====================================
+EXPORT TRACK
+===================================== */
+
+document.getElementById(
+    "exportTrackBtn"
+).onclick = async () => {
+
+    if(!selectedTake){
+
+        alert(
+            "Selecione uma faixa"
+        );
+
+        return;
+    }
+
+    exportTake(
+        selectedTake
+    );
+};
+
+async function exportTake(take){
+
+    const wav =
+        audioBufferToWav(
+            take.buffer
+        );
+
+    downloadBlob(
+        wav,
+        "track.wav"
+    );
+}
+
+/* =====================================
+EXPORT MIX
+===================================== */
+
+document.getElementById(
+    "exportMixBtn"
+).onclick = async () => {
+
+    if(!audioContext)
+        return;
+
+    const maxDuration =
+        getMaxDuration();
+
+    const offline =
+        new OfflineAudioContext(
+            2,
+            44100 * maxDuration,
+            44100
+        );
+
+    tracks.forEach(track => {
+
+        if(track.muted)
+            return;
+
+        track.takes.forEach(take => {
+
+            const source =
+                offline
+                .createBufferSource();
+
+            source.buffer =
+                take.buffer;
+
+            source.connect(
+                offline.destination
+            );
+
+            const duration =
+                take.endOffset -
+                take.startOffset;
+
+            source.start(
+                take.timelinePosition,
+                take.startOffset,
+                duration
+            );
+        });
+    });
+
+    const rendered =
+        await offline
+        .startRendering();
+
+    const wav =
+        audioBufferToWav(
+            rendered
+        );
+
+    downloadBlob(
+        wav,
+        "mix.wav"
+    );
+};
+
+/* =====================================
+MAX DURATION
+===================================== */
+
+function getMaxDuration(){
+
+    let max = 0;
+
+    tracks.forEach(track => {
+
+        track.takes.forEach(take => {
+
+            const end =
+                take.timelinePosition +
+                (
+                    take.endOffset -
+                    take.startOffset
+                );
+
+            if(end > max)
+                max = end;
+        });
+    });
+
+    return max + 1;
+}
+
+/* =====================================
+DOWNLOAD
+===================================== */
+
+function downloadBlob(
+    blob,
+    filename
+){
+
+    const url =
+        URL.createObjectURL(
+            blob
+        );
+
+    const a =
+        document.createElement("a");
+
+    a.href = url;
+
+    a.download =
+        filename;
+
+    a.click();
+
+    URL.revokeObjectURL(
+        url
+    );
+}
+
+/* =====================================
+WAV ENCODER
+===================================== */
+
+function audioBufferToWav(buffer){
+
+    const numChannels =
+        buffer.numberOfChannels;
+
+    const sampleRate =
+        buffer.sampleRate;
+
+    let result;
+
+    if(numChannels === 2){
+
+        result = interleave(
+            buffer.getChannelData(0),
+            buffer.getChannelData(1)
+        );
+
+    }else{
+
+        result =
+            buffer.getChannelData(0);
+    }
+
+    const bufferLength =
+        result.length * 2;
+
+    const arrayBuffer =
+        new ArrayBuffer(
+            44 + bufferLength
+        );
+
+    const view =
+        new DataView(
+            arrayBuffer
+        );
+
+    writeString(view,0,'RIFF');
+
+    view.setUint32(
+        4,
+        36 + bufferLength,
+        true
+    );
+
+    writeString(view,8,'WAVE');
+
+    writeString(view,12,'fmt ');
+
+    view.setUint32(
+        16,
+        16,
+        true
+    );
+
+    view.setUint16(
+        20,
+        1,
+        true
+    );
+
+    view.setUint16(
+        22,
+        numChannels,
+        true
+    );
+
+    view.setUint32(
+        24,
+        sampleRate,
+        true
+    );
+
+    view.setUint32(
+        28,
+        sampleRate *
+        numChannels *
+        2,
+        true
+    );
+
+    view.setUint16(
+        32,
+        numChannels * 2,
+        true
+    );
+
+    view.setUint16(
+        34,
+        16,
+        true
+    );
+
+    writeString(view,36,'data');
+
+    view.setUint32(
+        40,
+        bufferLength,
+        true
+    );
+
+    floatTo16BitPCM(
+        view,
+        44,
+        result
+    );
+
+    return new Blob(
+        [view],
+        {type:'audio/wav'}
+    );
+}
+
+function interleave(left,right){
+
+    const length =
+        left.length +
+        right.length;
+
+    const result =
+        new Float32Array(length);
+
+    let inputIndex = 0;
+
+    for(let i=0;i<length;){
+
+        result[i++] =
+            left[inputIndex];
+
+        result[i++] =
+            right[inputIndex];
+
+        inputIndex++;
+    }
+
+    return result;
+}
+
+function floatTo16BitPCM(
+    output,
+    offset,
+    input
+){
+
+    for(let i=0;i<input.length;i++,offset+=2){
+
+        let s =
+            Math.max(
+                -1,
+                Math.min(
+                    1,
+                    input[i]
+                )
+            );
+
+        output.setInt16(
+            offset,
+            s < 0
+                ? s * 0x8000
+                : s * 0x7FFF,
+            true
+        );
+    }
+}
+
+function writeString(
+    view,
+    offset,
+    string
+){
+
+    for(let i=0;i<string.length;i++){
+
+        view.setUint8(
+            offset + i,
+            string.charCodeAt(i)
+        );
+    }
 }
 
 /* =====================================
