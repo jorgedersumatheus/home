@@ -37,7 +37,10 @@ button{
     padding:10px 14px;
     cursor:pointer;
     font-weight:bold;
-    color:white;
+    color:#fff;
+    background:#222;
+    font-size:14px;
+    min-width:52px;
 }
 
 #addTrack{
@@ -267,7 +270,7 @@ ACTIVE STATES
 <div id="topbar">
 
     <button id="addTrack">
-        ADD TRACK
+        TRACK
     </button>
 
     <button id="playBtn">
@@ -297,10 +300,6 @@ ACTIVE STATES
 <div id="menu"></div>
 
 <script>
-
-/* =========================================
-AUDIO
-========================================= */
 
 const audioContext =
     new AudioContext();
@@ -477,8 +476,6 @@ function bindTrack(track){
             "del_" + track.id
         );
 
-    /* REC */
-
     recBtn.onclick = async () => {
 
         if(!track.recorder){
@@ -560,8 +557,6 @@ function bindTrack(track){
         }
     };
 
-    /* MUTE */
-
     muteBtn.onclick = () => {
 
         track.muted =
@@ -572,8 +567,6 @@ function bindTrack(track){
         );
     };
 
-    /* SOLO */
-
     soloBtn.onclick = () => {
 
         track.solo =
@@ -583,8 +576,6 @@ function bindTrack(track){
             "soloActive"
         );
     };
-
-    /* DELETE TRACK */
 
     delBtn.onclick = () => {
 
@@ -602,7 +593,7 @@ function bindTrack(track){
 }
 
 /* =========================================
-RENDER TAKE
+TAKE
 ========================================= */
 
 function renderTake(track, take){
@@ -645,9 +636,11 @@ function renderTake(track, take){
     const canvas =
         document.createElement("canvas");
 
-    canvas.className = "waveCanvas";
+    canvas.className =
+        "waveCanvas";
 
-    canvas.width = take.width;
+    canvas.width =
+        take.width;
 
     canvas.height = 80;
 
@@ -699,7 +692,9 @@ function renderTake(track, take){
 
     let dragging = false;
 
-    let offsetX = 0;
+    let startMouseX = 0;
+
+    let startTakeX = 0;
 
     block.addEventListener(
         "mousedown",
@@ -712,9 +707,11 @@ function renderTake(track, take){
 
             dragging = true;
 
-            offsetX =
-                e.clientX -
-                block.offsetLeft;
+            startMouseX =
+                e.clientX;
+
+            startTakeX =
+                take.position;
         }
     );
 
@@ -727,15 +724,20 @@ function renderTake(track, take){
                 selectedTake !== take
             ) return;
 
-            let x =
+            const delta =
                 e.clientX -
-                offsetX;
+                startMouseX;
+
+            let x =
+                startTakeX + delta;
 
             if(x < 0)
                 x = 0;
 
             x =
-                Math.round(x / 10) * 10;
+                Math.round(
+                    x / 10
+                ) * 10;
 
             take.position = x;
 
@@ -749,88 +751,6 @@ function renderTake(track, take){
         () => {
 
             dragging = false;
-        }
-    );
-
-    /* LEFT TRIM */
-
-    let trimLeft = false;
-
-    leftHandle.onmousedown = e => {
-
-        e.stopPropagation();
-
-        trimLeft = true;
-    };
-
-    /* RIGHT TRIM */
-
-    let trimRight = false;
-
-    rightHandle.onmousedown = e => {
-
-        e.stopPropagation();
-
-        trimRight = true;
-    };
-
-    document.addEventListener(
-        "mousemove",
-        e => {
-
-            if(trimLeft){
-
-                const rect =
-                    block.getBoundingClientRect();
-
-                let delta =
-                    e.clientX - rect.left;
-
-                if(delta < 20)
-                    delta = 20;
-
-                if(delta >
-                   take.width - 20)
-                    delta =
-                    take.width - 20;
-
-                block.style.left =
-                    (
-                        take.position +
-                        delta
-                    ) + "px";
-
-                block.style.width =
-                    (
-                        take.width -
-                        delta
-                    ) + "px";
-            }
-
-            if(trimRight){
-
-                const rect =
-                    block.getBoundingClientRect();
-
-                let width =
-                    e.clientX - rect.left;
-
-                if(width < 20)
-                    width = 20;
-
-                block.style.width =
-                    width + "px";
-            }
-        }
-    );
-
-    document.addEventListener(
-        "mouseup",
-        () => {
-
-            trimLeft = false;
-
-            trimRight = false;
         }
     );
 
@@ -864,14 +784,11 @@ function openMenu(
 
     menu.innerHTML = "";
 
-    menu.style.display =
-        "block";
+    menu.style.display = "block";
 
-    menu.style.left =
-        x + "px";
+    menu.style.left = x + "px";
 
-    menu.style.top =
-        y + "px";
+    menu.style.top = y + "px";
 
     const actions = [
 
@@ -886,6 +803,26 @@ function openMenu(
             label:"STOP TAKE",
             action:() => {
                 stopTake(take);
+            }
+        },
+
+        {
+            label:"DUPLICATE",
+            action:() => {
+
+                const clone = {
+
+                    ...take,
+
+                    id:Date.now(),
+
+                    position:
+                        take.position + 40
+                };
+
+                track.takes.push(clone);
+
+                renderTake(track, clone);
             }
         },
 
@@ -909,18 +846,15 @@ function openMenu(
         const div =
             document.createElement("div");
 
-        div.className =
-            "menuItem";
+        div.className = "menuItem";
 
-        div.innerText =
-            item.label;
+        div.innerText = item.label;
 
         div.onclick = () => {
 
             item.action();
 
-            menu.style.display =
-                "none";
+            menu.style.display = "none";
         };
 
         menu.appendChild(div);
@@ -1223,18 +1157,6 @@ function stopSession(){
         });
     });
 }
-
-/* =========================================
-EXPORT
-========================================= */
-
-document.getElementById("exportBtn")
-.onclick = () => {
-
-    alert(
-        "EXPORT MIX em evolução."
-    );
-};
 
 /* =========================================
 INIT
