@@ -1,24 +1,20 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-<title>VOV FLOW MEMORY</title>
+<title>VOV FLOW MEMORY ENGINE v2</title>
 
 <style>
 
 body{
     margin:0;
-    background:#080808;
-    color:white;
+    background:#0a0a0a;
+    color:#fff;
     font-family:Arial,sans-serif;
     overflow:hidden;
 }
-
-/* =========================================
-TOPBAR
-========================================= */
 
 #topbar{
     height:60px;
@@ -27,84 +23,57 @@ TOPBAR
     display:flex;
     align-items:center;
     gap:10px;
-    padding:0 15px;
-    box-sizing:border-box;
+    padding:0 12px;
 }
 
 button{
     border:none;
     border-radius:8px;
-    padding:10px 14px;
-    cursor:pointer;
-    font-weight:bold;
+    background:#222;
     color:#fff;
-    background:#222;
-    font-size:14px;
-    min-width:52px;
+    padding:10px 14px;
+    font-weight:bold;
+    cursor:pointer;
 }
 
-#addTrack{
-    background:#222;
-}
-
-#playBtn{
-    background:green;
-}
-
-#stopBtn{
-    background:#aa0000;
-}
-
-#exportBtn{
-    background:#0055ff;
-}
-
-/* =========================================
-TIMELINE
-========================================= */
+#playBtn{ background:green; }
+#stopBtn{ background:#aa0000; }
+#addTrackBtn{ background:#333; }
 
 #timelineWrapper{
-    position:relative;
     width:100%;
     height:calc(100vh - 60px);
     overflow:auto;
+    position:relative;
 }
 
 #timeline{
     position:relative;
     width:50000px;
-    height:100%;
+    min-height:100%;
     background:#090909;
 }
-
-/* =========================================
-GRID
-========================================= */
 
 .gridLine{
     position:absolute;
     top:0;
     width:1px;
     height:100%;
-    background:#151515;
+    background:#161616;
 }
 
-.gridLabel{
+.gridText{
     position:absolute;
     top:0;
     color:#444;
     font-size:10px;
-    padding-left:3px;
+    padding-left:4px;
 }
-
-/* =========================================
-TRACK
-========================================= */
 
 .track{
     position:relative;
     height:120px;
-    border-bottom:1px solid #1b1b1b;
+    border-bottom:1px solid #1d1d1d;
 }
 
 .trackHeader{
@@ -115,53 +84,43 @@ TRACK
     height:100%;
     background:#111;
     border-right:1px solid #222;
-    padding:10px;
     box-sizing:border-box;
-    z-index:50;
-}
-
-.trackTitle{
-    margin-bottom:10px;
-    opacity:0.8;
-}
-
-.trackControls{
-    display:flex;
-    flex-wrap:wrap;
-    gap:5px;
+    padding:10px;
+    z-index:100;
 }
 
 .trackLane{
     position:absolute;
     left:180px;
-    right:0;
     top:0;
+    right:0;
     height:100%;
 }
 
-/* =========================================
-AUDIO BLOCK
-========================================= */
+.trackTitle{
+    margin-bottom:10px;
+}
+
+.trackButtons{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+}
 
 .audioBlock{
     position:absolute;
     top:20px;
     height:80px;
     background:#181818;
-    border:1px solid #444;
+    border:2px solid #333;
     border-radius:10px;
     overflow:hidden;
-    user-select:none;
     cursor:grab;
 }
 
 .audioBlock.selected{
-    border:2px solid #00ff99;
+    border-color:#00ff99;
 }
-
-/* =========================================
-HANDLES
-========================================= */
 
 .handle{
     position:absolute;
@@ -182,19 +141,11 @@ HANDLES
     cursor:ew-resize;
 }
 
-/* =========================================
-WAVEFORM
-========================================= */
-
 .waveCanvas{
     width:100%;
     height:100%;
     display:block;
 }
-
-/* =========================================
-CURSOR
-========================================= */
 
 .takeCursor{
     position:absolute;
@@ -206,10 +157,6 @@ CURSOR
     pointer-events:none;
 }
 
-/* =========================================
-PLAYHEAD
-========================================= */
-
 #playhead{
     position:absolute;
     top:0;
@@ -219,10 +166,6 @@ PLAYHEAD
     background:red;
     z-index:999;
 }
-
-/* =========================================
-MENU
-========================================= */
 
 #menu{
     position:absolute;
@@ -245,16 +188,12 @@ MENU
     background:#222;
 }
 
-/* =========================================
-ACTIVE STATES
-========================================= */
-
 .recActive{
     background:red !important;
 }
 
 .muteActive{
-    background:#666 !important;
+    background:#555 !important;
 }
 
 .soloActive{
@@ -269,7 +208,7 @@ ACTIVE STATES
 
 <div id="topbar">
 
-    <button id="addTrack">
+    <button id="addTrackBtn">
         TRACK
     </button>
 
@@ -279,10 +218,6 @@ ACTIVE STATES
 
     <button id="stopBtn">
         STOP
-    </button>
-
-    <button id="exportBtn">
-        EXPORT
     </button>
 
 </div>
@@ -304,6 +239,8 @@ ACTIVE STATES
 const audioContext =
     new AudioContext();
 
+const PIXELS_PER_SECOND = 120;
+
 const timeline =
     document.getElementById("timeline");
 
@@ -322,56 +259,58 @@ const menu =
         "menu"
     );
 
-const PIXELS_PER_SECOND = 120;
-
 let tracks = [];
 
 let trackCount = 0;
 
-let activeSources = [];
+let selectedTake = null;
 
 let playing = false;
 
 let playStart = 0;
 
-let selectedTake = null;
+let activeSources = [];
 
-/* =========================================
+/* =====================================
 GRID
-========================================= */
+===================================== */
 
 for(let i=0;i<300;i++){
 
     const line =
         document.createElement("div");
 
-    line.className = "gridLine";
+    line.className =
+        "gridLine";
 
     line.style.left =
-        (180 + i * PIXELS_PER_SECOND)
+        (180 + i*PIXELS_PER_SECOND)
         + "px";
 
-    const label =
+    const text =
         document.createElement("div");
 
-    label.className = "gridLabel";
+    text.className =
+        "gridText";
 
-    label.style.left =
-        (183 + i * PIXELS_PER_SECOND)
+    text.style.left =
+        (183 + i*PIXELS_PER_SECOND)
         + "px";
 
-    label.innerText = i + "s";
+    text.innerText =
+        i + "s";
 
     timeline.appendChild(line);
-    timeline.appendChild(label);
+    timeline.appendChild(text);
 }
 
-/* =========================================
-TRACK
-========================================= */
+/* =====================================
+TRACK CREATE
+===================================== */
 
-document.getElementById("addTrack")
-.onclick = () => {
+document.getElementById(
+    "addTrackBtn"
+).onclick = () => {
 
     createTrack();
 };
@@ -386,13 +325,13 @@ function createTrack(){
 
         takes:[],
 
-        muted:false,
-
-        solo:false,
-
         recorder:null,
 
-        stream:null
+        stream:null,
+
+        muted:false,
+
+        solo:false
     };
 
     tracks.push(track);
@@ -405,9 +344,11 @@ function renderTrack(track){
     const div =
         document.createElement("div");
 
-    div.className = "track";
+    div.className =
+        "track";
 
-    div.id = "track_" + track.id;
+    div.id =
+        "track_" + track.id;
 
     div.innerHTML = `
 
@@ -417,7 +358,7 @@ function renderTrack(track){
                 TRACK ${track.id}
             </div>
 
-            <div class="trackControls">
+            <div class="trackButtons">
 
                 <button id="rec_${track.id}">
                     REC
@@ -429,10 +370,6 @@ function renderTrack(track){
 
                 <button id="solo_${track.id}">
                     S
-                </button>
-
-                <button id="del_${track.id}">
-                    DEL
                 </button>
 
             </div>
@@ -450,9 +387,9 @@ function renderTrack(track){
     bindTrack(track);
 }
 
-/* =========================================
+/* =====================================
 BIND
-========================================= */
+===================================== */
 
 function bindTrack(track){
 
@@ -469,11 +406,6 @@ function bindTrack(track){
     const soloBtn =
         document.getElementById(
             "solo_" + track.id
-        );
-
-    const delBtn =
-        document.getElementById(
-            "del_" + track.id
         );
 
     recBtn.onclick = async () => {
@@ -507,7 +439,9 @@ function bindTrack(track){
 
                 const audioBuffer =
                     await audioContext
-                    .decodeAudioData(arrayBuffer);
+                    .decodeAudioData(
+                        arrayBuffer
+                    );
 
                 const take = {
 
@@ -515,11 +449,18 @@ function bindTrack(track){
 
                     buffer:audioBuffer,
 
-                    position:0,
+                    startOffset:0,
 
-                    width:
-                        audioBuffer.duration *
-                        PIXELS_PER_SECOND,
+                    endOffset:
+                        audioBuffer.duration,
+
+                    timelinePosition:0,
+
+                    gain:1,
+
+                    muted:false,
+
+                    solo:false,
 
                     source:null,
 
@@ -530,12 +471,13 @@ function bindTrack(track){
 
                 track.takes.push(take);
 
-                renderTake(track, take);
+                renderTake(track,take);
             };
 
             recorder.start();
 
-            track.recorder = recorder;
+            track.recorder =
+                recorder;
 
             recBtn.classList.add(
                 "recActive"
@@ -576,27 +518,13 @@ function bindTrack(track){
             "soloActive"
         );
     };
-
-    delBtn.onclick = () => {
-
-        document
-            .getElementById(
-                "track_" + track.id
-            )
-            .remove();
-
-        tracks =
-            tracks.filter(
-                t => t.id !== track.id
-            );
-    };
 }
 
-/* =========================================
-TAKE
-========================================= */
+/* =====================================
+TAKE RENDER
+===================================== */
 
-function renderTake(track, take){
+function renderTake(track,take){
 
     const lane =
         document.getElementById(
@@ -606,13 +534,13 @@ function renderTake(track, take){
     const block =
         document.createElement("div");
 
-    block.className = "audioBlock";
+    block.className =
+        "audioBlock";
 
-    block.style.left =
-        take.position + "px";
-
-    block.style.width =
-        take.width + "px";
+    updateTakeVisual(
+        block,
+        take
+    );
 
     /* HANDLES */
 
@@ -631,7 +559,7 @@ function renderTake(track, take){
     block.appendChild(leftHandle);
     block.appendChild(rightHandle);
 
-    /* WAVEFORM */
+    /* WAVE */
 
     const canvas =
         document.createElement("canvas");
@@ -639,16 +567,11 @@ function renderTake(track, take){
     canvas.className =
         "waveCanvas";
 
-    canvas.width =
-        take.width;
-
-    canvas.height = 80;
-
     block.appendChild(canvas);
 
-    drawWaveform(
+    renderWaveform(
         canvas,
-        take.buffer
+        take
     );
 
     /* CURSOR */
@@ -694,7 +617,7 @@ function renderTake(track, take){
 
     let startMouseX = 0;
 
-    let startTakeX = 0;
+    let startPosition = 0;
 
     block.addEventListener(
         "mousedown",
@@ -710,8 +633,8 @@ function renderTake(track, take){
             startMouseX =
                 e.clientX;
 
-            startTakeX =
-                take.position;
+            startPosition =
+                take.timelinePosition;
         }
     );
 
@@ -728,21 +651,20 @@ function renderTake(track, take){
                 e.clientX -
                 startMouseX;
 
-            let x =
-                startTakeX + delta;
+            let pos =
+                startPosition +
+                (delta / PIXELS_PER_SECOND);
 
-            if(x < 0)
-                x = 0;
+            if(pos < 0)
+                pos = 0;
 
-            x =
-                Math.round(
-                    x / 10
-                ) * 10;
+            take.timelinePosition =
+                pos;
 
-            take.position = x;
-
-            block.style.left =
-                x + "px";
+            updateTakeVisual(
+                block,
+                take
+            );
         }
     );
 
@@ -751,6 +673,118 @@ function renderTake(track, take){
         () => {
 
             dragging = false;
+        }
+    );
+
+    /* LEFT TRIM */
+
+    let trimLeft = false;
+
+    leftHandle.onmousedown = e => {
+
+        e.stopPropagation();
+
+        trimLeft = true;
+    };
+
+    /* RIGHT TRIM */
+
+    let trimRight = false;
+
+    rightHandle.onmousedown = e => {
+
+        e.stopPropagation();
+
+        trimRight = true;
+    };
+
+    document.addEventListener(
+        "mousemove",
+        e => {
+
+            /* LEFT */
+
+            if(trimLeft){
+
+                const delta =
+                    (e.movementX /
+                    PIXELS_PER_SECOND);
+
+                take.startOffset +=
+                    delta;
+
+                if(
+                    take.startOffset < 0
+                ){
+                    take.startOffset = 0;
+                }
+
+                if(
+                    take.startOffset >
+                    take.endOffset - 0.2
+                ){
+                    take.startOffset =
+                    take.endOffset - 0.2;
+                }
+
+                updateTakeVisual(
+                    block,
+                    take
+                );
+
+                renderWaveform(
+                    canvas,
+                    take
+                );
+            }
+
+            /* RIGHT */
+
+            if(trimRight){
+
+                const delta =
+                    (e.movementX /
+                    PIXELS_PER_SECOND);
+
+                take.endOffset +=
+                    delta;
+
+                if(
+                    take.endOffset >
+                    take.buffer.duration
+                ){
+                    take.endOffset =
+                    take.buffer.duration;
+                }
+
+                if(
+                    take.endOffset <
+                    take.startOffset + 0.2
+                ){
+                    take.endOffset =
+                    take.startOffset + 0.2;
+                }
+
+                updateTakeVisual(
+                    block,
+                    take
+                );
+
+                renderWaveform(
+                    canvas,
+                    take
+                );
+            }
+        }
+    );
+
+    document.addEventListener(
+        "mouseup",
+        () => {
+
+            trimLeft = false;
+
+            trimRight = false;
         }
     );
 
@@ -770,208 +804,60 @@ function renderTake(track, take){
     };
 }
 
-/* =========================================
-MENU
-========================================= */
+/* =====================================
+VISUAL
+===================================== */
 
-function openMenu(
-    x,
-    y,
-    track,
-    take,
-    block
+function updateTakeVisual(
+    block,
+    take
 ){
 
-    menu.innerHTML = "";
+    const duration =
+        take.endOffset -
+        take.startOffset;
 
-    menu.style.display = "block";
+    block.style.left =
+        (
+            take.timelinePosition *
+            PIXELS_PER_SECOND
+        ) + "px";
 
-    menu.style.left = x + "px";
-
-    menu.style.top = y + "px";
-
-    const actions = [
-
-        {
-            label:"PLAY TAKE",
-            action:() => {
-                playTake(take);
-            }
-        },
-
-        {
-            label:"STOP TAKE",
-            action:() => {
-                stopTake(take);
-            }
-        },
-
-        {
-            label:"DUPLICATE",
-            action:() => {
-
-                const clone = {
-
-                    ...take,
-
-                    id:Date.now(),
-
-                    position:
-                        take.position + 40
-                };
-
-                track.takes.push(clone);
-
-                renderTake(track, clone);
-            }
-        },
-
-        {
-            label:"DELETE TAKE",
-            action:() => {
-
-                block.remove();
-
-                track.takes =
-                    track.takes.filter(
-                        t => t.id !== take.id
-                    );
-            }
-        }
-
-    ];
-
-    actions.forEach(item => {
-
-        const div =
-            document.createElement("div");
-
-        div.className = "menuItem";
-
-        div.innerText = item.label;
-
-        div.onclick = () => {
-
-            item.action();
-
-            menu.style.display = "none";
-        };
-
-        menu.appendChild(div);
-    });
+    block.style.width =
+        (
+            duration *
+            PIXELS_PER_SECOND
+        ) + "px";
 }
 
-/* =========================================
-PLAY TAKE
-========================================= */
+/* =====================================
+WAVE
+===================================== */
 
-function playTake(take){
-
-    stopTake(take);
-
-    const source =
-        audioContext
-        .createBufferSource();
-
-    source.buffer =
-        take.buffer;
-
-    source.connect(
-        audioContext.destination
-    );
-
-    source.start();
-
-    take.source = source;
-
-    take.playing = true;
-
-    animateTakeCursor(take);
-}
-
-function stopTake(take){
-
-    if(take.source){
-
-        try{
-            take.source.stop();
-        }catch(e){}
-    }
-
-    take.playing = false;
-
-    if(take.cursor){
-
-        take.cursor.style.left =
-            "0px";
-    }
-}
-
-/* =========================================
-CURSOR
-========================================= */
-
-function animateTakeCursor(take){
-
-    const start =
-        audioContext.currentTime;
-
-    function loop(){
-
-        if(!take.playing)
-            return;
-
-        const elapsed =
-            audioContext.currentTime -
-            start;
-
-        const progress =
-            elapsed /
-            take.buffer.duration;
-
-        take.cursor.style.left =
-            (progress * take.width)
-            + "px";
-
-        if(progress >= 1){
-
-            take.playing = false;
-
-            take.cursor.style.left =
-                "0px";
-
-            return;
-        }
-
-        requestAnimationFrame(loop);
-    }
-
-    loop();
-}
-
-/* =========================================
-WAVEFORM
-========================================= */
-
-function drawWaveform(
+function renderWaveform(
     canvas,
-    buffer
+    take
 ){
+
+    const duration =
+        take.endOffset -
+        take.startOffset;
+
+    canvas.width =
+        duration *
+        PIXELS_PER_SECOND;
+
+    canvas.height = 80;
 
     const ctx =
         canvas.getContext("2d");
 
-    const data =
-        buffer.getChannelData(0);
-
-    const step =
-        Math.ceil(
-            data.length /
-            canvas.width
-        );
-
-    const amp =
-        canvas.height / 2;
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
 
     ctx.fillStyle =
         "#181818";
@@ -983,20 +869,52 @@ function drawWaveform(
         canvas.height
     );
 
-    ctx.beginPath();
-
     ctx.strokeStyle =
         "#00ff99";
 
+    ctx.beginPath();
+
+    const data =
+        take.buffer.getChannelData(0);
+
+    const startSample =
+        Math.floor(
+            take.startOffset *
+            take.buffer.sampleRate
+        );
+
+    const endSample =
+        Math.floor(
+            take.endOffset *
+            take.buffer.sampleRate
+        );
+
+    const samples =
+        data.slice(
+            startSample,
+            endSample
+        );
+
+    const step =
+        Math.ceil(
+            samples.length /
+            canvas.width
+        );
+
+    const amp =
+        canvas.height / 2;
+
     for(let i=0;i<canvas.width;i++){
 
-        let min = 1.0;
-        let max = -1.0;
+        let min = 1;
+        let max = -1;
 
         for(let j=0;j<step;j++){
 
             const datum =
-                data[(i*step)+j];
+                samples[
+                    (i*step)+j
+                ] || 0;
 
             if(datum < min)
                 min = datum;
@@ -1007,26 +925,27 @@ function drawWaveform(
 
         ctx.moveTo(
             i,
-            (1 + min) * amp
+            (1+min)*amp
         );
 
         ctx.lineTo(
             i,
-            (1 + max) * amp
+            (1+max)*amp
         );
     }
 
     ctx.stroke();
 }
 
-/* =========================================
+/* =====================================
 PLAYBACK
-========================================= */
+===================================== */
 
-document.getElementById("playBtn")
-.onclick = () => {
+document.getElementById(
+    "playBtn"
+).onclick = () => {
 
-    stopSession();
+    stopAll();
 
     const now =
         audioContext.currentTime;
@@ -1064,30 +983,126 @@ document.getElementById("playBtn")
                 audioContext.destination
             );
 
+            const duration =
+                take.endOffset -
+                take.startOffset;
+
             source.start(
+
                 now +
-                (
-                    take.position /
-                    PIXELS_PER_SECOND
-                )
+                take.timelinePosition,
+
+                take.startOffset,
+
+                duration
             );
 
-            take.source = source;
+            take.source =
+                source;
 
-            take.playing = true;
+            take.playing =
+                true;
 
-            animateTakeCursor(take);
+            animateCursor(take);
 
-            activeSources.push(source);
+            activeSources.push(
+                source
+            );
         });
     });
 
     animateTimeline();
 };
 
-/* =========================================
-TIMELINE
-========================================= */
+function stopAll(){
+
+    activeSources.forEach(s => {
+
+        try{
+            s.stop();
+        }catch(e){}
+    });
+
+    activeSources = [];
+
+    playing = false;
+
+    playhead.style.left =
+        "180px";
+
+    tracks.forEach(track => {
+
+        track.takes.forEach(take => {
+
+            take.playing =
+                false;
+
+            if(take.cursor){
+
+                take.cursor.style.left =
+                    "0px";
+            }
+        });
+    });
+}
+
+document.getElementById(
+    "stopBtn"
+).onclick = stopAll;
+
+/* =====================================
+CURSOR
+===================================== */
+
+function animateCursor(take){
+
+    const duration =
+        take.endOffset -
+        take.startOffset;
+
+    const start =
+        audioContext.currentTime;
+
+    function loop(){
+
+        if(!take.playing)
+            return;
+
+        const elapsed =
+            audioContext.currentTime -
+            start;
+
+        const progress =
+            elapsed / duration;
+
+        take.cursor.style.left =
+            (
+                progress *
+                (
+                    duration *
+                    PIXELS_PER_SECOND
+                )
+            ) + "px";
+
+        if(progress >= 1){
+
+            take.playing = false;
+
+            take.cursor.style.left =
+                "0px";
+
+            return;
+        }
+
+        requestAnimationFrame(loop);
+    }
+
+    loop();
+}
+
+/* =====================================
+PLAYHEAD
+===================================== */
 
 function animateTimeline(){
 
@@ -1120,47 +1135,117 @@ function animateTimeline(){
     loop();
 }
 
-/* =========================================
-STOP
-========================================= */
+/* =====================================
+MENU
+===================================== */
 
-document.getElementById("stopBtn")
-.onclick = stopSession;
+function openMenu(
+    x,
+    y,
+    track,
+    take,
+    block
+){
 
-function stopSession(){
+    menu.innerHTML = "";
 
-    activeSources.forEach(s => {
+    menu.style.display =
+        "block";
 
-        try{
-            s.stop();
-        }catch(e){}
-    });
+    menu.style.left =
+        x + "px";
 
-    activeSources = [];
+    menu.style.top =
+        y + "px";
 
-    playing = false;
+    const actions = [
 
-    playhead.style.left =
-        "180px";
+        {
+            label:"PLAY TAKE",
+            action:() => {
 
-    tracks.forEach(track => {
-
-        track.takes.forEach(take => {
-
-            take.playing = false;
-
-            if(take.cursor){
-
-                take.cursor.style.left =
-                    "0px";
+                playSingleTake(take);
             }
-        });
+        },
+
+        {
+            label:"STOP TAKE",
+            action:() => {
+
+                if(take.source){
+
+                    try{
+                        take.source.stop();
+                    }catch(e){}
+                }
+            }
+        },
+
+        {
+            label:"DELETE TAKE",
+            action:() => {
+
+                block.remove();
+
+                track.takes =
+                    track.takes.filter(
+                        t => t.id !== take.id
+                    );
+            }
+        }
+
+    ];
+
+    actions.forEach(item => {
+
+        const div =
+            document.createElement("div");
+
+        div.className =
+            "menuItem";
+
+        div.innerText =
+            item.label;
+
+        div.onclick = () => {
+
+            item.action();
+
+            menu.style.display =
+                "none";
+        };
+
+        menu.appendChild(div);
     });
 }
 
-/* =========================================
+function playSingleTake(take){
+
+    const source =
+        audioContext
+        .createBufferSource();
+
+    source.buffer =
+        take.buffer;
+
+    source.connect(
+        audioContext.destination
+    );
+
+    const duration =
+        take.endOffset -
+        take.startOffset;
+
+    source.start(
+        0,
+        take.startOffset,
+        duration
+    );
+}
+
+/* =====================================
 INIT
-========================================= */
+===================================== */
 
 createTrack();
 
