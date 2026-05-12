@@ -1,6 +1,6 @@
 /* =========================================
 ARQUIVO 2 — style.css
-VOV FLOW MEMORY v6
+VOV FLOW MEMORY v7
 ========================================= */
 
 body{
@@ -33,7 +33,6 @@ button{
     color:#fff;
     padding:10px 16px;
     font-weight:bold;
-    font-size:14px;
     cursor:pointer;
 }
 
@@ -45,31 +44,54 @@ button{
     background:#aa0000;
 }
 
-#rewBtn,
-#ffBtn{
-    background:#444;
-    width:48px;
+/* =====================================
+INPUT BAR
+===================================== */
+
+#inputBar{
+    height:90px;
+    background:#0d0d0d;
+    border-bottom:1px solid #181818;
+    display:flex;
+    align-items:center;
+    gap:20px;
+    padding:10px;
+    box-sizing:border-box;
 }
 
-#exportTrackBtn{
-    background:#0055aa;
+.inputSection{
+    display:flex;
+    flex-direction:column;
+    gap:4px;
 }
 
-#exportMixBtn{
-    background:#8800aa;
+.inputSection label{
+    font-size:11px;
+    color:#999;
 }
 
-.recActive{
-    background:red !important;
+.inputSection input{
+    width:140px;
 }
 
-.muteActive{
-    background:#555 !important;
+/* =====================================
+METER
+===================================== */
+
+.meterWrap{
+    width:240px;
+    height:20px;
+    background:#111;
+    border-radius:10px;
+    overflow:hidden;
+    border:1px solid #222;
 }
 
-.soloActive{
-    background:gold !important;
-    color:black !important;
+#inputMeter{
+    width:0%;
+    height:100%;
+    background:lime;
+    transition:width 0.04s linear;
 }
 
 /* =====================================
@@ -78,7 +100,7 @@ TIMELINE
 
 #timelineWrapper{
     width:100%;
-    height:calc(100vh - 60px);
+    height:calc(100vh - 150px);
     overflow:auto;
     position:relative;
 }
@@ -131,11 +153,6 @@ TRACK
     padding:10px;
     box-sizing:border-box;
     z-index:100;
-}
-
-.trackTitle{
-    margin-bottom:10px;
-    font-weight:bold;
 }
 
 .trackButtons{
@@ -192,10 +209,6 @@ AUDIO BLOCK
     border-color:#00ff99;
 }
 
-/* =====================================
-HANDLES
-===================================== */
-
 .handle{
     position:absolute;
     top:0;
@@ -207,17 +220,11 @@ HANDLES
 
 .leftHandle{
     left:0;
-    cursor:ew-resize;
 }
 
 .rightHandle{
     right:0;
-    cursor:ew-resize;
 }
-
-/* =====================================
-WAVEFORM
-===================================== */
 
 .waveCanvas{
     width:100%;
@@ -237,4 +244,17 @@ PLAYHEAD
     height:100%;
     background:red;
     z-index:9999;
+}
+
+.recActive{
+    background:red !important;
+}
+
+.muteActive{
+    background:#555 !important;
+}
+
+.soloActive{
+    background:gold !important;
+    color:black !important;
 }
