@@ -1,12 +1,15 @@
 /* =========================================
 ARQUIVO 3 — app.js
-VOV FLOW MEMORY v7
-INPUT ENGINE
+VOV VERO v1
 ========================================= */
 
 let audioContext = null;
 
 const PIXELS_PER_SECOND = 120;
+
+/* =====================================
+DOM
+===================================== */
 
 const timeline =
     document.getElementById(
@@ -28,6 +31,18 @@ const inputMeter =
         "inputMeter"
     );
 
+const veroCanvas =
+    document.getElementById(
+        "veroCanvas"
+    );
+
+const veroCtx =
+    veroCanvas.getContext("2d");
+
+/* =====================================
+STATE
+===================================== */
+
 let tracks = [];
 
 let trackCount = 0;
@@ -39,6 +54,145 @@ let activeSources = [];
 let timelineOffset = 0;
 
 let monitorEnabled = false;
+
+let playing = false;
+
+let playheadAnimation = null;
+
+let playStartTime = 0;
+
+/* =====================================
+VERO ENGINE
+===================================== */
+
+let veroAnalyser = null;
+
+let veroData = null;
+
+function resizeVeroCanvas(){
+
+    veroCanvas.width =
+        timeline.scrollWidth;
+
+    veroCanvas.height =
+        timeline.scrollHeight;
+}
+
+window.addEventListener(
+    "resize",
+    resizeVeroCanvas
+);
+
+resizeVeroCanvas();
+
+function connectVero(node){
+
+    veroAnalyser =
+        audioContext.createAnalyser();
+
+    veroAnalyser.fftSize = 2048;
+
+    veroData =
+        new Uint8Array(
+            veroAnalyser.frequencyBinCount
+        );
+
+    node.connect(
+        veroAnalyser
+    );
+
+    animateVero();
+}
+
+function animateVero(){
+
+    requestAnimationFrame(
+        animateVero
+    );
+
+    if(!veroAnalyser)
+        return;
+
+    veroAnalyser.getByteFrequencyData(
+        veroData
+    );
+
+    veroCtx.fillStyle =
+        "rgba(0,0,0,0.04)";
+
+    veroCtx.fillRect(
+        0,
+        0,
+        veroCanvas.width,
+        veroCanvas.height
+    );
+
+    const centerY =
+        veroCanvas.height / 2;
+
+    for(
+        let i=0;
+        i<veroData.length;
+        i++
+    ){
+
+        const value =
+            veroData[i];
+
+        const percent =
+            value / 255;
+
+        const height =
+            percent * 240;
+
+        let r = 0;
+        let g = 0;
+        let b = 0;
+
+        if(i < 80){
+
+            r = value;
+            g = value * 0.2;
+            b = value * 0.1;
+
+        }else if(i < 240){
+
+            r = value * 0.7;
+            g = value;
+            b = value * 0.2;
+
+        }else{
+
+            r = value * 0.2;
+            g = value * 0.5;
+            b = value;
+        }
+
+        veroCtx.fillStyle =
+            `
+            rgba(
+                ${r},
+                ${g},
+                ${b},
+                0.15
+            )
+            `;
+
+        const x =
+            (
+                performance.now()
+                * 0.12
+            ) %
+            veroCanvas.width;
+
+        veroCtx.fillRect(
+            x,
+            centerY - height/2,
+            2,
+            height
+        );
+    }
+}
 
 /* =====================================
 INPUT ENGINE
@@ -88,7 +242,9 @@ GRID
 for(let i=0;i<300;i++){
 
     const line =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
     line.className =
         "gridLine";
@@ -96,14 +252,18 @@ for(let i=0;i<300;i++){
     line.style.left =
         (
             180 +
-            i *
-            PIXELS_PER_SECOND
+            (
+                i *
+                PIXELS_PER_SECOND
+            )
         ) + "px";
 
     timeline.appendChild(line);
 
     const text =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
     text.className =
         "gridText";
@@ -111,8 +271,10 @@ for(let i=0;i<300;i++){
     text.style.left =
         (
             183 +
-            i *
-            PIXELS_PER_SECOND
+            (
+                i *
+                PIXELS_PER_SECOND
+            )
         ) + "px";
 
     text.innerText =
@@ -122,7 +284,7 @@ for(let i=0;i<300;i++){
 }
 
 /* =====================================
-TRACK
+TRACKS
 ===================================== */
 
 document.getElementById(
@@ -163,7 +325,9 @@ function createTrack(){
 function renderTrack(track){
 
     const div =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
     div.className =
         "track";
@@ -188,6 +352,10 @@ function renderTrack(track){
 
                 <button id="solo_${track.id}">
                     S
+                </button>
+
+                <button id="del_${track.id}">
+                    X
                 </button>
 
             </div>
@@ -232,14 +400,14 @@ function renderTrack(track){
 
     timeline.appendChild(div);
 
-    bindTrack(track);
+    bindTrack(track,div);
 }
 
 /* =====================================
 BIND
 ===================================== */
 
-function bindTrack(track){
+function bindTrack(track,div){
 
     const recBtn =
         document.getElementById(
@@ -256,6 +424,11 @@ function bindTrack(track){
             "solo_" + track.id
         );
 
+    const delBtn =
+        document.getElementById(
+            "del_" + track.id
+        );
+
     const volSlider =
         document.getElementById(
             "vol_" + track.id
@@ -265,6 +438,20 @@ function bindTrack(track){
         document.getElementById(
             "pan_" + track.id
         );
+
+    /* DELETE TRACK */
+
+    delBtn.onclick = () => {
+
+        div.remove();
+
+        tracks =
+            tracks.filter(
+                t => t.id !== track.id
+            );
+    };
+
+    /* MIXER */
 
     volSlider.oninput = () => {
 
@@ -282,9 +469,7 @@ function bindTrack(track){
             );
     };
 
-    /* =====================================
-    REC
-    ===================================== */
+    /* REC */
 
     recBtn.onclick = async () => {
 
@@ -351,9 +536,12 @@ function bindTrack(track){
                     audioContext
                     .createAnalyser();
 
-                analyser.fftSize = 256;
+                analyser.fftSize =
+                    256;
 
-                source.connect(gainNode);
+                source.connect(
+                    gainNode
+                );
 
                 gainNode.connect(
                     compressor
@@ -420,7 +608,9 @@ function bindTrack(track){
                         timelinePosition:0
                     };
 
-                    track.takes.push(take);
+                    track.takes.push(
+                        take
+                    );
 
                     renderTake(
                         track,
@@ -520,22 +710,6 @@ function meterLoop(analyser){
         inputMeter.style.width =
             percent + "%";
 
-        if(percent < 60){
-
-            inputMeter.style.background =
-                "lime";
-
-        }else if(percent < 85){
-
-            inputMeter.style.background =
-                "yellow";
-
-        }else{
-
-            inputMeter.style.background =
-                "red";
-        }
-
         requestAnimationFrame(
             update
         );
@@ -556,7 +730,9 @@ function renderTake(track,take){
         );
 
     const block =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
     block.className =
         "audioBlock";
@@ -566,36 +742,30 @@ function renderTake(track,take){
         take
     );
 
-    const leftHandle =
-        document.createElement("div");
-
-    leftHandle.className =
-        "handle leftHandle";
-
-    const rightHandle =
-        document.createElement("div");
-
-    rightHandle.className =
-        "handle rightHandle";
-
-    block.appendChild(leftHandle);
-
-    block.appendChild(rightHandle);
-
     const canvas =
-        document.createElement("canvas");
+        document.createElement(
+            "canvas"
+        );
 
     canvas.className =
         "waveCanvas";
 
-    block.appendChild(canvas);
-
-    renderWaveform(
-        canvas,
-        take
+    block.appendChild(
+        canvas
     );
 
-    lane.appendChild(block);
+    lane.appendChild(
+        block
+    );
+
+    requestAnimationFrame(
+        () => {
+
+        renderWaveform(
+            canvas,
+            take
+        );
+    });
 
     block.onclick = () => {
 
@@ -621,56 +791,43 @@ function renderTake(track,take){
 
     let dragging = false;
 
-    let startPointerX = 0;
+    let startX = 0;
 
-    let startTimelinePosition = 0;
+    let startPos = 0;
 
     block.addEventListener(
         "pointerdown",
         e => {
 
-            if(
-                e.target === leftHandle ||
-                e.target === rightHandle
-            ) return;
-
             dragging = true;
 
-            startPointerX =
+            startX =
                 e.clientX;
 
-            startTimelinePosition =
+            startPos =
                 take.timelinePosition;
-
-            block.setPointerCapture(
-                e.pointerId
-            );
         }
     );
 
-    block.addEventListener(
+    window.addEventListener(
         "pointermove",
         e => {
 
             if(!dragging)
                 return;
 
-            const deltaX =
-                e.clientX -
-                startPointerX;
-
-            let newPosition =
-                startTimelinePosition +
+            const delta =
                 (
-                    deltaX /
-                    PIXELS_PER_SECOND
-                );
-
-            if(newPosition < 0)
-                newPosition = 0;
+                    e.clientX -
+                    startX
+                ) /
+                PIXELS_PER_SECOND;
 
             take.timelinePosition =
-                newPosition;
+                Math.max(
+                    0,
+                    startPos + delta
+                );
 
             updateTakeVisual(
                 block,
@@ -679,7 +836,7 @@ function renderTake(track,take){
         }
     );
 
-    block.addEventListener(
+    window.addEventListener(
         "pointerup",
         () => {
 
@@ -728,13 +885,23 @@ function renderWaveform(
         take.startOffset;
 
     canvas.width =
-        duration *
-        PIXELS_PER_SECOND;
+        Math.max(
+            100,
+            duration *
+            PIXELS_PER_SECOND
+        );
 
     canvas.height = 80;
 
     const ctx =
         canvas.getContext("2d");
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
 
     ctx.fillStyle =
         "#181818";
@@ -771,7 +938,11 @@ function renderWaveform(
         for(let j=0;j<step;j++){
 
             const datum =
-                data[(i*step)+j] || 0;
+                data[
+                    (
+                        i * step
+                    ) + j
+                ] || 0;
 
             if(datum < min)
                 min = datum;
@@ -782,12 +953,16 @@ function renderWaveform(
 
         ctx.moveTo(
             i,
-            (1+min)*amp
+            (
+                1 + min
+            ) * amp
         );
 
         ctx.lineTo(
             i,
-            (1+max)*amp
+            (
+                1 + max
+            ) * amp
         );
     }
 
@@ -806,6 +981,13 @@ document.getElementById(
         return;
 
     stopAll();
+
+    playing = true;
+
+    playStartTime =
+        audioContext.currentTime;
+
+    animatePlayhead();
 
     const now =
         audioContext.currentTime;
@@ -838,9 +1020,17 @@ document.getElementById(
             panNode.pan.value =
                 track.pan;
 
-            source.connect(gainNode);
+            source.connect(
+                gainNode
+            );
 
-            gainNode.connect(panNode);
+            connectVero(
+                gainNode
+            );
+
+            gainNode.connect(
+                panNode
+            );
 
             panNode.connect(
                 audioContext.destination
@@ -857,14 +1047,58 @@ document.getElementById(
                 duration
             );
 
-            activeSources.push(source);
+            activeSources.push(
+                source
+            );
         });
     });
 };
 
+/* =====================================
+PLAYHEAD ENGINE
+===================================== */
+
+function animatePlayhead(){
+
+    if(!playing)
+        return;
+
+    const elapsed =
+        audioContext.currentTime -
+        playStartTime;
+
+    playhead.style.left =
+        (
+            180 +
+            (
+                elapsed *
+                PIXELS_PER_SECOND
+            )
+        ) + "px";
+
+    playheadAnimation =
+        requestAnimationFrame(
+            animatePlayhead
+        );
+}
+
+/* =====================================
+STOP
+===================================== */
+
 function stopAll(){
 
-    activeSources.forEach(s => {
+    playing = false;
+
+    cancelAnimationFrame(
+        playheadAnimation
+    );
+
+    playhead.style.left =
+        "180px";
+
+    activeSources.forEach(
+        s => {
 
         try{
             s.stop();
@@ -911,11 +1145,6 @@ function updateTransport(){
 
     timelineWrapper.scrollLeft =
         px;
-
-    playhead.style.left =
-        (
-            180 + px
-        ) + "px";
 }
 
 /* =====================================
@@ -927,6 +1156,6 @@ window.onload = () => {
     createTrack();
 
     console.log(
-        "VOV INPUT ENGINE READY"
+        "VOV VERO READY"
     );
 };
