@@ -1,6 +1,7 @@
 <!-- =========================================
 ARQUIVO 1 — index.html
-VOV FLOW MEMORY v6
+VOV FLOW MEMORY v7
+INPUT ENGINE
 ========================================= -->
 
 <!DOCTYPE html>
@@ -14,7 +15,7 @@ VOV FLOW MEMORY v6
       content="width=device-width,initial-scale=1.0">
 
 <title>
-VOV FLOW MEMORY v6
+VOV FLOW MEMORY v7
 </title>
 
 <link rel="stylesheet"
@@ -57,6 +58,66 @@ TOPBAR
     <button id="exportMixBtn">
         MIX
     </button>
+
+</div>
+
+<!-- =====================================
+INPUT ENGINE
+===================================== -->
+
+<div id="inputBar">
+
+    <div class="inputSection">
+
+        <label>
+            INPUT GAIN
+        </label>
+
+        <input
+            type="range"
+            id="inputGain"
+            min="0"
+            max="3"
+            step="0.01"
+            value="1"
+        >
+
+    </div>
+
+    <div class="inputSection">
+
+        <label>
+            COMPRESS
+        </label>
+
+        <input
+            type="range"
+            id="compressAmount"
+            min="0"
+            max="1"
+            step="0.01"
+            value="0.4"
+        >
+
+    </div>
+
+    <div class="inputSection">
+
+        <label>
+            MONITOR
+        </label>
+
+        <button id="monitorBtn">
+            OFF
+        </button>
+
+    </div>
+
+    <div class="meterWrap">
+
+        <div id="inputMeter"></div>
+
+    </div>
 
 </div>
 
