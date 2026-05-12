@@ -1,6 +1,6 @@
 /* =========================================
 ARQUIVO 2 — style.css
-VOV FLOW MEMORY v7
+VOV VERO v1
 ========================================= */
 
 body{
@@ -113,6 +113,21 @@ TIMELINE
 }
 
 /* =====================================
+VERO ENGINE
+===================================== */
+
+#veroCanvas{
+    position:absolute;
+    top:0;
+    left:180px;
+    width:calc(100% - 180px);
+    height:100%;
+    z-index:1;
+    opacity:0.22;
+    pointer-events:none;
+}
+
+/* =====================================
 GRID
 ===================================== */
 
@@ -138,6 +153,7 @@ TRACK
 
 .track{
     position:relative;
+    z-index:10;
     height:160px;
     border-bottom:1px solid #1b1b1b;
 }
@@ -243,8 +259,12 @@ PLAYHEAD
     width:2px;
     height:100%;
     background:red;
-    z-index:9999;
+    z-index:99999;
 }
+
+/* =====================================
+BUTTON STATES
+===================================== */
 
 .recActive{
     background:red !important;
