@@ -1,23 +1,12 @@
 /* =========================================
 ARQUIVO 3 — app.js
-VOV FLOW MEMORY v6
+VOV FLOW MEMORY v7
+INPUT ENGINE
 ========================================= */
-
-/* =====================================
-AUDIO
-===================================== */
 
 let audioContext = null;
 
-/* =====================================
-CONFIG
-===================================== */
-
 const PIXELS_PER_SECOND = 120;
-
-/* =====================================
-DOM
-===================================== */
 
 const timeline =
     document.getElementById(
@@ -34,9 +23,10 @@ const playhead =
         "playhead"
     );
 
-/* =====================================
-STATE
-===================================== */
+const inputMeter =
+    document.getElementById(
+        "inputMeter"
+    );
 
 let tracks = [];
 
@@ -47,6 +37,49 @@ let selectedTake = null;
 let activeSources = [];
 
 let timelineOffset = 0;
+
+let monitorEnabled = false;
+
+/* =====================================
+INPUT ENGINE
+===================================== */
+
+let inputGainValue = 1;
+
+let compressorAmount = 0.4;
+
+document.getElementById(
+    "inputGain"
+).oninput = e => {
+
+    inputGainValue =
+        parseFloat(
+            e.target.value
+        );
+};
+
+document.getElementById(
+    "compressAmount"
+).oninput = e => {
+
+    compressorAmount =
+        parseFloat(
+            e.target.value
+        );
+};
+
+document.getElementById(
+    "monitorBtn"
+).onclick = function(){
+
+    monitorEnabled =
+        !monitorEnabled;
+
+    this.innerText =
+        monitorEnabled
+        ? "ON"
+        : "OFF";
+};
 
 /* =====================================
 GRID
@@ -63,10 +96,8 @@ for(let i=0;i<300;i++){
     line.style.left =
         (
             180 +
-            (
-                i *
-                PIXELS_PER_SECOND
-            )
+            i *
+            PIXELS_PER_SECOND
         ) + "px";
 
     timeline.appendChild(line);
@@ -80,10 +111,8 @@ for(let i=0;i<300;i++){
     text.style.left =
         (
             183 +
-            (
-                i *
-                PIXELS_PER_SECOND
-            )
+            i *
+            PIXELS_PER_SECOND
         ) + "px";
 
     text.innerText =
@@ -93,7 +122,7 @@ for(let i=0;i<300;i++){
 }
 
 /* =====================================
-ADD TRACK
+TRACK
 ===================================== */
 
 document.getElementById(
@@ -102,10 +131,6 @@ document.getElementById(
 
     createTrack();
 };
-
-/* =====================================
-CREATE TRACK
-===================================== */
 
 function createTrack(){
 
@@ -135,10 +160,6 @@ function createTrack(){
     renderTrack(track);
 }
 
-/* =====================================
-RENDER TRACK
-===================================== */
-
 function renderTrack(track){
 
     const div =
@@ -151,7 +172,7 @@ function renderTrack(track){
 
         <div class="trackHeader">
 
-            <div class="trackTitle">
+            <div>
                 TRACK ${track.id}
             </div>
 
@@ -215,7 +236,7 @@ function renderTrack(track){
 }
 
 /* =====================================
-BIND TRACK
+BIND
 ===================================== */
 
 function bindTrack(track){
@@ -244,10 +265,6 @@ function bindTrack(track){
         document.getElementById(
             "pan_" + track.id
         );
-
-    /* =====================================
-    MIXER
-    ===================================== */
 
     volSlider.oninput = () => {
 
@@ -287,11 +304,73 @@ function bindTrack(track){
                     await navigator
                     .mediaDevices
                     .getUserMedia({
-                        audio:true
+                        audio:{
+                            echoCancellation:true,
+                            noiseSuppression:true,
+                            autoGainControl:true
+                        }
                     });
 
                 track.stream =
                     stream;
+
+                const source =
+                    audioContext
+                    .createMediaStreamSource(
+                        stream
+                    );
+
+                const gainNode =
+                    audioContext
+                    .createGain();
+
+                gainNode.gain.value =
+                    inputGainValue;
+
+                const compressor =
+                    audioContext
+                    .createDynamicsCompressor();
+
+                compressor.threshold.value =
+                    -24;
+
+                compressor.knee.value =
+                    30;
+
+                compressor.ratio.value =
+                    12 *
+                    compressorAmount;
+
+                compressor.attack.value =
+                    0.003;
+
+                compressor.release.value =
+                    0.25;
+
+                const analyser =
+                    audioContext
+                    .createAnalyser();
+
+                analyser.fftSize = 256;
+
+                source.connect(gainNode);
+
+                gainNode.connect(
+                    compressor
+                );
+
+                compressor.connect(
+                    analyser
+                );
+
+                if(monitorEnabled){
+
+                    analyser.connect(
+                        audioContext.destination
+                    );
+                }
+
+                meterLoop(analyser);
 
                 const recorder =
                     new MediaRecorder(
@@ -310,6 +389,9 @@ function bindTrack(track){
 
                 recorder.onstop =
                     async () => {
+
+                    inputMeter.style.width =
+                        "0%";
 
                     const blob =
                         new Blob(chunks);
@@ -333,15 +415,12 @@ function bindTrack(track){
                         startOffset:0,
 
                         endOffset:
-                            audioBuffer
-                            .duration,
+                            audioBuffer.duration,
 
                         timelinePosition:0
                     };
 
-                    track.takes.push(
-                        take
-                    );
+                    track.takes.push(take);
 
                     renderTake(
                         track,
@@ -368,8 +447,7 @@ function bindTrack(track){
                         t => t.stop()
                     );
 
-                track.recorder =
-                    null;
+                track.recorder = null;
 
                 recBtn.classList.remove(
                     "recActive"
@@ -386,10 +464,6 @@ function bindTrack(track){
         }
     };
 
-    /* =====================================
-    MUTE
-    ===================================== */
-
     muteBtn.onclick = () => {
 
         track.muted =
@@ -399,10 +473,6 @@ function bindTrack(track){
             "muteActive"
         );
     };
-
-    /* =====================================
-    SOLO
-    ===================================== */
 
     soloBtn.onclick = () => {
 
@@ -416,7 +486,66 @@ function bindTrack(track){
 }
 
 /* =====================================
-RENDER TAKE
+INPUT METER
+===================================== */
+
+function meterLoop(analyser){
+
+    const data =
+        new Uint8Array(
+            analyser.frequencyBinCount
+        );
+
+    function update(){
+
+        analyser.getByteFrequencyData(
+            data
+        );
+
+        let sum = 0;
+
+        for(let i=0;i<data.length;i++){
+
+            sum += data[i];
+        }
+
+        let average =
+            sum / data.length;
+
+        let percent =
+            (
+                average / 255
+            ) * 100;
+
+        inputMeter.style.width =
+            percent + "%";
+
+        if(percent < 60){
+
+            inputMeter.style.background =
+                "lime";
+
+        }else if(percent < 85){
+
+            inputMeter.style.background =
+                "yellow";
+
+        }else{
+
+            inputMeter.style.background =
+                "red";
+        }
+
+        requestAnimationFrame(
+            update
+        );
+    }
+
+    update();
+}
+
+/* =====================================
+TAKES
 ===================================== */
 
 function renderTake(track,take){
@@ -449,34 +578,24 @@ function renderTake(track,take){
     rightHandle.className =
         "handle rightHandle";
 
-    block.appendChild(
-        leftHandle
-    );
+    block.appendChild(leftHandle);
 
-    block.appendChild(
-        rightHandle
-    );
+    block.appendChild(rightHandle);
 
     const canvas =
-        document.createElement(
-            "canvas"
-        );
+        document.createElement("canvas");
 
     canvas.className =
         "waveCanvas";
 
-    block.appendChild(
-        canvas
-    );
+    block.appendChild(canvas);
 
     renderWaveform(
         canvas,
         take
     );
 
-    lane.appendChild(
-        block
-    );
+    lane.appendChild(block);
 
     block.onclick = () => {
 
@@ -567,140 +686,6 @@ function renderTake(track,take){
             dragging = false;
         }
     );
-
-    /* LEFT TRIM */
-
-    let trimLeft = false;
-
-    leftHandle.addEventListener(
-        "pointerdown",
-        e => {
-
-            e.stopPropagation();
-
-            trimLeft = true;
-
-            leftHandle.setPointerCapture(
-                e.pointerId
-            );
-        }
-    );
-
-    leftHandle.addEventListener(
-        "pointermove",
-        e => {
-
-            if(!trimLeft)
-                return;
-
-            const delta =
-                e.movementX /
-                PIXELS_PER_SECOND;
-
-            take.startOffset +=
-                delta;
-
-            if(
-                take.startOffset < 0
-            ){
-                take.startOffset = 0;
-            }
-
-            if(
-                take.startOffset >
-                take.endOffset - 0.2
-            ){
-                take.startOffset =
-                    take.endOffset - 0.2;
-            }
-
-            updateTakeVisual(
-                block,
-                take
-            );
-
-            renderWaveform(
-                canvas,
-                take
-            );
-        }
-    );
-
-    leftHandle.addEventListener(
-        "pointerup",
-        () => {
-
-            trimLeft = false;
-        }
-    );
-
-    /* RIGHT TRIM */
-
-    let trimRight = false;
-
-    rightHandle.addEventListener(
-        "pointerdown",
-        e => {
-
-            e.stopPropagation();
-
-            trimRight = true;
-
-            rightHandle.setPointerCapture(
-                e.pointerId
-            );
-        }
-    );
-
-    rightHandle.addEventListener(
-        "pointermove",
-        e => {
-
-            if(!trimRight)
-                return;
-
-            const delta =
-                e.movementX /
-                PIXELS_PER_SECOND;
-
-            take.endOffset +=
-                delta;
-
-            if(
-                take.endOffset >
-                take.buffer.duration
-            ){
-                take.endOffset =
-                    take.buffer.duration;
-            }
-
-            if(
-                take.endOffset <
-                take.startOffset + 0.2
-            ){
-                take.endOffset =
-                    take.startOffset + 0.2;
-            }
-
-            updateTakeVisual(
-                block,
-                take
-            );
-
-            renderWaveform(
-                canvas,
-                take
-            );
-        }
-    );
-
-    rightHandle.addEventListener(
-        "pointerup",
-        () => {
-
-            trimRight = false;
-        }
-    );
 }
 
 /* =====================================
@@ -786,12 +771,7 @@ function renderWaveform(
         for(let j=0;j<step;j++){
 
             const datum =
-                data[
-                    (
-                        i *
-                        step
-                    ) + j
-                ] || 0;
+                data[(i*step)+j] || 0;
 
             if(datum < min)
                 min = datum;
@@ -802,16 +782,12 @@ function renderWaveform(
 
         ctx.moveTo(
             i,
-            (
-                1 + min
-            ) * amp
+            (1+min)*amp
         );
 
         ctx.lineTo(
             i,
-            (
-                1 + max
-            ) * amp
+            (1+max)*amp
         );
     }
 
@@ -862,13 +838,9 @@ document.getElementById(
             panNode.pan.value =
                 track.pan;
 
-            source.connect(
-                gainNode
-            );
+            source.connect(gainNode);
 
-            gainNode.connect(
-                panNode
-            );
+            gainNode.connect(panNode);
 
             panNode.connect(
                 audioContext.destination
@@ -885,21 +857,14 @@ document.getElementById(
                 duration
             );
 
-            activeSources.push(
-                source
-            );
+            activeSources.push(source);
         });
     });
 };
 
-/* =====================================
-STOP
-===================================== */
-
 function stopAll(){
 
-    activeSources.forEach(
-        s => {
+    activeSources.forEach(s => {
 
         try{
             s.stop();
@@ -954,364 +919,6 @@ function updateTransport(){
 }
 
 /* =====================================
-EXPORT TRACK
-===================================== */
-
-document.getElementById(
-    "exportTrackBtn"
-).onclick = async () => {
-
-    if(!selectedTake){
-
-        alert(
-            "Selecione uma faixa"
-        );
-
-        return;
-    }
-
-    exportTake(
-        selectedTake
-    );
-};
-
-async function exportTake(take){
-
-    const wav =
-        audioBufferToWav(
-            take.buffer
-        );
-
-    downloadBlob(
-        wav,
-        "track.wav"
-    );
-}
-
-/* =====================================
-EXPORT MIX
-===================================== */
-
-document.getElementById(
-    "exportMixBtn"
-).onclick = async () => {
-
-    if(!audioContext)
-        return;
-
-    const maxDuration =
-        getMaxDuration();
-
-    const offline =
-        new OfflineAudioContext(
-            2,
-            44100 * maxDuration,
-            44100
-        );
-
-    tracks.forEach(track => {
-
-        if(track.muted)
-            return;
-
-        track.takes.forEach(take => {
-
-            const source =
-                offline
-                .createBufferSource();
-
-            source.buffer =
-                take.buffer;
-
-            const gainNode =
-                offline
-                .createGain();
-
-            gainNode.gain.value =
-                track.volume;
-
-            const panNode =
-                offline
-                .createStereoPanner();
-
-            panNode.pan.value =
-                track.pan;
-
-            source.connect(
-                gainNode
-            );
-
-            gainNode.connect(
-                panNode
-            );
-
-            panNode.connect(
-                offline.destination
-            );
-
-            const duration =
-                take.endOffset -
-                take.startOffset;
-
-            source.start(
-                take.timelinePosition,
-                take.startOffset,
-                duration
-            );
-        });
-    });
-
-    const rendered =
-        await offline
-        .startRendering();
-
-    const wav =
-        audioBufferToWav(
-            rendered
-        );
-
-    downloadBlob(
-        wav,
-        "mix.wav"
-    );
-};
-
-function getMaxDuration(){
-
-    let max = 0;
-
-    tracks.forEach(track => {
-
-        track.takes.forEach(take => {
-
-            const end =
-                take.timelinePosition +
-                (
-                    take.endOffset -
-                    take.startOffset
-                );
-
-            if(end > max)
-                max = end;
-        });
-    });
-
-    return max + 1;
-}
-
-/* =====================================
-DOWNLOAD
-===================================== */
-
-function downloadBlob(
-    blob,
-    filename
-){
-
-    const url =
-        URL.createObjectURL(
-            blob
-        );
-
-    const a =
-        document.createElement("a");
-
-    a.href = url;
-
-    a.download =
-        filename;
-
-    a.click();
-
-    URL.revokeObjectURL(
-        url
-    );
-}
-
-/* =====================================
-WAV ENCODER
-===================================== */
-
-function audioBufferToWav(buffer){
-
-    const numChannels =
-        buffer.numberOfChannels;
-
-    const sampleRate =
-        buffer.sampleRate;
-
-    let result;
-
-    if(numChannels === 2){
-
-        result = interleave(
-            buffer.getChannelData(0),
-            buffer.getChannelData(1)
-        );
-
-    }else{
-
-        result =
-            buffer.getChannelData(0);
-    }
-
-    const bufferLength =
-        result.length * 2;
-
-    const arrayBuffer =
-        new ArrayBuffer(
-            44 + bufferLength
-        );
-
-    const view =
-        new DataView(
-            arrayBuffer
-        );
-
-    writeString(view,0,'RIFF');
-
-    view.setUint32(
-        4,
-        36 + bufferLength,
-        true
-    );
-
-    writeString(view,8,'WAVE');
-
-    writeString(view,12,'fmt ');
-
-    view.setUint32(
-        16,
-        16,
-        true
-    );
-
-    view.setUint16(
-        20,
-        1,
-        true
-    );
-
-    view.setUint16(
-        22,
-        numChannels,
-        true
-    );
-
-    view.setUint32(
-        24,
-        sampleRate,
-        true
-    );
-
-    view.setUint32(
-        28,
-        sampleRate *
-        numChannels *
-        2,
-        true
-    );
-
-    view.setUint16(
-        32,
-        numChannels * 2,
-        true
-    );
-
-    view.setUint16(
-        34,
-        16,
-        true
-    );
-
-    writeString(view,36,'data');
-
-    view.setUint32(
-        40,
-        bufferLength,
-        true
-    );
-
-    floatTo16BitPCM(
-        view,
-        44,
-        result
-    );
-
-    return new Blob(
-        [view],
-        {type:'audio/wav'}
-    );
-}
-
-function interleave(left,right){
-
-    const length =
-        left.length +
-        right.length;
-
-    const result =
-        new Float32Array(length);
-
-    let inputIndex = 0;
-
-    for(let i=0;i<length;){
-
-        result[i++] =
-            left[inputIndex];
-
-        result[i++] =
-            right[inputIndex];
-
-        inputIndex++;
-    }
-
-    return result;
-}
-
-function floatTo16BitPCM(
-    output,
-    offset,
-    input
-){
-
-    for(let i=0;i<input.length;i++,offset+=2){
-
-        let s =
-            Math.max(
-                -1,
-                Math.min(
-                    1,
-                    input[i]
-                )
-            );
-
-        output.setInt16(
-            offset,
-            s < 0
-                ? s * 0x8000
-                : s * 0x7FFF,
-            true
-        );
-    }
-}
-
-function writeString(
-    view,
-    offset,
-    string
-){
-
-    for(let i=0;i<string.length;i++){
-
-        view.setUint8(
-            offset + i,
-            string.charCodeAt(i)
-        );
-    }
-}
-
-/* =====================================
 INIT
 ===================================== */
 
@@ -1320,6 +927,6 @@ window.onload = () => {
     createTrack();
 
     console.log(
-        "VOV FLOW MEMORY v6 READY"
+        "VOV INPUT ENGINE READY"
     );
 };
