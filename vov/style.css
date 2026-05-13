@@ -1,6 +1,7 @@
 /* =========================================
-ARQUIVO 2 — style.css
-VERO DAW v2
+ARQUIVO — style.css
+VERO DAW v2.2
+TRACK FIX + EDIT FIX
 ========================================= */
 
 body{
@@ -23,6 +24,8 @@ TOPBAR
     gap:10px;
     padding:0 10px;
     border-bottom:1px solid #222;
+    position:relative;
+    z-index:9999;
 }
 
 button{
@@ -33,6 +36,10 @@ button{
     border-radius:10px;
     cursor:pointer;
     font-weight:bold;
+}
+
+button:hover{
+    background:#333;
 }
 
 #playBtn{
@@ -67,13 +74,15 @@ TIMELINE
     height:calc(100vh - 60px);
     overflow:auto;
     position:relative;
+    background:#080808;
 }
 
 #timeline{
     position:relative;
     width:50000px;
-    min-height:100%;
+    min-height:100vh;
     background:#080808;
+    padding-bottom:200px;
 }
 
 /* =====================================
@@ -86,6 +95,7 @@ GRID
     width:1px;
     height:100%;
     background:#151515;
+    z-index:1;
 }
 
 .gridText{
@@ -94,6 +104,7 @@ GRID
     color:#444;
     font-size:10px;
     padding-left:4px;
+    z-index:1;
 }
 
 /* =====================================
@@ -104,6 +115,7 @@ TRACK
     position:relative;
     height:160px;
     border-bottom:1px solid #181818;
+    z-index:20;
 }
 
 .trackHeader{
@@ -121,6 +133,7 @@ TRACK
 
 .trackButtons{
     display:flex;
+    flex-wrap:wrap;
     gap:5px;
     margin-top:10px;
 }
@@ -145,25 +158,27 @@ AUDIO BLOCK
     background:#161616;
     border:2px solid #333;
     border-radius:10px;
-    overflow:hidden;
+    overflow:visible;
     cursor:grab;
     touch-action:none;
+    z-index:50;
 }
 
 .audioBlock.selected{
     border-color:#00ff99;
     box-shadow:
-        0 0 10px #00ff99;
+        0 0 12px #00ff99;
 }
 
 /* =====================================
-WAVE
+WAVEFORM
 ===================================== */
 
 .waveCanvas{
     width:100%;
     height:100%;
     display:block;
+    border-radius:8px;
 }
 
 /* =====================================
@@ -176,7 +191,7 @@ HANDLES
     width:14px;
     height:100%;
     background:#00ff99;
-    z-index:50;
+    z-index:60;
 }
 
 .leftHandle{
@@ -190,30 +205,7 @@ HANDLES
 }
 
 /* =====================================
-FADE
-===================================== */
-
-.fadeHandle{
-    position:absolute;
-    top:0;
-    width:10px;
-    height:100%;
-    background:rgba(255,255,255,0.15);
-    z-index:60;
-}
-
-.fadeLeft{
-    left:16px;
-    cursor:pointer;
-}
-
-.fadeRight{
-    right:16px;
-    cursor:pointer;
-}
-
-/* =====================================
-MENU
+EDIT MENU
 ===================================== */
 
 .editMenu{
@@ -222,7 +214,7 @@ MENU
     left:0;
     display:flex;
     gap:5px;
-    z-index:999;
+    z-index:99999;
 }
 
 .editMenu button{
@@ -230,6 +222,7 @@ MENU
     font-size:10px;
     background:#111;
     border:1px solid #333;
+    color:white;
 }
 
 /* =====================================
@@ -241,7 +234,7 @@ STATES
 }
 
 .muteActive{
-    background:#555 !important;
+    background:#666 !important;
 }
 
 .soloActive{
