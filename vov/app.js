@@ -138,6 +138,9 @@ function renderTrack(track){
     div.className =
         "track";
 
+    div.id =
+        "track_" + track.id;
+
     div.innerHTML = `
 
     <div class="trackHeader">
@@ -166,15 +169,6 @@ function renderTrack(track){
 
         </div>
 
-        <input
-            type="range"
-            min="0"
-            max="2"
-            step="0.01"
-            value="1"
-            id="gain_${track.id}"
-        >
-
     </div>
 
     <div
@@ -199,6 +193,25 @@ function bindTrack(track){
         document.getElementById(
             "rec_" + track.id
         );
+
+    const delBtn =
+        document.getElementById(
+            "del_" + track.id
+        );
+
+    delBtn.onclick = () => {
+
+        document
+            .getElementById(
+                "track_" + track.id
+            )
+            .remove();
+
+        tracks =
+            tracks.filter(
+                t => t.id !== track.id
+            );
+    };
 
     recBtn.onclick = async () => {
 
@@ -341,6 +354,9 @@ function renderTake(track,take){
     menu.className =
         "editMenu";
 
+    menu.style.display =
+        "none";
+
     menu.innerHTML = `
 
     <button>CUT</button>
@@ -385,6 +401,23 @@ function renderTake(track,take){
         take,
         canvas
     );
+
+    block.onclick = e => {
+
+        e.stopPropagation();
+
+        document
+            .querySelectorAll(
+                ".editMenu"
+            )
+            .forEach(
+                m => m.style.display =
+                "none"
+            );
+
+        menu.style.display =
+            "flex";
+    };
 
     /* MOVE */
 
@@ -590,21 +623,10 @@ document.getElementById(
                 audioContext
                 .createBufferSource();
 
-            const gainNode =
-                audioContext
-                .createGain();
-
-            gainNode.gain.value =
-                track.gain;
-
             source.buffer =
                 take.buffer;
 
             source.connect(
-                gainNode
-            );
-
-            gainNode.connect(
                 audioContext.destination
             );
 
