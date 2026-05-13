@@ -1,8 +1,3 @@
-/* =========================================
-VERO DAW — app.js
-FIX DELETE + REAL CUT
-========================================= */
-
 let audioContext = null;
 
 let tracks = [];
@@ -16,11 +11,6 @@ let activeSources = [];
 const timeline =
 document.getElementById(
 "timeline"
-);
-
-const playhead =
-document.getElementById(
-"playhead"
 );
 
 const timelineWrapper =
@@ -169,19 +159,13 @@ document.getElementById(
 "del_"+track.id
 );
 
-/* DELETE TRACK */
+delBtn.onclick = ()=>{
 
-delBtn.onclick = e => {
-
-e.stopPropagation();
-
-const el =
-document.getElementById(
+document
+.getElementById(
 "track_"+track.id
-);
-
-if(el)
-el.remove();
+)
+.remove();
 
 tracks =
 tracks.filter(
@@ -189,9 +173,8 @@ t=>t.id!==track.id
 );
 };
 
-/* REC */
-
-recBtn.onclick = async()=>{
+recBtn.onclick =
+async()=>{
 
 if(!audioContext){
 
@@ -214,12 +197,16 @@ track.stream =
 stream;
 
 const recorder =
-new MediaRecorder(stream);
+new MediaRecorder(
+stream
+);
 
 const chunks=[];
 
 recorder.ondataavailable =
-e=>chunks.push(e.data);
+e=>chunks.push(
+e.data
+);
 
 recorder.onstop =
 async()=>{
@@ -250,7 +237,9 @@ audioBuffer.duration,
 timelinePosition:0
 };
 
-track.takes.push(take);
+track.takes.push(
+take
+);
 
 renderTake(
 track,
@@ -314,28 +303,24 @@ document.createElement("div");
 menu.className =
 "editMenu";
 
+menu.innerHTML = `
+
+<button class="cutBtn">
+CUT
+</button>
+
+<button class="delBtn">
+DEL
+</button>
+
+`;
+
 menu.style.display =
 "none";
 
-const cutBtn =
-document.createElement("button");
-
-cutBtn.innerText =
-"CUT";
-
-const delBtn =
-document.createElement("button");
-
-delBtn.innerText =
-"DEL";
-
-menu.appendChild(cutBtn);
-
-menu.appendChild(delBtn);
-
 block.appendChild(menu);
 
-/* CANVAS */
+/* WAVE */
 
 const canvas =
 document.createElement("canvas");
@@ -345,13 +330,31 @@ canvas.className =
 
 block.appendChild(canvas);
 
+/* HANDLES */
+
+const leftHandle =
+document.createElement("div");
+
+leftHandle.className =
+"handle leftHandle";
+
+const rightHandle =
+document.createElement("div");
+
+rightHandle.className =
+"handle rightHandle";
+
+block.appendChild(leftHandle);
+
+block.appendChild(rightHandle);
+
 drawTake(
 block,
 take,
 canvas
 );
 
-/* SHOW MENU */
+/* SELECT */
 
 block.onclick = e => {
 
@@ -370,11 +373,11 @@ menu.style.display =
 "flex";
 };
 
-/* DELETE TAKE */
+/* DELETE */
 
-delBtn.onclick = e => {
-
-e.stopPropagation();
+menu
+.querySelector(".delBtn")
+.onclick = ()=>{
 
 block.remove();
 
@@ -384,22 +387,22 @@ t=>t.id!==take.id
 );
 };
 
-/* REAL CUT */
+/* CUT */
 
-cutBtn.onclick = e => {
+menu
+.querySelector(".cutBtn")
+.onclick = ()=>{
 
-e.stopPropagation();
-
-const currentDuration =
+const duration =
 take.endOffset -
 take.startOffset;
 
-if(currentDuration < 0.4)
+if(duration<0.5)
 return;
 
 take.endOffset =
 take.startOffset +
-(currentDuration/2);
+(duration/2);
 
 drawTake(
 block,
@@ -408,30 +411,35 @@ canvas
 );
 };
 
-/* DRAG */
+/* =====================================
+MOVE
+===================================== */
 
 let dragging=false;
 
-let startX=0;
+let dragStartX=0;
 
-let startPos=0;
+let dragStartPos=0;
 
-block.onpointerdown =
+block.addEventListener(
+"pointerdown",
 e=>{
 
 if(
-e.target.tagName==="BUTTON"
+e.target.classList.contains(
+"handle"
 )
-return;
+) return;
 
 dragging=true;
 
-startX=
+dragStartX =
 e.clientX;
 
-startPos=
+dragStartPos =
 take.timelinePosition;
-};
+}
+);
 
 window.addEventListener(
 "pointermove",
@@ -442,13 +450,15 @@ return;
 
 const delta =
 (
-e.clientX-startX
+e.clientX -
+dragStartX
 )/zoomLevel;
 
 take.timelinePosition =
 Math.max(
 0,
-startPos+delta
+dragStartPos +
+delta
 );
 
 drawTake(
@@ -463,6 +473,129 @@ window.addEventListener(
 "pointerup",
 ()=>{
 dragging=false;
+});
+
+/* =====================================
+LEFT TRIM
+===================================== */
+
+let trimmingLeft=false;
+
+leftHandle.addEventListener(
+"pointerdown",
+e=>{
+
+e.stopPropagation();
+
+trimmingLeft=true;
+}
+);
+
+window.addEventListener(
+"pointermove",
+e=>{
+
+if(!trimmingLeft)
+return;
+
+const delta =
+e.movementX /
+zoomLevel;
+
+take.startOffset +=
+delta;
+
+take.timelinePosition +=
+delta;
+
+if(take.startOffset<0){
+
+take.startOffset=0;
+}
+
+if(
+take.startOffset >
+take.endOffset - 0.1
+){
+
+take.startOffset =
+take.endOffset - 0.1;
+}
+
+drawTake(
+block,
+take,
+canvas
+);
+}
+);
+
+window.addEventListener(
+"pointerup",
+()=>{
+trimmingLeft=false;
+});
+
+/* =====================================
+RIGHT TRIM
+===================================== */
+
+let trimmingRight=false;
+
+rightHandle.addEventListener(
+"pointerdown",
+e=>{
+
+e.stopPropagation();
+
+trimmingRight=true;
+}
+);
+
+window.addEventListener(
+"pointermove",
+e=>{
+
+if(!trimmingRight)
+return;
+
+const delta =
+e.movementX /
+zoomLevel;
+
+take.endOffset +=
+delta;
+
+if(
+take.endOffset >
+take.buffer.duration
+){
+
+take.endOffset =
+take.buffer.duration;
+}
+
+if(
+take.endOffset <
+take.startOffset+0.1
+){
+
+take.endOffset =
+take.startOffset+0.1;
+}
+
+drawTake(
+block,
+take,
+canvas
+);
+}
+);
+
+window.addEventListener(
+"pointerup",
+()=>{
+trimmingRight=false;
 });
 }
 
@@ -512,7 +645,11 @@ take.endOffset -
 take.startOffset;
 
 canvas.width =
-duration*zoomLevel;
+Math.max(
+120,
+duration *
+zoomLevel
+);
 
 canvas.height=80;
 
@@ -716,7 +853,7 @@ document
 .onclick = ()=>{
 
 alert(
-"EXPORT EM DESENVOLVIMENTO"
+"EXPORT STEM/MIX EM BREVE"
 );
 };
 
