@@ -1,6 +1,7 @@
 /* =========================================
-ARQUIVO 3 — app.js
-VERO DAW v2
+ARQUIVO — app.js
+VERO DAW v2.1
+FIX TRACK + ZOOM
 ========================================= */
 
 let audioContext = null;
@@ -264,11 +265,7 @@ function bindTrack(track,div){
                         endOffset:
                             audioBuffer.duration,
 
-                        timelinePosition:0,
-
-                        fadeIn:0,
-
-                        fadeOut:0
+                        timelinePosition:0
                     };
 
                     track.takes.push(
@@ -333,9 +330,7 @@ function renderTake(track,take){
         take
     );
 
-    /* =====================================
-    MENU
-    ===================================== */
+    /* MENU */
 
     const menu =
         document.createElement(
@@ -345,9 +340,12 @@ function renderTake(track,take){
     menu.className =
         "editMenu";
 
+    menu.style.display =
+        "none";
+
     menu.innerHTML = `
 
-    <button class="splitBtn">
+    <button class="cutBtn">
         CUT
     </button>
 
@@ -361,14 +359,9 @@ function renderTake(track,take){
 
     `;
 
-    menu.style.display =
-        "none";
-
     block.appendChild(menu);
 
-    /* =====================================
-    WAVE
-    ===================================== */
+    /* WAVE */
 
     const canvas =
         document.createElement(
@@ -382,9 +375,7 @@ function renderTake(track,take){
         canvas
     );
 
-    /* =====================================
-    HANDLES
-    ===================================== */
+    /* HANDLES */
 
     const leftHandle =
         document.createElement(
@@ -410,34 +401,6 @@ function renderTake(track,take){
         rightHandle
     );
 
-    /* =====================================
-    FADES
-    ===================================== */
-
-    const fadeLeft =
-        document.createElement(
-            "div"
-        );
-
-    fadeLeft.className =
-        "fadeHandle fadeLeft";
-
-    const fadeRight =
-        document.createElement(
-            "div"
-        );
-
-    fadeRight.className =
-        "fadeHandle fadeRight";
-
-    block.appendChild(
-        fadeLeft
-    );
-
-    block.appendChild(
-        fadeRight
-    );
-
     lane.appendChild(
         block
     );
@@ -447,9 +410,7 @@ function renderTake(track,take){
         take
     );
 
-    /* =====================================
-    SELECT
-    ===================================== */
+    /* SELECT */
 
     block.onclick = e => {
 
@@ -484,9 +445,98 @@ function renderTake(track,take){
             "flex";
     };
 
-    /* =====================================
-    MOVE
-    ===================================== */
+    /* DELETE */
+
+    menu.querySelector(
+        ".delBtn"
+    ).onclick = () => {
+
+        block.remove();
+
+        track.takes =
+            track.takes.filter(
+                t => t.id !== take.id
+            );
+    };
+
+    /* DUP */
+
+    menu.querySelector(
+        ".dupBtn"
+    ).onclick = () => {
+
+        const clone = {
+
+            ...take,
+
+            id:Date.now(),
+
+            timelinePosition:
+                take.timelinePosition + 1
+        };
+
+        track.takes.push(
+            clone
+        );
+
+        renderTake(
+            track,
+            clone
+        );
+    };
+
+    /* CUT */
+
+    menu.querySelector(
+        ".cutBtn"
+    ).onclick = () => {
+
+        const middle =
+            (
+                take.startOffset +
+                take.endOffset
+            ) / 2;
+
+        const second = {
+
+            ...take,
+
+            id:Date.now(),
+
+            startOffset:middle,
+
+            timelinePosition:
+                take.timelinePosition +
+                (
+                    middle -
+                    take.startOffset
+                )
+        };
+
+        take.endOffset =
+            middle;
+
+        updateTakeVisual(
+            block,
+            take
+        );
+
+        renderWaveform(
+            canvas,
+            take
+        );
+
+        track.takes.push(
+            second
+        );
+
+        renderTake(
+            track,
+            second
+        );
+    };
+
+    /* MOVE */
 
     let dragging = false;
 
@@ -547,9 +597,7 @@ function renderTake(track,take){
         }
     );
 
-    /* =====================================
-    LEFT TRIM
-    ===================================== */
+    /* LEFT TRIM */
 
     let trimLeft = false;
 
@@ -559,9 +607,7 @@ function renderTake(track,take){
         trimLeft = true;
     };
 
-    /* =====================================
-    RIGHT TRIM
-    ===================================== */
+    /* RIGHT TRIM */
 
     let trimRight = false;
 
@@ -663,103 +709,6 @@ function renderTake(track,take){
             trimRight = false;
         }
     );
-
-    /* =====================================
-    DELETE
-    ===================================== */
-
-    menu.querySelector(
-        ".delBtn"
-    ).onclick = () => {
-
-        block.remove();
-
-        track.takes =
-            track.takes.filter(
-                t => t.id !== take.id
-            );
-    };
-
-    /* =====================================
-    DUP
-    ===================================== */
-
-    menu.querySelector(
-        ".dupBtn"
-    ).onclick = () => {
-
-        const clone = {
-
-            ...take,
-
-            id:Date.now(),
-
-            timelinePosition:
-                take.timelinePosition + 1
-        };
-
-        track.takes.push(
-            clone
-        );
-
-        renderTake(
-            track,
-            clone
-        );
-    };
-
-    /* =====================================
-    CUT
-    ===================================== */
-
-    menu.querySelector(
-        ".splitBtn"
-    ).onclick = () => {
-
-        const middle =
-            (
-                take.startOffset +
-                take.endOffset
-            ) / 2;
-
-        const second = {
-
-            ...take,
-
-            id:Date.now(),
-
-            startOffset:middle,
-
-            timelinePosition:
-                take.timelinePosition +
-                (
-                    middle -
-                    take.startOffset
-                )
-        };
-
-        take.endOffset =
-            middle;
-
-        updateTakeVisual(
-            block,
-            take
-        );
-
-        renderWaveform(
-            canvas,
-            take
-        );
-
-        track.takes.push(
-            second
-        );
-
-        renderTake(
-            track,
-            second
-        );
-    };
 }
 
 /* =====================================
@@ -918,7 +867,8 @@ document.getElementById(
             );
 
             source.start(
-                now,
+                now +
+                take.timelinePosition,
                 take.startOffset,
                 take.endOffset -
                 take.startOffset
