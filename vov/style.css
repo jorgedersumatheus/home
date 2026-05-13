@@ -1,18 +1,18 @@
-/* =========================================
-ARQUIVO 2 — style.css
-========================================= */
-
 *{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+margin:0;
+padding:0;
+box-sizing:border-box;
 }
 
 body{
-    background:#000;
-    color:#fff;
-    font-family:Arial,Helvetica,sans-serif;
-    overflow:hidden;
+
+background:#000;
+
+color:#fff;
+
+font-family:Arial,Helvetica,sans-serif;
+
+overflow:hidden;
 }
 
 /* =====================================
@@ -21,65 +21,65 @@ TOPBAR
 
 #topbar{
 
-    position:fixed;
+position:fixed;
 
-    top:0;
-    left:0;
-    right:0;
+top:0;
+left:0;
+right:0;
 
-    height:74px;
+height:74px;
 
-    background:#050505;
+background:#050505;
 
-    display:flex;
+display:flex;
 
-    align-items:center;
+align-items:center;
 
-    gap:14px;
+gap:12px;
 
-    padding:10px;
+padding:10px;
 
-    z-index:9999;
+z-index:9999;
 
-    border-bottom:
-    1px solid #222;
+overflow-x:auto;
 
-    overflow-x:auto;
+white-space:nowrap;
 
-    white-space:nowrap;
+border-bottom:
+1px solid #222;
 }
 
 #topbar::-webkit-scrollbar{
-    display:none;
+display:none;
 }
 
 #topbar button{
 
-    border:none;
+min-width:88px;
 
-    border-radius:16px;
+height:52px;
 
-    color:#fff;
+border:none;
 
-    font-size:18px;
+border-radius:12px;
 
-    font-weight:bold;
+background:#222;
 
-    min-width:90px;
+color:#fff;
 
-    height:54px;
+font-size:16px;
 
-    background:#222;
+font-weight:bold;
 
-    flex-shrink:0;
+flex-shrink:0;
 }
 
 #playBtn{
-    background:#009900 !important;
+background:#008800;
 }
 
 #stopBtn{
-    background:#cc0000 !important;
+background:#bb0000;
 }
 
 /* =====================================
@@ -88,27 +88,27 @@ TIMELINE
 
 #timelineWrapper{
 
-    position:absolute;
+position:absolute;
 
-    top:74px;
-    left:0;
-    right:0;
-    bottom:0;
+top:74px;
+left:0;
+right:0;
+bottom:0;
 
-    overflow:auto;
+overflow:auto;
 
-    background:#000;
+background:#000;
 }
 
 #timeline{
 
-    position:relative;
+position:relative;
 
-    width:80000px;
+width:100000px;
 
-    min-height:5000px;
+min-height:5000px;
 
-    padding-left:180px;
+padding-left:180px;
 }
 
 /* =====================================
@@ -117,18 +117,18 @@ PLAYHEAD
 
 #playhead{
 
-    position:absolute;
+position:absolute;
 
-    top:0;
-    bottom:0;
+top:0;
+bottom:0;
 
-    width:3px;
+width:3px;
 
-    background:red;
+background:red;
 
-    left:180px;
+left:180px;
 
-    z-index:999;
+z-index:999;
 }
 
 /* =====================================
@@ -137,25 +137,25 @@ GRID
 
 .gridLine{
 
-    position:absolute;
+position:absolute;
 
-    top:0;
-    bottom:0;
+top:0;
+bottom:0;
 
-    width:1px;
+width:1px;
 
-    background:#1a1a1a;
+background:#1a1a1a;
 }
 
 .gridText{
 
-    position:absolute;
+position:absolute;
 
-    top:5px;
+top:5px;
 
-    font-size:13px;
+font-size:12px;
 
-    color:#666;
+color:#666;
 }
 
 /* =====================================
@@ -164,118 +164,96 @@ TRACK
 
 .track{
 
-    position:relative;
+position:relative;
 
-    width:100%;
+width:100%;
 
-    min-height:150px;
+height:160px;
 
-    border-bottom:
-    1px solid #111;
+border-bottom:
+1px solid #111;
 }
 
 .trackHeader{
 
-    position:absolute;
+position:absolute;
 
-    left:-180px;
+left:-180px;
 
-    top:0;
+top:0;
 
-    width:180px;
+width:180px;
 
-    height:150px;
+height:160px;
 
-    background:#080808;
+background:#080808;
 
-    border-right:
-    1px solid #222;
+padding:10px;
 
-    padding:10px;
+border-right:
+1px solid #222;
 
-    z-index:100;
-}
-
-.trackHeader input{
-
-    width:100%;
-
-    margin-top:10px;
+z-index:100;
 }
 
 .trackButtons{
 
-    display:flex;
+display:flex;
 
-    flex-wrap:wrap;
+gap:8px;
 
-    gap:8px;
-
-    margin-top:15px;
+margin-top:15px;
 }
 
 .trackButtons button{
 
-    width:48px;
-    height:48px;
+width:48px;
+height:48px;
 
-    border:none;
+border:none;
 
-    border-radius:12px;
+border-radius:10px;
 
-    background:#222;
+background:#222;
 
-    color:#fff;
+color:#fff;
 
-    font-weight:bold;
+font-weight:bold;
 }
 
 .recActive{
-    background:red !important;
-}
-
-.muteActive{
-    background:#666 !important;
-}
-
-.soloActive{
-    background:#cc9900 !important;
+background:red !important;
 }
 
 .trackLane{
 
-    position:relative;
+position:relative;
 
-    height:150px;
+height:160px;
 }
 
 /* =====================================
-AUDIO BLOCK
+TAKE
 ===================================== */
 
 .audioBlock{
 
-    position:absolute;
+position:absolute;
 
-    top:35px;
+top:45px;
 
-    height:80px;
+height:80px;
 
-    background:#111;
+background:#111;
 
-    border:
-    2px solid #00ff99;
+border:
+2px solid #00ff99;
 
-    border-radius:10px;
+border-radius:10px;
 
-    touch-action:none;
+overflow:visible;
 
-    overflow:visible;
-}
-
-.audioBlock.selected{
-
-    border-color:#fff;
+touch-action:none;
 }
 
 /* =====================================
@@ -284,9 +262,9 @@ WAVEFORM
 
 .waveCanvas{
 
-    position:absolute;
+position:absolute;
 
-    inset:0;
+inset:0;
 }
 
 /* =====================================
@@ -295,61 +273,61 @@ HANDLES
 
 .handle{
 
-    position:absolute;
+position:absolute;
 
-    top:0;
-    bottom:0;
+top:0;
+bottom:0;
 
-    width:14px;
+width:16px;
 
-    background:
-    rgba(255,255,255,0.2);
+background:
+rgba(255,255,255,0.25);
 
-    z-index:30;
+z-index:50;
 }
 
 .leftHandle{
-    left:0;
+left:0;
+cursor:ew-resize;
 }
 
 .rightHandle{
-    right:0;
+right:0;
+cursor:ew-resize;
 }
 
 /* =====================================
-EDIT MENU
+MENU
 ===================================== */
 
 .editMenu{
 
-    position:absolute;
+position:absolute;
 
-    top:-42px;
+top:-40px;
 
-    left:0;
+left:0;
 
-    display:flex;
+display:flex;
 
-    gap:5px;
+gap:5px;
 
-    z-index:50000;
-
-    pointer-events:auto;
+z-index:99999;
 }
 
 .editMenu button{
 
-    border:none;
+border:none;
 
-    border-radius:8px;
+padding:6px 10px;
 
-    background:#222;
+border-radius:8px;
 
-    color:#fff;
+background:#222;
 
-    padding:6px 10px;
+color:#fff;
 
-    font-size:12px;
+font-size:12px;
 
-    font-weight:bold;
+font-weight:bold;
 }
