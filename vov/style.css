@@ -1,6 +1,6 @@
 /* =========================================
 ARQUIVO 2 — style.css
-VOV VERO EDIT ENGINE v1
+VERO DAW v2
 ========================================= */
 
 body{
@@ -18,22 +18,21 @@ TOPBAR
 #topbar{
     height:60px;
     background:#111;
-    border-bottom:1px solid #222;
     display:flex;
     align-items:center;
     gap:10px;
-    padding:0 12px;
-    box-sizing:border-box;
+    padding:0 10px;
+    border-bottom:1px solid #222;
 }
 
 button{
+    background:#222;
+    color:white;
     border:none;
-    border-radius:10px;
-    background:#333;
-    color:#fff;
     padding:10px 16px;
-    font-weight:bold;
+    border-radius:10px;
     cursor:pointer;
+    font-weight:bold;
 }
 
 #playBtn{
@@ -41,57 +40,22 @@ button{
 }
 
 #stopBtn{
-    background:#aa0000;
+    background:#990000;
 }
 
 /* =====================================
-INPUT BAR
+PLAYHEAD
 ===================================== */
 
-#inputBar{
-    height:90px;
-    background:#0d0d0d;
-    border-bottom:1px solid #181818;
-    display:flex;
-    align-items:center;
-    gap:20px;
-    padding:10px;
-    box-sizing:border-box;
-}
-
-.inputSection{
-    display:flex;
-    flex-direction:column;
-    gap:4px;
-}
-
-.inputSection label{
-    font-size:11px;
-    color:#999;
-}
-
-.inputSection input{
-    width:140px;
-}
-
-/* =====================================
-METER
-===================================== */
-
-.meterWrap{
-    width:240px;
-    height:20px;
-    background:#111;
-    border-radius:10px;
-    overflow:hidden;
-    border:1px solid #222;
-}
-
-#inputMeter{
-    width:0%;
-    height:100%;
-    background:lime;
-    transition:width 0.04s linear;
+#playhead{
+    position:fixed;
+    top:60px;
+    left:220px;
+    width:2px;
+    height:calc(100vh - 60px);
+    background:red;
+    z-index:999999;
+    pointer-events:none;
 }
 
 /* =====================================
@@ -100,7 +64,7 @@ TIMELINE
 
 #timelineWrapper{
     width:100%;
-    height:calc(100vh - 150px);
+    height:calc(100vh - 60px);
     overflow:auto;
     position:relative;
 }
@@ -113,36 +77,6 @@ TIMELINE
 }
 
 /* =====================================
-VERO ENGINE
-===================================== */
-
-#veroCanvas{
-    position:absolute;
-    top:0;
-    left:180px;
-    width:calc(100% - 180px);
-    height:100%;
-    z-index:1;
-    opacity:0.22;
-    pointer-events:none;
-}
-
-/* =====================================
-PLAYHEAD
-===================================== */
-
-#playhead{
-    position:fixed;
-    top:150px;
-    left:220px;
-    width:2px;
-    height:calc(100vh - 150px);
-    background:red;
-    z-index:999999;
-    pointer-events:none;
-}
-
-/* =====================================
 GRID
 ===================================== */
 
@@ -151,7 +85,7 @@ GRID
     top:0;
     width:1px;
     height:100%;
-    background:#161616;
+    background:#151515;
 }
 
 .gridText{
@@ -168,9 +102,8 @@ TRACK
 
 .track{
     position:relative;
-    z-index:10;
     height:160px;
-    border-bottom:1px solid #1b1b1b;
+    border-bottom:1px solid #181818;
 }
 
 .trackHeader{
@@ -189,7 +122,7 @@ TRACK
 .trackButtons{
     display:flex;
     gap:5px;
-    margin-bottom:10px;
+    margin-top:10px;
 }
 
 .trackLane{
@@ -202,26 +135,6 @@ TRACK
 }
 
 /* =====================================
-MIXER
-===================================== */
-
-.mixer{
-    margin-top:10px;
-    display:flex;
-    flex-direction:column;
-    gap:4px;
-}
-
-.mixer label{
-    font-size:10px;
-    color:#888;
-}
-
-.mixer input{
-    width:100%;
-}
-
-/* =====================================
 AUDIO BLOCK
 ===================================== */
 
@@ -229,10 +142,10 @@ AUDIO BLOCK
     position:absolute;
     top:40px;
     height:80px;
-    background:#181818;
+    background:#161616;
     border:2px solid #333;
     border-radius:10px;
-    overflow:visible;
+    overflow:hidden;
     cursor:grab;
     touch-action:none;
 }
@@ -240,32 +153,7 @@ AUDIO BLOCK
 .audioBlock.selected{
     border-color:#00ff99;
     box-shadow:
-        0 0 12px #00ff99;
-}
-
-/* =====================================
-HANDLES
-===================================== */
-
-.handle{
-    position:absolute;
-    top:0;
-    width:14px;
-    height:100%;
-    background:#00ff99;
-    z-index:200;
-    cursor:ew-resize;
-    opacity:0.9;
-}
-
-.leftHandle{
-    left:0;
-    border-right:2px solid #fff;
-}
-
-.rightHandle{
-    right:0;
-    border-left:2px solid #fff;
+        0 0 10px #00ff99;
 }
 
 /* =====================================
@@ -279,7 +167,73 @@ WAVE
 }
 
 /* =====================================
-BUTTON STATES
+HANDLES
+===================================== */
+
+.handle{
+    position:absolute;
+    top:0;
+    width:14px;
+    height:100%;
+    background:#00ff99;
+    z-index:50;
+}
+
+.leftHandle{
+    left:0;
+    cursor:ew-resize;
+}
+
+.rightHandle{
+    right:0;
+    cursor:ew-resize;
+}
+
+/* =====================================
+FADE
+===================================== */
+
+.fadeHandle{
+    position:absolute;
+    top:0;
+    width:10px;
+    height:100%;
+    background:rgba(255,255,255,0.15);
+    z-index:60;
+}
+
+.fadeLeft{
+    left:16px;
+    cursor:pointer;
+}
+
+.fadeRight{
+    right:16px;
+    cursor:pointer;
+}
+
+/* =====================================
+MENU
+===================================== */
+
+.editMenu{
+    position:absolute;
+    top:-42px;
+    left:0;
+    display:flex;
+    gap:5px;
+    z-index:999;
+}
+
+.editMenu button{
+    padding:4px 8px;
+    font-size:10px;
+    background:#111;
+    border:1px solid #333;
+}
+
+/* =====================================
+STATES
 ===================================== */
 
 .recActive{
@@ -293,24 +247,4 @@ BUTTON STATES
 .soloActive{
     background:gold !important;
     color:black !important;
-}
-
-/* =====================================
-EDIT MENU
-===================================== */
-
-.editMenu{
-    position:absolute;
-    top:-42px;
-    left:0;
-    display:flex;
-    gap:5px;
-    z-index:500;
-}
-
-.editMenu button{
-    padding:4px 8px;
-    font-size:10px;
-    background:#111;
-    border:1px solid #333;
 }
