@@ -1,7 +1,6 @@
 /* =========================================
-ARQUIVO — app.js
-VERO DAW v2.1
-FIX TRACK + ZOOM
+VERO DAW v2.3
+APP.JS COMPLETO
 ========================================= */
 
 let audioContext = null;
@@ -16,9 +15,9 @@ let activeSources = [];
 
 let playing = false;
 
-let playStartTime = 0;
+let playheadFrame = null;
 
-let playheadAnimation = null;
+let playStartTime = 0;
 
 const timeline =
     document.getElementById(
@@ -28,6 +27,11 @@ const timeline =
 const timelineWrapper =
     document.getElementById(
         "timelineWrapper"
+    );
+
+const playhead =
+    document.getElementById(
+        "playhead"
     );
 
 /* =====================================
@@ -57,9 +61,7 @@ function buildGrid(){
         line.style.left =
             (
                 180 +
-                (
-                    i * zoomLevel
-                )
+                i * zoomLevel
             ) + "px";
 
         timeline.appendChild(
@@ -77,9 +79,7 @@ function buildGrid(){
         text.style.left =
             (
                 183 +
-                (
-                    i * zoomLevel
-                )
+                i * zoomLevel
             ) + "px";
 
         text.innerText =
@@ -97,13 +97,6 @@ buildGrid();
 TRACK
 ===================================== */
 
-document.getElementById(
-    "addTrackBtn"
-).onclick = () => {
-
-    createTrack();
-};
-
 function createTrack(){
 
     trackCount++;
@@ -116,13 +109,25 @@ function createTrack(){
 
         recorder:null,
 
-        stream:null
+        stream:null,
+
+        muted:false,
+
+        solo:false
     };
 
     tracks.push(track);
 
     renderTrack(track);
 }
+
+document.getElementById(
+    "addTrackBtn"
+).onclick = createTrack;
+
+/* =====================================
+RENDER TRACK
+===================================== */
 
 function renderTrack(track){
 
@@ -156,7 +161,7 @@ function renderTrack(track){
                 S
             </button>
 
-            <button id="delTrack_${track.id}">
+            <button id="del_${track.id}">
                 X
             </button>
 
@@ -170,7 +175,10 @@ function renderTrack(track){
 
     `;
 
-    timeline.appendChild(div);
+    timeline.insertBefore(
+        div,
+        timeline.firstChild
+    );
 
     bindTrack(track,div);
 }
@@ -186,10 +194,22 @@ function bindTrack(track,div){
             "rec_" + track.id
         );
 
+    const muteBtn =
+        document.getElementById(
+            "mute_" + track.id
+        );
+
+    const soloBtn =
+        document.getElementById(
+            "solo_" + track.id
+        );
+
     const delBtn =
         document.getElementById(
-            "delTrack_" + track.id
+            "del_" + track.id
         );
+
+    /* DELETE TRACK */
 
     delBtn.onclick = () => {
 
@@ -200,6 +220,32 @@ function bindTrack(track,div){
                 t => t.id !== track.id
             );
     };
+
+    /* MUTE */
+
+    muteBtn.onclick = () => {
+
+        track.muted =
+            !track.muted;
+
+        muteBtn.classList.toggle(
+            "muteActive"
+        );
+    };
+
+    /* SOLO */
+
+    soloBtn.onclick = () => {
+
+        track.solo =
+            !track.solo;
+
+        soloBtn.classList.toggle(
+            "soloActive"
+        );
+    };
+
+    /* RECORD */
 
     recBtn.onclick = async () => {
 
@@ -231,12 +277,9 @@ function bindTrack(track,div){
             const chunks = [];
 
             recorder.ondataavailable =
-                e => {
-
-                    chunks.push(
-                        e.data
-                    );
-                };
+                e => chunks.push(
+                    e.data
+                );
 
             recorder.onstop =
                 async () => {
@@ -325,9 +368,8 @@ function renderTake(track,take){
     block.className =
         "audioBlock";
 
-    updateTakeVisual(
-        block,
-        take
+    lane.appendChild(
+        block
     );
 
     /* MENU */
@@ -401,8 +443,9 @@ function renderTake(track,take){
         rightHandle
     );
 
-    lane.appendChild(
-        block
+    updateTakeVisual(
+        block,
+        take
     );
 
     renderWaveform(
@@ -443,97 +486,6 @@ function renderTake(track,take){
 
         menu.style.display =
             "flex";
-    };
-
-    /* DELETE */
-
-    menu.querySelector(
-        ".delBtn"
-    ).onclick = () => {
-
-        block.remove();
-
-        track.takes =
-            track.takes.filter(
-                t => t.id !== take.id
-            );
-    };
-
-    /* DUP */
-
-    menu.querySelector(
-        ".dupBtn"
-    ).onclick = () => {
-
-        const clone = {
-
-            ...take,
-
-            id:Date.now(),
-
-            timelinePosition:
-                take.timelinePosition + 1
-        };
-
-        track.takes.push(
-            clone
-        );
-
-        renderTake(
-            track,
-            clone
-        );
-    };
-
-    /* CUT */
-
-    menu.querySelector(
-        ".cutBtn"
-    ).onclick = () => {
-
-        const middle =
-            (
-                take.startOffset +
-                take.endOffset
-            ) / 2;
-
-        const second = {
-
-            ...take,
-
-            id:Date.now(),
-
-            startOffset:middle,
-
-            timelinePosition:
-                take.timelinePosition +
-                (
-                    middle -
-                    take.startOffset
-                )
-        };
-
-        take.endOffset =
-            middle;
-
-        updateTakeVisual(
-            block,
-            take
-        );
-
-        renderWaveform(
-            canvas,
-            take
-        );
-
-        track.takes.push(
-            second
-        );
-
-        renderTake(
-            track,
-            second
-        );
     };
 
     /* MOVE */
@@ -597,19 +549,17 @@ function renderTake(track,take){
         }
     );
 
-    /* LEFT TRIM */
+    /* TRIM */
 
     let trimLeft = false;
+
+    let trimRight = false;
 
     leftHandle.onpointerdown =
         () => {
 
         trimLeft = true;
     };
-
-    /* RIGHT TRIM */
-
-    let trimRight = false;
 
     rightHandle.onpointerdown =
         () => {
@@ -709,6 +659,97 @@ function renderTake(track,take){
             trimRight = false;
         }
     );
+
+    /* DELETE TAKE */
+
+    menu.querySelector(
+        ".delBtn"
+    ).onclick = () => {
+
+        block.remove();
+
+        track.takes =
+            track.takes.filter(
+                t => t.id !== take.id
+            );
+    };
+
+    /* DUP */
+
+    menu.querySelector(
+        ".dupBtn"
+    ).onclick = () => {
+
+        const clone = {
+
+            ...take,
+
+            id:Date.now(),
+
+            timelinePosition:
+                take.timelinePosition + 1
+        };
+
+        track.takes.push(
+            clone
+        );
+
+        renderTake(
+            track,
+            clone
+        );
+    };
+
+    /* CUT */
+
+    menu.querySelector(
+        ".cutBtn"
+    ).onclick = () => {
+
+        const middle =
+            (
+                take.startOffset +
+                take.endOffset
+            ) / 2;
+
+        const second = {
+
+            ...take,
+
+            id:Date.now(),
+
+            startOffset:middle,
+
+            timelinePosition:
+                take.timelinePosition +
+                (
+                    middle -
+                    take.startOffset
+                )
+        };
+
+        take.endOffset =
+            middle;
+
+        updateTakeVisual(
+            block,
+            take
+        );
+
+        renderWaveform(
+            canvas,
+            take
+        );
+
+        track.takes.push(
+            second
+        );
+
+        renderTake(
+            track,
+            second
+        );
+    };
 }
 
 /* =====================================
@@ -731,7 +772,8 @@ function updateTakeVisual(
         ) + "px";
 
     block.style.width =
-        (
+        Math.max(
+            40,
             duration *
             zoomLevel
         ) + "px";
@@ -753,14 +795,20 @@ function renderWaveform(
     canvas.width =
         Math.max(
             100,
-            duration *
-            zoomLevel
+            duration * zoomLevel
         );
 
     canvas.height = 80;
 
     const ctx =
         canvas.getContext("2d");
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
 
     ctx.fillStyle =
         "#161616";
@@ -778,7 +826,9 @@ function renderWaveform(
     ctx.beginPath();
 
     const data =
-        take.buffer.getChannelData(0);
+        take.buffer.getChannelData(
+            0
+        );
 
     const step =
         Math.ceil(
@@ -792,15 +842,14 @@ function renderWaveform(
     for(let i=0;i<canvas.width;i++){
 
         let min = 1;
+
         let max = -1;
 
         for(let j=0;j<step;j++){
 
             const datum =
                 data[
-                    (
-                        i * step
-                    ) + j
+                    (i * step) + j
                 ] || 0;
 
             if(datum < min)
@@ -812,16 +861,12 @@ function renderWaveform(
 
         ctx.moveTo(
             i,
-            (
-                1 + min
-            ) * amp
+            (1 + min) * amp
         );
 
         ctx.lineTo(
             i,
-            (
-                1 + max
-            ) * amp
+            (1 + max) * amp
         );
     }
 
@@ -851,7 +896,20 @@ document.getElementById(
     const now =
         audioContext.currentTime;
 
+    const soloTracks =
+        tracks.filter(
+            t => t.solo
+        );
+
     tracks.forEach(track => {
+
+        if(track.muted)
+            return;
+
+        if(
+            soloTracks.length &&
+            !track.solo
+        ) return;
 
         track.takes.forEach(take => {
 
@@ -895,10 +953,9 @@ function animatePlayhead(){
         playStartTime;
 
     timelineWrapper.scrollLeft =
-        elapsed *
-        zoomLevel;
+        elapsed * zoomLevel;
 
-    playheadAnimation =
+    playheadFrame =
         requestAnimationFrame(
             animatePlayhead
         );
@@ -913,7 +970,7 @@ function stopAll(){
     playing = false;
 
     cancelAnimationFrame(
-        playheadAnimation
+        playheadFrame
     );
 
     activeSources.forEach(
@@ -922,7 +979,7 @@ function stopAll(){
         try{
             s.stop();
         }catch(e){}
-    );
+    });
 
     activeSources = [];
 }
