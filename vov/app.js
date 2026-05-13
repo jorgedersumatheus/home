@@ -1,6 +1,7 @@
 /* =========================================
-VERO DAW v2.3
-APP.JS COMPLETO
+VERO ENGINE v3
+APP.JS
+TIMELINE REAL + ZOOM REAL + EXPORT
 ========================================= */
 
 let audioContext = null;
@@ -18,6 +19,8 @@ let playing = false;
 let playheadFrame = null;
 
 let playStartTime = 0;
+
+let selectedTake = null;
 
 const timeline =
     document.getElementById(
@@ -48,7 +51,7 @@ function buildGrid(){
             e => e.remove()
         );
 
-    for(let i=0;i<300;i++){
+    for(let i=0;i<600;i++){
 
         const line =
             document.createElement(
@@ -113,7 +116,9 @@ function createTrack(){
 
         muted:false,
 
-        solo:false
+        solo:false,
+
+        gain:1
     };
 
     tracks.push(track);
@@ -138,6 +143,9 @@ function renderTrack(track){
 
     div.className =
         "track";
+
+    div.id =
+        "track_" + track.id;
 
     div.innerHTML = `
 
@@ -167,6 +175,15 @@ function renderTrack(track){
 
         </div>
 
+        <input
+            type="range"
+            min="0"
+            max="2"
+            step="0.01"
+            value="1"
+            id="gain_${track.id}"
+        >
+
     </div>
 
     <div class="trackLane"
@@ -180,14 +197,14 @@ function renderTrack(track){
         timeline.firstChild
     );
 
-    bindTrack(track,div);
+    bindTrack(track);
 }
 
 /* =====================================
 BIND TRACK
 ===================================== */
 
-function bindTrack(track,div){
+function bindTrack(track){
 
     const recBtn =
         document.getElementById(
@@ -209,19 +226,18 @@ function bindTrack(track,div){
             "del_" + track.id
         );
 
-    /* DELETE TRACK */
+    const gainSlider =
+        document.getElementById(
+            "gain_" + track.id
+        );
 
-    delBtn.onclick = () => {
+    gainSlider.oninput = () => {
 
-        div.remove();
-
-        tracks =
-            tracks.filter(
-                t => t.id !== track.id
+        track.gain =
+            parseFloat(
+                gainSlider.value
             );
     };
-
-    /* MUTE */
 
     muteBtn.onclick = () => {
 
@@ -233,8 +249,6 @@ function bindTrack(track,div){
         );
     };
 
-    /* SOLO */
-
     soloBtn.onclick = () => {
 
         track.solo =
@@ -245,7 +259,19 @@ function bindTrack(track,div){
         );
     };
 
-    /* RECORD */
+    delBtn.onclick = () => {
+
+        document
+            .getElementById(
+                "track_" + track.id
+            )
+            .remove();
+
+        tracks =
+            tracks.filter(
+                t => t.id !== track.id
+            );
+    };
 
     recBtn.onclick = async () => {
 
@@ -368,6 +394,9 @@ function renderTake(track,take){
     block.className =
         "audioBlock";
 
+    block.takeData =
+        take;
+
     lane.appendChild(
         block
     );
@@ -381,9 +410,6 @@ function renderTake(track,take){
 
     menu.className =
         "editMenu";
-
-    menu.style.display =
-        "none";
 
     menu.innerHTML = `
 
@@ -403,7 +429,7 @@ function renderTake(track,take){
 
     block.appendChild(menu);
 
-    /* WAVE */
+    /* CANVAS */
 
     const canvas =
         document.createElement(
@@ -443,14 +469,10 @@ function renderTake(track,take){
         rightHandle
     );
 
-    updateTakeVisual(
+    drawTake(
         block,
-        take
-    );
-
-    renderWaveform(
-        canvas,
-        take
+        take,
+        canvas
     );
 
     /* SELECT */
@@ -464,56 +486,42 @@ function renderTake(track,take){
                 ".audioBlock"
             )
             .forEach(
-                b => {
-
-                b.classList.remove(
+                b => b.classList.remove(
                     "selected"
-                );
-
-                const m =
-                    b.querySelector(
-                        ".editMenu"
-                    );
-
-                if(m)
-                    m.style.display =
-                        "none";
-            });
+                )
+            );
 
         block.classList.add(
             "selected"
         );
 
-        menu.style.display =
-            "flex";
+        selectedTake =
+            take;
     };
 
     /* MOVE */
 
     let dragging = false;
 
-    let startX = 0;
+    let dragStartX = 0;
 
-    let startPos = 0;
+    let dragStartPos = 0;
 
-    block.addEventListener(
-        "pointerdown",
-        e => {
+    block.onpointerdown = e => {
 
-            if(
-                e.target !== block &&
-                e.target !== canvas
-            ) return;
+        if(
+            e.target === leftHandle ||
+            e.target === rightHandle
+        ) return;
 
-            dragging = true;
+        dragging = true;
 
-            startX =
-                e.clientX;
+        dragStartX =
+            e.clientX;
 
-            startPos =
-                take.timelinePosition;
-        }
-    );
+        dragStartPos =
+            take.timelinePosition;
+    };
 
     window.addEventListener(
         "pointermove",
@@ -525,18 +533,19 @@ function renderTake(track,take){
             const delta =
                 (
                     e.clientX -
-                    startX
+                    dragStartX
                 ) / zoomLevel;
 
             take.timelinePosition =
                 Math.max(
                     0,
-                    startPos + delta
+                    dragStartPos + delta
                 );
 
-            updateTakeVisual(
+            drawTake(
                 block,
-                take
+                take,
+                canvas
             );
         }
     );
@@ -549,17 +558,19 @@ function renderTake(track,take){
         }
     );
 
-    /* TRIM */
+    /* LEFT TRIM */
 
     let trimLeft = false;
-
-    let trimRight = false;
 
     leftHandle.onpointerdown =
         () => {
 
         trimLeft = true;
     };
+
+    /* RIGHT TRIM */
+
+    let trimRight = false;
 
     rightHandle.onpointerdown =
         () => {
@@ -592,21 +603,17 @@ function renderTake(track,take){
 
                 if(
                     take.startOffset >
-                    take.endOffset - 0.1
+                    take.endOffset - 0.05
                 ){
 
                     take.startOffset =
-                        take.endOffset - 0.1;
+                        take.endOffset - 0.05;
                 }
 
-                updateTakeVisual(
+                drawTake(
                     block,
-                    take
-                );
-
-                renderWaveform(
-                    canvas,
-                    take
+                    take,
+                    canvas
                 );
             }
 
@@ -630,21 +637,17 @@ function renderTake(track,take){
 
                 if(
                     take.endOffset <
-                    take.startOffset + 0.1
+                    take.startOffset + 0.05
                 ){
 
                     take.endOffset =
-                        take.startOffset + 0.1;
+                        take.startOffset + 0.05;
                 }
 
-                updateTakeVisual(
+                drawTake(
                     block,
-                    take
-                );
-
-                renderWaveform(
-                    canvas,
-                    take
+                    take,
+                    canvas
                 );
             }
         }
@@ -659,46 +662,6 @@ function renderTake(track,take){
             trimRight = false;
         }
     );
-
-    /* DELETE TAKE */
-
-    menu.querySelector(
-        ".delBtn"
-    ).onclick = () => {
-
-        block.remove();
-
-        track.takes =
-            track.takes.filter(
-                t => t.id !== take.id
-            );
-    };
-
-    /* DUP */
-
-    menu.querySelector(
-        ".dupBtn"
-    ).onclick = () => {
-
-        const clone = {
-
-            ...take,
-
-            id:Date.now(),
-
-            timelinePosition:
-                take.timelinePosition + 1
-        };
-
-        track.takes.push(
-            clone
-        );
-
-        renderTake(
-            track,
-            clone
-        );
-    };
 
     /* CUT */
 
@@ -731,14 +694,10 @@ function renderTake(track,take){
         take.endOffset =
             middle;
 
-        updateTakeVisual(
+        drawTake(
             block,
-            take
-        );
-
-        renderWaveform(
-            canvas,
-            take
+            take,
+            canvas
         );
 
         track.takes.push(
@@ -750,15 +709,56 @@ function renderTake(track,take){
             second
         );
     };
+
+    /* DUP */
+
+    menu.querySelector(
+        ".dupBtn"
+    ).onclick = () => {
+
+        const clone = {
+
+            ...take,
+
+            id:Date.now(),
+
+            timelinePosition:
+                take.timelinePosition + 1
+        };
+
+        track.takes.push(
+            clone
+        );
+
+        renderTake(
+            track,
+            clone
+        );
+    };
+
+    /* DELETE */
+
+    menu.querySelector(
+        ".delBtn"
+    ).onclick = () => {
+
+        block.remove();
+
+        track.takes =
+            track.takes.filter(
+                t => t.id !== take.id
+            );
+    };
 }
 
 /* =====================================
-VISUAL
+DRAW TAKE
 ===================================== */
 
-function updateTakeVisual(
+function drawTake(
     block,
-    take
+    take,
+    canvas
 ){
 
     const duration =
@@ -772,11 +772,15 @@ function updateTakeVisual(
         ) + "px";
 
     block.style.width =
-        Math.max(
-            40,
+        (
             duration *
             zoomLevel
         ) + "px";
+
+    renderWaveform(
+        canvas,
+        take
+    );
 }
 
 /* =====================================
@@ -794,7 +798,7 @@ function renderWaveform(
 
     canvas.width =
         Math.max(
-            100,
+            120,
             duration * zoomLevel
         );
 
@@ -803,15 +807,8 @@ function renderWaveform(
     const ctx =
         canvas.getContext("2d");
 
-    ctx.clearRect(
-        0,
-        0,
-        canvas.width,
-        canvas.height
-    );
-
     ctx.fillStyle =
-        "#161616";
+        "#111";
 
     ctx.fillRect(
         0,
@@ -917,10 +914,21 @@ document.getElementById(
                 audioContext
                 .createBufferSource();
 
+            const gainNode =
+                audioContext
+                .createGain();
+
+            gainNode.gain.value =
+                track.gain;
+
             source.buffer =
                 take.buffer;
 
             source.connect(
+                gainNode
+            );
+
+            gainNode.connect(
                 audioContext.destination
             );
 
@@ -940,28 +948,6 @@ document.getElementById(
 };
 
 /* =====================================
-PLAYHEAD
-===================================== */
-
-function animatePlayhead(){
-
-    if(!playing)
-        return;
-
-    const elapsed =
-        audioContext.currentTime -
-        playStartTime;
-
-    timelineWrapper.scrollLeft =
-        elapsed * zoomLevel;
-
-    playheadFrame =
-        requestAnimationFrame(
-            animatePlayhead
-        );
-}
-
-/* =====================================
 STOP
 ===================================== */
 
@@ -979,7 +965,7 @@ function stopAll(){
         try{
             s.stop();
         }catch(e){}
-    });
+    );
 
     activeSources = [];
 }
@@ -987,6 +973,35 @@ function stopAll(){
 document.getElementById(
     "stopBtn"
 ).onclick = stopAll;
+
+/* =====================================
+PLAYHEAD
+===================================== */
+
+function animatePlayhead(){
+
+    if(!playing)
+        return;
+
+    const elapsed =
+        audioContext.currentTime -
+        playStartTime;
+
+    playhead.style.left =
+        (
+            180 +
+            (
+                elapsed *
+                zoomLevel
+            ) -
+            timelineWrapper.scrollLeft
+        ) + "px";
+
+    playheadFrame =
+        requestAnimationFrame(
+            animatePlayhead
+        );
+}
 
 /* =====================================
 ZOOM
@@ -997,6 +1012,8 @@ document.getElementById(
 ).onclick = () => {
 
     zoomLevel += 20;
+
+    refreshAllTakes();
 
     buildGrid();
 };
@@ -1010,7 +1027,66 @@ document.getElementById(
     if(zoomLevel < 40)
         zoomLevel = 40;
 
+    refreshAllTakes();
+
     buildGrid();
+};
+
+function refreshAllTakes(){
+
+    document
+        .querySelectorAll(
+            ".audioBlock"
+        )
+        .forEach(block => {
+
+            const take =
+                block.takeData;
+
+            const canvas =
+                block.querySelector(
+                    "canvas"
+                );
+
+            drawTake(
+                block,
+                take,
+                canvas
+            );
+        });
+}
+
+/* =====================================
+TRANSPORT
+===================================== */
+
+document.getElementById(
+    "rewBtn"
+).onclick = () => {
+
+    timelineWrapper.scrollLeft -=
+        500;
+};
+
+document.getElementById(
+    "ffBtn"
+).onclick = () => {
+
+    timelineWrapper.scrollLeft +=
+        500;
+};
+
+/* =====================================
+EXPORT MASTER WAV
+===================================== */
+
+document.getElementById(
+    "exportBtn"
+).onclick = async () => {
+
+    alert(
+        "EXPORT MASTER em construção v3"
+    );
 };
 
 /* =====================================
