@@ -1,15 +1,25 @@
 /* =========================================
 ARQUIVO 3 — app.js
-VOV VERO v1
+VOV VERO EDIT ENGINE v1
 ========================================= */
 
 let audioContext = null;
 
-const PIXELS_PER_SECOND = 120;
+let tracks = [];
 
-/* =====================================
-DOM
-===================================== */
+let trackCount = 0;
+
+let selectedTake = null;
+
+let activeSources = [];
+
+let playing = false;
+
+let playheadAnimation = null;
+
+let playStartTime = 0;
+
+let zoomLevel = 120;
 
 const timeline =
     document.getElementById(
@@ -21,16 +31,6 @@ const timelineWrapper =
         "timelineWrapper"
     );
 
-const playhead =
-    document.getElementById(
-        "playhead"
-    );
-
-const inputMeter =
-    document.getElementById(
-        "inputMeter"
-    );
-
 const veroCanvas =
     document.getElementById(
         "veroCanvas"
@@ -40,34 +40,8 @@ const veroCtx =
     veroCanvas.getContext("2d");
 
 /* =====================================
-STATE
+VERO
 ===================================== */
-
-let tracks = [];
-
-let trackCount = 0;
-
-let selectedTake = null;
-
-let activeSources = [];
-
-let timelineOffset = 0;
-
-let monitorEnabled = false;
-
-let playing = false;
-
-let playheadAnimation = null;
-
-let playStartTime = 0;
-
-/* =====================================
-VERO ENGINE
-===================================== */
-
-let veroAnalyser = null;
-
-let veroData = null;
 
 function resizeVeroCanvas(){
 
@@ -78,162 +52,12 @@ function resizeVeroCanvas(){
         timeline.scrollHeight;
 }
 
+resizeVeroCanvas();
+
 window.addEventListener(
     "resize",
     resizeVeroCanvas
 );
-
-resizeVeroCanvas();
-
-function connectVero(node){
-
-    veroAnalyser =
-        audioContext.createAnalyser();
-
-    veroAnalyser.fftSize = 2048;
-
-    veroData =
-        new Uint8Array(
-            veroAnalyser.frequencyBinCount
-        );
-
-    node.connect(
-        veroAnalyser
-    );
-
-    animateVero();
-}
-
-function animateVero(){
-
-    requestAnimationFrame(
-        animateVero
-    );
-
-    if(!veroAnalyser)
-        return;
-
-    veroAnalyser.getByteFrequencyData(
-        veroData
-    );
-
-    veroCtx.fillStyle =
-        "rgba(0,0,0,0.04)";
-
-    veroCtx.fillRect(
-        0,
-        0,
-        veroCanvas.width,
-        veroCanvas.height
-    );
-
-    const centerY =
-        veroCanvas.height / 2;
-
-    for(
-        let i=0;
-        i<veroData.length;
-        i++
-    ){
-
-        const value =
-            veroData[i];
-
-        const percent =
-            value / 255;
-
-        const height =
-            percent * 240;
-
-        let r = 0;
-        let g = 0;
-        let b = 0;
-
-        if(i < 80){
-
-            r = value;
-            g = value * 0.2;
-            b = value * 0.1;
-
-        }else if(i < 240){
-
-            r = value * 0.7;
-            g = value;
-            b = value * 0.2;
-
-        }else{
-
-            r = value * 0.2;
-            g = value * 0.5;
-            b = value;
-        }
-
-        veroCtx.fillStyle =
-            `
-            rgba(
-                ${r},
-                ${g},
-                ${b},
-                0.15
-            )
-            `;
-
-        const x =
-            (
-                performance.now()
-                * 0.12
-            ) %
-            veroCanvas.width;
-
-        veroCtx.fillRect(
-            x,
-            centerY - height/2,
-            2,
-            height
-        );
-    }
-}
-
-/* =====================================
-INPUT ENGINE
-===================================== */
-
-let inputGainValue = 1;
-
-let compressorAmount = 0.4;
-
-document.getElementById(
-    "inputGain"
-).oninput = e => {
-
-    inputGainValue =
-        parseFloat(
-            e.target.value
-        );
-};
-
-document.getElementById(
-    "compressAmount"
-).oninput = e => {
-
-    compressorAmount =
-        parseFloat(
-            e.target.value
-        );
-};
-
-document.getElementById(
-    "monitorBtn"
-).onclick = function(){
-
-    monitorEnabled =
-        !monitorEnabled;
-
-    this.innerText =
-        monitorEnabled
-        ? "ON"
-        : "OFF";
-};
 
 /* =====================================
 GRID
@@ -253,8 +77,7 @@ for(let i=0;i<300;i++){
         (
             180 +
             (
-                i *
-                PIXELS_PER_SECOND
+                i * zoomLevel
             )
         ) + "px";
 
@@ -272,8 +95,7 @@ for(let i=0;i<300;i++){
         (
             183 +
             (
-                i *
-                PIXELS_PER_SECOND
+                i * zoomLevel
             )
         ) + "px";
 
@@ -284,7 +106,7 @@ for(let i=0;i<300;i++){
 }
 
 /* =====================================
-TRACKS
+TRACK
 ===================================== */
 
 document.getElementById(
@@ -334,67 +156,67 @@ function renderTrack(track){
 
     div.innerHTML = `
 
-        <div class="trackHeader">
+    <div class="trackHeader">
 
-            <div>
-                TRACK ${track.id}
-            </div>
+        <div>
+            TRACK ${track.id}
+        </div>
 
-            <div class="trackButtons">
+        <div class="trackButtons">
 
-                <button id="rec_${track.id}">
-                    REC
-                </button>
+            <button id="rec_${track.id}">
+                REC
+            </button>
 
-                <button id="mute_${track.id}">
-                    M
-                </button>
+            <button id="mute_${track.id}">
+                M
+            </button>
 
-                <button id="solo_${track.id}">
-                    S
-                </button>
+            <button id="solo_${track.id}">
+                S
+            </button>
 
-                <button id="del_${track.id}">
-                    X
-                </button>
-
-            </div>
-
-            <div class="mixer">
-
-                <label>
-                    VOL
-                </label>
-
-                <input
-                    type="range"
-                    min="0"
-                    max="2"
-                    step="0.01"
-                    value="1"
-                    id="vol_${track.id}"
-                >
-
-                <label>
-                    PAN
-                </label>
-
-                <input
-                    type="range"
-                    min="-1"
-                    max="1"
-                    step="0.01"
-                    value="0"
-                    id="pan_${track.id}"
-                >
-
-            </div>
+            <button id="del_${track.id}">
+                X
+            </button>
 
         </div>
 
-        <div class="trackLane"
-             id="lane_${track.id}">
+        <div class="mixer">
+
+            <label>
+                VOL
+            </label>
+
+            <input
+                type="range"
+                min="0"
+                max="2"
+                step="0.01"
+                value="1"
+                id="vol_${track.id}"
+            >
+
+            <label>
+                PAN
+            </label>
+
+            <input
+                type="range"
+                min="-1"
+                max="1"
+                step="0.01"
+                value="0"
+                id="pan_${track.id}"
+            >
+
         </div>
+
+    </div>
+
+    <div class="trackLane"
+         id="lane_${track.id}">
+    </div>
 
     `;
 
@@ -414,32 +236,10 @@ function bindTrack(track,div){
             "rec_" + track.id
         );
 
-    const muteBtn =
-        document.getElementById(
-            "mute_" + track.id
-        );
-
-    const soloBtn =
-        document.getElementById(
-            "solo_" + track.id
-        );
-
     const delBtn =
         document.getElementById(
             "del_" + track.id
         );
-
-    const volSlider =
-        document.getElementById(
-            "vol_" + track.id
-        );
-
-    const panSlider =
-        document.getElementById(
-            "pan_" + track.id
-        );
-
-    /* DELETE TRACK */
 
     delBtn.onclick = () => {
 
@@ -451,135 +251,45 @@ function bindTrack(track,div){
             );
     };
 
-    /* MIXER */
-
-    volSlider.oninput = () => {
-
-        track.volume =
-            parseFloat(
-                volSlider.value
-            );
-    };
-
-    panSlider.oninput = () => {
-
-        track.pan =
-            parseFloat(
-                panSlider.value
-            );
-    };
-
-    /* REC */
-
     recBtn.onclick = async () => {
 
-        try{
+        if(!audioContext){
 
-            if(!audioContext){
+            audioContext =
+                new AudioContext();
 
-                audioContext =
-                    new AudioContext();
+            await audioContext.resume();
+        }
 
-                await audioContext.resume();
-            }
+        if(!track.recorder){
 
-            if(!track.recorder){
+            const stream =
+                await navigator
+                .mediaDevices
+                .getUserMedia({
+                    audio:true
+                });
 
-                const stream =
-                    await navigator
-                    .mediaDevices
-                    .getUserMedia({
-                        audio:{
-                            echoCancellation:true,
-                            noiseSuppression:true,
-                            autoGainControl:true
-                        }
-                    });
+            track.stream =
+                stream;
 
-                track.stream =
-                    stream;
-
-                const source =
-                    audioContext
-                    .createMediaStreamSource(
-                        stream
-                    );
-
-                const gainNode =
-                    audioContext
-                    .createGain();
-
-                gainNode.gain.value =
-                    inputGainValue;
-
-                const compressor =
-                    audioContext
-                    .createDynamicsCompressor();
-
-                compressor.threshold.value =
-                    -24;
-
-                compressor.knee.value =
-                    30;
-
-                compressor.ratio.value =
-                    12 *
-                    compressorAmount;
-
-                compressor.attack.value =
-                    0.003;
-
-                compressor.release.value =
-                    0.25;
-
-                const analyser =
-                    audioContext
-                    .createAnalyser();
-
-                analyser.fftSize =
-                    256;
-
-                source.connect(
-                    gainNode
+            const recorder =
+                new MediaRecorder(
+                    stream
                 );
 
-                gainNode.connect(
-                    compressor
-                );
+            const chunks = [];
 
-                compressor.connect(
-                    analyser
-                );
+            recorder.ondataavailable =
+                e => {
 
-                if(monitorEnabled){
-
-                    analyser.connect(
-                        audioContext.destination
+                    chunks.push(
+                        e.data
                     );
-                }
+                };
 
-                meterLoop(analyser);
-
-                const recorder =
-                    new MediaRecorder(
-                        stream
-                    );
-
-                const chunks = [];
-
-                recorder.ondataavailable =
-                    e => {
-
-                        chunks.push(
-                            e.data
-                        );
-                    };
-
-                recorder.onstop =
-                    async () => {
-
-                    inputMeter.style.width =
-                        "0%";
+            recorder.onstop =
+                async () => {
 
                     const blob =
                         new Blob(chunks);
@@ -618,108 +328,36 @@ function bindTrack(track,div){
                     );
                 };
 
-                recorder.start();
+            recorder.start();
 
-                track.recorder =
-                    recorder;
+            track.recorder =
+                recorder;
 
-                recBtn.classList.add(
-                    "recActive"
+            recBtn.classList.add(
+                "recActive"
+            );
+
+        }else{
+
+            track.recorder.stop();
+
+            track.stream
+                .getTracks()
+                .forEach(
+                    t => t.stop()
                 );
 
-            }else{
+            track.recorder = null;
 
-                track.recorder.stop();
-
-                track.stream
-                    .getTracks()
-                    .forEach(
-                        t => t.stop()
-                    );
-
-                track.recorder = null;
-
-                recBtn.classList.remove(
-                    "recActive"
-                );
-            }
-
-        }catch(error){
-
-            console.error(error);
-
-            alert(
-                "Erro no REC"
+            recBtn.classList.remove(
+                "recActive"
             );
         }
     };
-
-    muteBtn.onclick = () => {
-
-        track.muted =
-            !track.muted;
-
-        muteBtn.classList.toggle(
-            "muteActive"
-        );
-    };
-
-    soloBtn.onclick = () => {
-
-        track.solo =
-            !track.solo;
-
-        soloBtn.classList.toggle(
-            "soloActive"
-        );
-    };
 }
 
 /* =====================================
-INPUT METER
-===================================== */
-
-function meterLoop(analyser){
-
-    const data =
-        new Uint8Array(
-            analyser.frequencyBinCount
-        );
-
-    function update(){
-
-        analyser.getByteFrequencyData(
-            data
-        );
-
-        let sum = 0;
-
-        for(let i=0;i<data.length;i++){
-
-            sum += data[i];
-        }
-
-        let average =
-            sum / data.length;
-
-        let percent =
-            (
-                average / 255
-            ) * 100;
-
-        inputMeter.style.width =
-            percent + "%";
-
-        requestAnimationFrame(
-            update
-        );
-    }
-
-    update();
-}
-
-/* =====================================
-TAKES
+TAKE
 ===================================== */
 
 function renderTake(track,take){
@@ -741,6 +379,63 @@ function renderTake(track,take){
         block,
         take
     );
+
+    /* =====================================
+    MENU
+    ===================================== */
+
+    const menu =
+        document.createElement(
+            "div"
+        );
+
+    menu.className =
+        "editMenu";
+
+    menu.style.display =
+        "none";
+
+    menu.innerHTML = `
+
+    <button class="delTake">
+        DEL
+    </button>
+
+    `;
+
+    block.appendChild(menu);
+
+    /* =====================================
+    HANDLES
+    ===================================== */
+
+    const leftHandle =
+        document.createElement(
+            "div"
+        );
+
+    leftHandle.className =
+        "handle leftHandle";
+
+    const rightHandle =
+        document.createElement(
+            "div"
+        );
+
+    rightHandle.className =
+        "handle rightHandle";
+
+    block.appendChild(
+        leftHandle
+    );
+
+    block.appendChild(
+        rightHandle
+    );
+
+    /* =====================================
+    CANVAS
+    ===================================== */
 
     const canvas =
         document.createElement(
@@ -767,27 +462,66 @@ function renderTake(track,take){
         );
     });
 
-    block.onclick = () => {
+    /* =====================================
+    SELECT
+    ===================================== */
+
+    block.onclick = e => {
+
+        e.stopPropagation();
 
         document
             .querySelectorAll(
                 ".audioBlock"
             )
             .forEach(
-                b => b.classList
-                .remove(
+                b => {
+
+                b.classList.remove(
                     "selected"
-                )
-            );
+                );
+
+                const m =
+                    b.querySelector(
+                        ".editMenu"
+                    );
+
+                if(m)
+                    m.style.display =
+                        "none";
+            });
 
         block.classList.add(
             "selected"
         );
 
+        menu.style.display =
+            "flex";
+
         selectedTake = take;
     };
 
-    /* MOVE */
+    /* =====================================
+    DELETE TAKE
+    ===================================== */
+
+    menu.querySelector(
+        ".delTake"
+    ).onclick = e => {
+
+        e.stopPropagation();
+
+        block.remove();
+
+        track.takes =
+            track.takes.filter(
+                t => t.id !== take.id
+            );
+    };
+
+    /* =====================================
+    MOVE
+    ===================================== */
 
     let dragging = false;
 
@@ -798,6 +532,11 @@ function renderTake(track,take){
     block.addEventListener(
         "pointerdown",
         e => {
+
+            if(
+                e.target === leftHandle ||
+                e.target === rightHandle
+            ) return;
 
             dragging = true;
 
@@ -820,8 +559,7 @@ function renderTake(track,take){
                 (
                     e.clientX -
                     startX
-                ) /
-                PIXELS_PER_SECOND;
+                ) / zoomLevel;
 
             take.timelinePosition =
                 Math.max(
@@ -843,6 +581,138 @@ function renderTake(track,take){
             dragging = false;
         }
     );
+
+    /* =====================================
+    TRIM LEFT
+    ===================================== */
+
+    let trimmingLeft = false;
+
+    leftHandle.addEventListener(
+        "pointerdown",
+        e => {
+
+            e.stopPropagation();
+
+            trimmingLeft = true;
+        }
+    );
+
+    /* =====================================
+    TRIM RIGHT
+    ===================================== */
+
+    let trimmingRight = false;
+
+    rightHandle.addEventListener(
+        "pointerdown",
+        e => {
+
+            e.stopPropagation();
+
+            trimmingRight = true;
+        }
+    );
+
+    window.addEventListener(
+        "pointermove",
+        e => {
+
+            /* LEFT */
+
+            if(trimmingLeft){
+
+                const delta =
+                    e.movementX /
+                    zoomLevel;
+
+                take.startOffset +=
+                    delta;
+
+                take.timelinePosition +=
+                    delta;
+
+                if(
+                    take.startOffset < 0
+                ){
+
+                    take.timelinePosition -=
+                        take.startOffset;
+
+                    take.startOffset = 0;
+                }
+
+                if(
+                    take.startOffset >
+                    take.endOffset - 0.1
+                ){
+
+                    take.startOffset =
+                        take.endOffset - 0.1;
+                }
+
+                updateTakeVisual(
+                    block,
+                    take
+                );
+
+                renderWaveform(
+                    canvas,
+                    take
+                );
+            }
+
+            /* RIGHT */
+
+            if(trimmingRight){
+
+                const delta =
+                    e.movementX /
+                    zoomLevel;
+
+                take.endOffset +=
+                    delta;
+
+                if(
+                    take.endOffset >
+                    take.buffer.duration
+                ){
+
+                    take.endOffset =
+                        take.buffer.duration;
+                }
+
+                if(
+                    take.endOffset <
+                    take.startOffset + 0.1
+                ){
+
+                    take.endOffset =
+                        take.startOffset + 0.1;
+                }
+
+                updateTakeVisual(
+                    block,
+                    take
+                );
+
+                renderWaveform(
+                    canvas,
+                    take
+                );
+            }
+        }
+    );
+
+    window.addEventListener(
+        "pointerup",
+        () => {
+
+            trimmingLeft = false;
+
+            trimmingRight = false;
+        }
+    );
 }
 
 /* =====================================
@@ -861,13 +731,13 @@ function updateTakeVisual(
     block.style.left =
         (
             take.timelinePosition *
-            PIXELS_PER_SECOND
+            zoomLevel
         ) + "px";
 
     block.style.width =
         (
             duration *
-            PIXELS_PER_SECOND
+            zoomLevel
         ) + "px";
 }
 
@@ -888,7 +758,7 @@ function renderWaveform(
         Math.max(
             100,
             duration *
-            PIXELS_PER_SECOND
+            zoomLevel
         );
 
     canvas.height = 80;
@@ -994,9 +864,6 @@ document.getElementById(
 
     tracks.forEach(track => {
 
-        if(track.muted)
-            return;
-
         track.takes.forEach(take => {
 
             const source =
@@ -1006,33 +873,7 @@ document.getElementById(
             source.buffer =
                 take.buffer;
 
-            const gainNode =
-                audioContext
-                .createGain();
-
-            gainNode.gain.value =
-                track.volume;
-
-            const panNode =
-                audioContext
-                .createStereoPanner();
-
-            panNode.pan.value =
-                track.pan;
-
             source.connect(
-                gainNode
-            );
-
-            connectVero(
-                gainNode
-            );
-
-            gainNode.connect(
-                panNode
-            );
-
-            panNode.connect(
                 audioContext.destination
             );
 
@@ -1041,8 +882,7 @@ document.getElementById(
                 take.startOffset;
 
             source.start(
-                now +
-                take.timelinePosition,
+                now,
                 take.startOffset,
                 duration
             );
@@ -1055,7 +895,7 @@ document.getElementById(
 };
 
 /* =====================================
-PLAYHEAD ENGINE
+PLAYHEAD
 ===================================== */
 
 function animatePlayhead(){
@@ -1067,14 +907,12 @@ function animatePlayhead(){
         audioContext.currentTime -
         playStartTime;
 
-    playhead.style.left =
-        (
-            180 +
-            (
-                elapsed *
-                PIXELS_PER_SECOND
-            )
-        ) + "px";
+    const scrollX =
+        elapsed *
+        zoomLevel;
+
+    timelineWrapper.scrollLeft =
+        scrollX;
 
     playheadAnimation =
         requestAnimationFrame(
@@ -1094,8 +932,7 @@ function stopAll(){
         playheadAnimation
     );
 
-    playhead.style.left =
-        "180px";
+    timelineWrapper.scrollLeft = 0;
 
     activeSources.forEach(
         s => {
@@ -1113,49 +950,28 @@ document.getElementById(
 ).onclick = stopAll;
 
 /* =====================================
-TRANSPORT
+ZOOM
 ===================================== */
 
 document.getElementById(
-    "rewBtn"
+    "zoomInBtn"
 ).onclick = () => {
 
-    timelineOffset -= 5;
-
-    if(timelineOffset < 0)
-        timelineOffset = 0;
-
-    updateTransport();
+    zoomLevel += 20;
 };
 
 document.getElementById(
-    "ffBtn"
+    "zoomOutBtn"
 ).onclick = () => {
 
-    timelineOffset += 5;
+    zoomLevel -= 20;
 
-    updateTransport();
+    if(zoomLevel < 40)
+        zoomLevel = 40;
 };
-
-function updateTransport(){
-
-    const px =
-        timelineOffset *
-        PIXELS_PER_SECOND;
-
-    timelineWrapper.scrollLeft =
-        px;
-}
 
 /* =====================================
 INIT
 ===================================== */
 
-window.onload = () => {
-
-    createTrack();
-
-    console.log(
-        "VOV VERO READY"
-    );
-};
+createTrack();
