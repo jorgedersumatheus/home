@@ -1,6 +1,6 @@
 /* =========================================
 ARQUIVO 3 — app.js
-VOV VERO EDIT ENGINE v1
+VERO DAW v2
 ========================================= */
 
 let audioContext = null;
@@ -9,17 +9,15 @@ let tracks = [];
 
 let trackCount = 0;
 
-let selectedTake = null;
+let zoomLevel = 120;
 
 let activeSources = [];
 
 let playing = false;
 
-let playheadAnimation = null;
-
 let playStartTime = 0;
 
-let zoomLevel = 120;
+let playheadAnimation = null;
 
 const timeline =
     document.getElementById(
@@ -31,79 +29,68 @@ const timelineWrapper =
         "timelineWrapper"
     );
 
-const veroCanvas =
-    document.getElementById(
-        "veroCanvas"
-    );
-
-const veroCtx =
-    veroCanvas.getContext("2d");
-
-/* =====================================
-VERO
-===================================== */
-
-function resizeVeroCanvas(){
-
-    veroCanvas.width =
-        timeline.scrollWidth;
-
-    veroCanvas.height =
-        timeline.scrollHeight;
-}
-
-resizeVeroCanvas();
-
-window.addEventListener(
-    "resize",
-    resizeVeroCanvas
-);
-
 /* =====================================
 GRID
 ===================================== */
 
-for(let i=0;i<300;i++){
+function buildGrid(){
 
-    const line =
-        document.createElement(
-            "div"
+    document
+        .querySelectorAll(
+            ".gridLine,.gridText"
+        )
+        .forEach(
+            e => e.remove()
         );
 
-    line.className =
-        "gridLine";
+    for(let i=0;i<300;i++){
 
-    line.style.left =
-        (
-            180 +
+        const line =
+            document.createElement(
+                "div"
+            );
+
+        line.className =
+            "gridLine";
+
+        line.style.left =
             (
-                i * zoomLevel
-            )
-        ) + "px";
+                180 +
+                (
+                    i * zoomLevel
+                )
+            ) + "px";
 
-    timeline.appendChild(line);
-
-    const text =
-        document.createElement(
-            "div"
+        timeline.appendChild(
+            line
         );
 
-    text.className =
-        "gridText";
+        const text =
+            document.createElement(
+                "div"
+            );
 
-    text.style.left =
-        (
-            183 +
+        text.className =
+            "gridText";
+
+        text.style.left =
             (
-                i * zoomLevel
-            )
-        ) + "px";
+                183 +
+                (
+                    i * zoomLevel
+                )
+            ) + "px";
 
-    text.innerText =
-        i + "s";
+        text.innerText =
+            i + "s";
 
-    timeline.appendChild(text);
+        timeline.appendChild(
+            text
+        );
+    }
 }
+
+buildGrid();
 
 /* =====================================
 TRACK
@@ -128,15 +115,7 @@ function createTrack(){
 
         recorder:null,
 
-        stream:null,
-
-        muted:false,
-
-        solo:false,
-
-        volume:1,
-
-        pan:0
+        stream:null
     };
 
     tracks.push(track);
@@ -176,39 +155,9 @@ function renderTrack(track){
                 S
             </button>
 
-            <button id="del_${track.id}">
+            <button id="delTrack_${track.id}">
                 X
             </button>
-
-        </div>
-
-        <div class="mixer">
-
-            <label>
-                VOL
-            </label>
-
-            <input
-                type="range"
-                min="0"
-                max="2"
-                step="0.01"
-                value="1"
-                id="vol_${track.id}"
-            >
-
-            <label>
-                PAN
-            </label>
-
-            <input
-                type="range"
-                min="-1"
-                max="1"
-                step="0.01"
-                value="0"
-                id="pan_${track.id}"
-            >
 
         </div>
 
@@ -226,7 +175,7 @@ function renderTrack(track){
 }
 
 /* =====================================
-BIND
+BIND TRACK
 ===================================== */
 
 function bindTrack(track,div){
@@ -238,7 +187,7 @@ function bindTrack(track,div){
 
     const delBtn =
         document.getElementById(
-            "del_" + track.id
+            "delTrack_" + track.id
         );
 
     delBtn.onclick = () => {
@@ -315,7 +264,11 @@ function bindTrack(track,div){
                         endOffset:
                             audioBuffer.duration,
 
-                        timelinePosition:0
+                        timelinePosition:0,
+
+                        fadeIn:0,
+
+                        fadeOut:0
                     };
 
                     track.takes.push(
@@ -392,18 +345,42 @@ function renderTake(track,take){
     menu.className =
         "editMenu";
 
-    menu.style.display =
-        "none";
-
     menu.innerHTML = `
 
-    <button class="delTake">
+    <button class="splitBtn">
+        CUT
+    </button>
+
+    <button class="dupBtn">
+        DUP
+    </button>
+
+    <button class="delBtn">
         DEL
     </button>
 
     `;
 
+    menu.style.display =
+        "none";
+
     block.appendChild(menu);
+
+    /* =====================================
+    WAVE
+    ===================================== */
+
+    const canvas =
+        document.createElement(
+            "canvas"
+        );
+
+    canvas.className =
+        "waveCanvas";
+
+    block.appendChild(
+        canvas
+    );
 
     /* =====================================
     HANDLES
@@ -434,33 +411,41 @@ function renderTake(track,take){
     );
 
     /* =====================================
-    CANVAS
+    FADES
     ===================================== */
 
-    const canvas =
+    const fadeLeft =
         document.createElement(
-            "canvas"
+            "div"
         );
 
-    canvas.className =
-        "waveCanvas";
+    fadeLeft.className =
+        "fadeHandle fadeLeft";
+
+    const fadeRight =
+        document.createElement(
+            "div"
+        );
+
+    fadeRight.className =
+        "fadeHandle fadeRight";
 
     block.appendChild(
-        canvas
+        fadeLeft
+    );
+
+    block.appendChild(
+        fadeRight
     );
 
     lane.appendChild(
         block
     );
 
-    requestAnimationFrame(
-        () => {
-
-        renderWaveform(
-            canvas,
-            take
-        );
-    });
+    renderWaveform(
+        canvas,
+        take
+    );
 
     /* =====================================
     SELECT
@@ -497,26 +482,6 @@ function renderTake(track,take){
 
         menu.style.display =
             "flex";
-
-        selectedTake = take;
-    };
-
-    /* =====================================
-    DELETE TAKE
-    ===================================== */
-
-    menu.querySelector(
-        ".delTake"
-    ).onclick = e => {
-
-        e.stopPropagation();
-
-        block.remove();
-
-        track.takes =
-            track.takes.filter(
-                t => t.id !== take.id
-            );
     };
 
     /* =====================================
@@ -534,8 +499,8 @@ function renderTake(track,take){
         e => {
 
             if(
-                e.target === leftHandle ||
-                e.target === rightHandle
+                e.target !== block &&
+                e.target !== canvas
             ) return;
 
             dragging = true;
@@ -583,44 +548,34 @@ function renderTake(track,take){
     );
 
     /* =====================================
-    TRIM LEFT
+    LEFT TRIM
     ===================================== */
 
-    let trimmingLeft = false;
+    let trimLeft = false;
 
-    leftHandle.addEventListener(
-        "pointerdown",
-        e => {
+    leftHandle.onpointerdown =
+        () => {
 
-            e.stopPropagation();
-
-            trimmingLeft = true;
-        }
-    );
+        trimLeft = true;
+    };
 
     /* =====================================
-    TRIM RIGHT
+    RIGHT TRIM
     ===================================== */
 
-    let trimmingRight = false;
+    let trimRight = false;
 
-    rightHandle.addEventListener(
-        "pointerdown",
-        e => {
+    rightHandle.onpointerdown =
+        () => {
 
-            e.stopPropagation();
-
-            trimmingRight = true;
-        }
-    );
+        trimRight = true;
+    };
 
     window.addEventListener(
         "pointermove",
         e => {
 
-            /* LEFT */
-
-            if(trimmingLeft){
+            if(trimLeft){
 
                 const delta =
                     e.movementX /
@@ -635,9 +590,6 @@ function renderTake(track,take){
                 if(
                     take.startOffset < 0
                 ){
-
-                    take.timelinePosition -=
-                        take.startOffset;
 
                     take.startOffset = 0;
                 }
@@ -662,9 +614,7 @@ function renderTake(track,take){
                 );
             }
 
-            /* RIGHT */
-
-            if(trimmingRight){
+            if(trimRight){
 
                 const delta =
                     e.movementX /
@@ -708,11 +658,108 @@ function renderTake(track,take){
         "pointerup",
         () => {
 
-            trimmingLeft = false;
+            trimLeft = false;
 
-            trimmingRight = false;
+            trimRight = false;
         }
     );
+
+    /* =====================================
+    DELETE
+    ===================================== */
+
+    menu.querySelector(
+        ".delBtn"
+    ).onclick = () => {
+
+        block.remove();
+
+        track.takes =
+            track.takes.filter(
+                t => t.id !== take.id
+            );
+    };
+
+    /* =====================================
+    DUP
+    ===================================== */
+
+    menu.querySelector(
+        ".dupBtn"
+    ).onclick = () => {
+
+        const clone = {
+
+            ...take,
+
+            id:Date.now(),
+
+            timelinePosition:
+                take.timelinePosition + 1
+        };
+
+        track.takes.push(
+            clone
+        );
+
+        renderTake(
+            track,
+            clone
+        );
+    };
+
+    /* =====================================
+    CUT
+    ===================================== */
+
+    menu.querySelector(
+        ".splitBtn"
+    ).onclick = () => {
+
+        const middle =
+            (
+                take.startOffset +
+                take.endOffset
+            ) / 2;
+
+        const second = {
+
+            ...take,
+
+            id:Date.now(),
+
+            startOffset:middle,
+
+            timelinePosition:
+                take.timelinePosition +
+                (
+                    middle -
+                    take.startOffset
+                )
+        };
+
+        take.endOffset =
+            middle;
+
+        updateTakeVisual(
+            block,
+            take
+        );
+
+        renderWaveform(
+            canvas,
+            take
+        );
+
+        track.takes.push(
+            second
+        );
+
+        renderTake(
+            track,
+            second
+        );
+    };
 }
 
 /* =====================================
@@ -766,15 +813,8 @@ function renderWaveform(
     const ctx =
         canvas.getContext("2d");
 
-    ctx.clearRect(
-        0,
-        0,
-        canvas.width,
-        canvas.height
-    );
-
     ctx.fillStyle =
-        "#181818";
+        "#161616";
 
     ctx.fillRect(
         0,
@@ -840,7 +880,7 @@ function renderWaveform(
 }
 
 /* =====================================
-PLAYBACK
+PLAY
 ===================================== */
 
 document.getElementById(
@@ -877,14 +917,11 @@ document.getElementById(
                 audioContext.destination
             );
 
-            const duration =
-                take.endOffset -
-                take.startOffset;
-
             source.start(
                 now,
                 take.startOffset,
-                duration
+                take.endOffset -
+                take.startOffset
             );
 
             activeSources.push(
@@ -907,12 +944,9 @@ function animatePlayhead(){
         audioContext.currentTime -
         playStartTime;
 
-    const scrollX =
+    timelineWrapper.scrollLeft =
         elapsed *
         zoomLevel;
-
-    timelineWrapper.scrollLeft =
-        scrollX;
 
     playheadAnimation =
         requestAnimationFrame(
@@ -932,15 +966,13 @@ function stopAll(){
         playheadAnimation
     );
 
-    timelineWrapper.scrollLeft = 0;
-
     activeSources.forEach(
         s => {
 
         try{
             s.stop();
         }catch(e){}
-    });
+    );
 
     activeSources = [];
 }
@@ -958,6 +990,8 @@ document.getElementById(
 ).onclick = () => {
 
     zoomLevel += 20;
+
+    buildGrid();
 };
 
 document.getElementById(
@@ -968,6 +1002,8 @@ document.getElementById(
 
     if(zoomLevel < 40)
         zoomLevel = 40;
+
+    buildGrid();
 };
 
 /* =====================================
