@@ -43,6 +43,14 @@ TOPBAR
 
     border-bottom:
     1px solid #222;
+
+    overflow-x:auto;
+
+    white-space:nowrap;
+}
+
+#topbar::-webkit-scrollbar{
+    display:none;
 }
 
 #topbar button{
@@ -62,6 +70,8 @@ TOPBAR
     height:54px;
 
     background:#222;
+
+    flex-shrink:0;
 }
 
 #playBtn{
@@ -258,9 +268,9 @@ AUDIO BLOCK
 
     border-radius:10px;
 
-    overflow:hidden;
-
     touch-action:none;
+
+    overflow:visible;
 }
 
 .audioBlock.selected{
@@ -322,7 +332,9 @@ EDIT MENU
 
     gap:5px;
 
-    z-index:9999;
+    z-index:50000;
+
+    pointer-events:auto;
 }
 
 .editMenu button{
