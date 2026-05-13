@@ -1,7 +1,5 @@
 /* =========================================
-VERO ENGINE v3
-APP.JS
-TIMELINE REAL + ZOOM REAL + EXPORT
+ARQUIVO 3 — app.js
 ========================================= */
 
 let audioContext = null;
@@ -19,8 +17,6 @@ let playing = false;
 let playheadFrame = null;
 
 let playStartTime = 0;
-
-let selectedTake = null;
 
 const timeline =
     document.getElementById(
@@ -63,7 +59,6 @@ function buildGrid(){
 
         line.style.left =
             (
-                180 +
                 i * zoomLevel
             ) + "px";
 
@@ -81,8 +76,7 @@ function buildGrid(){
 
         text.style.left =
             (
-                183 +
-                i * zoomLevel
+                i * zoomLevel + 5
             ) + "px";
 
         text.innerText =
@@ -144,9 +138,6 @@ function renderTrack(track){
     div.className =
         "track";
 
-    div.id =
-        "track_" + track.id;
-
     div.innerHTML = `
 
     <div class="trackHeader">
@@ -186,16 +177,14 @@ function renderTrack(track){
 
     </div>
 
-    <div class="trackLane"
-         id="lane_${track.id}">
+    <div
+        class="trackLane"
+        id="lane_${track.id}">
     </div>
 
     `;
 
-    timeline.insertBefore(
-        div,
-        timeline.firstChild
-    );
+    timeline.appendChild(div);
 
     bindTrack(track);
 }
@@ -210,68 +199,6 @@ function bindTrack(track){
         document.getElementById(
             "rec_" + track.id
         );
-
-    const muteBtn =
-        document.getElementById(
-            "mute_" + track.id
-        );
-
-    const soloBtn =
-        document.getElementById(
-            "solo_" + track.id
-        );
-
-    const delBtn =
-        document.getElementById(
-            "del_" + track.id
-        );
-
-    const gainSlider =
-        document.getElementById(
-            "gain_" + track.id
-        );
-
-    gainSlider.oninput = () => {
-
-        track.gain =
-            parseFloat(
-                gainSlider.value
-            );
-    };
-
-    muteBtn.onclick = () => {
-
-        track.muted =
-            !track.muted;
-
-        muteBtn.classList.toggle(
-            "muteActive"
-        );
-    };
-
-    soloBtn.onclick = () => {
-
-        track.solo =
-            !track.solo;
-
-        soloBtn.classList.toggle(
-            "soloActive"
-        );
-    };
-
-    delBtn.onclick = () => {
-
-        document
-            .getElementById(
-                "track_" + track.id
-            )
-            .remove();
-
-        tracks =
-            tracks.filter(
-                t => t.id !== track.id
-            );
-    };
 
     recBtn.onclick = async () => {
 
@@ -297,7 +224,11 @@ function bindTrack(track){
 
             const recorder =
                 new MediaRecorder(
-                    stream
+                    stream,
+                    {
+                        mimeType:
+                        "audio/webm"
+                    }
                 );
 
             const chunks = [];
@@ -308,44 +239,50 @@ function bindTrack(track){
                 );
 
             recorder.onstop =
-                async () => {
+            async () => {
 
-                    const blob =
-                        new Blob(chunks);
-
-                    const arrayBuffer =
-                        await blob
-                        .arrayBuffer();
-
-                    const audioBuffer =
-                        await audioContext
-                        .decodeAudioData(
-                            arrayBuffer
-                        );
-
-                    const take = {
-
-                        id:Date.now(),
-
-                        buffer:audioBuffer,
-
-                        startOffset:0,
-
-                        endOffset:
-                            audioBuffer.duration,
-
-                        timelinePosition:0
-                    };
-
-                    track.takes.push(
-                        take
+                const blob =
+                    new Blob(
+                        chunks,
+                        {
+                            type:
+                            "audio/webm"
+                        }
                     );
 
-                    renderTake(
-                        track,
-                        take
+                const arrayBuffer =
+                    await blob
+                    .arrayBuffer();
+
+                const audioBuffer =
+                    await audioContext
+                    .decodeAudioData(
+                        arrayBuffer
                     );
+
+                const take = {
+
+                    id:Date.now(),
+
+                    buffer:audioBuffer,
+
+                    startOffset:0,
+
+                    endOffset:
+                    audioBuffer.duration,
+
+                    timelinePosition:0
                 };
+
+                track.takes.push(
+                    take
+                );
+
+                renderTake(
+                    track,
+                    take
+                );
+            };
 
             recorder.start();
 
@@ -394,14 +331,7 @@ function renderTake(track,take){
     block.className =
         "audioBlock";
 
-    block.takeData =
-        take;
-
-    lane.appendChild(
-        block
-    );
-
-    /* MENU */
+    lane.appendChild(block);
 
     const menu =
         document.createElement(
@@ -413,23 +343,13 @@ function renderTake(track,take){
 
     menu.innerHTML = `
 
-    <button class="cutBtn">
-        CUT
-    </button>
-
-    <button class="dupBtn">
-        DUP
-    </button>
-
-    <button class="delBtn">
-        DEL
-    </button>
+    <button>CUT</button>
+    <button>DUP</button>
+    <button>DEL</button>
 
     `;
 
     block.appendChild(menu);
-
-    /* CANVAS */
 
     const canvas =
         document.createElement(
@@ -439,11 +359,7 @@ function renderTake(track,take){
     canvas.className =
         "waveCanvas";
 
-    block.appendChild(
-        canvas
-    );
-
-    /* HANDLES */
+    block.appendChild(canvas);
 
     const leftHandle =
         document.createElement(
@@ -461,13 +377,8 @@ function renderTake(track,take){
     rightHandle.className =
         "handle rightHandle";
 
-    block.appendChild(
-        leftHandle
-    );
-
-    block.appendChild(
-        rightHandle
-    );
+    block.appendChild(leftHandle);
+    block.appendChild(rightHandle);
 
     drawTake(
         block,
@@ -475,51 +386,23 @@ function renderTake(track,take){
         canvas
     );
 
-    /* SELECT */
-
-    block.onclick = e => {
-
-        e.stopPropagation();
-
-        document
-            .querySelectorAll(
-                ".audioBlock"
-            )
-            .forEach(
-                b => b.classList.remove(
-                    "selected"
-                )
-            );
-
-        block.classList.add(
-            "selected"
-        );
-
-        selectedTake =
-            take;
-    };
-
     /* MOVE */
 
     let dragging = false;
 
-    let dragStartX = 0;
+    let startX = 0;
 
-    let dragStartPos = 0;
+    let startPos = 0;
 
-    block.onpointerdown = e => {
-
-        if(
-            e.target === leftHandle ||
-            e.target === rightHandle
-        ) return;
+    block.onpointerdown =
+        e => {
 
         dragging = true;
 
-        dragStartX =
+        startX =
             e.clientX;
 
-        dragStartPos =
+        startPos =
             take.timelinePosition;
     };
 
@@ -533,13 +416,13 @@ function renderTake(track,take){
             const delta =
                 (
                     e.clientX -
-                    dragStartX
+                    startX
                 ) / zoomLevel;
 
             take.timelinePosition =
                 Math.max(
                     0,
-                    dragStartPos + delta
+                    startPos + delta
                 );
 
             drawTake(
@@ -557,198 +440,6 @@ function renderTake(track,take){
             dragging = false;
         }
     );
-
-    /* LEFT TRIM */
-
-    let trimLeft = false;
-
-    leftHandle.onpointerdown =
-        () => {
-
-        trimLeft = true;
-    };
-
-    /* RIGHT TRIM */
-
-    let trimRight = false;
-
-    rightHandle.onpointerdown =
-        () => {
-
-        trimRight = true;
-    };
-
-    window.addEventListener(
-        "pointermove",
-        e => {
-
-            if(trimLeft){
-
-                const delta =
-                    e.movementX /
-                    zoomLevel;
-
-                take.startOffset +=
-                    delta;
-
-                take.timelinePosition +=
-                    delta;
-
-                if(
-                    take.startOffset < 0
-                ){
-
-                    take.startOffset = 0;
-                }
-
-                if(
-                    take.startOffset >
-                    take.endOffset - 0.05
-                ){
-
-                    take.startOffset =
-                        take.endOffset - 0.05;
-                }
-
-                drawTake(
-                    block,
-                    take,
-                    canvas
-                );
-            }
-
-            if(trimRight){
-
-                const delta =
-                    e.movementX /
-                    zoomLevel;
-
-                take.endOffset +=
-                    delta;
-
-                if(
-                    take.endOffset >
-                    take.buffer.duration
-                ){
-
-                    take.endOffset =
-                        take.buffer.duration;
-                }
-
-                if(
-                    take.endOffset <
-                    take.startOffset + 0.05
-                ){
-
-                    take.endOffset =
-                        take.startOffset + 0.05;
-                }
-
-                drawTake(
-                    block,
-                    take,
-                    canvas
-                );
-            }
-        }
-    );
-
-    window.addEventListener(
-        "pointerup",
-        () => {
-
-            trimLeft = false;
-
-            trimRight = false;
-        }
-    );
-
-    /* CUT */
-
-    menu.querySelector(
-        ".cutBtn"
-    ).onclick = () => {
-
-        const middle =
-            (
-                take.startOffset +
-                take.endOffset
-            ) / 2;
-
-        const second = {
-
-            ...take,
-
-            id:Date.now(),
-
-            startOffset:middle,
-
-            timelinePosition:
-                take.timelinePosition +
-                (
-                    middle -
-                    take.startOffset
-                )
-        };
-
-        take.endOffset =
-            middle;
-
-        drawTake(
-            block,
-            take,
-            canvas
-        );
-
-        track.takes.push(
-            second
-        );
-
-        renderTake(
-            track,
-            second
-        );
-    };
-
-    /* DUP */
-
-    menu.querySelector(
-        ".dupBtn"
-    ).onclick = () => {
-
-        const clone = {
-
-            ...take,
-
-            id:Date.now(),
-
-            timelinePosition:
-                take.timelinePosition + 1
-        };
-
-        track.takes.push(
-            clone
-        );
-
-        renderTake(
-            track,
-            clone
-        );
-    };
-
-    /* DELETE */
-
-    menu.querySelector(
-        ".delBtn"
-    ).onclick = () => {
-
-        block.remove();
-
-        track.takes =
-            track.takes.filter(
-                t => t.id !== take.id
-            );
-    };
 }
 
 /* =====================================
@@ -797,10 +488,8 @@ function renderWaveform(
         take.startOffset;
 
     canvas.width =
-        Math.max(
-            120,
-            duration * zoomLevel
-        );
+        duration *
+        zoomLevel;
 
     canvas.height = 80;
 
@@ -893,20 +582,7 @@ document.getElementById(
     const now =
         audioContext.currentTime;
 
-    const soloTracks =
-        tracks.filter(
-            t => t.solo
-        );
-
     tracks.forEach(track => {
-
-        if(track.muted)
-            return;
-
-        if(
-            soloTracks.length &&
-            !track.solo
-        ) return;
 
         track.takes.forEach(take => {
 
@@ -965,7 +641,7 @@ function stopAll(){
         try{
             s.stop();
         }catch(e){}
-    );
+    });
 
     activeSources = [];
 }
@@ -993,8 +669,7 @@ function animatePlayhead(){
             (
                 elapsed *
                 zoomLevel
-            ) -
-            timelineWrapper.scrollLeft
+            )
         ) + "px";
 
     playheadFrame =
@@ -1013,8 +688,6 @@ document.getElementById(
 
     zoomLevel += 20;
 
-    refreshAllTakes();
-
     buildGrid();
 };
 
@@ -1027,34 +700,8 @@ document.getElementById(
     if(zoomLevel < 40)
         zoomLevel = 40;
 
-    refreshAllTakes();
-
     buildGrid();
 };
-
-function refreshAllTakes(){
-
-    document
-        .querySelectorAll(
-            ".audioBlock"
-        )
-        .forEach(block => {
-
-            const take =
-                block.takeData;
-
-            const canvas =
-                block.querySelector(
-                    "canvas"
-                );
-
-            drawTake(
-                block,
-                take,
-                canvas
-            );
-        });
-}
 
 /* =====================================
 TRANSPORT
@@ -1077,15 +724,15 @@ document.getElementById(
 };
 
 /* =====================================
-EXPORT MASTER WAV
+EXPORT
 ===================================== */
 
 document.getElementById(
     "exportBtn"
-).onclick = async () => {
+).onclick = () => {
 
     alert(
-        "EXPORT MASTER em construção v3"
+        "EXPORT EM BREVE"
     );
 };
 
