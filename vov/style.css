@@ -1,6 +1,6 @@
 /* =========================================
 ARQUIVO 2 — style.css
-VOV VERO v1
+VOV VERO EDIT ENGINE v1
 ========================================= */
 
 body{
@@ -128,6 +128,21 @@ VERO ENGINE
 }
 
 /* =====================================
+PLAYHEAD
+===================================== */
+
+#playhead{
+    position:fixed;
+    top:150px;
+    left:220px;
+    width:2px;
+    height:calc(100vh - 150px);
+    background:red;
+    z-index:999999;
+    pointer-events:none;
+}
+
+/* =====================================
 GRID
 ===================================== */
 
@@ -183,6 +198,7 @@ TRACK
     top:0;
     right:0;
     height:100%;
+    overflow:visible;
 }
 
 /* =====================================
@@ -216,50 +232,50 @@ AUDIO BLOCK
     background:#181818;
     border:2px solid #333;
     border-radius:10px;
-    overflow:hidden;
+    overflow:visible;
     cursor:grab;
     touch-action:none;
 }
 
 .audioBlock.selected{
     border-color:#00ff99;
+    box-shadow:
+        0 0 12px #00ff99;
 }
+
+/* =====================================
+HANDLES
+===================================== */
 
 .handle{
     position:absolute;
     top:0;
-    width:12px;
+    width:14px;
     height:100%;
     background:#00ff99;
-    z-index:20;
+    z-index:200;
+    cursor:ew-resize;
+    opacity:0.9;
 }
 
 .leftHandle{
     left:0;
+    border-right:2px solid #fff;
 }
 
 .rightHandle{
     right:0;
+    border-left:2px solid #fff;
 }
+
+/* =====================================
+WAVE
+===================================== */
 
 .waveCanvas{
     width:100%;
     height:100%;
     display:block;
-}
-
-/* =====================================
-PLAYHEAD
-===================================== */
-
-#playhead{
-    position:absolute;
-    top:0;
-    left:180px;
-    width:2px;
-    height:100%;
-    background:red;
-    z-index:99999;
 }
 
 /* =====================================
@@ -277,4 +293,24 @@ BUTTON STATES
 .soloActive{
     background:gold !important;
     color:black !important;
+}
+
+/* =====================================
+EDIT MENU
+===================================== */
+
+.editMenu{
+    position:absolute;
+    top:-42px;
+    left:0;
+    display:flex;
+    gap:5px;
+    z-index:500;
+}
+
+.editMenu button{
+    padding:4px 8px;
+    font-size:10px;
+    background:#111;
+    border:1px solid #333;
 }
